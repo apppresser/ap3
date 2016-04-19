@@ -1,7 +1,5 @@
 import {Page, NavController, MenuController} from 'ionic-angular';
-import {TabsPage} from '../tabs/tabs';
-import {SignupPage} from '../signup/signup';
-
+import Iframe from '../iframe/';
 
 interface Slide {
   title: string;
@@ -10,14 +8,15 @@ interface Slide {
 }
 
 @Page({
-  template: require('./tutorial.html')
+  template: require('./index.html'),
+    styles: [require('!raw!autoprefixer!sass!./index.scss')]
 })
 export class TutorialPage {
   slides: Slide[];
   showSkip = true;
 
   constructor(private nav: NavController, private menu: MenuController) {
-    this.slides = [
+      this.slides = [
       {
         title: "Welcome to <b>ICA</b>",
         description: "The <b>Ionic Conference App</b> is a practical preview of the Ionic Framework in action, and a demonstration of proper code use.",
@@ -37,7 +36,11 @@ export class TutorialPage {
   }
 
   startApp() {
-    this.nav.push(TabsPage);
+      this.nav.setRoot(Iframe, {
+          "title": "Home",
+        "icon": "",
+        "src": "http://reactordev.com/apv2"
+      });
   }
 
   onSlideChangeStart(slider) {

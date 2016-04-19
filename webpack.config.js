@@ -18,8 +18,7 @@ let baseAppEntries = [
 ];
 
 let devAppEntries = [
-    'webpack-dev-server/client',
-    'webpack/hot/only-dev-server'
+
 ];
 
 let plugins = [];
