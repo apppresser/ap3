@@ -1,0 +1,2 @@
+<ion-spinner *ngIf="!loaded"></ion-spinner>
+<iframe (load)="onLoad($event)" [src]="iframeSrc" ></iframe>

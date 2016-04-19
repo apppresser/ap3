@@ -2,9 +2,9 @@
     <button menuToggle>
     <ion-icon name="menu"></ion-icon>
   </button>
-    <ion-title>Home</ion-title>
+    <ion-title>{{title}}</ion-title>
 </ion-navbar>
 
 <ion-content>
-    <custom-iframe [src]="src"></custom-iframe>
+    <custom-iframe [src]="src" (load)="iframeLoaded($event)"></custom-iframe>
 </ion-content>

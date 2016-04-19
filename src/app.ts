@@ -2,40 +2,38 @@ import {App, IonicApp, Events, Platform, NavController} from 'ionic-angular';
 import {StatusBar} from 'ionic-native';
 import {TutorialPage} from './pages/tutorial';
 import Iframe from './pages/iframe';
+import {IMenu, default as MenuService} from './providers/menu';
 
-interface MenuObject {
-    title: string;
-    src: string;
-    icon: string;
-}
 
 @App({
     template: require('./app.html'),
-    providers: [],
+    providers: [MenuService],
     config: {},
     prodMode: __DEV__ ? false : true
 })
 class ConferenceApp {
     rootPage: any = TutorialPage;
-    menu: MenuObject[] = require('./data/menu.json').list;
+    menuList: IMenu[];
     loggedIn = false;
 
     constructor(
         private app: IonicApp,
         private events: Events,
-        platform: Platform
+        platform: Platform,
+        private menu : MenuService  
     ) {
         // Call any initial plugins when ready
         platform.ready().then(() => {
             StatusBar.styleDefault();
         });
+        this.menuList = menu.getList();
     }
 
     ngAfterViewInit() {
         
     }
 
-    openPage(page: MenuObject) {
+    openPage(page: IMenu) {
         let nav = this.app.getComponent('nav');
         nav.push(Iframe, page);
     }

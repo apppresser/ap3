@@ -1,12 +1,12 @@
 {
     "home": {
-        "title": "Home",
+        "title": "AppPresser",
         "icon": "",
         "src": "http://reactordev.com/apv2"
     },
     "list": [
         {
-            "title": "Home",
+            "title": "AppPresser",
             "icon": "",
             "src": "http://reactordev.com/apv2"
         },
