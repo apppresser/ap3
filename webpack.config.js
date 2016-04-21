@@ -89,28 +89,32 @@ module.exports = {
         preLoaders: [
             //   loaders.tslint,
         ],
-        loaders: [
-            {
-                test: /\.ts$/,
-                exclude: /(node_modules)/,
-                loader: 'awesome-typescript-loader',
-                include: paths.src
-            }, {
-                test: /\.json$/,
-                loader: "json"
-            }, {
-                test: /\.(png|jpg|svg)$/,
-                loader: 'file?name=img/[ext]/[name].[ext]'
-            }, {
-                test: /\.scss$/,
-                loader: ExtractTextPlugin.extract(["css", "autoprefixer", "sass"])
-            }, {
-                test: /\.html$/,
-                loader: 'html'
-            }, {
-                test: [/ionicons\.svg/, /ionicons\.eot/, /ionicons\.ttf/, /ionicons\.woff/, /roboto-bold\.woff/, /roboto-medium\.woff/, /roboto-light\.woff/, /roboto-regular\.woff/, /roboto-bold\.ttf/, /roboto-medium\.ttf/, /roboto-light\.ttf/, /roboto-regular\.ttf/, /noto-sans-bold\.ttf/, /noto-sans-regular\.ttf/],
-                loader: 'file?name=fonts/[name].[ext]'
-            }
+        loaders: [{
+            test: /\.ts$/,
+            exclude: /(node_modules)/,
+            loader: 'awesome-typescript-loader',
+            include: paths.src
+        }, {
+            test: /\.json$/,
+            loader: "json"
+        }, {
+            test: /\.(png|jpg|svg)$/,
+            loader: 'file?name=img/[ext]/[name].[ext]'
+        }, {
+            test: /\.scss$/,
+            loader: ExtractTextPlugin.extract(["css", "autoprefixer", "sass"])
+        }, {
+            test: /\.html$/,
+            loader: 'html'
+        }, {
+            test: [/ionicons\.svg/, /ionicons\.eot/, /ionicons\.ttf/, /ionicons\.woff/, /roboto-bold\.woff/, /roboto-medium\.woff/, /roboto-light\.woff/, /roboto-regular\.woff/, /roboto-bold\.ttf/, /roboto-medium\.ttf/, /roboto-light\.ttf/, /roboto-regular\.ttf/, /noto-sans-bold\.ttf/, /noto-sans-regular\.ttf/],
+            loader: 'file?name=fonts/[name].[ext]'
+        }]
+    },
+    sassLoader: {
+        includePaths: [
+            "node_modules/ionic-angular",
+            "node_modules/ionicons/dist/scss"
         ]
     }
 };
