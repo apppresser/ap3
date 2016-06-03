@@ -1,5 +1,6 @@
 {
-  "name": "ionic2-webpack-boilerplate",
-  "app_id": "",
-  "v2": true
+  "name": "MyIonic2Project",
+  "app_id": "3192a6c7",
+  "v2": true,
+  "typescript": true
 }
