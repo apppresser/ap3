@@ -5,12 +5,13 @@ import {HelloIonicPage} from './pages/hello-ionic/hello-ionic';
 import {NewPage} from './pages/new-page/new-page';
 import {ListPage} from './pages/list/list';
 import Iframe from './pages/iframe';
-import {Tabs} from './pages/tabs/tabs';
+import {Menus} from './providers/menus/menus';
 // import {Push} from 'ionic-native';
 
 
 @App({
   templateUrl: 'build/app.html',
+  providers: [Menus],
   config: {
     iconMode: 'ios',
     pageTransition: 'ios',
@@ -21,24 +22,28 @@ class MyApp {
 
   // make HelloIonicPage the root (or first) page
   rootPage: any = HelloIonicPage;
-  pages: Array<{title: string, component: any, src: string}>;
+  pages: Array<{title: string, src: string, component: any}>;
 
   constructor(
     private platform: Platform,
+    public menuService: Menus,
     private menu: MenuController
   ) {
     this.initializeApp();
-
     // set our app's pages
-    this.pages = [
-      { title: 'Hello Ionic', component: HelloIonicPage },
-      { title: 'My First List', component: ListPage },
-      { title: 'New Page', component: NewPage },
-      { title: 'Home', component: Iframe, src: 'http://www.wp4.dev?appp=2' },
-      { title: 'Activity', component: Iframe, src: 'http://www.wp4.dev/activity?appp=2' },
-      { title: 'Shop', component: Iframe, src: 'http://www.wp4.dev/shop?appp=2' },
-      { title: 'Tabs', component: Tabs },
-    ];
+    this.loadMenu();
+  }
+
+  loadMenu() {
+    // any menu imported from WP has to use same component. Other pages can be added manually with different components
+    this.pages = this.menuService.load();
+     
+     // Add pages manually here, can use different components like this...
+    let a = { 'title': 'New Page', 'src': '', 'component': NewPage };
+    let b = { 'title': 'List Page', 'src': '', 'component': ListPage };
+
+    this.pages.push(a, b);
+
   }
 
   initializeApp() {
@@ -86,4 +91,5 @@ class MyApp {
       this.nav.setRoot(page.component);
     }
   }
+
 }

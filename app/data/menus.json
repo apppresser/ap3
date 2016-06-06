@@ -1,0 +1,31 @@
+{ 
+	"menu": [
+        {
+        	"title": "Hello Ionic", 
+        	"component": "HelloIonicPage" 
+        },
+        { 
+        	"title": "My First List", 
+        	"component": "ListPage" 
+        },
+		{ 
+			"title": "New Page", 
+			"component": "NewPage" 
+		},
+		{ 
+			"title": "Home", 
+			"component": "Iframe", 
+			"src": "http://10.0.1.12?appp=2" 
+		},
+		{ 
+			"title": "Activity", 
+			"component": "Iframe", 
+			"src": "http://10.0.1.12/activity?appp=2" 
+		},
+		{ 
+			"title": "Shop", 
+			"component": "Iframe", 
+			"src": "http://10.0.1.12/shop?appp=2"
+		}
+	]
+}
