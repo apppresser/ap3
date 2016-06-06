@@ -33,7 +33,9 @@ var MyApp = (function () {
         var _this = this;
         // any menu imported from WP has to use same component. Other pages can be added manually with different components
         this.menuService.load().then(function (pages) {
+            // Loads menu from WordPress API
             _this.pages = pages;
+            _this.pages.unshift({ 'title': 'Home', 'url': '', 'component': hello_ionic_1.HelloIonicPage });
             // Add pages manually here, can use different components like this...
             var a = { 'title': 'New Page', 'url': '', 'component': new_page_1.NewPage };
             var b = { 'title': 'List Page', 'url': '', 'component': list_1.ListPage };

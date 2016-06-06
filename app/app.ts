@@ -37,7 +37,10 @@ class MyApp {
   loadMenu() {
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
     this.menuService.load().then( pages => {
+      // Loads menu from WordPress API
       this.pages = pages;
+
+      this.pages.unshift({ 'title': 'Home', 'url': '', 'component': HelloIonicPage });
 
       // Add pages manually here, can use different components like this...
       let a = { 'title': 'New Page', 'url': '', 'component': NewPage };
