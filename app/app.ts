@@ -22,7 +22,7 @@ class MyApp {
 
   // make HelloIonicPage the root (or first) page
   rootPage: any = HelloIonicPage;
-  pages: Array<{title: string, src: string, component: any}>;
+  pages: Array<{title: string, url: string, component: any}>;
 
   constructor(
     private platform: Platform,
@@ -36,13 +36,16 @@ class MyApp {
 
   loadMenu() {
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
-    this.pages = this.menuService.load();
-     
-     // Add pages manually here, can use different components like this...
-    let a = { 'title': 'New Page', 'src': '', 'component': NewPage };
-    let b = { 'title': 'List Page', 'src': '', 'component': ListPage };
+    this.menuService.load().then( pages => {
+      this.pages = pages;
 
-    this.pages.push(a, b);
+      // Add pages manually here, can use different components like this...
+      let a = { 'title': 'New Page', 'url': '', 'component': NewPage };
+      let b = { 'title': 'List Page', 'url': '', 'component': ListPage };
+
+      this.pages.push(a, b);
+
+    });
 
   }
 
@@ -71,8 +74,8 @@ class MyApp {
 
       var data = JSON.parse(e.data);
       console.warn(data);
-      if ( data.src ) {
-        let page = { title: data.title, component: Iframe, src: data.src };
+      if ( data.url ) {
+        let page = { title: data.title, component: Iframe, url: data.url };
         this.nav.push(Iframe, page);
       } else if( data.msg ) {
         window.plugins.socialsharing.share(data.msg, null, null, data.link);
@@ -85,7 +88,7 @@ class MyApp {
     // close the menu when clicking a link from the menu
     this.menu.close();
     // navigate to the new page if it is not the current page
-    if (page.src) {
+    if (page.url) {
       this.nav.setRoot(Iframe, page);
     } else {
       this.nav.setRoot(page.component);

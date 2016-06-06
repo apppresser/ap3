@@ -7,11 +7,11 @@ import {Page, NavParams} from 'ionic-angular';
 })
 export default class {
     title: string;
-    src: string;
+    url: string;
     iframe: any;
     constructor(private navParams: NavParams) {
         this.title = navParams.data.title;
-        this.src = navParams.data.src;
+        this.url = navParams.data.url;
         console.log('navParams.data', navParams.data)
     }
     iframeLoaded(e) {
