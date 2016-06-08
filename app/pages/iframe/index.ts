@@ -1,8 +1,9 @@
-import {Page, NavParams} from 'ionic-angular';
+import {NavParams} from 'ionic-angular';
+import {Component} from '@angular/core';
 // import customIframe from '../../components/iframe/index';
 
 
-@Page({
+@Component({
     templateUrl: 'build/pages/iframe/index.html'
 })
 export default class {

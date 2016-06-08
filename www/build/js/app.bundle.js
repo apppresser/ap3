@@ -10,13 +10,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
+var core_2 = require('@angular/core');
 var ionic_angular_1 = require('ionic-angular');
 var ionic_native_1 = require('ionic-native');
 var hello_ionic_1 = require('./pages/hello-ionic/hello-ionic');
-var new_page_1 = require('./pages/new-page/new-page');
 var list_1 = require('./pages/list/list');
+var post_list_1 = require('./pages/post-list/post-list');
 var iframe_1 = require('./pages/iframe');
 var menus_1 = require('./providers/menus/menus');
+var posts_1 = require('./providers/posts/posts');
+var tabs_1 = require('./pages/tabs/tabs');
 // import {Push} from 'ionic-native';
 var MyApp = (function () {
     function MyApp(platform, menuService, menu) {
@@ -35,11 +38,12 @@ var MyApp = (function () {
         this.menuService.load().then(function (pages) {
             // Loads menu from WordPress API
             _this.pages = pages;
-            _this.pages.unshift({ 'title': 'Home', 'url': '', 'component': hello_ionic_1.HelloIonicPage });
+            _this.pages.unshift({ 'title': 'Local Home', 'url': '', 'component': hello_ionic_1.HelloIonicPage });
             // Add pages manually here, can use different components like this...
-            var a = { 'title': 'New Page', 'url': '', 'component': new_page_1.NewPage };
-            var b = { 'title': 'List Page', 'url': '', 'component': list_1.ListPage };
-            _this.pages.push(a, b);
+            var a = { 'title': 'Tabs', 'url': '', 'component': tabs_1.TabsPage };
+            var b = { 'title': 'WP Posts', 'url': '', 'component': post_list_1.PostList };
+            var c = { 'title': 'Local Posts', 'url': '', 'component': list_1.ListPage };
+            _this.pages.push(a, b, c);
         });
     };
     MyApp.prototype.initializeApp = function () {
@@ -53,15 +57,27 @@ var MyApp = (function () {
             //   // Log out your device token (Save this!)
             //   console.log("Got Token:", token.token);
             // });
+            _this.presentToast();
         });
         // When WP site loads, attach our click events
         window.addEventListener('message', function (e) {
             console.log('postMessage', e.data);
+            if (e.data === 'site_loaded') {
+                var iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
+                // TODO: can't find elements this way, not sure why
+                var shareBtns = iframedoc.getElementsByClassName("appshare");
+                console.warn(shareBtns);
+                // Add click events to all appshare buttons
+                for (var i = 0; i < shareBtns.length; i++) {
+                    shareBtns[i].addEventListener('click', function () {
+                        alert('click');
+                    }, false);
+                }
+            }
             // if it's not our json object, return
             if (e.data.indexOf('{') != 0)
                 return;
             var data = JSON.parse(e.data);
-            console.warn(data);
             if (data.url) {
                 var page = { title: data.title, component: iframe_1.default, url: data.url };
                 _this.nav.push(iframe_1.default, page);
@@ -70,6 +86,16 @@ var MyApp = (function () {
                 window.plugins.socialsharing.share(data.msg, null, null, data.link);
             }
         }, false);
+    };
+    MyApp.prototype.presentToast = function () {
+        var toast = ionic_angular_1.Toast.create({
+            message: 'This is a toast message',
+            duration: 3000
+        });
+        toast.onDismiss(function () {
+            console.log('Dismissed toast');
+        });
+        this.nav.present(toast);
     };
     MyApp.prototype.openPage = function (page) {
         // close the menu when clicking a link from the menu
@@ -87,20 +113,22 @@ var MyApp = (function () {
         __metadata('design:type', ionic_angular_1.Nav)
     ], MyApp.prototype, "nav", void 0);
     MyApp = __decorate([
-        ionic_angular_1.App({
+        core_2.Component({
             templateUrl: 'build/app.html',
-            providers: [menus_1.Menus],
-            config: {
-                iconMode: 'ios',
-                pageTransition: 'ios',
-            } // http://ionicframework.com/docs/v2/api/config/Config/
         }), 
         __metadata('design:paramtypes', [ionic_angular_1.Platform, menus_1.Menus, ionic_angular_1.MenuController])
     ], MyApp);
     return MyApp;
 }());
+// Pass the main app component as the first argument
+// Pass any providers for your app in the second argument
+// Set any config for your app as the third argument:
+// http://ionicframework.com/docs/v2/api/config/Config/
+ionic_angular_1.ionicBootstrap(MyApp, [menus_1.Menus, posts_1.Posts], {
+    tabbarPlacement: 'bottom',
+});
 
-},{"./pages/hello-ionic/hello-ionic":2,"./pages/iframe":3,"./pages/list/list":5,"./pages/new-page/new-page":6,"./providers/menus/menus":7,"@angular/core":140,"ionic-angular":389,"ionic-native":412}],2:[function(require,module,exports){
+},{"./pages/hello-ionic/hello-ionic":2,"./pages/iframe":3,"./pages/list/list":5,"./pages/post-list/post-list":8,"./pages/tabs/tabs":9,"./providers/menus/menus":10,"./providers/posts/posts":11,"@angular/core":144,"ionic-angular":395,"ionic-native":418}],2:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -111,21 +139,43 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var core_1 = require('@angular/core');
 var ionic_angular_1 = require('ionic-angular');
 var HelloIonicPage = (function () {
-    function HelloIonicPage() {
+    function HelloIonicPage(nav) {
+        this.nav = nav;
     }
+    HelloIonicPage.prototype.showModal = function () {
+        var profileModal = ionic_angular_1.Modal.create(MyModal);
+        this.nav.present(profileModal);
+    };
     HelloIonicPage = __decorate([
-        ionic_angular_1.Page({
+        core_1.Component({
             templateUrl: 'build/pages/hello-ionic/hello-ionic.html'
         }), 
-        __metadata('design:paramtypes', [])
+        __metadata('design:paramtypes', [ionic_angular_1.NavController])
     ], HelloIonicPage);
     return HelloIonicPage;
 }());
 exports.HelloIonicPage = HelloIonicPage;
+// The template for our modal. Should be in separate file
+var MyModal = (function () {
+    function MyModal(viewCtrl) {
+        this.viewCtrl = viewCtrl;
+    }
+    MyModal.prototype.close = function () {
+        this.viewCtrl.dismiss();
+    };
+    MyModal = __decorate([
+        core_1.Component({
+            template: "\n  <ion-content padding>\n    <h2>I'm a modal!</h2>\n    <button (click)=\"close()\">Close</button>\n  </ion-content>"
+        }), 
+        __metadata('design:paramtypes', [ionic_angular_1.ViewController])
+    ], MyModal);
+    return MyModal;
+}());
 
-},{"ionic-angular":389}],3:[function(require,module,exports){
+},{"@angular/core":144,"ionic-angular":395}],3:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -137,6 +187,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var ionic_angular_1 = require('ionic-angular');
+var core_1 = require('@angular/core');
 // import customIframe from '../../components/iframe/index';
 var default_1 = (function () {
     function default_1(navParams) {
@@ -153,7 +204,7 @@ var default_1 = (function () {
         this.iframe.postMessage('activity', '*');
     };
     default_1 = __decorate([
-        ionic_angular_1.Page({
+        core_1.Component({
             templateUrl: 'build/pages/iframe/index.html'
         }), 
         __metadata('design:paramtypes', [ionic_angular_1.NavParams])
@@ -163,7 +214,7 @@ var default_1 = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = default_1;
 
-},{"ionic-angular":389}],4:[function(require,module,exports){
+},{"@angular/core":144,"ionic-angular":395}],4:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -175,6 +226,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var ionic_angular_1 = require('ionic-angular');
+var core_1 = require('@angular/core');
 var ItemDetailsPage = (function () {
     function ItemDetailsPage(nav, navParams) {
         this.nav = nav;
@@ -182,7 +234,7 @@ var ItemDetailsPage = (function () {
         this.selectedItem = navParams.get('item');
     }
     ItemDetailsPage = __decorate([
-        ionic_angular_1.Page({
+        core_1.Component({
             templateUrl: 'build/pages/item-details/item-details.html'
         }), 
         __metadata('design:paramtypes', [ionic_angular_1.NavController, ionic_angular_1.NavParams])
@@ -191,7 +243,7 @@ var ItemDetailsPage = (function () {
 }());
 exports.ItemDetailsPage = ItemDetailsPage;
 
-},{"ionic-angular":389}],5:[function(require,module,exports){
+},{"@angular/core":144,"ionic-angular":395}],5:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -203,6 +255,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var ionic_angular_1 = require('ionic-angular');
+var core_1 = require('@angular/core');
 var item_details_1 = require('../item-details/item-details');
 var ListPage = (function () {
     function ListPage(nav, navParams) {
@@ -226,7 +279,7 @@ var ListPage = (function () {
         });
     };
     ListPage = __decorate([
-        ionic_angular_1.Page({
+        core_1.Component({
             templateUrl: 'build/pages/list/list.html'
         }), 
         __metadata('design:paramtypes', [ionic_angular_1.NavController, ionic_angular_1.NavParams])
@@ -235,7 +288,36 @@ var ListPage = (function () {
 }());
 exports.ListPage = ListPage;
 
-},{"../item-details/item-details":4,"ionic-angular":389}],6:[function(require,module,exports){
+},{"../item-details/item-details":4,"@angular/core":144,"ionic-angular":395}],6:[function(require,module,exports){
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var core_1 = require('@angular/core');
+var NewPage = (function () {
+    function NewPage() {
+        console.log('NewPage loaded');
+    }
+    NewPage.prototype.fart = function () {
+        alert('phhhhrt');
+    };
+    NewPage = __decorate([
+        core_1.Component({
+            templateUrl: 'build/pages/new-page/new-page.html'
+        }), 
+        __metadata('design:paramtypes', [])
+    ], NewPage);
+    return NewPage;
+}());
+exports.NewPage = NewPage;
+
+},{"@angular/core":144}],7:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -247,24 +329,103 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var ionic_angular_1 = require('ionic-angular');
-var NewPage = (function () {
-    function NewPage() {
-        console.log('NewPage loaded');
+var core_1 = require('@angular/core');
+var PostDetailsPage = (function () {
+    function PostDetailsPage(nav, navParams) {
+        this.nav = nav;
+        // If we navigated to this page, we will have an item available as a nav param
+        this.selectedItem = navParams.get('item');
     }
-    NewPage.prototype.fart = function () {
-        alert('phhhhrt');
-    };
-    NewPage = __decorate([
-        ionic_angular_1.Page({
-            templateUrl: 'build/pages/new-page/new-page.html'
+    PostDetailsPage = __decorate([
+        core_1.Component({
+            templateUrl: 'build/pages/post-details/post-details.html'
         }), 
-        __metadata('design:paramtypes', [])
-    ], NewPage);
-    return NewPage;
+        __metadata('design:paramtypes', [ionic_angular_1.NavController, ionic_angular_1.NavParams])
+    ], PostDetailsPage);
+    return PostDetailsPage;
 }());
-exports.NewPage = NewPage;
+exports.PostDetailsPage = PostDetailsPage;
 
-},{"ionic-angular":389}],7:[function(require,module,exports){
+},{"@angular/core":144,"ionic-angular":395}],8:[function(require,module,exports){
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var ionic_angular_1 = require('ionic-angular');
+var core_1 = require('@angular/core');
+var posts_1 = require('../../providers/posts/posts');
+var post_details_1 = require('../post-details/post-details');
+var PostList = (function () {
+    function PostList(nav, navParams, postService) {
+        this.nav = nav;
+        this.postService = postService;
+        // If we navigated to this page, we will have an item available as a nav param
+        this.loadPosts();
+    }
+    PostList.prototype.loadPosts = function () {
+        var _this = this;
+        // any menu imported from WP has to use same component. Other pages can be added manually with different components
+        this.postService.load().then(function (items) {
+            // Loads posts from WordPress API
+            _this.items = items;
+        });
+    };
+    PostList.prototype.itemTapped = function (event, item) {
+        this.nav.push(post_details_1.PostDetailsPage, {
+            item: item
+        });
+    };
+    PostList = __decorate([
+        core_1.Component({
+            templateUrl: 'build/pages/post-list/post-list.html'
+        }), 
+        __metadata('design:paramtypes', [ionic_angular_1.NavController, ionic_angular_1.NavParams, posts_1.Posts])
+    ], PostList);
+    return PostList;
+}());
+exports.PostList = PostList;
+
+},{"../../providers/posts/posts":11,"../post-details/post-details":7,"@angular/core":144,"ionic-angular":395}],9:[function(require,module,exports){
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var core_1 = require('@angular/core');
+var ionic_angular_1 = require('ionic-angular');
+var new_page_1 = require('../new-page/new-page');
+var list_1 = require('../list/list');
+var post_list_1 = require('../post-list/post-list');
+var TabsPage = (function () {
+    function TabsPage(navParams) {
+        // set the root pages for each tab
+        this.tab1Root = list_1.ListPage;
+        this.tab2Root = post_list_1.PostList;
+        this.tab3Root = new_page_1.NewPage;
+        this.mySelectedIndex = navParams.data.tabIndex || 0;
+    }
+    TabsPage = __decorate([
+        core_1.Component({
+            templateUrl: 'build/pages/tabs/tabs.html'
+        }), 
+        __metadata('design:paramtypes', [ionic_angular_1.NavParams])
+    ], TabsPage);
+    return TabsPage;
+}());
+exports.TabsPage = TabsPage;
+
+},{"../list/list":5,"../new-page/new-page":6,"../post-list/post-list":8,"@angular/core":144,"ionic-angular":395}],10:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -300,13 +461,12 @@ var Menus = (function () {
             // We're using Angular Http provider to request the data,
             // then on the response it'll map the JSON data to a parsed JS object.
             // Next we process the data and resolve the promise with the new data.
-            _this.http.get('http://reactordev.com/apv2/wp-json/menus/9')
+            _this.http.get('http://reactordev.com/apv2/wp-json/wp-api-menus/v2/menus/9')
                 .map(function (res) { return res.json(); })
                 .subscribe(function (data) {
                 // we've got back the raw data, now generate the core schedule data
                 // and save the data for later reference
                 _this.data = data.items;
-                console.warn(_this.data);
                 resolve(_this.data);
             });
         });
@@ -319,7 +479,62 @@ var Menus = (function () {
 }());
 exports.Menus = Menus;
 
-},{"@angular/core":140,"@angular/http":216,"rxjs/add/operator/map":537}],8:[function(require,module,exports){
+},{"@angular/core":144,"@angular/http":220,"rxjs/add/operator/map":543}],11:[function(require,module,exports){
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var core_1 = require('@angular/core');
+var http_1 = require('@angular/http');
+require('rxjs/add/operator/map');
+/*
+  Generated class for the Posts provider.
+
+  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
+  for more info on providers and Angular 2 DI.
+*/
+var Posts = (function () {
+    function Posts(http) {
+        this.http = http;
+        this.data = null;
+    }
+    Posts.prototype.load = function () {
+        var _this = this;
+        if (this.data) {
+            // already loaded data
+            return Promise.resolve(this.data);
+        }
+        // don't have the data yet
+        return new Promise(function (resolve) {
+            // We're using Angular Http provider to request the data,
+            // then on the response it'll map the JSON data to a parsed JS object.
+            // Next we process the data and resolve the promise with the new data.
+            _this.http.get('http://reactordev.com/apv2/wp-json/wp/v2/posts')
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                // we've got back the raw data, now generate the core schedule data
+                // and save the data for later reference
+                _this.data = data;
+                console.warn(data);
+                resolve(_this.data);
+            });
+        });
+    };
+    Posts = __decorate([
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [http_1.Http])
+    ], Posts);
+    return Posts;
+}());
+exports.Posts = Posts;
+
+},{"@angular/core":144,"@angular/http":220,"rxjs/add/operator/map":543}],12:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -330,7 +545,7 @@ __export(require('./src/forms'));
 __export(require('./src/common_directives'));
 __export(require('./src/location'));
 
-},{"./src/common_directives":9,"./src/directives":10,"./src/forms":28,"./src/location":52,"./src/pipes":58}],9:[function(require,module,exports){
+},{"./src/common_directives":13,"./src/directives":14,"./src/forms":32,"./src/location":56,"./src/pipes":62}],13:[function(require,module,exports){
 "use strict";
 var forms_1 = require('./forms');
 var directives_1 = require('./directives');
@@ -379,7 +594,7 @@ var directives_1 = require('./directives');
  */
 exports.COMMON_DIRECTIVES = [directives_1.CORE_DIRECTIVES, forms_1.FORM_DIRECTIVES];
 
-},{"./directives":10,"./forms":28}],10:[function(require,module,exports){
+},{"./directives":14,"./forms":32}],14:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -411,7 +626,7 @@ __export(require('./directives/observable_list_diff'));
 var core_directives_1 = require('./directives/core_directives');
 exports.CORE_DIRECTIVES = core_directives_1.CORE_DIRECTIVES;
 
-},{"./directives/core_directives":11,"./directives/ng_class":12,"./directives/ng_for":13,"./directives/ng_if":14,"./directives/ng_plural":15,"./directives/ng_style":16,"./directives/ng_switch":17,"./directives/ng_template_outlet":18,"./directives/observable_list_diff":19}],11:[function(require,module,exports){
+},{"./directives/core_directives":15,"./directives/ng_class":16,"./directives/ng_for":17,"./directives/ng_if":18,"./directives/ng_plural":19,"./directives/ng_style":20,"./directives/ng_switch":21,"./directives/ng_template_outlet":22,"./directives/observable_list_diff":23}],15:[function(require,module,exports){
 "use strict";
 var ng_class_1 = require('./ng_class');
 var ng_for_1 = require('./ng_for');
@@ -473,7 +688,7 @@ exports.CORE_DIRECTIVES = [
     ng_plural_1.NgPluralCase
 ];
 
-},{"./ng_class":12,"./ng_for":13,"./ng_if":14,"./ng_plural":15,"./ng_style":16,"./ng_switch":17,"./ng_template_outlet":18}],12:[function(require,module,exports){
+},{"./ng_class":16,"./ng_for":17,"./ng_if":18,"./ng_plural":19,"./ng_style":20,"./ng_switch":21,"./ng_template_outlet":22}],16:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -599,7 +814,7 @@ var NgClass = (function () {
 }());
 exports.NgClass = NgClass;
 
-},{"../../src/facade/collection":22,"../../src/facade/lang":26,"@angular/core":140}],13:[function(require,module,exports){
+},{"../../src/facade/collection":26,"../../src/facade/lang":30,"@angular/core":144}],17:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -760,7 +975,7 @@ var RecordViewTuple = (function () {
     return RecordViewTuple;
 }());
 
-},{"../../src/facade/exceptions":24,"../../src/facade/lang":26,"@angular/core":140}],14:[function(require,module,exports){
+},{"../../src/facade/exceptions":28,"../../src/facade/lang":30,"@angular/core":144}],18:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -795,7 +1010,7 @@ var NgIf = (function () {
 }());
 exports.NgIf = NgIf;
 
-},{"../../src/facade/lang":26,"@angular/core":140}],15:[function(require,module,exports){
+},{"../../src/facade/lang":30,"@angular/core":144}],19:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -893,7 +1108,7 @@ var NgPlural = (function () {
 }());
 exports.NgPlural = NgPlural;
 
-},{"../../src/facade/collection":22,"../../src/facade/lang":26,"./ng_switch":17,"@angular/core":140}],16:[function(require,module,exports){
+},{"../../src/facade/collection":26,"../../src/facade/lang":30,"./ng_switch":21,"@angular/core":144}],20:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -942,7 +1157,7 @@ var NgStyle = (function () {
 }());
 exports.NgStyle = NgStyle;
 
-},{"../../src/facade/lang":26,"@angular/core":140}],17:[function(require,module,exports){
+},{"../../src/facade/lang":30,"@angular/core":144}],21:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -1092,7 +1307,7 @@ var NgSwitchDefault = (function () {
 }());
 exports.NgSwitchDefault = NgSwitchDefault;
 
-},{"../../src/facade/collection":22,"../../src/facade/lang":26,"@angular/core":140}],18:[function(require,module,exports){
+},{"../../src/facade/collection":26,"../../src/facade/lang":30,"@angular/core":144}],22:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -1125,10 +1340,10 @@ var NgTemplateOutlet = (function () {
 }());
 exports.NgTemplateOutlet = NgTemplateOutlet;
 
-},{"../../src/facade/lang":26,"@angular/core":140}],19:[function(require,module,exports){
+},{"../../src/facade/lang":30,"@angular/core":144}],23:[function(require,module,exports){
 "use strict";
 
-},{}],20:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1279,7 +1494,7 @@ var EventEmitter = (function (_super) {
 }(Subject_1.Subject));
 exports.EventEmitter = EventEmitter;
 
-},{"./lang":26,"./promise":27,"rxjs/Observable":474,"rxjs/Subject":480,"rxjs/observable/PromiseObservable":603,"rxjs/operator/toPromise":701}],21:[function(require,module,exports){
+},{"./lang":30,"./promise":31,"rxjs/Observable":480,"rxjs/Subject":486,"rxjs/observable/PromiseObservable":609,"rxjs/operator/toPromise":707}],25:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1330,7 +1545,7 @@ var BaseWrappedException = (function (_super) {
 }(Error));
 exports.BaseWrappedException = BaseWrappedException;
 
-},{}],22:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 var lang_1 = require('./lang');
 exports.Map = lang_1.global.Map;
@@ -1699,7 +1914,7 @@ var SetWrapper = (function () {
 }());
 exports.SetWrapper = SetWrapper;
 
-},{"./lang":26}],23:[function(require,module,exports){
+},{"./lang":30}],27:[function(require,module,exports){
 "use strict";
 var lang_1 = require('./lang');
 var base_wrapped_exception_1 = require('./base_wrapped_exception');
@@ -1832,7 +2047,7 @@ var ExceptionHandler = (function () {
 }());
 exports.ExceptionHandler = ExceptionHandler;
 
-},{"./base_wrapped_exception":21,"./collection":22,"./lang":26}],24:[function(require,module,exports){
+},{"./base_wrapped_exception":25,"./collection":26,"./lang":30}],28:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1911,7 +2126,7 @@ function unimplemented() {
 }
 exports.unimplemented = unimplemented;
 
-},{"./base_wrapped_exception":21,"./exception_handler":23}],25:[function(require,module,exports){
+},{"./base_wrapped_exception":25,"./exception_handler":27}],29:[function(require,module,exports){
 "use strict";
 (function (NumberFormatStyle) {
     NumberFormatStyle[NumberFormatStyle["Decimal"] = 0] = "Decimal";
@@ -2017,7 +2232,7 @@ var DateFormatter = (function () {
 }());
 exports.DateFormatter = DateFormatter;
 
-},{}],26:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 (function (global){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -2500,7 +2715,7 @@ exports.escape = escape;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],27:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 var PromiseCompleter = (function () {
     function PromiseCompleter() {
@@ -2550,7 +2765,7 @@ var PromiseWrapper = (function () {
 }());
 exports.PromiseWrapper = PromiseWrapper;
 
-},{}],28:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 /**
 * @module
@@ -2631,7 +2846,7 @@ exports.FORM_PROVIDERS = [form_builder_2.FormBuilder, radio_control_value_access
  */
 exports.FORM_BINDINGS = exports.FORM_PROVIDERS;
 
-},{"./forms/directives":29,"./forms/directives/abstract_control_directive":30,"./forms/directives/checkbox_value_accessor":31,"./forms/directives/control_container":32,"./forms/directives/control_value_accessor":33,"./forms/directives/default_value_accessor":34,"./forms/directives/ng_control":35,"./forms/directives/ng_control_group":36,"./forms/directives/ng_control_name":37,"./forms/directives/ng_control_status":38,"./forms/directives/ng_form":39,"./forms/directives/ng_form_control":40,"./forms/directives/ng_form_model":41,"./forms/directives/ng_model":42,"./forms/directives/radio_control_value_accessor":45,"./forms/directives/select_control_value_accessor":46,"./forms/directives/validators":48,"./forms/form_builder":49,"./forms/model":50,"./forms/validators":51}],29:[function(require,module,exports){
+},{"./forms/directives":33,"./forms/directives/abstract_control_directive":34,"./forms/directives/checkbox_value_accessor":35,"./forms/directives/control_container":36,"./forms/directives/control_value_accessor":37,"./forms/directives/default_value_accessor":38,"./forms/directives/ng_control":39,"./forms/directives/ng_control_group":40,"./forms/directives/ng_control_name":41,"./forms/directives/ng_control_status":42,"./forms/directives/ng_form":43,"./forms/directives/ng_form_control":44,"./forms/directives/ng_form_model":45,"./forms/directives/ng_model":46,"./forms/directives/radio_control_value_accessor":49,"./forms/directives/select_control_value_accessor":50,"./forms/directives/validators":52,"./forms/form_builder":53,"./forms/model":54,"./forms/validators":55}],33:[function(require,module,exports){
 "use strict";
 var ng_control_name_1 = require('./directives/ng_control_name');
 var ng_form_control_1 = require('./directives/ng_form_control');
@@ -2715,7 +2930,7 @@ exports.FORM_DIRECTIVES = [
     validators_1.PatternValidator
 ];
 
-},{"./directives/checkbox_value_accessor":31,"./directives/default_value_accessor":34,"./directives/ng_control":35,"./directives/ng_control_group":36,"./directives/ng_control_name":37,"./directives/ng_control_status":38,"./directives/ng_form":39,"./directives/ng_form_control":40,"./directives/ng_form_model":41,"./directives/ng_model":42,"./directives/number_value_accessor":44,"./directives/radio_control_value_accessor":45,"./directives/select_control_value_accessor":46,"./directives/validators":48}],30:[function(require,module,exports){
+},{"./directives/checkbox_value_accessor":35,"./directives/default_value_accessor":38,"./directives/ng_control":39,"./directives/ng_control_group":40,"./directives/ng_control_name":41,"./directives/ng_control_status":42,"./directives/ng_form":43,"./directives/ng_form_control":44,"./directives/ng_form_model":45,"./directives/ng_model":46,"./directives/number_value_accessor":48,"./directives/radio_control_value_accessor":49,"./directives/select_control_value_accessor":50,"./directives/validators":52}],34:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../../src/facade/lang');
 var exceptions_1 = require('../../../src/facade/exceptions');
@@ -2778,7 +2993,7 @@ var AbstractControlDirective = (function () {
 }());
 exports.AbstractControlDirective = AbstractControlDirective;
 
-},{"../../../src/facade/exceptions":24,"../../../src/facade/lang":26}],31:[function(require,module,exports){
+},{"../../../src/facade/exceptions":28,"../../../src/facade/lang":30}],35:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var control_value_accessor_1 = require('./control_value_accessor');
@@ -2814,7 +3029,7 @@ var CheckboxControlValueAccessor = (function () {
 }());
 exports.CheckboxControlValueAccessor = CheckboxControlValueAccessor;
 
-},{"./control_value_accessor":33,"@angular/core":140}],32:[function(require,module,exports){
+},{"./control_value_accessor":37,"@angular/core":144}],36:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2852,7 +3067,7 @@ var ControlContainer = (function (_super) {
 }(abstract_control_directive_1.AbstractControlDirective));
 exports.ControlContainer = ControlContainer;
 
-},{"./abstract_control_directive":30}],33:[function(require,module,exports){
+},{"./abstract_control_directive":34}],37:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 /**
@@ -2863,7 +3078,7 @@ var core_1 = require('@angular/core');
 exports.NG_VALUE_ACCESSOR = 
 /*@ts2dart_const*/ new core_1.OpaqueToken("NgValueAccessor");
 
-},{"@angular/core":140}],34:[function(require,module,exports){
+},{"@angular/core":144}],38:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../../src/facade/lang');
@@ -2905,7 +3120,7 @@ var DefaultValueAccessor = (function () {
 }());
 exports.DefaultValueAccessor = DefaultValueAccessor;
 
-},{"../../../src/facade/lang":26,"./control_value_accessor":33,"@angular/core":140}],35:[function(require,module,exports){
+},{"../../../src/facade/lang":30,"./control_value_accessor":37,"@angular/core":144}],39:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2941,7 +3156,7 @@ var NgControl = (function (_super) {
 }(abstract_control_directive_1.AbstractControlDirective));
 exports.NgControl = NgControl;
 
-},{"../../../src/facade/exceptions":24,"./abstract_control_directive":30}],36:[function(require,module,exports){
+},{"../../../src/facade/exceptions":28,"./abstract_control_directive":34}],40:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -3018,7 +3233,7 @@ var NgControlGroup = (function (_super) {
 }(control_container_1.ControlContainer));
 exports.NgControlGroup = NgControlGroup;
 
-},{"../validators":51,"./control_container":32,"./shared":47,"@angular/core":140}],37:[function(require,module,exports){
+},{"../validators":55,"./control_container":36,"./shared":51,"@angular/core":144}],41:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -3108,7 +3323,7 @@ var NgControlName = (function (_super) {
 }(ng_control_1.NgControl));
 exports.NgControlName = NgControlName;
 
-},{"../../../src/facade/async":20,"../validators":51,"./control_container":32,"./control_value_accessor":33,"./ng_control":35,"./shared":47,"@angular/core":140}],38:[function(require,module,exports){
+},{"../../../src/facade/async":24,"../validators":55,"./control_container":36,"./control_value_accessor":37,"./ng_control":39,"./shared":51,"@angular/core":144}],42:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var ng_control_1 = require('./ng_control');
@@ -3179,7 +3394,7 @@ var NgControlStatus = (function () {
 }());
 exports.NgControlStatus = NgControlStatus;
 
-},{"../../../src/facade/lang":26,"./ng_control":35,"@angular/core":140}],39:[function(require,module,exports){
+},{"../../../src/facade/lang":30,"./ng_control":39,"@angular/core":144}],43:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -3302,7 +3517,7 @@ var NgForm = (function (_super) {
 }(control_container_1.ControlContainer));
 exports.NgForm = NgForm;
 
-},{"../../../src/facade/async":20,"../../../src/facade/collection":22,"../../../src/facade/lang":26,"../model":50,"../validators":51,"./control_container":32,"./shared":47,"@angular/core":140}],40:[function(require,module,exports){
+},{"../../../src/facade/async":24,"../../../src/facade/collection":26,"../../../src/facade/lang":30,"../model":54,"../validators":55,"./control_container":36,"./shared":51,"@angular/core":144}],44:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -3385,7 +3600,7 @@ var NgFormControl = (function (_super) {
 }(ng_control_1.NgControl));
 exports.NgFormControl = NgFormControl;
 
-},{"../../../src/facade/async":20,"../../../src/facade/collection":22,"../validators":51,"./control_value_accessor":33,"./ng_control":35,"./shared":47,"@angular/core":140}],41:[function(require,module,exports){
+},{"../../../src/facade/async":24,"../../../src/facade/collection":26,"../validators":55,"./control_value_accessor":37,"./ng_control":39,"./shared":51,"@angular/core":144}],45:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -3497,7 +3712,7 @@ var NgFormModel = (function (_super) {
 }(control_container_1.ControlContainer));
 exports.NgFormModel = NgFormModel;
 
-},{"../../../src/facade/async":20,"../../../src/facade/collection":22,"../../../src/facade/exceptions":24,"../../../src/facade/lang":26,"../validators":51,"./control_container":32,"./shared":47,"@angular/core":140}],42:[function(require,module,exports){
+},{"../../../src/facade/async":24,"../../../src/facade/collection":26,"../../../src/facade/exceptions":28,"../../../src/facade/lang":30,"../validators":55,"./control_container":36,"./shared":51,"@angular/core":144}],46:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -3582,7 +3797,7 @@ var NgModel = (function (_super) {
 }(ng_control_1.NgControl));
 exports.NgModel = NgModel;
 
-},{"../../../src/facade/async":20,"../model":50,"../validators":51,"./control_value_accessor":33,"./ng_control":35,"./shared":47,"@angular/core":140}],43:[function(require,module,exports){
+},{"../../../src/facade/async":24,"../model":54,"../validators":55,"./control_value_accessor":37,"./ng_control":39,"./shared":51,"@angular/core":144}],47:[function(require,module,exports){
 "use strict";
 function normalizeValidator(validator) {
     if (validator.validate !== undefined) {
@@ -3603,7 +3818,7 @@ function normalizeAsyncValidator(validator) {
 }
 exports.normalizeAsyncValidator = normalizeAsyncValidator;
 
-},{}],44:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../../src/facade/lang');
@@ -3646,7 +3861,7 @@ var NumberValueAccessor = (function () {
 }());
 exports.NumberValueAccessor = NumberValueAccessor;
 
-},{"../../../src/facade/lang":26,"./control_value_accessor":33,"@angular/core":140}],45:[function(require,module,exports){
+},{"../../../src/facade/lang":30,"./control_value_accessor":37,"@angular/core":144}],49:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../../src/facade/lang');
@@ -3748,7 +3963,7 @@ var RadioControlValueAccessor = (function () {
 }());
 exports.RadioControlValueAccessor = RadioControlValueAccessor;
 
-},{"../../../src/facade/collection":22,"../../../src/facade/lang":26,"./control_value_accessor":33,"./ng_control":35,"@angular/core":140}],46:[function(require,module,exports){
+},{"../../../src/facade/collection":26,"../../../src/facade/lang":30,"./control_value_accessor":37,"./ng_control":39,"@angular/core":144}],50:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../../src/facade/lang');
@@ -3874,7 +4089,7 @@ var NgSelectOption = (function () {
 }());
 exports.NgSelectOption = NgSelectOption;
 
-},{"../../../src/facade/collection":22,"../../../src/facade/lang":26,"./control_value_accessor":33,"@angular/core":140}],47:[function(require,module,exports){
+},{"../../../src/facade/collection":26,"../../../src/facade/lang":30,"./control_value_accessor":37,"@angular/core":144}],51:[function(require,module,exports){
 "use strict";
 var collection_1 = require('../../../src/facade/collection');
 var lang_1 = require('../../../src/facade/lang');
@@ -3977,7 +4192,7 @@ function selectValueAccessor(dir, valueAccessors) {
 }
 exports.selectValueAccessor = selectValueAccessor;
 
-},{"../../../src/facade/collection":22,"../../../src/facade/exceptions":24,"../../../src/facade/lang":26,"../validators":51,"./checkbox_value_accessor":31,"./default_value_accessor":34,"./normalize_validator":43,"./number_value_accessor":44,"./radio_control_value_accessor":45,"./select_control_value_accessor":46}],48:[function(require,module,exports){
+},{"../../../src/facade/collection":26,"../../../src/facade/exceptions":28,"../../../src/facade/lang":30,"../validators":55,"./checkbox_value_accessor":35,"./default_value_accessor":38,"./normalize_validator":47,"./number_value_accessor":48,"./radio_control_value_accessor":49,"./select_control_value_accessor":50}],52:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../facade/lang');
@@ -4093,7 +4308,7 @@ var PatternValidator = (function () {
 }());
 exports.PatternValidator = PatternValidator;
 
-},{"../../facade/lang":26,"../validators":51,"@angular/core":140}],49:[function(require,module,exports){
+},{"../../facade/lang":30,"../validators":55,"@angular/core":144}],53:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var collection_1 = require('../../src/facade/collection');
@@ -4168,7 +4383,7 @@ var FormBuilder = (function () {
 }());
 exports.FormBuilder = FormBuilder;
 
-},{"../../src/facade/collection":22,"../../src/facade/lang":26,"./model":50,"@angular/core":140}],50:[function(require,module,exports){
+},{"../../src/facade/collection":26,"../../src/facade/lang":30,"./model":54,"@angular/core":144}],54:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4673,7 +4888,7 @@ var ControlArray = (function (_super) {
 }(AbstractControl));
 exports.ControlArray = ControlArray;
 
-},{"../../src/facade/async":20,"../../src/facade/collection":22,"../../src/facade/lang":26,"../../src/facade/promise":27}],51:[function(require,module,exports){
+},{"../../src/facade/async":24,"../../src/facade/collection":26,"../../src/facade/lang":30,"../../src/facade/promise":31}],55:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -4810,7 +5025,7 @@ function _mergeErrors(arrayOfErrors) {
     return collection_1.StringMapWrapper.isEmpty(res) ? null : res;
 }
 
-},{"../../src/facade/async":20,"../../src/facade/collection":22,"../../src/facade/lang":26,"../../src/facade/promise":27,"@angular/core":140}],52:[function(require,module,exports){
+},{"../../src/facade/async":24,"../../src/facade/collection":26,"../../src/facade/lang":30,"../../src/facade/promise":31,"@angular/core":144}],56:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -4821,7 +5036,7 @@ __export(require('./location/hash_location_strategy'));
 __export(require('./location/path_location_strategy'));
 __export(require('./location/location'));
 
-},{"./location/hash_location_strategy":53,"./location/location":54,"./location/location_strategy":55,"./location/path_location_strategy":56,"./location/platform_location":57}],53:[function(require,module,exports){
+},{"./location/hash_location_strategy":57,"./location/location":58,"./location/location_strategy":59,"./location/path_location_strategy":60,"./location/platform_location":61}],57:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4890,7 +5105,7 @@ var HashLocationStrategy = (function (_super) {
 }(location_strategy_1.LocationStrategy));
 exports.HashLocationStrategy = HashLocationStrategy;
 
-},{"../../src/facade/lang":26,"./location":54,"./location_strategy":55,"./platform_location":57,"@angular/core":140}],54:[function(require,module,exports){
+},{"../../src/facade/lang":30,"./location":58,"./location_strategy":59,"./platform_location":61,"@angular/core":144}],58:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var async_1 = require('../../src/facade/async');
@@ -5027,7 +5242,7 @@ function _stripIndexHtml(url) {
     return url;
 }
 
-},{"../../src/facade/async":20,"./location_strategy":55,"@angular/core":140}],55:[function(require,module,exports){
+},{"../../src/facade/async":24,"./location_strategy":59,"@angular/core":144}],59:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 /**
@@ -5083,7 +5298,7 @@ exports.LocationStrategy = LocationStrategy;
  */
 exports.APP_BASE_HREF = new core_1.OpaqueToken('appBaseHref');
 
-},{"@angular/core":140}],56:[function(require,module,exports){
+},{"@angular/core":144}],60:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5142,7 +5357,7 @@ var PathLocationStrategy = (function (_super) {
 }(location_strategy_1.LocationStrategy));
 exports.PathLocationStrategy = PathLocationStrategy;
 
-},{"../../src/facade/exceptions":24,"../../src/facade/lang":26,"./location":54,"./location_strategy":55,"./platform_location":57,"@angular/core":140}],57:[function(require,module,exports){
+},{"../../src/facade/exceptions":28,"../../src/facade/lang":30,"./location":58,"./location_strategy":59,"./platform_location":61,"@angular/core":144}],61:[function(require,module,exports){
 "use strict";
 /**
 * This class should not be used directly by an application developer. Instead, use
@@ -5190,7 +5405,7 @@ var PlatformLocation = (function () {
 }());
 exports.PlatformLocation = PlatformLocation;
 
-},{}],58:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 "use strict";
 /**
 * @module
@@ -5223,7 +5438,7 @@ exports.I18nSelectPipe = i18n_select_pipe_1.I18nSelectPipe;
 var common_pipes_1 = require('./pipes/common_pipes');
 exports.COMMON_PIPES = common_pipes_1.COMMON_PIPES;
 
-},{"./pipes/async_pipe":59,"./pipes/common_pipes":60,"./pipes/date_pipe":61,"./pipes/i18n_plural_pipe":62,"./pipes/i18n_select_pipe":63,"./pipes/json_pipe":65,"./pipes/lowercase_pipe":66,"./pipes/number_pipe":67,"./pipes/replace_pipe":68,"./pipes/slice_pipe":69,"./pipes/uppercase_pipe":70}],59:[function(require,module,exports){
+},{"./pipes/async_pipe":63,"./pipes/common_pipes":64,"./pipes/date_pipe":65,"./pipes/i18n_plural_pipe":66,"./pipes/i18n_select_pipe":67,"./pipes/json_pipe":69,"./pipes/lowercase_pipe":70,"./pipes/number_pipe":71,"./pipes/replace_pipe":72,"./pipes/slice_pipe":73,"./pipes/uppercase_pipe":74}],63:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -5335,7 +5550,7 @@ var AsyncPipe = (function () {
 }());
 exports.AsyncPipe = AsyncPipe;
 
-},{"../../src/facade/async":20,"../../src/facade/lang":26,"./invalid_pipe_argument_exception":64,"@angular/core":140}],60:[function(require,module,exports){
+},{"../../src/facade/async":24,"../../src/facade/lang":30,"./invalid_pipe_argument_exception":68,"@angular/core":144}],64:[function(require,module,exports){
 "use strict";
 /**
 * @module
@@ -5374,7 +5589,7 @@ exports.COMMON_PIPES = [
     i18n_select_pipe_1.I18nSelectPipe
 ];
 
-},{"./async_pipe":59,"./date_pipe":61,"./i18n_plural_pipe":62,"./i18n_select_pipe":63,"./json_pipe":65,"./lowercase_pipe":66,"./number_pipe":67,"./replace_pipe":68,"./slice_pipe":69,"./uppercase_pipe":70}],61:[function(require,module,exports){
+},{"./async_pipe":63,"./date_pipe":65,"./i18n_plural_pipe":66,"./i18n_select_pipe":67,"./json_pipe":69,"./lowercase_pipe":70,"./number_pipe":71,"./replace_pipe":72,"./slice_pipe":73,"./uppercase_pipe":74}],65:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -5421,7 +5636,7 @@ var DatePipe = (function () {
 }());
 exports.DatePipe = DatePipe;
 
-},{"../../src/facade/collection":22,"../../src/facade/intl":25,"../../src/facade/lang":26,"./invalid_pipe_argument_exception":64,"@angular/core":140}],62:[function(require,module,exports){
+},{"../../src/facade/collection":26,"../../src/facade/intl":29,"../../src/facade/lang":30,"./invalid_pipe_argument_exception":68,"@angular/core":144}],66:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -5448,7 +5663,7 @@ var I18nPluralPipe = (function () {
 }());
 exports.I18nPluralPipe = I18nPluralPipe;
 
-},{"../../src/facade/lang":26,"./invalid_pipe_argument_exception":64,"@angular/core":140}],63:[function(require,module,exports){
+},{"../../src/facade/lang":30,"./invalid_pipe_argument_exception":68,"@angular/core":144}],67:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -5471,7 +5686,7 @@ var I18nSelectPipe = (function () {
 }());
 exports.I18nSelectPipe = I18nSelectPipe;
 
-},{"../../src/facade/collection":22,"../../src/facade/lang":26,"./invalid_pipe_argument_exception":64,"@angular/core":140}],64:[function(require,module,exports){
+},{"../../src/facade/collection":26,"../../src/facade/lang":30,"./invalid_pipe_argument_exception":68,"@angular/core":144}],68:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5489,7 +5704,7 @@ var InvalidPipeArgumentException = (function (_super) {
 }(exceptions_1.BaseException));
 exports.InvalidPipeArgumentException = InvalidPipeArgumentException;
 
-},{"../../src/facade/exceptions":24,"../../src/facade/lang":26}],65:[function(require,module,exports){
+},{"../../src/facade/exceptions":28,"../../src/facade/lang":30}],69:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -5505,7 +5720,7 @@ var JsonPipe = (function () {
 }());
 exports.JsonPipe = JsonPipe;
 
-},{"../../src/facade/lang":26,"@angular/core":140}],66:[function(require,module,exports){
+},{"../../src/facade/lang":30,"@angular/core":144}],70:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -5529,7 +5744,7 @@ var LowerCasePipe = (function () {
 }());
 exports.LowerCasePipe = LowerCasePipe;
 
-},{"../../src/facade/lang":26,"./invalid_pipe_argument_exception":64,"@angular/core":140}],67:[function(require,module,exports){
+},{"../../src/facade/lang":30,"./invalid_pipe_argument_exception":68,"@angular/core":144}],71:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5636,7 +5851,7 @@ var CurrencyPipe = (function (_super) {
 }(NumberPipe));
 exports.CurrencyPipe = CurrencyPipe;
 
-},{"../../src/facade/exceptions":24,"../../src/facade/intl":25,"../../src/facade/lang":26,"./invalid_pipe_argument_exception":64,"@angular/core":140}],68:[function(require,module,exports){
+},{"../../src/facade/exceptions":28,"../../src/facade/intl":29,"../../src/facade/lang":30,"./invalid_pipe_argument_exception":68,"@angular/core":144}],72:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -5685,7 +5900,7 @@ var ReplacePipe = (function () {
 }());
 exports.ReplacePipe = ReplacePipe;
 
-},{"../../src/facade/lang":26,"./invalid_pipe_argument_exception":64,"@angular/core":140}],69:[function(require,module,exports){
+},{"../../src/facade/lang":30,"./invalid_pipe_argument_exception":68,"@angular/core":144}],73:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -5715,7 +5930,7 @@ var SlicePipe = (function () {
 }());
 exports.SlicePipe = SlicePipe;
 
-},{"../../src/facade/collection":22,"../../src/facade/lang":26,"./invalid_pipe_argument_exception":64,"@angular/core":140}],70:[function(require,module,exports){
+},{"../../src/facade/collection":26,"../../src/facade/lang":30,"./invalid_pipe_argument_exception":68,"@angular/core":144}],74:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -5739,7 +5954,7 @@ var UpperCasePipe = (function () {
 }());
 exports.UpperCasePipe = UpperCasePipe;
 
-},{"../../src/facade/lang":26,"./invalid_pipe_argument_exception":64,"@angular/core":140}],71:[function(require,module,exports){
+},{"../../src/facade/lang":30,"./invalid_pipe_argument_exception":68,"@angular/core":144}],75:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -5781,7 +5996,7 @@ exports.CompilePipeMetadata = compiler_1.CompilePipeMetadata;
 __export(require('./src/template_ast'));
 __export(require('./private_export'));
 
-},{"./private_export":74,"./src/compiler":77,"./src/schema/element_schema_registry":113,"./src/template_ast":118}],72:[function(require,module,exports){
+},{"./private_export":78,"./src/compiler":81,"./src/schema/element_schema_registry":117,"./src/template_ast":122}],76:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 exports.isDefaultChangeDetectionStrategy = core_1.__core_private__.isDefaultChangeDetectionStrategy;
@@ -5828,14 +6043,14 @@ exports.pureProxy10 = core_1.__core_private__.pureProxy10;
 exports.castByValue = core_1.__core_private__.castByValue;
 exports.Console = core_1.__core_private__.Console;
 
-},{"@angular/core":140}],73:[function(require,module,exports){
+},{"@angular/core":144}],77:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 __export(require('./compiler'));
 
-},{"./compiler":71}],74:[function(require,module,exports){
+},{"./compiler":75}],78:[function(require,module,exports){
 "use strict";
 var selector = require('./src/selector');
 var pathUtil = require('./src/output/path_util');
@@ -5847,7 +6062,7 @@ var __compiler_private__;
     __compiler_private__.ImportGenerator = pathUtil.ImportGenerator;
 })(__compiler_private__ = exports.__compiler_private__ || (exports.__compiler_private__ = {}));
 
-},{"./src/output/path_util":106,"./src/selector":114}],75:[function(require,module,exports){
+},{"./src/output/path_util":110,"./src/selector":118}],79:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../src/facade/lang');
 var exceptions_1 = require('../src/facade/exceptions');
@@ -5866,7 +6081,7 @@ function assertArrayOfStrings(identifier, value) {
 }
 exports.assertArrayOfStrings = assertArrayOfStrings;
 
-},{"../src/facade/exceptions":89,"../src/facade/lang":90}],76:[function(require,module,exports){
+},{"../src/facade/exceptions":93,"../src/facade/lang":94}],80:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -6514,7 +6729,7 @@ function _normalizeArray(obj) {
     return lang_1.isPresent(obj) ? obj : [];
 }
 
-},{"../core_private":72,"../src/facade/collection":87,"../src/facade/exceptions":89,"../src/facade/lang":90,"./selector":114,"./url_resolver":121,"./util":122,"@angular/core":140}],77:[function(require,module,exports){
+},{"../core_private":76,"../src/facade/collection":91,"../src/facade/exceptions":93,"../src/facade/lang":94,"./selector":118,"./url_resolver":125,"./util":126,"@angular/core":144}],81:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -6584,7 +6799,7 @@ exports.COMPILER_PROVIDERS =
     pipe_resolver_2.PipeResolver
 ];
 
-},{"../src/facade/lang":90,"./compile_metadata":76,"./config":78,"./directive_normalizer":80,"./directive_resolver":81,"./expression_parser/lexer":83,"./expression_parser/parser":84,"./html_parser":94,"./metadata_resolver":97,"./offline_compiler":98,"./pipe_resolver":109,"./runtime_compiler":111,"./schema/dom_element_schema_registry":112,"./schema/element_schema_registry":113,"./style_compiler":116,"./template_ast":118,"./template_parser":119,"./url_resolver":121,"./view_compiler/view_compiler":137,"./view_resolver":138,"./xhr":139,"@angular/core":140}],78:[function(require,module,exports){
+},{"../src/facade/lang":94,"./compile_metadata":80,"./config":82,"./directive_normalizer":84,"./directive_resolver":85,"./expression_parser/lexer":87,"./expression_parser/parser":88,"./html_parser":98,"./metadata_resolver":101,"./offline_compiler":102,"./pipe_resolver":113,"./runtime_compiler":115,"./schema/dom_element_schema_registry":116,"./schema/element_schema_registry":117,"./style_compiler":120,"./template_ast":122,"./template_parser":123,"./url_resolver":125,"./view_compiler/view_compiler":141,"./view_resolver":142,"./xhr":143,"@angular/core":144}],82:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../src/facade/lang');
 var exceptions_1 = require('../src/facade/exceptions');
@@ -6657,7 +6872,7 @@ var DefaultRenderTypes = (function () {
 }());
 exports.DefaultRenderTypes = DefaultRenderTypes;
 
-},{"../src/facade/exceptions":89,"../src/facade/lang":90,"./identifiers":96}],79:[function(require,module,exports){
+},{"../src/facade/exceptions":93,"../src/facade/lang":94,"./identifiers":100}],83:[function(require,module,exports){
 "use strict";
 var core_private_1 = require('../core_private');
 var lang_1 = require('../src/facade/lang');
@@ -6688,7 +6903,7 @@ function hasLifecycleHook(lcInterface, token) {
 }
 exports.hasLifecycleHook = hasLifecycleHook;
 
-},{"../core_private":72,"../src/facade/lang":90}],80:[function(require,module,exports){
+},{"../core_private":76,"../src/facade/lang":94}],84:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../src/facade/lang');
@@ -6839,7 +7054,7 @@ var TemplatePreparseVisitor = (function () {
     return TemplatePreparseVisitor;
 }());
 
-},{"../src/facade/async":85,"../src/facade/exceptions":89,"../src/facade/lang":90,"./compile_metadata":76,"./html_ast":92,"./html_parser":94,"./style_url_resolver":117,"./template_preparser":120,"./url_resolver":121,"./xhr":139,"@angular/core":140}],81:[function(require,module,exports){
+},{"../src/facade/async":89,"../src/facade/exceptions":93,"../src/facade/lang":94,"./compile_metadata":80,"./html_ast":96,"./html_parser":98,"./style_url_resolver":121,"./template_preparser":124,"./url_resolver":125,"./xhr":143,"@angular/core":144}],85:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var core_private_1 = require('../core_private');
@@ -6976,7 +7191,7 @@ var DirectiveResolver = (function () {
 exports.DirectiveResolver = DirectiveResolver;
 exports.CODEGEN_DIRECTIVE_RESOLVER = new DirectiveResolver(core_1.reflector);
 
-},{"../core_private":72,"../src/facade/collection":87,"../src/facade/exceptions":89,"../src/facade/lang":90,"@angular/core":140}],82:[function(require,module,exports){
+},{"../core_private":76,"../src/facade/collection":91,"../src/facade/exceptions":93,"../src/facade/lang":94,"@angular/core":144}],86:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -7464,7 +7679,7 @@ var AstTransformer = (function () {
 }());
 exports.AstTransformer = AstTransformer;
 
-},{"../../src/facade/collection":87}],83:[function(require,module,exports){
+},{"../../src/facade/collection":91}],87:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -7913,7 +8128,7 @@ var OPERATORS = collection_1.SetWrapper.createFromList([
 ]);
 var KEYWORDS = collection_1.SetWrapper.createFromList(['var', 'let', 'null', 'undefined', 'true', 'false', 'if', 'else']);
 
-},{"../../src/facade/collection":87,"../../src/facade/exceptions":89,"../../src/facade/lang":90,"@angular/core":140}],84:[function(require,module,exports){
+},{"../../src/facade/collection":91,"../../src/facade/exceptions":93,"../../src/facade/lang":94,"@angular/core":144}],88:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -8590,17 +8805,17 @@ var SimpleExpressionChecker = (function () {
     return SimpleExpressionChecker;
 }());
 
-},{"../../src/facade/collection":87,"../../src/facade/exceptions":89,"../../src/facade/lang":90,"./ast":82,"./lexer":83,"@angular/core":140}],85:[function(require,module,exports){
-arguments[4][20][0].apply(exports,arguments)
-},{"./lang":90,"./promise":91,"dup":20,"rxjs/Observable":474,"rxjs/Subject":480,"rxjs/observable/PromiseObservable":603,"rxjs/operator/toPromise":701}],86:[function(require,module,exports){
-arguments[4][21][0].apply(exports,arguments)
-},{"dup":21}],87:[function(require,module,exports){
-arguments[4][22][0].apply(exports,arguments)
-},{"./lang":90,"dup":22}],88:[function(require,module,exports){
-arguments[4][23][0].apply(exports,arguments)
-},{"./base_wrapped_exception":86,"./collection":87,"./lang":90,"dup":23}],89:[function(require,module,exports){
+},{"../../src/facade/collection":91,"../../src/facade/exceptions":93,"../../src/facade/lang":94,"./ast":86,"./lexer":87,"@angular/core":144}],89:[function(require,module,exports){
 arguments[4][24][0].apply(exports,arguments)
-},{"./base_wrapped_exception":86,"./exception_handler":88,"dup":24}],90:[function(require,module,exports){
+},{"./lang":94,"./promise":95,"dup":24,"rxjs/Observable":480,"rxjs/Subject":486,"rxjs/observable/PromiseObservable":609,"rxjs/operator/toPromise":707}],90:[function(require,module,exports){
+arguments[4][25][0].apply(exports,arguments)
+},{"dup":25}],91:[function(require,module,exports){
+arguments[4][26][0].apply(exports,arguments)
+},{"./lang":94,"dup":26}],92:[function(require,module,exports){
+arguments[4][27][0].apply(exports,arguments)
+},{"./base_wrapped_exception":90,"./collection":91,"./lang":94,"dup":27}],93:[function(require,module,exports){
+arguments[4][28][0].apply(exports,arguments)
+},{"./base_wrapped_exception":90,"./exception_handler":92,"dup":28}],94:[function(require,module,exports){
 (function (global){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -9083,9 +9298,9 @@ exports.escape = escape;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],91:[function(require,module,exports){
-arguments[4][27][0].apply(exports,arguments)
-},{"dup":27}],92:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
+arguments[4][31][0].apply(exports,arguments)
+},{"dup":31}],96:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../src/facade/lang');
 var HtmlTextAst = (function () {
@@ -9170,7 +9385,7 @@ function htmlVisitAll(visitor, asts, context) {
 }
 exports.htmlVisitAll = htmlVisitAll;
 
-},{"../src/facade/lang":90}],93:[function(require,module,exports){
+},{"../src/facade/lang":94}],97:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -9855,7 +10070,7 @@ function mergeTextTokens(srcTokens) {
     return dstTokens;
 }
 
-},{"../src/facade/collection":87,"../src/facade/lang":90,"./html_tags":95,"./parse_util":108}],94:[function(require,module,exports){
+},{"../src/facade/collection":91,"../src/facade/lang":94,"./html_tags":99,"./parse_util":112}],98:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -10183,7 +10398,7 @@ function lastOnStack(stack, element) {
     return stack.length > 0 && stack[stack.length - 1] === element;
 }
 
-},{"../src/facade/collection":87,"../src/facade/lang":90,"./html_ast":92,"./html_lexer":93,"./html_tags":95,"./parse_util":108,"@angular/core":140}],95:[function(require,module,exports){
+},{"../src/facade/collection":91,"../src/facade/lang":94,"./html_ast":96,"./html_lexer":97,"./html_tags":99,"./parse_util":112,"@angular/core":144}],99:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../src/facade/lang');
 // see http://www.w3.org/TR/html51/syntax.html#named-character-references
@@ -10586,7 +10801,7 @@ function mergeNsAndName(prefix, localName) {
 }
 exports.mergeNsAndName = mergeNsAndName;
 
-},{"../src/facade/lang":90}],96:[function(require,module,exports){
+},{"../src/facade/lang":94}],100:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var core_private_1 = require('../core_private');
@@ -10730,7 +10945,7 @@ function identifierToken(identifier) {
 }
 exports.identifierToken = identifierToken;
 
-},{"../core_private":72,"./compile_metadata":76,"./util":122,"@angular/core":140}],97:[function(require,module,exports){
+},{"../core_private":76,"./compile_metadata":80,"./util":126,"@angular/core":144}],101:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -11147,7 +11362,7 @@ var _CompileValueConverter = (function (_super) {
     return _CompileValueConverter;
 }(util_1.ValueTransformer));
 
-},{"../core_private":72,"../src/facade/collection":87,"../src/facade/exceptions":89,"../src/facade/lang":90,"./assertions":75,"./compile_metadata":76,"./directive_lifecycle_reflector":79,"./directive_resolver":81,"./pipe_resolver":109,"./url_resolver":121,"./util":122,"./view_resolver":138,"@angular/core":140}],98:[function(require,module,exports){
+},{"../core_private":76,"../src/facade/collection":91,"../src/facade/exceptions":93,"../src/facade/lang":94,"./assertions":79,"./compile_metadata":80,"./directive_lifecycle_reflector":83,"./directive_resolver":85,"./pipe_resolver":113,"./url_resolver":125,"./util":126,"./view_resolver":142,"@angular/core":144}],102:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var compile_metadata_1 = require('./compile_metadata');
@@ -11289,7 +11504,7 @@ function _splitSuffix(path) {
     }
 }
 
-},{"../src/facade/collection":87,"../src/facade/exceptions":89,"./compile_metadata":76,"./output/output_ast":103,"./util":122,"@angular/core":140}],99:[function(require,module,exports){
+},{"../src/facade/collection":91,"../src/facade/exceptions":93,"./compile_metadata":80,"./output/output_ast":107,"./util":126,"@angular/core":144}],103:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var exceptions_1 = require('../../src/facade/exceptions');
@@ -11700,7 +11915,7 @@ function _createIndent(count) {
     return res;
 }
 
-},{"../../src/facade/exceptions":89,"../../src/facade/lang":90,"./output_ast":103}],100:[function(require,module,exports){
+},{"../../src/facade/exceptions":93,"../../src/facade/lang":94,"./output_ast":107}],104:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -11866,7 +12081,7 @@ var AbstractJsEmitterVisitor = (function (_super) {
 }(abstract_emitter_1.AbstractEmitterVisitor));
 exports.AbstractJsEmitterVisitor = AbstractJsEmitterVisitor;
 
-},{"../../src/facade/exceptions":89,"../../src/facade/lang":90,"./abstract_emitter":99,"./output_ast":103}],101:[function(require,module,exports){
+},{"../../src/facade/exceptions":93,"../../src/facade/lang":94,"./abstract_emitter":103,"./output_ast":107}],105:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -12248,7 +12463,7 @@ function isConstType(type) {
     return lang_1.isPresent(type) && type.hasModifier(o.TypeModifier.Const);
 }
 
-},{"../../src/facade/exceptions":89,"../../src/facade/lang":90,"./abstract_emitter":99,"./output_ast":103}],102:[function(require,module,exports){
+},{"../../src/facade/exceptions":93,"../../src/facade/lang":94,"./abstract_emitter":103,"./output_ast":107}],106:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -12333,7 +12548,7 @@ var _InterpretiveAppView = (function (_super) {
     return _InterpretiveAppView;
 }(core_private_1.DebugAppView));
 
-},{"../../core_private":72,"../../src/facade/exceptions":89,"../../src/facade/lang":90}],103:[function(require,module,exports){
+},{"../../core_private":76,"../../src/facade/exceptions":93,"../../src/facade/lang":94}],107:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -13313,7 +13528,7 @@ function fn(params, body, type) {
 }
 exports.fn = fn;
 
-},{"../../src/facade/lang":90}],104:[function(require,module,exports){
+},{"../../src/facade/lang":94}],108:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -13748,7 +13963,7 @@ function _declareFn(varNames, statements, ctx, visitor) {
 var CATCH_ERROR_VAR = 'error';
 var CATCH_STACK_VAR = 'stack';
 
-},{"../../src/facade/async":85,"../../src/facade/collection":87,"../../src/facade/exceptions":89,"../../src/facade/lang":90,"./dart_emitter":101,"./output_ast":103,"./ts_emitter":107,"@angular/core":140}],105:[function(require,module,exports){
+},{"../../src/facade/async":89,"../../src/facade/collection":91,"../../src/facade/exceptions":93,"../../src/facade/lang":94,"./dart_emitter":105,"./output_ast":107,"./ts_emitter":111,"@angular/core":144}],109:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -13795,7 +14010,7 @@ var JitEmitterVisitor = (function (_super) {
     return JitEmitterVisitor;
 }(abstract_js_emitter_1.AbstractJsEmitterVisitor));
 
-},{"../../src/facade/lang":90,"../util":122,"./abstract_emitter":99,"./abstract_js_emitter":100}],106:[function(require,module,exports){
+},{"../../src/facade/lang":94,"../util":126,"./abstract_emitter":103,"./abstract_js_emitter":104}],110:[function(require,module,exports){
 "use strict";
 var exceptions_1 = require('../../src/facade/exceptions');
 var lang_1 = require('../../src/facade/lang');
@@ -13832,7 +14047,7 @@ var AssetUrl = (function () {
 }());
 exports.AssetUrl = AssetUrl;
 
-},{"../../src/facade/exceptions":89,"../../src/facade/lang":90}],107:[function(require,module,exports){
+},{"../../src/facade/exceptions":93,"../../src/facade/lang":94}],111:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -14167,7 +14382,7 @@ var _TsEmitterVisitor = (function (_super) {
     return _TsEmitterVisitor;
 }(abstract_emitter_1.AbstractEmitterVisitor));
 
-},{"../../src/facade/exceptions":89,"../../src/facade/lang":90,"./abstract_emitter":99,"./output_ast":103}],108:[function(require,module,exports){
+},{"../../src/facade/exceptions":93,"../../src/facade/lang":94,"./abstract_emitter":103,"./output_ast":107}],112:[function(require,module,exports){
 "use strict";
 var ParseLocation = (function () {
     function ParseLocation(file, offset, line, col) {
@@ -14248,7 +14463,7 @@ var ParseError = (function () {
 }());
 exports.ParseError = ParseError;
 
-},{}],109:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var core_private_1 = require('../core_private');
@@ -14290,7 +14505,7 @@ var PipeResolver = (function () {
 exports.PipeResolver = PipeResolver;
 exports.CODEGEN_PIPE_RESOLVER = new PipeResolver(core_1.reflector);
 
-},{"../core_private":72,"../src/facade/exceptions":89,"../src/facade/lang":90,"@angular/core":140}],110:[function(require,module,exports){
+},{"../core_private":76,"../src/facade/exceptions":93,"../src/facade/lang":94,"@angular/core":144}],114:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -14668,7 +14883,7 @@ function _addQueryToTokenMap(map, query) {
     });
 }
 
-},{"../src/facade/collection":87,"../src/facade/lang":90,"./compile_metadata":76,"./identifiers":96,"./parse_util":108,"./template_ast":118}],111:[function(require,module,exports){
+},{"../src/facade/collection":91,"../src/facade/lang":94,"./compile_metadata":80,"./identifiers":100,"./parse_util":112,"./template_ast":122}],115:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../src/facade/lang');
@@ -14841,7 +15056,7 @@ function assertComponent(meta) {
     }
 }
 
-},{"../src/facade/async":85,"../src/facade/collection":87,"../src/facade/exceptions":89,"../src/facade/lang":90,"./compile_metadata":76,"./config":78,"./directive_normalizer":80,"./metadata_resolver":97,"./output/interpretive_view":102,"./output/output_ast":103,"./output/output_interpreter":104,"./output/output_jit":105,"./style_compiler":116,"./template_parser":119,"./view_compiler/view_compiler":137,"./xhr":139,"@angular/core":140}],112:[function(require,module,exports){
+},{"../src/facade/async":89,"../src/facade/collection":91,"../src/facade/exceptions":93,"../src/facade/lang":94,"./compile_metadata":80,"./config":82,"./directive_normalizer":84,"./metadata_resolver":101,"./output/interpretive_view":106,"./output/output_ast":107,"./output/output_interpreter":108,"./output/output_jit":109,"./style_compiler":120,"./template_parser":123,"./view_compiler/view_compiler":141,"./xhr":143,"@angular/core":144}],116:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -15135,7 +15350,7 @@ var DomElementSchemaRegistry = (function (_super) {
 }(element_schema_registry_1.ElementSchemaRegistry));
 exports.DomElementSchemaRegistry = DomElementSchemaRegistry;
 
-},{"../../core_private":72,"../facade/collection":87,"../facade/lang":90,"./element_schema_registry":113,"@angular/core":140}],113:[function(require,module,exports){
+},{"../../core_private":76,"../facade/collection":91,"../facade/lang":94,"./element_schema_registry":117,"@angular/core":144}],117:[function(require,module,exports){
 "use strict";
 var ElementSchemaRegistry = (function () {
     function ElementSchemaRegistry() {
@@ -15144,7 +15359,7 @@ var ElementSchemaRegistry = (function () {
 }());
 exports.ElementSchemaRegistry = ElementSchemaRegistry;
 
-},{}],114:[function(require,module,exports){
+},{}],118:[function(require,module,exports){
 "use strict";
 var collection_1 = require('../src/facade/collection');
 var lang_1 = require('../src/facade/lang');
@@ -15503,7 +15718,7 @@ var SelectorContext = (function () {
 }());
 exports.SelectorContext = SelectorContext;
 
-},{"../src/facade/collection":87,"../src/facade/exceptions":89,"../src/facade/lang":90}],115:[function(require,module,exports){
+},{"../src/facade/collection":91,"../src/facade/exceptions":93,"../src/facade/lang":94}],119:[function(require,module,exports){
 "use strict";
 var collection_1 = require('../src/facade/collection');
 var lang_1 = require('../src/facade/lang');
@@ -16003,7 +16218,7 @@ function escapeBlocks(input) {
     return new StringWithEscapedBlocks(resultParts.join(''), escapedBlocks);
 }
 
-},{"../src/facade/collection":87,"../src/facade/lang":90}],116:[function(require,module,exports){
+},{"../src/facade/collection":91,"../src/facade/lang":94}],120:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var compile_metadata_1 = require('./compile_metadata');
@@ -16082,7 +16297,7 @@ function getStylesVarName(component) {
     return result;
 }
 
-},{"../src/facade/lang":90,"./compile_metadata":76,"./output/output_ast":103,"./shadow_css":115,"./style_url_resolver":117,"./url_resolver":121,"@angular/core":140}],117:[function(require,module,exports){
+},{"../src/facade/lang":94,"./compile_metadata":80,"./output/output_ast":107,"./shadow_css":119,"./style_url_resolver":121,"./url_resolver":125,"@angular/core":144}],121:[function(require,module,exports){
 "use strict";
 // Some of the code comes from WebComponents.JS
 // https://github.com/webcomponents/webcomponentsjs/blob/master/src/HTMLImports/path.js
@@ -16125,7 +16340,7 @@ var _cssImportRe = /@import\s+(?:url\()?\s*(?:(?:['"]([^'"]*))|([^;\)\s]*))[^;]*
 //       https://github.com/angular/angular/issues/4596
 var _urlWithSchemaRe = /^([a-zA-Z\-\+\.]+):/g;
 
-},{"../src/facade/lang":90}],118:[function(require,module,exports){
+},{"../src/facade/lang":94}],122:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../src/facade/lang');
 /**
@@ -16403,7 +16618,7 @@ function templateVisitAll(visitor, asts, context) {
 }
 exports.templateVisitAll = templateVisitAll;
 
-},{"../src/facade/lang":90}],119:[function(require,module,exports){
+},{"../src/facade/lang":94}],123:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -17184,7 +17399,7 @@ function removeDuplicates(items) {
     return res;
 }
 
-},{"../core_private":72,"../src/facade/collection":87,"../src/facade/exceptions":89,"../src/facade/lang":90,"./expression_parser/ast":82,"./expression_parser/parser":84,"./html_ast":92,"./html_parser":94,"./html_tags":95,"./identifiers":96,"./parse_util":108,"./provider_parser":110,"./schema/element_schema_registry":113,"./selector":114,"./style_url_resolver":117,"./template_ast":118,"./template_preparser":120,"./util":122,"@angular/core":140}],120:[function(require,module,exports){
+},{"../core_private":76,"../src/facade/collection":91,"../src/facade/exceptions":93,"../src/facade/lang":94,"./expression_parser/ast":86,"./expression_parser/parser":88,"./html_ast":96,"./html_parser":98,"./html_tags":99,"./identifiers":100,"./parse_util":112,"./provider_parser":114,"./schema/element_schema_registry":117,"./selector":118,"./style_url_resolver":121,"./template_ast":122,"./template_preparser":124,"./util":126,"@angular/core":144}],124:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../src/facade/lang');
 var html_tags_1 = require('./html_tags');
@@ -17268,7 +17483,7 @@ function normalizeNgContentSelect(selectAttr) {
     return selectAttr;
 }
 
-},{"../src/facade/lang":90,"./html_tags":95}],121:[function(require,module,exports){
+},{"../src/facade/lang":94,"./html_tags":99}],125:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../src/facade/lang');
@@ -17589,7 +17804,7 @@ function _resolveUrl(base, url) {
     return _joinAndCanonicalizePath(parts);
 }
 
-},{"../src/facade/lang":90,"@angular/core":140}],122:[function(require,module,exports){
+},{"../src/facade/lang":94,"@angular/core":144}],126:[function(require,module,exports){
 "use strict";
 var lang_1 = require('./facade/lang');
 var collection_1 = require('./facade/collection');
@@ -17673,7 +17888,7 @@ function assetUrl(pkg, path, type) {
 }
 exports.assetUrl = assetUrl;
 
-},{"./facade/collection":87,"./facade/lang":90}],123:[function(require,module,exports){
+},{"./facade/collection":91,"./facade/lang":94}],127:[function(require,module,exports){
 "use strict";
 var CompileBinding = (function () {
     function CompileBinding(node, sourceAst) {
@@ -17684,7 +17899,7 @@ var CompileBinding = (function () {
 }());
 exports.CompileBinding = CompileBinding;
 
-},{}],124:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -18065,7 +18280,7 @@ var _ValueOutputAstTransformer = (function (_super) {
     return _ValueOutputAstTransformer;
 }(util_2.ValueTransformer));
 
-},{"../../src/facade/collection":87,"../../src/facade/lang":90,"../compile_metadata":76,"../identifiers":96,"../output/output_ast":103,"../template_ast":118,"../util":122,"./compile_method":125,"./compile_query":127,"./constants":129,"./util":134,"@angular/core":140}],125:[function(require,module,exports){
+},{"../../src/facade/collection":91,"../../src/facade/lang":94,"../compile_metadata":80,"../identifiers":100,"../output/output_ast":107,"../template_ast":122,"../util":126,"./compile_method":129,"./compile_query":131,"./constants":133,"./util":138,"@angular/core":144}],129:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var collection_1 = require('../../src/facade/collection');
@@ -18130,7 +18345,7 @@ var CompileMethod = (function () {
 }());
 exports.CompileMethod = CompileMethod;
 
-},{"../../src/facade/collection":87,"../../src/facade/lang":90,"../output/output_ast":103}],126:[function(require,module,exports){
+},{"../../src/facade/collection":91,"../../src/facade/lang":94,"../output/output_ast":107}],130:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../facade/lang');
 var exceptions_1 = require('../facade/exceptions');
@@ -18230,7 +18445,7 @@ function _findPipeMeta(view, name) {
     return pipeMeta;
 }
 
-},{"../facade/exceptions":89,"../facade/lang":90,"../identifiers":96,"../output/output_ast":103,"./util":134}],127:[function(require,module,exports){
+},{"../facade/exceptions":93,"../facade/lang":94,"../identifiers":100,"../output/output_ast":107,"./util":138}],131:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var collection_1 = require('../../src/facade/collection');
@@ -18333,7 +18548,7 @@ function addQueryToTokenMap(map, query) {
 }
 exports.addQueryToTokenMap = addQueryToTokenMap;
 
-},{"../../src/facade/collection":87,"../../src/facade/lang":90,"../identifiers":96,"../output/output_ast":103,"./util":134}],128:[function(require,module,exports){
+},{"../../src/facade/collection":91,"../../src/facade/lang":94,"../identifiers":100,"../output/output_ast":107,"./util":138}],132:[function(require,module,exports){
 "use strict";
 var core_private_1 = require('../../core_private');
 var lang_1 = require('../../src/facade/lang');
@@ -18492,7 +18707,7 @@ function getViewType(component, embeddedTemplateIndex) {
     }
 }
 
-},{"../../core_private":72,"../../src/facade/collection":87,"../../src/facade/lang":90,"../compile_metadata":76,"../identifiers":96,"../output/output_ast":103,"./compile_method":125,"./compile_pipe":126,"./compile_query":127,"./constants":129,"./util":134}],129:[function(require,module,exports){
+},{"../../core_private":76,"../../src/facade/collection":91,"../../src/facade/lang":94,"../compile_metadata":80,"../identifiers":100,"../output/output_ast":107,"./compile_method":129,"./compile_pipe":130,"./compile_query":131,"./constants":133,"./util":138}],133:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var core_private_1 = require('../../core_private');
@@ -18606,7 +18821,7 @@ var DetectChangesVars = (function () {
 }());
 exports.DetectChangesVars = DetectChangesVars;
 
-},{"../../core_private":72,"../../src/facade/lang":90,"../compile_metadata":76,"../identifiers":96,"../output/output_ast":103,"@angular/core":140}],130:[function(require,module,exports){
+},{"../../core_private":76,"../../src/facade/lang":94,"../compile_metadata":80,"../identifiers":100,"../output/output_ast":107,"@angular/core":144}],134:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var collection_1 = require('../../src/facade/collection');
@@ -18741,7 +18956,7 @@ function santitizeEventName(name) {
     return lang_1.StringWrapper.replaceAll(name, /[^a-zA-Z_]/g, '_');
 }
 
-},{"../../src/facade/collection":87,"../../src/facade/lang":90,"../output/output_ast":103,"./compile_binding":123,"./compile_method":125,"./constants":129,"./expression_converter":131}],131:[function(require,module,exports){
+},{"../../src/facade/collection":91,"../../src/facade/lang":94,"../output/output_ast":107,"./compile_binding":127,"./compile_method":129,"./constants":133,"./expression_converter":135}],135:[function(require,module,exports){
 "use strict";
 var exceptions_1 = require('../../src/facade/exceptions');
 var lang_1 = require('../../src/facade/lang');
@@ -18980,7 +19195,7 @@ function flattenStatements(arg, output) {
     }
 }
 
-},{"../../src/facade/exceptions":89,"../../src/facade/lang":90,"../identifiers":96,"../output/output_ast":103}],132:[function(require,module,exports){
+},{"../../src/facade/exceptions":93,"../../src/facade/lang":94,"../identifiers":100,"../output/output_ast":107}],136:[function(require,module,exports){
 "use strict";
 var core_private_1 = require('../../core_private');
 var o = require('../output/output_ast');
@@ -19044,7 +19259,7 @@ function bindPipeDestroyLifecycleCallbacks(pipeMeta, pipeInstance, view) {
 }
 exports.bindPipeDestroyLifecycleCallbacks = bindPipeDestroyLifecycleCallbacks;
 
-},{"../../core_private":72,"../output/output_ast":103,"./constants":129}],133:[function(require,module,exports){
+},{"../../core_private":76,"../output/output_ast":107,"./constants":133}],137:[function(require,module,exports){
 "use strict";
 var core_private_1 = require('../../core_private');
 var core_private_2 = require('../../core_private');
@@ -19233,7 +19448,7 @@ function logBindingUpdateStmt(renderNode, propName, value) {
         .toStmt();
 }
 
-},{"../../core_private":72,"../../src/facade/lang":90,"../identifiers":96,"../output/output_ast":103,"../template_ast":118,"../util":122,"./compile_binding":123,"./constants":129,"./expression_converter":131}],134:[function(require,module,exports){
+},{"../../core_private":76,"../../src/facade/lang":94,"../identifiers":100,"../output/output_ast":107,"../template_ast":122,"../util":126,"./compile_binding":127,"./constants":133,"./expression_converter":135}],138:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var exceptions_1 = require('../../src/facade/exceptions');
@@ -19324,7 +19539,7 @@ function createPureProxy(fn, argCount, pureProxyProp, view) {
 }
 exports.createPureProxy = createPureProxy;
 
-},{"../../src/facade/exceptions":89,"../../src/facade/lang":90,"../identifiers":96,"../output/output_ast":103}],135:[function(require,module,exports){
+},{"../../src/facade/exceptions":93,"../../src/facade/lang":94,"../identifiers":100,"../output/output_ast":107}],139:[function(require,module,exports){
 "use strict";
 var collection_1 = require('../../src/facade/collection');
 var template_ast_1 = require('../template_ast');
@@ -19402,7 +19617,7 @@ var ViewBinderVisitor = (function () {
     return ViewBinderVisitor;
 }());
 
-},{"../../src/facade/collection":87,"../template_ast":118,"./event_binder":130,"./lifecycle_binder":132,"./property_binder":133}],136:[function(require,module,exports){
+},{"../../src/facade/collection":91,"../template_ast":122,"./event_binder":134,"./lifecycle_binder":136,"./property_binder":137}],140:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var core_private_1 = require('../../core_private');
@@ -19861,7 +20076,7 @@ function getChangeDetectionMode(view) {
     return mode;
 }
 
-},{"../../core_private":72,"../../src/facade/collection":87,"../../src/facade/lang":90,"../compile_metadata":76,"../identifiers":96,"../output/output_ast":103,"../template_ast":118,"./compile_element":124,"./compile_view":128,"./constants":129,"./util":134,"@angular/core":140}],137:[function(require,module,exports){
+},{"../../core_private":76,"../../src/facade/collection":91,"../../src/facade/lang":94,"../compile_metadata":80,"../identifiers":100,"../output/output_ast":107,"../template_ast":122,"./compile_element":128,"./compile_view":132,"./constants":133,"./util":138,"@angular/core":144}],141:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var compile_element_1 = require('./compile_element');
@@ -19903,7 +20118,7 @@ var ViewCompiler = (function () {
 }());
 exports.ViewCompiler = ViewCompiler;
 
-},{"../config":78,"./compile_element":124,"./compile_view":128,"./view_binder":135,"./view_builder":136,"@angular/core":140}],138:[function(require,module,exports){
+},{"../config":82,"./compile_element":128,"./compile_view":132,"./view_binder":139,"./view_builder":140,"@angular/core":144}],142:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var core_private_1 = require('../core_private');
@@ -20005,7 +20220,7 @@ var ViewResolver = (function () {
 }());
 exports.ViewResolver = ViewResolver;
 
-},{"../core_private":72,"../src/facade/collection":87,"../src/facade/exceptions":89,"../src/facade/lang":90,"@angular/core":140}],139:[function(require,module,exports){
+},{"../core_private":76,"../src/facade/collection":91,"../src/facade/exceptions":93,"../src/facade/lang":94,"@angular/core":144}],143:[function(require,module,exports){
 "use strict";
 // TODO: vsavkin rename it into TemplateLoader
 /**
@@ -20020,7 +20235,7 @@ var XHR = (function () {
 }());
 exports.XHR = XHR;
 
-},{}],140:[function(require,module,exports){
+},{}],144:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -20078,7 +20293,7 @@ exports.WrappedException = exceptions_1.WrappedException;
 exports.BaseException = exceptions_1.BaseException;
 __export(require('./private_export'));
 
-},{"./private_export":141,"./src/application_common_providers":142,"./src/application_ref":143,"./src/application_tokens":144,"./src/change_detection":145,"./src/debug/debug_node":155,"./src/di":157,"./src/facade/async":169,"./src/facade/exceptions":173,"./src/facade/lang":174,"./src/linker":176,"./src/metadata":192,"./src/platform_common_providers":197,"./src/platform_directives_and_pipes":198,"./src/profile/profile":199,"./src/reflection/reflection":202,"./src/render":206,"./src/testability/testability":209,"./src/util":210,"./src/zone":212}],141:[function(require,module,exports){
+},{"./private_export":145,"./src/application_common_providers":146,"./src/application_ref":147,"./src/application_tokens":148,"./src/change_detection":149,"./src/debug/debug_node":159,"./src/di":161,"./src/facade/async":173,"./src/facade/exceptions":177,"./src/facade/lang":178,"./src/linker":180,"./src/metadata":196,"./src/platform_common_providers":201,"./src/platform_directives_and_pipes":202,"./src/profile/profile":203,"./src/reflection/reflection":206,"./src/render":210,"./src/testability/testability":213,"./src/util":214,"./src/zone":216}],145:[function(require,module,exports){
 "use strict";
 var constants = require('./src/change_detection/constants');
 var security = require('./src/security');
@@ -20151,7 +20366,7 @@ exports.__core_private__ = {
     Console: console.Console,
 };
 
-},{"./src/change_detection/change_detection_util":147,"./src/change_detection/constants":149,"./src/console":154,"./src/debug/debug_renderer":156,"./src/di/provider_util":164,"./src/di/reflective_provider":168,"./src/linker/component_resolver":178,"./src/linker/debug_context":179,"./src/linker/element":181,"./src/linker/template_ref":186,"./src/linker/view":187,"./src/linker/view_type":190,"./src/linker/view_utils":191,"./src/metadata/lifecycle_hooks":195,"./src/metadata/view":196,"./src/profile/wtf_init":201,"./src/reflection/reflection_capabilities":203,"./src/reflection/reflector_reader":205,"./src/render/api":207,"./src/security":208,"./src/util/decorators":211}],142:[function(require,module,exports){
+},{"./src/change_detection/change_detection_util":151,"./src/change_detection/constants":153,"./src/console":158,"./src/debug/debug_renderer":160,"./src/di/provider_util":168,"./src/di/reflective_provider":172,"./src/linker/component_resolver":182,"./src/linker/debug_context":183,"./src/linker/element":185,"./src/linker/template_ref":190,"./src/linker/view":191,"./src/linker/view_type":194,"./src/linker/view_utils":195,"./src/metadata/lifecycle_hooks":199,"./src/metadata/view":200,"./src/profile/wtf_init":205,"./src/reflection/reflection_capabilities":207,"./src/reflection/reflector_reader":209,"./src/render/api":211,"./src/security":212,"./src/util/decorators":215}],146:[function(require,module,exports){
 "use strict";
 var application_tokens_1 = require('./application_tokens');
 var application_ref_1 = require('./application_ref');
@@ -20175,7 +20390,7 @@ exports.APPLICATION_COMMON_PROVIDERS =
     /* @ts2dart_Provider */ { provide: dynamic_component_loader_1.DynamicComponentLoader, useClass: dynamic_component_loader_1.DynamicComponentLoader_ }
 ];
 
-},{"./application_ref":143,"./application_tokens":144,"./change_detection/change_detection":146,"./linker/component_resolver":178,"./linker/dynamic_component_loader":180,"./linker/view_utils":191}],143:[function(require,module,exports){
+},{"./application_ref":147,"./application_tokens":148,"./change_detection/change_detection":150,"./linker/component_resolver":182,"./linker/dynamic_component_loader":184,"./linker/view_utils":195}],147:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -20588,7 +20803,7 @@ exports.APPLICATION_CORE_PROVIDERS = [
     /* @ts2dart_Provider */ { provide: ApplicationRef, useExisting: ApplicationRef_ }
 ];
 
-},{"../src/facade/async":169,"../src/facade/collection":171,"../src/facade/exceptions":173,"../src/facade/lang":174,"./application_tokens":144,"./console":154,"./di":157,"./linker/component_resolver":178,"./profile/profile":199,"./testability/testability":209,"./zone/ng_zone":213}],144:[function(require,module,exports){
+},{"../src/facade/async":173,"../src/facade/collection":175,"../src/facade/exceptions":177,"../src/facade/lang":178,"./application_tokens":148,"./console":158,"./di":161,"./linker/component_resolver":182,"./profile/profile":203,"./testability/testability":213,"./zone/ng_zone":217}],148:[function(require,module,exports){
 "use strict";
 var di_1 = require('./di');
 var lang_1 = require('../src/facade/lang');
@@ -20633,7 +20848,7 @@ exports.APP_INITIALIZER =
 exports.PACKAGE_ROOT_URL = 
 /*@ts2dart_const*/ new di_1.OpaqueToken("Application Packages Root URL");
 
-},{"../src/facade/lang":174,"./di":157}],145:[function(require,module,exports){
+},{"../src/facade/lang":178,"./di":161}],149:[function(require,module,exports){
 "use strict";
 /**
 * @module
@@ -20651,7 +20866,7 @@ exports.KeyValueDiffers = change_detection_1.KeyValueDiffers;
 exports.CollectionChangeRecord = change_detection_1.CollectionChangeRecord;
 exports.KeyValueChangeRecord = change_detection_1.KeyValueChangeRecord;
 
-},{"./change_detection/change_detection":146}],146:[function(require,module,exports){
+},{"./change_detection/change_detection":150}],150:[function(require,module,exports){
 "use strict";
 var iterable_differs_1 = require('./differs/iterable_differs');
 var default_iterable_differ_1 = require('./differs/default_iterable_differ');
@@ -20697,7 +20912,7 @@ exports.iterableDiff =
 exports.defaultIterableDiffers = new iterable_differs_1.IterableDiffers(exports.iterableDiff);
 exports.defaultKeyValueDiffers = new keyvalue_differs_1.KeyValueDiffers(exports.keyValDiff);
 
-},{"./change_detection_util":147,"./change_detector_ref":148,"./constants":149,"./differs/default_iterable_differ":150,"./differs/default_keyvalue_differ":151,"./differs/iterable_differs":152,"./differs/keyvalue_differs":153}],147:[function(require,module,exports){
+},{"./change_detection_util":151,"./change_detector_ref":152,"./constants":153,"./differs/default_iterable_differ":154,"./differs/default_keyvalue_differ":155,"./differs/iterable_differs":156,"./differs/keyvalue_differs":157}],151:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var collection_1 = require('../../src/facade/collection');
@@ -20777,7 +20992,7 @@ var SimpleChange = (function () {
 }());
 exports.SimpleChange = SimpleChange;
 
-},{"../../src/facade/collection":171,"../../src/facade/lang":174}],148:[function(require,module,exports){
+},{"../../src/facade/collection":175,"../../src/facade/lang":178}],152:[function(require,module,exports){
 "use strict";
 var ChangeDetectorRef = (function () {
     function ChangeDetectorRef() {
@@ -20786,7 +21001,7 @@ var ChangeDetectorRef = (function () {
 }());
 exports.ChangeDetectorRef = ChangeDetectorRef;
 
-},{}],149:[function(require,module,exports){
+},{}],153:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 /**
@@ -20871,7 +21086,7 @@ function isDefaultChangeDetectionStrategy(changeDetectionStrategy) {
 }
 exports.isDefaultChangeDetectionStrategy = isDefaultChangeDetectionStrategy;
 
-},{"../../src/facade/lang":174}],150:[function(require,module,exports){
+},{"../../src/facade/lang":178}],154:[function(require,module,exports){
 "use strict";
 var exceptions_1 = require('../../../src/facade/exceptions');
 var collection_1 = require('../../../src/facade/collection');
@@ -21525,7 +21740,7 @@ var _DuplicateMap = (function () {
     return _DuplicateMap;
 }());
 
-},{"../../../src/facade/collection":171,"../../../src/facade/exceptions":173,"../../../src/facade/lang":174}],151:[function(require,module,exports){
+},{"../../../src/facade/collection":175,"../../../src/facade/exceptions":177,"../../../src/facade/lang":178}],155:[function(require,module,exports){
 "use strict";
 var collection_1 = require('../../../src/facade/collection');
 var lang_1 = require('../../../src/facade/lang');
@@ -21881,7 +22096,7 @@ var KeyValueChangeRecord = (function () {
 }());
 exports.KeyValueChangeRecord = KeyValueChangeRecord;
 
-},{"../../../src/facade/collection":171,"../../../src/facade/exceptions":173,"../../../src/facade/lang":174}],152:[function(require,module,exports){
+},{"../../../src/facade/collection":175,"../../../src/facade/exceptions":177,"../../../src/facade/lang":178}],156:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../../src/facade/lang');
 var exceptions_1 = require('../../../src/facade/exceptions');
@@ -21953,7 +22168,7 @@ var IterableDiffers = (function () {
 }());
 exports.IterableDiffers = IterableDiffers;
 
-},{"../../../src/facade/collection":171,"../../../src/facade/exceptions":173,"../../../src/facade/lang":174,"../../di":157}],153:[function(require,module,exports){
+},{"../../../src/facade/collection":175,"../../../src/facade/exceptions":177,"../../../src/facade/lang":178,"../../di":161}],157:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../../src/facade/lang');
 var exceptions_1 = require('../../../src/facade/exceptions');
@@ -22025,7 +22240,7 @@ var KeyValueDiffers = (function () {
 }());
 exports.KeyValueDiffers = KeyValueDiffers;
 
-},{"../../../src/facade/collection":171,"../../../src/facade/exceptions":173,"../../../src/facade/lang":174,"../../di":157}],154:[function(require,module,exports){
+},{"../../../src/facade/collection":175,"../../../src/facade/exceptions":177,"../../../src/facade/lang":178,"../../di":161}],158:[function(require,module,exports){
 "use strict";
 var lang_1 = require('./facade/lang');
 var decorators_1 = require('./di/decorators');
@@ -22045,7 +22260,7 @@ var Console = (function () {
 }());
 exports.Console = Console;
 
-},{"./di/decorators":158,"./facade/lang":174}],155:[function(require,module,exports){
+},{"./di/decorators":162,"./facade/lang":178}],159:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -22240,7 +22455,7 @@ function removeDebugNodeFromIndex(node) {
 }
 exports.removeDebugNodeFromIndex = removeDebugNodeFromIndex;
 
-},{"../../src/facade/collection":171,"../../src/facade/lang":174}],156:[function(require,module,exports){
+},{"../../src/facade/collection":175,"../../src/facade/lang":178}],160:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var debug_node_1 = require('./debug_node');
@@ -22358,7 +22573,7 @@ var DebugDomRenderer = (function () {
 }());
 exports.DebugDomRenderer = DebugDomRenderer;
 
-},{"../../src/facade/lang":174,"./debug_node":155}],157:[function(require,module,exports){
+},{"../../src/facade/lang":178,"./debug_node":159}],161:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -22407,7 +22622,7 @@ exports.OutOfBoundsError = reflective_exceptions_1.OutOfBoundsError;
 var opaque_token_1 = require('./di/opaque_token');
 exports.OpaqueToken = opaque_token_1.OpaqueToken;
 
-},{"./di/decorators":158,"./di/forward_ref":159,"./di/injector":160,"./di/metadata":161,"./di/opaque_token":162,"./di/provider":163,"./di/reflective_exceptions":165,"./di/reflective_injector":166,"./di/reflective_key":167,"./di/reflective_provider":168}],158:[function(require,module,exports){
+},{"./di/decorators":162,"./di/forward_ref":163,"./di/injector":164,"./di/metadata":165,"./di/opaque_token":166,"./di/provider":167,"./di/reflective_exceptions":169,"./di/reflective_injector":170,"./di/reflective_key":171,"./di/reflective_provider":172}],162:[function(require,module,exports){
 "use strict";
 var metadata_1 = require('./metadata');
 var decorators_1 = require('../util/decorators');
@@ -22436,7 +22651,7 @@ exports.Host = decorators_1.makeParamDecorator(metadata_1.HostMetadata);
  */
 exports.SkipSelf = decorators_1.makeParamDecorator(metadata_1.SkipSelfMetadata);
 
-},{"../util/decorators":211,"./metadata":161}],159:[function(require,module,exports){
+},{"../util/decorators":215,"./metadata":165}],163:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 /**
@@ -22482,7 +22697,7 @@ function resolveForwardRef(type) {
 }
 exports.resolveForwardRef = resolveForwardRef;
 
-},{"../../src/facade/lang":174}],160:[function(require,module,exports){
+},{"../../src/facade/lang":178}],164:[function(require,module,exports){
 "use strict";
 var exceptions_1 = require('../../src/facade/exceptions');
 var _THROW_IF_NOT_FOUND = new Object();
@@ -22520,7 +22735,7 @@ var Injector = (function () {
 }());
 exports.Injector = Injector;
 
-},{"../../src/facade/exceptions":173}],161:[function(require,module,exports){
+},{"../../src/facade/exceptions":177}],165:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 /**
@@ -22786,7 +23001,7 @@ var HostMetadata = (function () {
 }());
 exports.HostMetadata = HostMetadata;
 
-},{"../../src/facade/lang":174}],162:[function(require,module,exports){
+},{"../../src/facade/lang":178}],166:[function(require,module,exports){
 "use strict";
 /**
 * Creates a token that can be used in a DI Provider.
@@ -22819,7 +23034,7 @@ var OpaqueToken = (function () {
 }());
 exports.OpaqueToken = OpaqueToken;
 
-},{}],163:[function(require,module,exports){
+},{}],167:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -23101,7 +23316,7 @@ function provide(token, _a) {
 }
 exports.provide = provide;
 
-},{"../../src/facade/exceptions":173,"../../src/facade/lang":174}],164:[function(require,module,exports){
+},{"../../src/facade/exceptions":177,"../../src/facade/lang":178}],168:[function(require,module,exports){
 "use strict";
 var provider_1 = require('./provider');
 function isProviderLiteral(obj) {
@@ -23113,7 +23328,7 @@ function createProvider(obj) {
 }
 exports.createProvider = createProvider;
 
-},{"./provider":163}],165:[function(require,module,exports){
+},{"./provider":167}],169:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -23395,7 +23610,7 @@ var MixingMultiProvidersWithRegularProvidersError = (function (_super) {
 }(exceptions_1.BaseException));
 exports.MixingMultiProvidersWithRegularProvidersError = MixingMultiProvidersWithRegularProvidersError;
 
-},{"../../src/facade/collection":171,"../../src/facade/exceptions":173,"../../src/facade/lang":174}],166:[function(require,module,exports){
+},{"../../src/facade/collection":175,"../../src/facade/exceptions":177,"../../src/facade/lang":178}],170:[function(require,module,exports){
 "use strict";
 var collection_1 = require('../../src/facade/collection');
 var reflective_provider_1 = require('./reflective_provider');
@@ -24222,7 +24437,7 @@ function _mapProviders(injector, fn) {
     return res;
 }
 
-},{"../../src/facade/collection":171,"../../src/facade/exceptions":173,"./injector":160,"./metadata":161,"./reflective_exceptions":165,"./reflective_key":167,"./reflective_provider":168}],167:[function(require,module,exports){
+},{"../../src/facade/collection":175,"../../src/facade/exceptions":177,"./injector":164,"./metadata":165,"./reflective_exceptions":169,"./reflective_key":171,"./reflective_provider":172}],171:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var exceptions_1 = require('../../src/facade/exceptions');
@@ -24305,7 +24520,7 @@ var KeyRegistry = (function () {
 exports.KeyRegistry = KeyRegistry;
 var _globalKeyRegistry = new KeyRegistry();
 
-},{"../../src/facade/exceptions":173,"../../src/facade/lang":174,"./forward_ref":159}],168:[function(require,module,exports){
+},{"../../src/facade/exceptions":177,"../../src/facade/lang":178,"./forward_ref":163}],172:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var collection_1 = require('../../src/facade/collection');
@@ -24544,17 +24759,17 @@ function _createDependency(token, optional, lowerBoundVisibility, upperBoundVisi
     return new ReflectiveDependency(reflective_key_1.ReflectiveKey.get(token), optional, lowerBoundVisibility, upperBoundVisibility, depProps);
 }
 
-},{"../../src/facade/collection":171,"../../src/facade/lang":174,"../reflection/reflection":202,"./forward_ref":159,"./metadata":161,"./provider":163,"./provider_util":164,"./reflective_exceptions":165,"./reflective_key":167}],169:[function(require,module,exports){
-arguments[4][20][0].apply(exports,arguments)
-},{"./lang":174,"./promise":175,"dup":20,"rxjs/Observable":474,"rxjs/Subject":480,"rxjs/observable/PromiseObservable":603,"rxjs/operator/toPromise":701}],170:[function(require,module,exports){
-arguments[4][21][0].apply(exports,arguments)
-},{"dup":21}],171:[function(require,module,exports){
-arguments[4][22][0].apply(exports,arguments)
-},{"./lang":174,"dup":22}],172:[function(require,module,exports){
-arguments[4][23][0].apply(exports,arguments)
-},{"./base_wrapped_exception":170,"./collection":171,"./lang":174,"dup":23}],173:[function(require,module,exports){
+},{"../../src/facade/collection":175,"../../src/facade/lang":178,"../reflection/reflection":206,"./forward_ref":163,"./metadata":165,"./provider":167,"./provider_util":168,"./reflective_exceptions":169,"./reflective_key":171}],173:[function(require,module,exports){
 arguments[4][24][0].apply(exports,arguments)
-},{"./base_wrapped_exception":170,"./exception_handler":172,"dup":24}],174:[function(require,module,exports){
+},{"./lang":178,"./promise":179,"dup":24,"rxjs/Observable":480,"rxjs/Subject":486,"rxjs/observable/PromiseObservable":609,"rxjs/operator/toPromise":707}],174:[function(require,module,exports){
+arguments[4][25][0].apply(exports,arguments)
+},{"dup":25}],175:[function(require,module,exports){
+arguments[4][26][0].apply(exports,arguments)
+},{"./lang":178,"dup":26}],176:[function(require,module,exports){
+arguments[4][27][0].apply(exports,arguments)
+},{"./base_wrapped_exception":174,"./collection":175,"./lang":178,"dup":27}],177:[function(require,module,exports){
+arguments[4][28][0].apply(exports,arguments)
+},{"./base_wrapped_exception":174,"./exception_handler":176,"dup":28}],178:[function(require,module,exports){
 (function (global){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -25037,9 +25252,9 @@ exports.escape = escape;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],175:[function(require,module,exports){
-arguments[4][27][0].apply(exports,arguments)
-},{"dup":27}],176:[function(require,module,exports){
+},{}],179:[function(require,module,exports){
+arguments[4][31][0].apply(exports,arguments)
+},{"dup":31}],180:[function(require,module,exports){
 "use strict";
 // Public API for compiler
 var component_resolver_1 = require('./linker/component_resolver');
@@ -25063,7 +25278,7 @@ exports.ComponentFactory = component_factory_1.ComponentFactory;
 var exceptions_1 = require('./linker/exceptions');
 exports.ExpressionChangedAfterItHasBeenCheckedException = exceptions_1.ExpressionChangedAfterItHasBeenCheckedException;
 
-},{"./linker/component_factory":177,"./linker/component_resolver":178,"./linker/dynamic_component_loader":180,"./linker/element_ref":183,"./linker/exceptions":184,"./linker/query_list":185,"./linker/template_ref":186,"./linker/view_container_ref":188,"./linker/view_ref":189}],177:[function(require,module,exports){
+},{"./linker/component_factory":181,"./linker/component_resolver":182,"./linker/dynamic_component_loader":184,"./linker/element_ref":187,"./linker/exceptions":188,"./linker/query_list":189,"./linker/template_ref":190,"./linker/view_container_ref":192,"./linker/view_ref":193}],181:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -25213,7 +25428,7 @@ var ComponentFactory = (function () {
 }());
 exports.ComponentFactory = ComponentFactory;
 
-},{"../../src/facade/exceptions":173,"../../src/facade/lang":174,"./view_utils":191}],178:[function(require,module,exports){
+},{"../../src/facade/exceptions":177,"../../src/facade/lang":178,"./view_utils":195}],182:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -25260,7 +25475,7 @@ var ReflectorComponentResolver = (function (_super) {
 }(ComponentResolver));
 exports.ReflectorComponentResolver = ReflectorComponentResolver;
 
-},{"../../src/facade/async":169,"../../src/facade/exceptions":173,"../../src/facade/lang":174,"../di/decorators":158,"../reflection/reflection":202,"./component_factory":177}],179:[function(require,module,exports){
+},{"../../src/facade/async":173,"../../src/facade/exceptions":177,"../../src/facade/lang":178,"../di/decorators":162,"../reflection/reflection":206,"./component_factory":181}],183:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var collection_1 = require('../../src/facade/collection');
@@ -25378,7 +25593,7 @@ var DebugContext = (function () {
 }());
 exports.DebugContext = DebugContext;
 
-},{"../../src/facade/collection":171,"../../src/facade/lang":174,"./view_type":190}],180:[function(require,module,exports){
+},{"../../src/facade/collection":175,"../../src/facade/lang":178,"./view_type":194}],184:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -25436,7 +25651,7 @@ var DynamicComponentLoader_ = (function (_super) {
 }(DynamicComponentLoader));
 exports.DynamicComponentLoader_ = DynamicComponentLoader_;
 
-},{"../../src/facade/lang":174,"../di/decorators":158,"../di/reflective_injector":166,"./component_resolver":178}],181:[function(require,module,exports){
+},{"../../src/facade/lang":178,"../di/decorators":162,"../di/reflective_injector":170,"./component_resolver":182}],185:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var collection_1 = require('../../src/facade/collection');
@@ -25530,7 +25745,7 @@ var AppElement = (function () {
 }());
 exports.AppElement = AppElement;
 
-},{"../../src/facade/collection":171,"../../src/facade/exceptions":173,"../../src/facade/lang":174,"./element_ref":183,"./view_container_ref":188,"./view_type":190}],182:[function(require,module,exports){
+},{"../../src/facade/collection":175,"../../src/facade/exceptions":177,"../../src/facade/lang":178,"./element_ref":187,"./view_container_ref":192,"./view_type":194}],186:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -25561,7 +25776,7 @@ var ElementInjector = (function (_super) {
 }(injector_1.Injector));
 exports.ElementInjector = ElementInjector;
 
-},{"../di/injector":160}],183:[function(require,module,exports){
+},{"../di/injector":164}],187:[function(require,module,exports){
 "use strict";
 /**
 * A wrapper around a native element inside of a View.
@@ -25580,7 +25795,7 @@ var ElementRef = (function () {
 }());
 exports.ElementRef = ElementRef;
 
-},{}],184:[function(require,module,exports){
+},{}],188:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -25660,7 +25875,7 @@ var ViewDestroyedException = (function (_super) {
 }(exceptions_1.BaseException));
 exports.ViewDestroyedException = ViewDestroyedException;
 
-},{"../../src/facade/exceptions":173}],185:[function(require,module,exports){
+},{"../../src/facade/exceptions":177}],189:[function(require,module,exports){
 "use strict";
 var collection_1 = require('../../src/facade/collection');
 var lang_1 = require('../../src/facade/lang');
@@ -25758,7 +25973,7 @@ var QueryList = (function () {
 }());
 exports.QueryList = QueryList;
 
-},{"../../src/facade/async":169,"../../src/facade/collection":171,"../../src/facade/lang":174}],186:[function(require,module,exports){
+},{"../../src/facade/async":173,"../../src/facade/collection":175,"../../src/facade/lang":178}],190:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -25826,7 +26041,7 @@ var TemplateRef_ = (function (_super) {
 }(TemplateRef));
 exports.TemplateRef_ = TemplateRef_;
 
-},{"../facade/lang":174}],187:[function(require,module,exports){
+},{"../facade/lang":178}],191:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -26174,7 +26389,7 @@ function _findLastRenderNode(node) {
     return lastNode;
 }
 
-},{"../../src/facade/async":169,"../../src/facade/collection":171,"../../src/facade/lang":174,"../change_detection/change_detection":146,"../profile/profile":199,"./debug_context":179,"./element":181,"./element_injector":182,"./exceptions":184,"./view_ref":189,"./view_type":190,"./view_utils":191}],188:[function(require,module,exports){
+},{"../../src/facade/async":173,"../../src/facade/collection":175,"../../src/facade/lang":178,"../change_detection/change_detection":150,"../profile/profile":203,"./debug_context":183,"./element":185,"./element_injector":186,"./exceptions":188,"./view_ref":193,"./view_type":194,"./view_utils":195}],192:[function(require,module,exports){
 "use strict";
 var collection_1 = require('../../src/facade/collection');
 var exceptions_1 = require('../../src/facade/exceptions');
@@ -26328,7 +26543,7 @@ var ViewContainerRef_ = (function () {
 }());
 exports.ViewContainerRef_ = ViewContainerRef_;
 
-},{"../../src/facade/collection":171,"../../src/facade/exceptions":173,"../../src/facade/lang":174,"../profile/profile":199}],189:[function(require,module,exports){
+},{"../../src/facade/collection":175,"../../src/facade/exceptions":177,"../../src/facade/lang":178,"../profile/profile":203}],193:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -26459,7 +26674,7 @@ var ViewRef_ = (function () {
 }());
 exports.ViewRef_ = ViewRef_;
 
-},{"../../src/facade/exceptions":173,"../change_detection/constants":149}],190:[function(require,module,exports){
+},{"../../src/facade/exceptions":177,"../change_detection/constants":153}],194:[function(require,module,exports){
 "use strict";
 (function (ViewType) {
     // A view that contains the host element with bound component directive.
@@ -26474,7 +26689,7 @@ exports.ViewRef_ = ViewRef_;
 })(exports.ViewType || (exports.ViewType = {}));
 var ViewType = exports.ViewType;
 
-},{}],191:[function(require,module,exports){
+},{}],195:[function(require,module,exports){
 "use strict";
 var security_1 = require('../security');
 var lang_1 = require('../../src/facade/lang');
@@ -26829,7 +27044,7 @@ function pureProxy10(fn) {
 }
 exports.pureProxy10 = pureProxy10;
 
-},{"../../src/facade/collection":171,"../../src/facade/exceptions":173,"../../src/facade/lang":174,"../application_tokens":144,"../change_detection/change_detection":146,"../change_detection/change_detection_util":147,"../di/decorators":158,"../render/api":207,"../security":208,"./element":181,"./exceptions":184}],192:[function(require,module,exports){
+},{"../../src/facade/collection":175,"../../src/facade/exceptions":177,"../../src/facade/lang":178,"../application_tokens":148,"../change_detection/change_detection":150,"../change_detection/change_detection_util":151,"../di/decorators":162,"../render/api":211,"../security":212,"./element":185,"./exceptions":188}],196:[function(require,module,exports){
 "use strict";
 /**
 * This indirection is needed to free up Component, etc symbols in the public API
@@ -27824,7 +28039,7 @@ exports.HostBinding = decorators_1.makePropDecorator(directives_2.HostBindingMet
  */
 exports.HostListener = decorators_1.makePropDecorator(directives_2.HostListenerMetadata);
 
-},{"./metadata/di":193,"./metadata/directives":194,"./metadata/view":196,"./util/decorators":211}],193:[function(require,module,exports){
+},{"./metadata/di":197,"./metadata/directives":198,"./metadata/view":200,"./util/decorators":215}],197:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -28313,7 +28528,7 @@ var ViewChildMetadata = (function (_super) {
 }(ViewQueryMetadata));
 exports.ViewChildMetadata = ViewChildMetadata;
 
-},{"../../src/facade/lang":174,"../di/forward_ref":159,"../di/metadata":161}],194:[function(require,module,exports){
+},{"../../src/facade/lang":178,"../di/forward_ref":163,"../di/metadata":165}],198:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -29208,7 +29423,7 @@ var HostListenerMetadata = (function () {
 }());
 exports.HostListenerMetadata = HostListenerMetadata;
 
-},{"../../src/facade/lang":174,"../change_detection/constants":149,"../di/metadata":161}],195:[function(require,module,exports){
+},{"../../src/facade/lang":178,"../change_detection/constants":153,"../di/metadata":165}],199:[function(require,module,exports){
 "use strict";
 (function (LifecycleHooks) {
     LifecycleHooks[LifecycleHooks["OnInit"] = 0] = "OnInit";
@@ -29235,7 +29450,7 @@ exports.LIFECYCLE_HOOKS_VALUES = [
     LifecycleHooks.AfterViewChecked
 ];
 
-},{}],196:[function(require,module,exports){
+},{}],200:[function(require,module,exports){
 "use strict";
 /**
  * Defines template and style encapsulation options available for Component's {@link View}.
@@ -29311,7 +29526,7 @@ var ViewMetadata = (function () {
 }());
 exports.ViewMetadata = ViewMetadata;
 
-},{}],197:[function(require,module,exports){
+},{}],201:[function(require,module,exports){
 "use strict";
 var console_1 = require('./console');
 var reflection_1 = require('./reflection/reflection');
@@ -29333,7 +29548,7 @@ exports.PLATFORM_COMMON_PROVIDERS = [
     console_1.Console
 ];
 
-},{"./application_ref":143,"./console":154,"./reflection/reflection":202,"./reflection/reflector_reader":205,"./testability/testability":209}],198:[function(require,module,exports){
+},{"./application_ref":147,"./console":158,"./reflection/reflection":206,"./reflection/reflector_reader":209,"./testability/testability":213}],202:[function(require,module,exports){
 "use strict";
 var di_1 = require('./di');
 /**
@@ -29387,7 +29602,7 @@ exports.PLATFORM_DIRECTIVES =
  */
 exports.PLATFORM_PIPES = new di_1.OpaqueToken("Platform Pipes");
 
-},{"./di":157}],199:[function(require,module,exports){
+},{"./di":161}],203:[function(require,module,exports){
 "use strict";
 var impl = require('./wtf_impl');
 // Change exports to const once https://github.com/angular/ts2dart/issues/150
@@ -29459,7 +29674,7 @@ exports.wtfEndTimeRange = exports.wtfEnabled ? impl.endTimeRange : function (r) 
     return null;
 };
 
-},{"./wtf_impl":200}],200:[function(require,module,exports){
+},{"./wtf_impl":204}],204:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var trace;
@@ -29495,7 +29710,7 @@ function endTimeRange(range) {
 }
 exports.endTimeRange = endTimeRange;
 
-},{"../../src/facade/lang":174}],201:[function(require,module,exports){
+},{"../../src/facade/lang":178}],205:[function(require,module,exports){
 "use strict";
 /**
 * This is here because DART requires it. It is noop in JS.
@@ -29503,7 +29718,7 @@ exports.endTimeRange = endTimeRange;
 function wtfInit() { }
 exports.wtfInit = wtfInit;
 
-},{}],202:[function(require,module,exports){
+},{}],206:[function(require,module,exports){
 "use strict";
 var reflector_1 = require('./reflector');
 var reflector_2 = require('./reflector');
@@ -29516,7 +29731,7 @@ var reflection_capabilities_1 = require('./reflection_capabilities');
  */
 exports.reflector = new reflector_1.Reflector(new reflection_capabilities_1.ReflectionCapabilities());
 
-},{"./reflection_capabilities":203,"./reflector":204}],203:[function(require,module,exports){
+},{"./reflection_capabilities":207,"./reflector":208}],207:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var exceptions_1 = require('../../src/facade/exceptions');
@@ -29734,7 +29949,7 @@ function convertTsickleDecoratorIntoMetadata(decoratorInvocations) {
     });
 }
 
-},{"../../src/facade/exceptions":173,"../../src/facade/lang":174}],204:[function(require,module,exports){
+},{"../../src/facade/exceptions":177,"../../src/facade/lang":178}],208:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -29892,7 +30107,7 @@ function _mergeMaps(target, config) {
     collection_1.StringMapWrapper.forEach(config, function (v, k) { return target.set(k, v); });
 }
 
-},{"../../src/facade/collection":171,"../../src/facade/exceptions":173,"../../src/facade/lang":174,"./reflector_reader":205}],205:[function(require,module,exports){
+},{"../../src/facade/collection":175,"../../src/facade/exceptions":177,"../../src/facade/lang":178,"./reflector_reader":209}],209:[function(require,module,exports){
 "use strict";
 /**
 * Provides read-only access to reflection data about symbols. Used internally by Angular
@@ -29905,7 +30120,7 @@ var ReflectorReader = (function () {
 }());
 exports.ReflectorReader = ReflectorReader;
 
-},{}],206:[function(require,module,exports){
+},{}],210:[function(require,module,exports){
 "use strict";
 // Public API for render
 var api_1 = require('./render/api');
@@ -29913,7 +30128,7 @@ exports.RootRenderer = api_1.RootRenderer;
 exports.Renderer = api_1.Renderer;
 exports.RenderComponentType = api_1.RenderComponentType;
 
-},{"./render/api":207}],207:[function(require,module,exports){
+},{"./render/api":211}],211:[function(require,module,exports){
 "use strict";
 var exceptions_1 = require('../../src/facade/exceptions');
 var RenderComponentType = (function () {
@@ -29988,7 +30203,7 @@ var RootRenderer = (function () {
 }());
 exports.RootRenderer = RootRenderer;
 
-},{"../../src/facade/exceptions":173}],208:[function(require,module,exports){
+},{"../../src/facade/exceptions":177}],212:[function(require,module,exports){
 "use strict";
 /**
 * A SecurityContext marks a location that has dangerous security implications, e.g. a DOM property
@@ -30017,7 +30232,7 @@ var SanitizationService = (function () {
 }());
 exports.SanitizationService = SanitizationService;
 
-},{}],209:[function(require,module,exports){
+},{}],213:[function(require,module,exports){
 "use strict";
 var collection_1 = require('../../src/facade/collection');
 var lang_1 = require('../../src/facade/lang');
@@ -30157,13 +30372,13 @@ function setTestabilityGetter(getter) {
 exports.setTestabilityGetter = setTestabilityGetter;
 var _testabilityGetter = new _NoopGetTestability();
 
-},{"../../src/facade/async":169,"../../src/facade/collection":171,"../../src/facade/exceptions":173,"../../src/facade/lang":174,"../di/decorators":158,"../zone/ng_zone":213}],210:[function(require,module,exports){
+},{"../../src/facade/async":173,"../../src/facade/collection":175,"../../src/facade/exceptions":177,"../../src/facade/lang":178,"../di/decorators":162,"../zone/ng_zone":217}],214:[function(require,module,exports){
 "use strict";
 // Public API for util
 var decorators_1 = require('./util/decorators');
 exports.Class = decorators_1.Class;
 
-},{"./util/decorators":211}],211:[function(require,module,exports){
+},{"./util/decorators":215}],215:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var _nextClassId = 0;
@@ -30422,14 +30637,14 @@ function makePropDecorator(annotationCls) {
 }
 exports.makePropDecorator = makePropDecorator;
 
-},{"../../src/facade/lang":174}],212:[function(require,module,exports){
+},{"../../src/facade/lang":178}],216:[function(require,module,exports){
 "use strict";
 // Public API for Zone
 var ng_zone_1 = require('./zone/ng_zone');
 exports.NgZone = ng_zone_1.NgZone;
 exports.NgZoneError = ng_zone_1.NgZoneError;
 
-},{"./zone/ng_zone":213}],213:[function(require,module,exports){
+},{"./zone/ng_zone":217}],217:[function(require,module,exports){
 "use strict";
 var async_1 = require('../../src/facade/async');
 var ng_zone_impl_1 = require('./ng_zone_impl');
@@ -30675,7 +30890,7 @@ var NgZone = (function () {
 }());
 exports.NgZone = NgZone;
 
-},{"../../src/facade/async":169,"../../src/facade/exceptions":173,"./ng_zone_impl":214}],214:[function(require,module,exports){
+},{"../../src/facade/async":173,"../../src/facade/exceptions":177,"./ng_zone_impl":218}],218:[function(require,module,exports){
 "use strict";
 /**
 * Stores error information; delivered via [NgZone.onError] stream.
@@ -30761,7 +30976,7 @@ var NgZoneImpl = (function () {
 }());
 exports.NgZoneImpl = NgZoneImpl;
 
-},{}],215:[function(require,module,exports){
+},{}],219:[function(require,module,exports){
 "use strict";
 /**
 * @module
@@ -31074,14 +31289,14 @@ exports.JSONP_PROVIDERS = [
  */
 exports.JSON_BINDINGS = exports.JSONP_PROVIDERS;
 
-},{"./src/backends/browser_jsonp":217,"./src/backends/browser_xhr":218,"./src/backends/jsonp_backend":219,"./src/backends/xhr_backend":220,"./src/base_request_options":221,"./src/base_response_options":222,"./src/enums":223,"./src/headers":229,"./src/http":230,"./src/interfaces":232,"./src/static_request":233,"./src/static_response":234,"./src/url_search_params":235,"@angular/core":140}],216:[function(require,module,exports){
+},{"./src/backends/browser_jsonp":221,"./src/backends/browser_xhr":222,"./src/backends/jsonp_backend":223,"./src/backends/xhr_backend":224,"./src/base_request_options":225,"./src/base_response_options":226,"./src/enums":227,"./src/headers":233,"./src/http":234,"./src/interfaces":236,"./src/static_request":237,"./src/static_response":238,"./src/url_search_params":239,"@angular/core":144}],220:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 __export(require('./http'));
 
-},{"./http":215}],217:[function(require,module,exports){
+},{"./http":219}],221:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../src/facade/lang');
@@ -31128,7 +31343,7 @@ var BrowserJsonp = (function () {
 }());
 exports.BrowserJsonp = BrowserJsonp;
 
-},{"../../src/facade/lang":228,"@angular/core":140}],218:[function(require,module,exports){
+},{"../../src/facade/lang":232,"@angular/core":144}],222:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var BrowserXhr = (function () {
@@ -31143,7 +31358,7 @@ var BrowserXhr = (function () {
 }());
 exports.BrowserXhr = BrowserXhr;
 
-},{"@angular/core":140}],219:[function(require,module,exports){
+},{"@angular/core":144}],223:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -31284,7 +31499,7 @@ var JSONPBackend_ = (function (_super) {
 }(JSONPBackend));
 exports.JSONPBackend_ = JSONPBackend_;
 
-},{"../../src/facade/exceptions":227,"../../src/facade/lang":228,"../base_response_options":222,"../enums":223,"../interfaces":232,"../static_response":234,"./browser_jsonp":217,"@angular/core":140,"rxjs/Observable":474}],220:[function(require,module,exports){
+},{"../../src/facade/exceptions":231,"../../src/facade/lang":232,"../base_response_options":226,"../enums":227,"../interfaces":236,"../static_response":238,"./browser_jsonp":221,"@angular/core":144,"rxjs/Observable":480}],224:[function(require,module,exports){
 "use strict";
 var enums_1 = require('../enums');
 var static_response_1 = require('../static_response');
@@ -31382,7 +31597,7 @@ var XHRBackend = (function () {
 }());
 exports.XHRBackend = XHRBackend;
 
-},{"../../src/facade/lang":228,"../base_response_options":222,"../enums":223,"../headers":229,"../http_utils":231,"../static_response":234,"./browser_xhr":218,"@angular/core":140,"rxjs/Observable":474}],221:[function(require,module,exports){
+},{"../../src/facade/lang":232,"../base_response_options":226,"../enums":227,"../headers":233,"../http_utils":235,"../static_response":238,"./browser_xhr":222,"@angular/core":144,"rxjs/Observable":480}],225:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -31483,7 +31698,7 @@ var BaseRequestOptions = (function (_super) {
 }(RequestOptions));
 exports.BaseRequestOptions = BaseRequestOptions;
 
-},{"../src/facade/lang":228,"./enums":223,"./headers":229,"./http_utils":231,"./url_search_params":235,"@angular/core":140}],222:[function(require,module,exports){
+},{"../src/facade/lang":232,"./enums":227,"./headers":233,"./http_utils":235,"./url_search_params":239,"@angular/core":144}],226:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -31582,7 +31797,7 @@ var BaseResponseOptions = (function (_super) {
 }(ResponseOptions));
 exports.BaseResponseOptions = BaseResponseOptions;
 
-},{"../src/facade/lang":228,"./enums":223,"./headers":229,"@angular/core":140}],223:[function(require,module,exports){
+},{"../src/facade/lang":232,"./enums":227,"./headers":233,"@angular/core":144}],227:[function(require,module,exports){
 "use strict";
 /**
 * Supported http methods.
@@ -31624,15 +31839,15 @@ var ReadyState = exports.ReadyState;
 })(exports.ResponseType || (exports.ResponseType = {}));
 var ResponseType = exports.ResponseType;
 
-},{}],224:[function(require,module,exports){
-arguments[4][21][0].apply(exports,arguments)
-},{"dup":21}],225:[function(require,module,exports){
-arguments[4][22][0].apply(exports,arguments)
-},{"./lang":228,"dup":22}],226:[function(require,module,exports){
-arguments[4][23][0].apply(exports,arguments)
-},{"./base_wrapped_exception":224,"./collection":225,"./lang":228,"dup":23}],227:[function(require,module,exports){
-arguments[4][24][0].apply(exports,arguments)
-},{"./base_wrapped_exception":224,"./exception_handler":226,"dup":24}],228:[function(require,module,exports){
+},{}],228:[function(require,module,exports){
+arguments[4][25][0].apply(exports,arguments)
+},{"dup":25}],229:[function(require,module,exports){
+arguments[4][26][0].apply(exports,arguments)
+},{"./lang":232,"dup":26}],230:[function(require,module,exports){
+arguments[4][27][0].apply(exports,arguments)
+},{"./base_wrapped_exception":228,"./collection":229,"./lang":232,"dup":27}],231:[function(require,module,exports){
+arguments[4][28][0].apply(exports,arguments)
+},{"./base_wrapped_exception":228,"./exception_handler":230,"dup":28}],232:[function(require,module,exports){
 (function (global){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -32115,7 +32330,7 @@ exports.escape = escape;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],229:[function(require,module,exports){
+},{}],233:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../src/facade/lang');
 var exceptions_1 = require('../src/facade/exceptions');
@@ -32251,7 +32466,7 @@ var Headers = (function () {
 }());
 exports.Headers = Headers;
 
-},{"../src/facade/collection":225,"../src/facade/exceptions":227,"../src/facade/lang":228}],230:[function(require,module,exports){
+},{"../src/facade/collection":229,"../src/facade/exceptions":231,"../src/facade/lang":232}],234:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -32396,7 +32611,7 @@ var Jsonp = (function (_super) {
 }(Http));
 exports.Jsonp = Jsonp;
 
-},{"../src/facade/exceptions":227,"../src/facade/lang":228,"./base_request_options":221,"./enums":223,"./interfaces":232,"./static_request":233,"@angular/core":140}],231:[function(require,module,exports){
+},{"../src/facade/exceptions":231,"../src/facade/lang":232,"./base_request_options":225,"./enums":227,"./interfaces":236,"./static_request":237,"@angular/core":144}],235:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../src/facade/lang');
 var enums_1 = require('./enums');
@@ -32429,7 +32644,7 @@ exports.getResponseURL = getResponseURL;
 var lang_2 = require('../src/facade/lang');
 exports.isJsObject = lang_2.isJsObject;
 
-},{"../src/facade/exceptions":227,"../src/facade/lang":228,"./enums":223}],232:[function(require,module,exports){
+},{"../src/facade/exceptions":231,"../src/facade/lang":232,"./enums":227}],236:[function(require,module,exports){
 "use strict";
 /**
  * Abstract class from which real backends are derived.
@@ -32453,7 +32668,7 @@ var Connection = (function () {
 }());
 exports.Connection = Connection;
 
-},{}],233:[function(require,module,exports){
+},{}],237:[function(require,module,exports){
 "use strict";
 var headers_1 = require('./headers');
 var http_utils_1 = require('./http_utils');
@@ -32529,7 +32744,7 @@ var Request = (function () {
 }());
 exports.Request = Request;
 
-},{"../src/facade/lang":228,"./headers":229,"./http_utils":231}],234:[function(require,module,exports){
+},{"../src/facade/lang":232,"./headers":233,"./http_utils":235}],238:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../src/facade/lang');
 var exceptions_1 = require('../src/facade/exceptions');
@@ -32595,7 +32810,7 @@ var Response = (function () {
 }());
 exports.Response = Response;
 
-},{"../src/facade/exceptions":227,"../src/facade/lang":228,"./http_utils":231}],235:[function(require,module,exports){
+},{"../src/facade/exceptions":231,"../src/facade/lang":232,"./http_utils":235}],239:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../src/facade/lang');
 var collection_1 = require('../src/facade/collection');
@@ -32724,19 +32939,19 @@ var URLSearchParams = (function () {
 }());
 exports.URLSearchParams = URLSearchParams;
 
-},{"../src/facade/collection":225,"../src/facade/lang":228}],236:[function(require,module,exports){
+},{"../src/facade/collection":229,"../src/facade/lang":232}],240:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 exports.ReflectionCapabilities = core_1.__core_private__.ReflectionCapabilities;
 
-},{"@angular/core":140}],237:[function(require,module,exports){
+},{"@angular/core":144}],241:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 __export(require('./platform_browser_dynamic'));
 
-},{"./platform_browser_dynamic":238}],238:[function(require,module,exports){
+},{"./platform_browser_dynamic":242}],242:[function(require,module,exports){
 "use strict";
 var compiler_1 = require('@angular/compiler');
 var xhr_cache_1 = require('./src/xhr/xhr_cache');
@@ -32831,15 +33046,15 @@ function bootstrap(appComponentType, customProviders) {
 }
 exports.bootstrap = bootstrap;
 
-},{"./core_private":236,"./src/facade/lang":243,"./src/xhr/xhr_cache":245,"./src/xhr/xhr_impl":246,"@angular/compiler":73,"@angular/core":140,"@angular/platform-browser":248}],239:[function(require,module,exports){
-arguments[4][21][0].apply(exports,arguments)
-},{"dup":21}],240:[function(require,module,exports){
-arguments[4][22][0].apply(exports,arguments)
-},{"./lang":243,"dup":22}],241:[function(require,module,exports){
-arguments[4][23][0].apply(exports,arguments)
-},{"./base_wrapped_exception":239,"./collection":240,"./lang":243,"dup":23}],242:[function(require,module,exports){
-arguments[4][24][0].apply(exports,arguments)
-},{"./base_wrapped_exception":239,"./exception_handler":241,"dup":24}],243:[function(require,module,exports){
+},{"./core_private":240,"./src/facade/lang":247,"./src/xhr/xhr_cache":249,"./src/xhr/xhr_impl":250,"@angular/compiler":77,"@angular/core":144,"@angular/platform-browser":252}],243:[function(require,module,exports){
+arguments[4][25][0].apply(exports,arguments)
+},{"dup":25}],244:[function(require,module,exports){
+arguments[4][26][0].apply(exports,arguments)
+},{"./lang":247,"dup":26}],245:[function(require,module,exports){
+arguments[4][27][0].apply(exports,arguments)
+},{"./base_wrapped_exception":243,"./collection":244,"./lang":247,"dup":27}],246:[function(require,module,exports){
+arguments[4][28][0].apply(exports,arguments)
+},{"./base_wrapped_exception":243,"./exception_handler":245,"dup":28}],247:[function(require,module,exports){
 (function (global){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -33322,9 +33537,9 @@ exports.escape = escape;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],244:[function(require,module,exports){
-arguments[4][27][0].apply(exports,arguments)
-},{"dup":27}],245:[function(require,module,exports){
+},{}],248:[function(require,module,exports){
+arguments[4][31][0].apply(exports,arguments)
+},{"dup":31}],249:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -33363,7 +33578,7 @@ var CachedXHR = (function (_super) {
 }(compiler_1.XHR));
 exports.CachedXHR = CachedXHR;
 
-},{"../../src/facade/exceptions":242,"../../src/facade/lang":243,"../../src/facade/promise":244,"@angular/compiler":73}],246:[function(require,module,exports){
+},{"../../src/facade/exceptions":246,"../../src/facade/lang":247,"../../src/facade/promise":248,"@angular/compiler":77}],250:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -33410,7 +33625,7 @@ var XHRImpl = (function (_super) {
 }(compiler_1.XHR));
 exports.XHRImpl = XHRImpl;
 
-},{"../../src/facade/lang":243,"../../src/facade/promise":244,"@angular/compiler":73}],247:[function(require,module,exports){
+},{"../../src/facade/lang":247,"../../src/facade/promise":248,"@angular/compiler":77}],251:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 exports.RenderDebugInfo = core_1.__core_private__.RenderDebugInfo;
@@ -33421,14 +33636,14 @@ exports.DebugDomRootRenderer = core_1.__core_private__.DebugDomRootRenderer;
 exports.SecurityContext = core_1.__core_private__.SecurityContext;
 exports.SanitizationService = core_1.__core_private__.SanitizationService;
 
-},{"@angular/core":140}],248:[function(require,module,exports){
+},{"@angular/core":144}],252:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 __export(require('./src/platform_browser'));
 
-},{"./src/platform_browser":282}],249:[function(require,module,exports){
+},{"./src/platform_browser":286}],253:[function(require,module,exports){
 "use strict";
 var animation_builder = require('./src/animate/animation_builder');
 var css_animation_builder = require('./src/animate/css_animation_builder');
@@ -33453,7 +33668,7 @@ var __platform_browser_private__;
     __platform_browser_private__.BrowserDetails = browser_details.BrowserDetails;
 })(__platform_browser_private__ = exports.__platform_browser_private__ || (exports.__platform_browser_private__ = {}));
 
-},{"./src/animate/animation":250,"./src/animate/animation_builder":251,"./src/animate/browser_details":252,"./src/animate/css_animation_builder":253,"./src/animate/css_animation_options":254,"./src/browser/browser_adapter":255,"./src/dom/dom_adapter":265}],250:[function(require,module,exports){
+},{"./src/animate/animation":254,"./src/animate/animation_builder":255,"./src/animate/browser_details":256,"./src/animate/css_animation_builder":257,"./src/animate/css_animation_options":258,"./src/browser/browser_adapter":259,"./src/dom/dom_adapter":269}],254:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var math_1 = require('../../src/facade/math');
@@ -33637,7 +33852,7 @@ var Animation = (function () {
 }());
 exports.Animation = Animation;
 
-},{"../../src/facade/collection":277,"../../src/facade/lang":280,"../../src/facade/math":281,"../dom/dom_adapter":265,"../dom/util":274}],251:[function(require,module,exports){
+},{"../../src/facade/collection":281,"../../src/facade/lang":284,"../../src/facade/math":285,"../dom/dom_adapter":269,"../dom/util":278}],255:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var css_animation_builder_1 = require('./css_animation_builder');
@@ -33665,7 +33880,7 @@ var AnimationBuilder = (function () {
 }());
 exports.AnimationBuilder = AnimationBuilder;
 
-},{"./browser_details":252,"./css_animation_builder":253,"@angular/core":140}],252:[function(require,module,exports){
+},{"./browser_details":256,"./css_animation_builder":257,"@angular/core":144}],256:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var math_1 = require('../../src/facade/math');
@@ -33732,7 +33947,7 @@ var RafQueue = (function () {
     return RafQueue;
 }());
 
-},{"../../src/facade/math":281,"../dom/dom_adapter":265,"@angular/core":140}],253:[function(require,module,exports){
+},{"../../src/facade/math":285,"../dom/dom_adapter":269,"@angular/core":144}],257:[function(require,module,exports){
 "use strict";
 var css_animation_options_1 = require('./css_animation_options');
 var animation_1 = require('./animation');
@@ -33820,7 +34035,7 @@ var CssAnimationBuilder = (function () {
 }());
 exports.CssAnimationBuilder = CssAnimationBuilder;
 
-},{"./animation":250,"./css_animation_options":254}],254:[function(require,module,exports){
+},{"./animation":254,"./css_animation_options":258}],258:[function(require,module,exports){
 "use strict";
 var CssAnimationOptions = (function () {
     function CssAnimationOptions() {
@@ -33835,7 +34050,7 @@ var CssAnimationOptions = (function () {
 }());
 exports.CssAnimationOptions = CssAnimationOptions;
 
-},{}],255:[function(require,module,exports){
+},{}],259:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -34232,7 +34447,7 @@ function relativePath(url) {
         '/' + urlParsingNode.pathname;
 }
 
-},{"../../src/facade/collection":277,"../../src/facade/lang":280,"../dom/dom_adapter":265,"./generic_browser_adapter":256}],256:[function(require,module,exports){
+},{"../../src/facade/collection":281,"../../src/facade/lang":284,"../dom/dom_adapter":269,"./generic_browser_adapter":260}],260:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -34302,7 +34517,7 @@ var GenericBrowserDomAdapter = (function (_super) {
 }(dom_adapter_1.DomAdapter));
 exports.GenericBrowserDomAdapter = GenericBrowserDomAdapter;
 
-},{"../../src/facade/collection":277,"../../src/facade/lang":280,"../dom/dom_adapter":265}],257:[function(require,module,exports){
+},{"../../src/facade/collection":281,"../../src/facade/lang":284,"../dom/dom_adapter":269}],261:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -34369,7 +34584,7 @@ var BrowserPlatformLocation = (function (_super) {
 }(common_1.PlatformLocation));
 exports.BrowserPlatformLocation = BrowserPlatformLocation;
 
-},{"../../dom/dom_adapter":265,"@angular/common":8,"@angular/core":140}],258:[function(require,module,exports){
+},{"../../dom/dom_adapter":269,"@angular/common":12,"@angular/core":144}],262:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var collection_1 = require('../../src/facade/collection');
@@ -34445,7 +34660,7 @@ var BrowserGetTestability = (function () {
 }());
 exports.BrowserGetTestability = BrowserGetTestability;
 
-},{"../../src/facade/collection":277,"../../src/facade/lang":280,"../dom/dom_adapter":265,"@angular/core":140}],259:[function(require,module,exports){
+},{"../../src/facade/collection":281,"../../src/facade/lang":284,"../dom/dom_adapter":269,"@angular/core":144}],263:[function(require,module,exports){
 "use strict";
 var dom_adapter_1 = require('../dom/dom_adapter');
 /**
@@ -34473,7 +34688,7 @@ var Title = (function () {
 }());
 exports.Title = Title;
 
-},{"../dom/dom_adapter":265}],260:[function(require,module,exports){
+},{"../dom/dom_adapter":269}],264:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('../../../src/facade/lang');
@@ -34553,7 +34768,7 @@ var AngularProfiler = (function () {
 }());
 exports.AngularProfiler = AngularProfiler;
 
-},{"../../../src/facade/browser":276,"../../../src/facade/lang":280,"../../dom/dom_adapter":265,"@angular/core":140}],261:[function(require,module,exports){
+},{"../../../src/facade/browser":280,"../../../src/facade/lang":284,"../../dom/dom_adapter":269,"@angular/core":144}],265:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../../src/facade/lang');
 var common_tools_1 = require('./common_tools');
@@ -34581,7 +34796,7 @@ function disableDebugTools() {
 }
 exports.disableDebugTools = disableDebugTools;
 
-},{"../../../src/facade/lang":280,"./common_tools":260}],262:[function(require,module,exports){
+},{"../../../src/facade/lang":284,"./common_tools":264}],266:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var core_private_1 = require('../core_private');
@@ -34673,7 +34888,7 @@ function initDomAdapter() {
 }
 exports.initDomAdapter = initDomAdapter;
 
-},{"../core_private":247,"../src/dom/events/hammer_gestures":271,"./animate/animation_builder":251,"./animate/browser_details":252,"./browser/browser_adapter":255,"./browser/testability":258,"./browser/title":259,"./browser/tools/tools":261,"./dom/debug/by":263,"./dom/debug/ng_probe":264,"./dom/dom_adapter":265,"./dom/dom_renderer":266,"./dom/dom_tokens":267,"./dom/events/dom_events":268,"./dom/events/event_manager":269,"./dom/events/hammer_gestures":271,"./dom/events/key_events":272,"./dom/shared_styles_host":273,"./facade/lang":280,"./security/dom_sanitization_service":284,"@angular/common":8,"@angular/core":140}],263:[function(require,module,exports){
+},{"../core_private":251,"../src/dom/events/hammer_gestures":275,"./animate/animation_builder":255,"./animate/browser_details":256,"./browser/browser_adapter":259,"./browser/testability":262,"./browser/title":263,"./browser/tools/tools":265,"./dom/debug/by":267,"./dom/debug/ng_probe":268,"./dom/dom_adapter":269,"./dom/dom_renderer":270,"./dom/dom_tokens":271,"./dom/events/dom_events":272,"./dom/events/event_manager":273,"./dom/events/hammer_gestures":275,"./dom/events/key_events":276,"./dom/shared_styles_host":277,"./facade/lang":284,"./security/dom_sanitization_service":288,"@angular/common":12,"@angular/core":144}],267:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../../src/facade/lang');
 var dom_adapter_1 = require('../../dom/dom_adapter');
@@ -34719,7 +34934,7 @@ var By = (function () {
 }());
 exports.By = By;
 
-},{"../../../src/facade/lang":280,"../../dom/dom_adapter":265}],264:[function(require,module,exports){
+},{"../../../src/facade/lang":284,"../../dom/dom_adapter":269}],268:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var core_private_1 = require('../../../core_private');
@@ -34767,7 +34982,7 @@ exports.ELEMENT_PROBE_PROVIDERS_PROD_MODE = [
     }
 ];
 
-},{"../../../core_private":247,"../../facade/lang":280,"../dom_adapter":265,"../dom_renderer":266,"@angular/core":140}],265:[function(require,module,exports){
+},{"../../../core_private":251,"../../facade/lang":284,"../dom_adapter":269,"../dom_renderer":270,"@angular/core":144}],269:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var _DOM = null;
@@ -34811,7 +35026,7 @@ var DomAdapter = (function () {
 }());
 exports.DomAdapter = DomAdapter;
 
-},{"../../src/facade/lang":280}],266:[function(require,module,exports){
+},{"../../src/facade/lang":284}],270:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -35128,7 +35343,7 @@ function splitNamespace(name) {
     return [match[1], match[2]];
 }
 
-},{"../../src/facade/exceptions":279,"../../src/facade/lang":280,"../animate/animation_builder":251,"./dom_adapter":265,"./dom_tokens":267,"./events/event_manager":269,"./shared_styles_host":273,"./util":274,"@angular/core":140}],267:[function(require,module,exports){
+},{"../../src/facade/exceptions":283,"../../src/facade/lang":284,"../animate/animation_builder":255,"./dom_adapter":269,"./dom_tokens":271,"./events/event_manager":273,"./shared_styles_host":277,"./util":278,"@angular/core":144}],271:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 /**
@@ -35139,7 +35354,7 @@ var core_1 = require('@angular/core');
  */
 exports.DOCUMENT = new core_1.OpaqueToken('DocumentToken');
 
-},{"@angular/core":140}],268:[function(require,module,exports){
+},{"@angular/core":144}],272:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -35175,7 +35390,7 @@ var DomEventsPlugin = (function (_super) {
 }(event_manager_1.EventManagerPlugin));
 exports.DomEventsPlugin = DomEventsPlugin;
 
-},{"../dom_adapter":265,"./event_manager":269,"@angular/core":140}],269:[function(require,module,exports){
+},{"../dom_adapter":269,"./event_manager":273,"@angular/core":144}],273:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var exceptions_1 = require('../../../src/facade/exceptions');
@@ -35234,7 +35449,7 @@ var EventManagerPlugin = (function () {
 }());
 exports.EventManagerPlugin = EventManagerPlugin;
 
-},{"../../../src/facade/collection":277,"../../../src/facade/exceptions":279,"@angular/core":140}],270:[function(require,module,exports){
+},{"../../../src/facade/collection":281,"../../../src/facade/exceptions":283,"@angular/core":144}],274:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -35293,7 +35508,7 @@ var HammerGesturesPluginCommon = (function (_super) {
 }(event_manager_1.EventManagerPlugin));
 exports.HammerGesturesPluginCommon = HammerGesturesPluginCommon;
 
-},{"../../../src/facade/collection":277,"./event_manager":269}],271:[function(require,module,exports){
+},{"../../../src/facade/collection":281,"./event_manager":273}],275:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -35363,7 +35578,7 @@ var HammerGesturesPlugin = (function (_super) {
 }(hammer_common_1.HammerGesturesPluginCommon));
 exports.HammerGesturesPlugin = HammerGesturesPlugin;
 
-},{"../../../src/facade/exceptions":279,"../../../src/facade/lang":280,"./hammer_common":270,"@angular/core":140}],272:[function(require,module,exports){
+},{"../../../src/facade/exceptions":283,"../../../src/facade/lang":284,"./hammer_common":274,"@angular/core":144}],276:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -35469,7 +35684,7 @@ var KeyEventsPlugin = (function (_super) {
 }(event_manager_1.EventManagerPlugin));
 exports.KeyEventsPlugin = KeyEventsPlugin;
 
-},{"../../../src/facade/collection":277,"../../../src/facade/lang":280,"../dom_adapter":265,"./event_manager":269,"@angular/core":140}],273:[function(require,module,exports){
+},{"../../../src/facade/collection":281,"../../../src/facade/lang":284,"../dom_adapter":269,"./event_manager":273,"@angular/core":144}],277:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -35541,7 +35756,7 @@ var DomSharedStylesHost = (function (_super) {
 }(SharedStylesHost));
 exports.DomSharedStylesHost = DomSharedStylesHost;
 
-},{"../../src/facade/collection":277,"./dom_adapter":265,"./dom_tokens":267,"@angular/core":140}],274:[function(require,module,exports){
+},{"../../src/facade/collection":281,"./dom_adapter":269,"./dom_tokens":271,"@angular/core":144}],278:[function(require,module,exports){
 "use strict";
 var lang_1 = require('../../src/facade/lang');
 var CAMEL_CASE_REGEXP = /([A-Z])/g;
@@ -35555,9 +35770,9 @@ function dashCaseToCamelCase(input) {
 }
 exports.dashCaseToCamelCase = dashCaseToCamelCase;
 
-},{"../../src/facade/lang":280}],275:[function(require,module,exports){
-arguments[4][21][0].apply(exports,arguments)
-},{"dup":21}],276:[function(require,module,exports){
+},{"../../src/facade/lang":284}],279:[function(require,module,exports){
+arguments[4][25][0].apply(exports,arguments)
+},{"dup":25}],280:[function(require,module,exports){
 "use strict";
 /**
 * JS version of browser APIs. This library can only run in the browser.
@@ -35576,13 +35791,13 @@ exports.History = win['History'];
 exports.Location = win['Location'];
 exports.EventListener = win['EventListener'];
 
-},{}],277:[function(require,module,exports){
-arguments[4][22][0].apply(exports,arguments)
-},{"./lang":280,"dup":22}],278:[function(require,module,exports){
-arguments[4][23][0].apply(exports,arguments)
-},{"./base_wrapped_exception":275,"./collection":277,"./lang":280,"dup":23}],279:[function(require,module,exports){
-arguments[4][24][0].apply(exports,arguments)
-},{"./base_wrapped_exception":275,"./exception_handler":278,"dup":24}],280:[function(require,module,exports){
+},{}],281:[function(require,module,exports){
+arguments[4][26][0].apply(exports,arguments)
+},{"./lang":284,"dup":26}],282:[function(require,module,exports){
+arguments[4][27][0].apply(exports,arguments)
+},{"./base_wrapped_exception":279,"./collection":281,"./lang":284,"dup":27}],283:[function(require,module,exports){
+arguments[4][28][0].apply(exports,arguments)
+},{"./base_wrapped_exception":279,"./exception_handler":282,"dup":28}],284:[function(require,module,exports){
 (function (global){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -36065,13 +36280,13 @@ exports.escape = escape;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],281:[function(require,module,exports){
+},{}],285:[function(require,module,exports){
 "use strict";
 var lang_1 = require('./lang');
 exports.Math = lang_1.global.Math;
 exports.NaN = typeof exports.NaN;
 
-},{"./lang":280}],282:[function(require,module,exports){
+},{"./lang":284}],286:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -36115,7 +36330,7 @@ function browserPlatform() {
 }
 exports.browserPlatform = browserPlatform;
 
-},{"../private_export":249,"./browser_common":262,"./dom/debug/ng_probe":264,"./dom/dom_tokens":267,"./dom/events/dom_events":268,"./dom/events/event_manager":269,"./facade/lang":280,"./platform_browser_static":283,"./security/dom_sanitization_service":284,"@angular/core":140}],283:[function(require,module,exports){
+},{"../private_export":253,"./browser_common":266,"./dom/debug/ng_probe":268,"./dom/dom_tokens":271,"./dom/events/dom_events":272,"./dom/events/event_manager":273,"./facade/lang":284,"./platform_browser_static":287,"./security/dom_sanitization_service":288,"@angular/core":144}],287:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('./facade/lang');
@@ -36158,7 +36373,7 @@ function bootstrapStatic(appComponentType, customProviders, initReflector) {
 }
 exports.bootstrapStatic = bootstrapStatic;
 
-},{"./browser/location/browser_platform_location":257,"./browser_common":262,"./dom/debug/ng_probe":264,"./facade/lang":280,"@angular/core":140}],284:[function(require,module,exports){
+},{"./browser/location/browser_platform_location":261,"./browser_common":266,"./dom/debug/ng_probe":268,"./facade/lang":284,"@angular/core":144}],288:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -36311,7 +36526,7 @@ var SafeResourceUrlImpl = (function (_super) {
     return SafeResourceUrlImpl;
 }(SafeValueImpl));
 
-},{"../../core_private":247,"./style_sanitizer":285,"./url_sanitizer":286,"@angular/core":140}],285:[function(require,module,exports){
+},{"../../core_private":251,"./style_sanitizer":289,"./url_sanitizer":290,"@angular/core":144}],289:[function(require,module,exports){
 "use strict";
 /**
 * Regular expression for safe style values.
@@ -36358,7 +36573,7 @@ function sanitizeStyle(value) {
 }
 exports.sanitizeStyle = sanitizeStyle;
 
-},{}],286:[function(require,module,exports){
+},{}],290:[function(require,module,exports){
 "use strict";
 /**
 * A pattern that recognizes a commonly useful subset of URLs that are safe.
@@ -36394,7 +36609,7 @@ function sanitizeUrl(url) {
 }
 exports.sanitizeUrl = sanitizeUrl;
 
-},{}],287:[function(require,module,exports){
+},{}],291:[function(require,module,exports){
 "use strict";
 /**
 * @module
@@ -36443,7 +36658,7 @@ var router_link_1 = require('./src/directives/router_link');
  */
 exports.ROUTER_DIRECTIVES = [router_outlet_1.RouterOutlet, router_link_1.RouterLink];
 
-},{"./src/directives/router_link":290,"./src/directives/router_outlet":291,"./src/metadata/decorators":301,"./src/metadata/metadata":302,"./src/router":304,"./src/router_providers":305,"./src/router_url_serializer":307,"./src/segments":308}],288:[function(require,module,exports){
+},{"./src/directives/router_link":294,"./src/directives/router_outlet":295,"./src/metadata/decorators":305,"./src/metadata/metadata":306,"./src/router":308,"./src/router_providers":309,"./src/router_url_serializer":311,"./src/segments":312}],292:[function(require,module,exports){
 "use strict";
 /**
 * Name of the default outlet outlet.
@@ -36451,12 +36666,12 @@ exports.ROUTER_DIRECTIVES = [router_outlet_1.RouterOutlet, router_link_1.RouterL
 */
 exports.DEFAULT_OUTLET_NAME = "__DEFAULT";
 
-},{}],289:[function(require,module,exports){
+},{}],293:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 exports.makeDecorator = core_1.__core_private__.makeDecorator;
 
-},{"@angular/core":140}],290:[function(require,module,exports){
+},{"@angular/core":144}],294:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var router_1 = require('../router');
@@ -36525,7 +36740,7 @@ var RouterLink = (function () {
 }());
 exports.RouterLink = RouterLink;
 
-},{"../facade/async":292,"../facade/lang":297,"../router":304,"../segments":308,"@angular/core":140}],291:[function(require,module,exports){
+},{"../facade/async":296,"../facade/lang":301,"../router":308,"../segments":312,"@angular/core":144}],295:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var router_1 = require('../router');
@@ -36577,17 +36792,17 @@ var RouterOutlet = (function () {
 }());
 exports.RouterOutlet = RouterOutlet;
 
-},{"../constants":288,"../facade/lang":297,"../router":304,"@angular/core":140}],292:[function(require,module,exports){
-arguments[4][20][0].apply(exports,arguments)
-},{"./lang":297,"./promise":298,"dup":20,"rxjs/Observable":474,"rxjs/Subject":480,"rxjs/observable/PromiseObservable":603,"rxjs/operator/toPromise":701}],293:[function(require,module,exports){
-arguments[4][21][0].apply(exports,arguments)
-},{"dup":21}],294:[function(require,module,exports){
-arguments[4][22][0].apply(exports,arguments)
-},{"./lang":297,"dup":22}],295:[function(require,module,exports){
-arguments[4][23][0].apply(exports,arguments)
-},{"./base_wrapped_exception":293,"./collection":294,"./lang":297,"dup":23}],296:[function(require,module,exports){
+},{"../constants":292,"../facade/lang":301,"../router":308,"@angular/core":144}],296:[function(require,module,exports){
 arguments[4][24][0].apply(exports,arguments)
-},{"./base_wrapped_exception":293,"./exception_handler":295,"dup":24}],297:[function(require,module,exports){
+},{"./lang":301,"./promise":302,"dup":24,"rxjs/Observable":480,"rxjs/Subject":486,"rxjs/observable/PromiseObservable":609,"rxjs/operator/toPromise":707}],297:[function(require,module,exports){
+arguments[4][25][0].apply(exports,arguments)
+},{"dup":25}],298:[function(require,module,exports){
+arguments[4][26][0].apply(exports,arguments)
+},{"./lang":301,"dup":26}],299:[function(require,module,exports){
+arguments[4][27][0].apply(exports,arguments)
+},{"./base_wrapped_exception":297,"./collection":298,"./lang":301,"dup":27}],300:[function(require,module,exports){
+arguments[4][28][0].apply(exports,arguments)
+},{"./base_wrapped_exception":297,"./exception_handler":299,"dup":28}],301:[function(require,module,exports){
 (function (global){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -37070,9 +37285,9 @@ exports.escape = escape;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],298:[function(require,module,exports){
-arguments[4][27][0].apply(exports,arguments)
-},{"dup":27}],299:[function(require,module,exports){
+},{}],302:[function(require,module,exports){
+arguments[4][31][0].apply(exports,arguments)
+},{"dup":31}],303:[function(require,module,exports){
 "use strict";
 var lang_1 = require('./facade/lang');
 function hasLifecycleHook(name, obj) {
@@ -37085,7 +37300,7 @@ function hasLifecycleHook(name, obj) {
 }
 exports.hasLifecycleHook = hasLifecycleHook;
 
-},{"./facade/lang":297}],300:[function(require,module,exports){
+},{"./facade/lang":301}],304:[function(require,module,exports){
 "use strict";
 var segments_1 = require('./segments');
 var lang_1 = require('./facade/lang');
@@ -37260,7 +37475,7 @@ function _outlet(commands) {
     return parts.length > 1 ? parts[0] : null;
 }
 
-},{"./facade/collection":294,"./facade/exceptions":296,"./facade/lang":297,"./segments":308}],301:[function(require,module,exports){
+},{"./facade/collection":298,"./facade/exceptions":300,"./facade/lang":301,"./segments":312}],305:[function(require,module,exports){
 "use strict";
 var metadata_1 = require("./metadata");
 var core_private_1 = require('../core_private');
@@ -37271,7 +37486,7 @@ var core_private_1 = require('../core_private');
  */
 exports.Routes = core_private_1.makeDecorator(metadata_1.RoutesMetadata);
 
-},{"../core_private":289,"./metadata":302}],302:[function(require,module,exports){
+},{"../core_private":293,"./metadata":306}],306:[function(require,module,exports){
 "use strict";
 var lang_1 = require("../facade/lang");
 /**
@@ -37338,7 +37553,7 @@ var RoutesMetadata = (function () {
 }());
 exports.RoutesMetadata = RoutesMetadata;
 
-},{"../facade/lang":297}],303:[function(require,module,exports){
+},{"../facade/lang":301}],307:[function(require,module,exports){
 "use strict";
 var segments_1 = require('./segments');
 var metadata_1 = require('./metadata/metadata');
@@ -37491,7 +37706,7 @@ function _readMetadata(componentType) {
     return collection_1.ListWrapper.first(metadata);
 }
 
-},{"./constants":288,"./facade/collection":294,"./facade/lang":297,"./facade/promise":298,"./metadata/metadata":302,"./segments":308,"@angular/core":140}],304:[function(require,module,exports){
+},{"./constants":292,"./facade/collection":298,"./facade/lang":301,"./facade/promise":302,"./metadata/metadata":306,"./segments":312,"@angular/core":144}],308:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var lang_1 = require('./facade/lang');
@@ -37768,7 +37983,7 @@ var _LoadSegments = (function () {
     return _LoadSegments;
 }());
 
-},{"./constants":288,"./facade/async":292,"./facade/collection":294,"./facade/lang":297,"./lifecycle_reflector":299,"./link":300,"./recognize":303,"./segments":308,"@angular/core":140}],305:[function(require,module,exports){
+},{"./constants":292,"./facade/async":296,"./facade/collection":298,"./facade/lang":301,"./lifecycle_reflector":303,"./link":304,"./recognize":307,"./segments":312,"@angular/core":144}],309:[function(require,module,exports){
 "use strict";
 var router_providers_common_1 = require('./router_providers_common');
 var platform_browser_1 = require('@angular/platform-browser');
@@ -37800,7 +38015,7 @@ exports.ROUTER_PROVIDERS = [
     /*@ts2dart_Provider*/ { provide: common_1.PlatformLocation, useClass: platform_browser_1.BrowserPlatformLocation },
 ];
 
-},{"./router_providers_common":306,"@angular/common":8,"@angular/platform-browser":248}],306:[function(require,module,exports){
+},{"./router_providers_common":310,"@angular/common":12,"@angular/platform-browser":252}],310:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var common_1 = require('@angular/common');
@@ -37831,7 +38046,7 @@ function routerFactory(app, componentResolver, urlSerializer, routerOutletMap, l
     return router;
 }
 
-},{"./router":304,"./router_url_serializer":307,"@angular/common":8,"@angular/core":140}],307:[function(require,module,exports){
+},{"./router":308,"./router_url_serializer":311,"@angular/common":12,"@angular/core":144}],311:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -38016,7 +38231,7 @@ var _UrlParser = (function () {
     return _UrlParser;
 }());
 
-},{"./facade/lang":297,"./segments":308,"@angular/core":140}],308:[function(require,module,exports){
+},{"./facade/lang":301,"./segments":312,"@angular/core":144}],312:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -38216,7 +38431,7 @@ function routeSegmentComponentFactory(a) {
 }
 exports.routeSegmentComponentFactory = routeSegmentComponentFactory;
 
-},{"./facade/collection":294,"./facade/lang":297}],309:[function(require,module,exports){
+},{"./facade/collection":298,"./facade/lang":301}],313:[function(require,module,exports){
 "use strict";
 var dom_1 = require('../util/dom');
 var util_1 = require('../util/util');
@@ -38330,7 +38545,7 @@ var Animation = (function () {
                 trans: (typeof TRANSFORMS[prop] !== 'undefined'),
                 wc: ''
             };
-            // add the will-change property fo transforms or opacity
+            // add the will-change property for transforms or opacity
             if (fxProp.trans) {
                 fxProp.wc = dom_1.CSS.transform;
             }
@@ -38876,7 +39091,7 @@ var TRANSFORMS = {
 var CSS_VALUE_REGEX = /(^-?\d*\.?\d*)(.*)/;
 var AnimationRegistry = {};
 
-},{"../util/dom":405,"../util/util":411}],310:[function(require,module,exports){
+},{"../util/dom":411,"../util/util":417}],314:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -38933,7 +39148,7 @@ var FadeOut = (function (_super) {
 }(animation_1.Animation));
 animation_1.Animation.register('fade-out', FadeOut);
 
-},{"./animation":309}],311:[function(require,module,exports){
+},{"./animation":313}],315:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -38971,8 +39186,10 @@ __export(require('./components/nav/nav-router'));
 __export(require('./components/navbar/navbar'));
 __export(require('./components/option/option'));
 __export(require('./components/picker/picker'));
+__export(require('./components/popover/popover'));
 __export(require('./components/radio/radio-button'));
 __export(require('./components/radio/radio-group'));
+__export(require('./components/range/range'));
 __export(require('./components/refresher/refresher'));
 __export(require('./components/refresher/refresher-content'));
 __export(require('./components/scroll/scroll'));
@@ -38990,7 +39207,7 @@ __export(require('./components/toggle/toggle'));
 __export(require('./components/toolbar/toolbar'));
 __export(require('./components/virtual-scroll/virtual-scroll'));
 
-},{"./components/action-sheet/action-sheet":312,"./components/alert/alert":313,"./components/app/app":314,"./components/badge/badge":315,"./components/button/button":316,"./components/checkbox/checkbox":317,"./components/content/content":318,"./components/datetime/datetime":319,"./components/icon/icon":320,"./components/img/img":321,"./components/infinite-scroll/infinite-scroll":323,"./components/infinite-scroll/infinite-scroll-content":322,"./components/input/input":325,"./components/item/item":330,"./components/item/item-sliding":329,"./components/label/label":331,"./components/list/list":332,"./components/loading/loading":333,"./components/menu/menu":339,"./components/menu/menu-close":334,"./components/menu/menu-controller":335,"./components/menu/menu-toggle":337,"./components/menu/menu-types":338,"./components/modal/modal":340,"./components/nav/nav":347,"./components/nav/nav-controller":341,"./components/nav/nav-params":342,"./components/nav/nav-push":344,"./components/nav/nav-router":346,"./components/nav/view-controller":349,"./components/navbar/navbar":350,"./components/option/option":351,"./components/picker/picker":352,"./components/radio/radio-button":353,"./components/radio/radio-group":354,"./components/refresher/refresher":356,"./components/refresher/refresher-content":355,"./components/scroll/scroll":357,"./components/searchbar/searchbar":358,"./components/segment/segment":359,"./components/select/select":360,"./components/show-hide-when/show-hide-when":361,"./components/slides/slides":362,"./components/spinner/spinner":364,"./components/tabs/tab":367,"./components/tabs/tabs":368,"./components/tap-click/tap-click":371,"./components/toast/toast":372,"./components/toggle/toggle":373,"./components/toolbar/toolbar":374,"./components/virtual-scroll/virtual-scroll":376}],312:[function(require,module,exports){
+},{"./components/action-sheet/action-sheet":316,"./components/alert/alert":317,"./components/app/app":318,"./components/badge/badge":320,"./components/button/button":321,"./components/checkbox/checkbox":322,"./components/content/content":323,"./components/datetime/datetime":324,"./components/icon/icon":325,"./components/img/img":326,"./components/infinite-scroll/infinite-scroll":328,"./components/infinite-scroll/infinite-scroll-content":327,"./components/input/input":330,"./components/item/item":335,"./components/item/item-sliding":334,"./components/label/label":336,"./components/list/list":337,"./components/loading/loading":338,"./components/menu/menu":344,"./components/menu/menu-close":339,"./components/menu/menu-controller":340,"./components/menu/menu-toggle":342,"./components/menu/menu-types":343,"./components/modal/modal":345,"./components/nav/nav":352,"./components/nav/nav-controller":346,"./components/nav/nav-params":347,"./components/nav/nav-push":349,"./components/nav/nav-router":351,"./components/nav/view-controller":354,"./components/navbar/navbar":355,"./components/option/option":356,"./components/picker/picker":357,"./components/popover/popover":358,"./components/radio/radio-button":359,"./components/radio/radio-group":360,"./components/range/range":361,"./components/refresher/refresher":363,"./components/refresher/refresher-content":362,"./components/scroll/scroll":364,"./components/searchbar/searchbar":365,"./components/segment/segment":366,"./components/select/select":367,"./components/show-hide-when/show-hide-when":368,"./components/slides/slides":369,"./components/spinner/spinner":371,"./components/tabs/tab":374,"./components/tabs/tabs":375,"./components/tap-click/tap-click":378,"./components/toast/toast":379,"./components/toggle/toggle":380,"./components/toolbar/toolbar":381,"./components/virtual-scroll/virtual-scroll":383}],316:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -39026,7 +39243,7 @@ var view_controller_1 = require('../nav/view-controller');
  * An action sheet is created from an array of `buttons`, with each button
  * including properties for its `text`, and optionally a `handler` and `role`.
  * If a handler returns `false` then the action sheet will not be dismissed. An
- * action sheet can also optionally have a `title` and a `subTitle`.
+ * action sheet can also optionally have a `title`, `subTitle` and an `icon`.
  *
  * A button's `role` property can either be `destructive` or `cancel`. Buttons
  * without a role property will have the default look for the platform. Buttons
@@ -39086,7 +39303,7 @@ var view_controller_1 = require('../nav/view-controller');
  * transitions were fired at roughly the same time, it's difficult for the
  * nav controller to cleanly animate multiple transitions that may
  * have been kicked off asynchronously. This is further described in the
- * [`Nav Transition Promises`](../../nav/NavController) section. For action sheets,
+ * [`Nav Transition Promises`](../../nav/NavController/#nav-transition-promises) section. For action sheets,
  * this means it's best to wait for the action sheet to finish its transition
  * out before starting a new transition on the same nav controller.
  *
@@ -39229,7 +39446,7 @@ var ActionSheetCmp = (function () {
             this.descId = 'acst-subhdr-' + this.id;
         }
     }
-    ActionSheetCmp.prototype.onPageLoaded = function () {
+    ActionSheetCmp.prototype.ionViewLoaded = function () {
         var _this = this;
         // normalize the data
         var buttons = [];
@@ -39260,7 +39477,7 @@ var ActionSheetCmp = (function () {
         });
         this.d.buttons = buttons;
     };
-    ActionSheetCmp.prototype.onPageDidEnter = function () {
+    ActionSheetCmp.prototype.ionViewDidEnter = function () {
         var activeElement = document.activeElement;
         if (document.activeElement) {
             activeElement.blur();
@@ -39323,7 +39540,7 @@ var ActionSheetCmp = (function () {
     ActionSheetCmp = __decorate([
         core_1.Component({
             selector: 'ion-action-sheet',
-            template: '<div (click)="bdClick()" tappable disable-activated class="backdrop" role="presentation"></div>' +
+            template: '<ion-backdrop (click)="bdClick()"></ion-backdrop>' +
                 '<div class="action-sheet-wrapper">' +
                 '<div class="action-sheet-container">' +
                 '<div class="action-sheet-group">' +
@@ -39358,7 +39575,7 @@ var ActionSheetSlideIn = (function (_super) {
     function ActionSheetSlideIn(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = enteringView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.action-sheet-wrapper'));
         backdrop.fromTo('opacity', 0.01, 0.4);
         wrapper.fromTo('translateY', '100%', '0%');
@@ -39372,7 +39589,7 @@ var ActionSheetSlideOut = (function (_super) {
     function ActionSheetSlideOut(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = leavingView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.action-sheet-wrapper'));
         backdrop.fromTo('opacity', 0.4, 0);
         wrapper.fromTo('translateY', '0%', '100%');
@@ -39386,7 +39603,7 @@ var ActionSheetMdSlideIn = (function (_super) {
     function ActionSheetMdSlideIn(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = enteringView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.action-sheet-wrapper'));
         backdrop.fromTo('opacity', 0.01, 0.26);
         wrapper.fromTo('translateY', '100%', '0%');
@@ -39400,7 +39617,7 @@ var ActionSheetMdSlideOut = (function (_super) {
     function ActionSheetMdSlideOut(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = leavingView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.action-sheet-wrapper'));
         backdrop.fromTo('opacity', 0.26, 0);
         wrapper.fromTo('translateY', '0%', '100%');
@@ -39414,7 +39631,7 @@ var ActionSheetWpSlideIn = (function (_super) {
     function ActionSheetWpSlideIn(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = enteringView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.action-sheet-wrapper'));
         backdrop.fromTo('opacity', 0.01, 0.16);
         wrapper.fromTo('translateY', '100%', '0%');
@@ -39428,7 +39645,7 @@ var ActionSheetWpSlideOut = (function (_super) {
     function ActionSheetWpSlideOut(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = leavingView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.action-sheet-wrapper'));
         backdrop.fromTo('opacity', 0.1, 0);
         wrapper.fromTo('translateY', '0%', '100%');
@@ -39439,7 +39656,7 @@ var ActionSheetWpSlideOut = (function (_super) {
 transition_1.Transition.register('action-sheet-wp-slide-out', ActionSheetWpSlideOut);
 var actionSheetIds = -1;
 
-},{"../../animations/animation":309,"../../config/config":379,"../../transitions/transition":399,"../../util/util":411,"../nav/nav-params":342,"../nav/view-controller":349,"@angular/core":140}],313:[function(require,module,exports){
+},{"../../animations/animation":313,"../../config/config":386,"../../transitions/transition":405,"../../util/util":417,"../nav/nav-params":347,"../nav/view-controller":354,"@angular/core":144}],317:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -39717,7 +39934,7 @@ var Alert = (function (_super) {
      *  | cssClass              | `string`  | Any additional class for the alert (optional)                             |
      *  | inputs                | `array`   | An array of inputs for the alert. See input options. (optional)           |
      *  | buttons               | `array`   | An array of buttons for the alert. See buttons options. (optional)        |
-     *  | enableBackdropDismiss | `boolean` | Wheather the alert should be dismissed by tapping the backdrop (optional) |
+     *  | enableBackdropDismiss | `boolean` | Whether the alert should be dismissed by tapping the backdrop (optional)  |
      *
      *
      *  Input options
@@ -39726,9 +39943,9 @@ var Alert = (function (_super) {
      *  |-------------|-----------|-----------------------------------------------------------------|
      *  | type        | `string`  | The type the input should be, text, tel, number, etc (optional) |
      *  | name        | `string`  | The name for the input (optional)                               |
-     *  | placeHolder | `string`  | The input's placeholder (optional)                              |
+     *  | placeholder | `string`  | The input's placeholder (optional, for textual/numeric inputs)  |
      *  | value       | `string`  | The input's value (optional)                                    |
-     *  | label       | `string`  | The input's label (optional)                                    |
+     *  | label       | `string`  | The input's label (optional, only for radio/checkbox inputs)    |
      *  | checked     | `boolean` | Whether or not the input is checked or not (optional)           |
      *  | id          | `string`  | The input's id (optional)                                       |
      *
@@ -39782,15 +39999,10 @@ var AlertCmp = (function () {
             this.d.message = '';
         }
     }
-    AlertCmp.prototype.onPageLoaded = function () {
+    AlertCmp.prototype.ionViewLoaded = function () {
         var _this = this;
         // normalize the data
         var data = this.d;
-        if (data['body']) {
-            // deprecated warning
-            void 0;
-            data.message = data['body'];
-        }
         data.buttons = data.buttons.map(function (button) {
             if (typeof button === 'string') {
                 return { text: button };
@@ -39844,7 +40056,7 @@ var AlertCmp = (function () {
             }
         }
     };
-    AlertCmp.prototype.onPageDidEnter = function () {
+    AlertCmp.prototype.ionViewDidEnter = function () {
         var activeElement = document.activeElement;
         if (document.activeElement) {
             activeElement.blur();
@@ -39936,7 +40148,7 @@ var AlertCmp = (function () {
     AlertCmp = __decorate([
         core_1.Component({
             selector: 'ion-alert',
-            template: '<div (click)="bdClick()" tappable disable-activated class="backdrop" role="presentation"></div>' +
+            template: '<ion-backdrop (click)="bdClick()"></ion-backdrop>' +
                 '<div class="alert-wrapper">' +
                 '<div class="alert-head">' +
                 '<h2 id="{{hdrId}}" class="alert-title" *ngIf="d.title" [innerHTML]="d.title"></h2>' +
@@ -39997,7 +40209,7 @@ var AlertPopIn = (function (_super) {
     function AlertPopIn(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = enteringView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.alert-wrapper'));
         wrapper.fromTo('opacity', '0.01', '1').fromTo('scale', '1.1', '1');
         backdrop.fromTo('opacity', '0.01', '0.3');
@@ -40015,7 +40227,7 @@ var AlertPopOut = (function (_super) {
     function AlertPopOut(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = leavingView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.alert-wrapper'));
         wrapper.fromTo('opacity', '1', '0').fromTo('scale', '1', '0.9');
         backdrop.fromTo('opacity', '0.3', '0');
@@ -40033,7 +40245,7 @@ var AlertMdPopIn = (function (_super) {
     function AlertMdPopIn(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = enteringView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.alert-wrapper'));
         wrapper.fromTo('opacity', '0.01', '1').fromTo('scale', '1.1', '1');
         backdrop.fromTo('opacity', '0.01', '0.5');
@@ -40051,7 +40263,7 @@ var AlertMdPopOut = (function (_super) {
     function AlertMdPopOut(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = leavingView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.alert-wrapper'));
         wrapper.fromTo('opacity', '1', '0').fromTo('scale', '1', '0.9');
         backdrop.fromTo('opacity', '0.5', '0');
@@ -40069,7 +40281,7 @@ var AlertWpPopIn = (function (_super) {
     function AlertWpPopIn(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = enteringView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.alert-wrapper'));
         wrapper.fromTo('opacity', '0.01', '1').fromTo('scale', '1.3', '1');
         backdrop.fromTo('opacity', '0.01', '0.5');
@@ -40087,7 +40299,7 @@ var AlertWpPopOut = (function (_super) {
     function AlertWpPopOut(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = leavingView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.alert-wrapper'));
         wrapper.fromTo('opacity', '1', '0').fromTo('scale', '1', '1.3');
         backdrop.fromTo('opacity', '0.5', '0');
@@ -40102,7 +40314,7 @@ var AlertWpPopOut = (function (_super) {
 transition_1.Transition.register('alert-wp-pop-out', AlertWpPopOut);
 var alertIds = -1;
 
-},{"../../animations/animation":309,"../../config/config":379,"../../transitions/transition":399,"../../util/util":411,"../nav/nav-params":342,"../nav/view-controller":349,"@angular/core":140}],314:[function(require,module,exports){
+},{"../../animations/animation":313,"../../config/config":386,"../../transitions/transition":405,"../../util/util":417,"../nav/nav-params":347,"../nav/view-controller":354,"@angular/core":144}],318:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -40119,11 +40331,10 @@ var config_1 = require('../../config/config');
 var click_block_1 = require('../../util/click-block');
 var platform_1 = require('../../platform/platform');
 /**
- * App utility service.  Allows you to look up components that have been
- * registered using the [Id directive](../Id/).
+ * Ionic App utility service.
  */
-var IonicApp = (function () {
-    function IonicApp(_config, _clickBlock, platform) {
+var App = (function () {
+    function App(_config, _clickBlock, platform) {
         var _this = this;
         this._config = _config;
         this._clickBlock = _clickBlock;
@@ -40131,7 +40342,6 @@ var IonicApp = (function () {
         this._scrollTime = 0;
         this._title = '';
         this._titleSrv = new platform_browser_1.Title();
-        this._isProd = false;
         this._rootNav = null;
         platform.backButton.subscribe(function () {
             var activeNav = _this.getActiveNav();
@@ -40149,26 +40359,11 @@ var IonicApp = (function () {
      * Sets the document title.
      * @param {string} val  Value to set the document title to.
      */
-    IonicApp.prototype.setTitle = function (val) {
+    App.prototype.setTitle = function (val) {
         if (val !== this._title) {
             this._title = val;
             this._titleSrv.setTitle(val);
         }
-    };
-    /**
-     * Returns if the app has been set to be in be in production mode or not.
-     * Production mode can only be set within the config of `@App`. Defaults
-     * to `false`.
-     * @return {boolean}
-     */
-    IonicApp.prototype.isProd = function () {
-        return this._isProd;
-    };
-    /**
-     * @private
-     */
-    IonicApp.prototype.setProd = function (val) {
-        this._isProd = !!val;
     };
     /**
      * @private
@@ -40182,12 +40377,17 @@ var IonicApp = (function () {
      * it will automatically enable the app again. It's basically a fallback incase
      * something goes wrong during a transition and the app wasn't re-enabled correctly.
      */
-    IonicApp.prototype.setEnabled = function (isEnabled, duration) {
+    App.prototype.setEnabled = function (isEnabled, duration) {
         if (duration === void 0) { duration = 700; }
         this._disTime = (isEnabled ? 0 : Date.now() + duration);
-        if (duration > 32 || isEnabled) {
-            // only do a click block if the duration is longer than XXms
-            this._clickBlock.show(!isEnabled, duration + 64);
+        if (this._clickBlock) {
+            if (duration > 32) {
+                // only do a click block if the duration is longer than XXms
+                this._clickBlock.show(true, duration + 64);
+            }
+            else {
+                this._clickBlock.show(false, 0);
+            }
         }
     };
     /**
@@ -40195,26 +40395,26 @@ var IonicApp = (function () {
      * Boolean if the app is actively enabled or not.
      * @return {boolean}
      */
-    IonicApp.prototype.isEnabled = function () {
+    App.prototype.isEnabled = function () {
         return (this._disTime < Date.now());
     };
     /**
      * @private
      */
-    IonicApp.prototype.setScrolling = function () {
+    App.prototype.setScrolling = function () {
         this._scrollTime = Date.now();
     };
     /**
      * Boolean if the app is actively scrolling or not.
      * @return {boolean}
      */
-    IonicApp.prototype.isScrolling = function () {
+    App.prototype.isScrolling = function () {
         return (this._scrollTime + 64 > Date.now());
     };
     /**
      * @private
      */
-    IonicApp.prototype.getActiveNav = function () {
+    App.prototype.getActiveNav = function () {
         var nav = this._rootNav || null;
         var activeChildNav;
         while (nav) {
@@ -40229,26 +40429,26 @@ var IonicApp = (function () {
     /**
      * @private
      */
-    IonicApp.prototype.getRootNav = function () {
+    App.prototype.getRootNav = function () {
         return this._rootNav;
     };
     /**
      * @private
      */
-    IonicApp.prototype.setRootNav = function (nav) {
+    App.prototype.setRootNav = function (nav) {
         this._rootNav = nav;
     };
     /**
      * @private
      */
-    IonicApp.prototype.getRegisteredComponent = function (cls) {
+    App.prototype.getRegisteredComponent = function (cls) {
         // deprecated warning: added 2016-04-28, beta7
         void 0;
     };
     /**
      * @private
      */
-    IonicApp.prototype.getComponent = function (id) {
+    App.prototype.getComponent = function (id) {
         // deprecated warning: added 2016-04-28, beta7
         void 0;
     };
@@ -40256,25 +40456,101 @@ var IonicApp = (function () {
      * Set the global app injector that contains references to all of the instantiated providers
      * @param injector
      */
-    IonicApp.prototype.setAppInjector = function (injector) {
+    App.prototype.setAppInjector = function (injector) {
         this._appInjector = injector;
     };
     /**
      * Get an instance of the global app injector that contains references to all of the instantiated providers
      * @returns {Injector}
      */
-    IonicApp.prototype.getAppInjector = function () {
+    App.prototype.getAppInjector = function () {
         return this._appInjector;
     };
-    IonicApp = __decorate([
+    App = __decorate([
         core_1.Injectable(), 
         __metadata('design:paramtypes', [config_1.Config, click_block_1.ClickBlock, platform_1.Platform])
-    ], IonicApp);
-    return IonicApp;
+    ], App);
+    return App;
 }());
-exports.IonicApp = IonicApp;
+exports.App = App;
 
-},{"../../config/config":379,"../../platform/platform":390,"../../util/click-block":403,"@angular/core":140,"@angular/platform-browser":248}],315:[function(require,module,exports){
+},{"../../config/config":386,"../../platform/platform":396,"../../util/click-block":409,"@angular/core":144,"@angular/platform-browser":252}],319:[function(require,module,exports){
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var core_1 = require('@angular/core');
+var util_1 = require('../../util/util');
+var DISABLE_SCROLL = 'disable-scroll';
+/**
+ * @private
+ */
+var Backdrop = (function () {
+    function Backdrop(elementRef) {
+        this.elementRef = elementRef;
+        this.pushed = false;
+        this.disableScroll = true;
+    }
+    Backdrop.push = function () {
+        if (this.nuBackDrops === 0) {
+            void 0;
+            document.body.classList.add(DISABLE_SCROLL);
+        }
+        else {
+            void 0;
+        }
+        this.nuBackDrops++;
+    };
+    Backdrop.pop = function () {
+        if (this.nuBackDrops === 0) {
+            void 0;
+            return;
+        }
+        this.nuBackDrops--;
+        if (this.nuBackDrops === 0) {
+            void 0;
+            document.body.classList.remove(DISABLE_SCROLL);
+        }
+    };
+    Backdrop.prototype.ngOnInit = function () {
+        if (util_1.isTrueProperty(this.disableScroll)) {
+            Backdrop.push();
+            this.pushed = true;
+        }
+    };
+    Backdrop.prototype.ngOnDestroy = function () {
+        if (this.pushed) {
+            Backdrop.pop();
+            this.pushed = false;
+        }
+    };
+    Backdrop.nuBackDrops = 0;
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Object)
+    ], Backdrop.prototype, "disableScroll", void 0);
+    Backdrop = __decorate([
+        core_1.Directive({
+            selector: 'ion-backdrop',
+            host: {
+                'role': 'presentation',
+                'tappable': '',
+                'disable-activated': ''
+            },
+        }), 
+        __metadata('design:paramtypes', [core_1.ElementRef])
+    ], Backdrop);
+    return Backdrop;
+}());
+exports.Backdrop = Backdrop;
+
+},{"../../util/util":417,"@angular/core":144}],320:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -40334,7 +40610,7 @@ var Badge = (function () {
 }());
 exports.Badge = Badge;
 
-},{"../../config/config":379,"@angular/core":140}],316:[function(require,module,exports){
+},{"../../config/config":386,"@angular/core":144}],321:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -40373,6 +40649,7 @@ var util_1 = require('../../util/util');
   * @property [fab-center] - Position a fab button towards the center.
   * @property [fab-top] - Position a fab button towards the top.
   * @property [fab-bottom] - Position a fab button towards the bottom.
+  * @property [fab-fixed] - Makes a fab button have a fixed position.
   * @property [color] - Dynamically set which predefined color this button should use (e.g. primary, secondary, danger, etc).
   *
   * @demo /docs/v2/demos/button/
@@ -40750,7 +41027,7 @@ var IGNORE_ATTRS = /_ng|button|left|right/;
 var TEXT = 1;
 var ICON = 2;
 
-},{"../../config/config":379,"../../util/util":411,"@angular/core":140}],317:[function(require,module,exports){
+},{"../../config/config":386,"../../util/util":417,"@angular/core":144}],322:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -40817,7 +41094,7 @@ var Checkbox = (function () {
         /**
          * @output {Checkbox} expression to evaluate when the checkbox value changes
          */
-        this.change = new core_1.EventEmitter();
+        this.ionChange = new core_1.EventEmitter();
         _form.register(this);
         if (_item) {
             this.id = 'chk-' + _item.registerInput('checkbox');
@@ -40854,7 +41131,9 @@ var Checkbox = (function () {
     Checkbox.prototype._setChecked = function (isChecked) {
         if (isChecked !== this._checked) {
             this._checked = isChecked;
-            this.change.emit(this);
+            if (this._init) {
+                this.ionChange.emit(this);
+            }
             this._item && this._item.setCssClass('item-checkbox-checked', isChecked);
         }
     };
@@ -40911,17 +41190,23 @@ var Checkbox = (function () {
     /**
      * @private
      */
+    Checkbox.prototype.ngAfterContentInit = function () {
+        this._init = true;
+    };
+    /**
+     * @private
+     */
     Checkbox.prototype.ngOnDestroy = function () {
         this._form.deregister(this);
     };
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Checkbox.prototype, "change", void 0);
+    ], Checkbox.prototype, "ionChange", void 0);
     __decorate([
         core_1.HostListener('click', ['$event']), 
         __metadata('design:type', Function), 
-        __metadata('design:paramtypes', [Object]), 
+        __metadata('design:paramtypes', [UIEvent]), 
         __metadata('design:returntype', void 0)
     ], Checkbox.prototype, "_click", null);
     __decorate([
@@ -40960,7 +41245,7 @@ var Checkbox = (function () {
 }());
 exports.Checkbox = Checkbox;
 
-},{"../../util/form":408,"../../util/util":411,"../item/item":330,"@angular/common":8,"@angular/core":140}],318:[function(require,module,exports){
+},{"../../util/form":414,"../../util/util":417,"../item/item":335,"@angular/common":12,"@angular/core":144}],323:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -41007,10 +41292,10 @@ var scroll_view_1 = require('../../util/scroll-view');
  * you can use Angular's `@ViewChild` annotation:
  *
  * ```ts
- * import {ViewChild} from '@angular/core';
+ * import {Component, ViewChild} from '@angular/core';
  * import {Content} from 'ionic-angular';
  *
- * @Page({...}
+ * @Component({...})
  * export class MyPage{
  *   @ViewChild(Content) content: Content;
  *
@@ -41156,10 +41441,10 @@ var Content = (function (_super) {
      * Scroll to the specified position.
      *
      * ```ts
-     * import {ViewChild} from '@angular/core';
+     * import {Component, ViewChild} from '@angular/core';
      * import {Content} from 'ionic-angular';
      *
-     * @Page({
+     * @Component({
      *   template: `<ion-content>
      *                <button (click)="scrollTo()">Down 500px</button>
      *              </ion-content>`
@@ -41187,10 +41472,10 @@ var Content = (function (_super) {
      * Scroll to the top of the content component.
      *
      * ```ts
-     * import {ViewChild} from '@angular/core';
+     * import {Component, ViewChild} from '@angular/core';
      * import {Content} from 'ionic-angular';
      *
-     * @Page({
+     * @Component({
      *   template: `<ion-content>
      *                <button (click)="scrollToTop()">Scroll to top</button>
      *              </ion-content>`
@@ -41333,13 +41618,13 @@ var Content = (function (_super) {
             }
         }),
         __param(5, core_1.Optional()), 
-        __metadata('design:paramtypes', [core_1.ElementRef, config_1.Config, app_1.IonicApp, keyboard_1.Keyboard, core_1.NgZone, view_controller_1.ViewController])
+        __metadata('design:paramtypes', [core_1.ElementRef, config_1.Config, app_1.App, keyboard_1.Keyboard, core_1.NgZone, view_controller_1.ViewController])
     ], Content);
     return Content;
 }(ion_1.Ion));
 exports.Content = Content;
 
-},{"../../config/config":379,"../../util/dom":405,"../../util/keyboard":409,"../../util/scroll-view":410,"../app/app":314,"../ion":327,"../nav/view-controller":349,"@angular/core":140}],319:[function(require,module,exports){
+},{"../../config/config":386,"../../util/dom":411,"../../util/keyboard":415,"../../util/scroll-view":416,"../app/app":318,"../ion":332,"../nav/view-controller":354,"@angular/core":144}],324:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -41495,7 +41780,7 @@ var DATETIME_VALUE_ACCESSOR = new core_1.Provider(common_1.NG_VALUE_ACCESSOR, { 
  * and `23` means `11pm`.
  *
  * It's also important to note that neither the `displayFormat` or `pickerFormat` can
- * set the datetime value's output, which is the value that sent the the component's
+ * set the datetime value's output, which is the value that is set by the component's
  * `ngModel`. The format's are merely for displaying the value as text and the picker's
  * interface, but the datetime's value is always persisted as a valid ISO 8601 datetime
  * string.
@@ -41543,14 +41828,14 @@ var DATETIME_VALUE_ACCESSOR = new core_1.Provider(common_1.NG_VALUE_ACCESSOR, { 
  * ### App Config Level
  *
  * ```ts
- * @App({
- *   config: {
- *     monthNames: ['janeiro', 'fevereiro', 'mar\u00e7o', ... ],
- *     monthShortNames: ['jan', 'fev', 'mar', ... ],
- *     dayNames: ['domingo', 'segunda-feira', 'ter\u00e7a-feira', ... ],
- *     dayShortNames: ['dom', 'seg', 'ter', ... ],
- *   }
- * })
+ * import {ionicBootstrap} from 'ionic-angular';
+ *
+ * ionicBootstrap(MyApp, customProviders, {
+ *   monthNames: ['janeiro', 'fevereiro', 'mar\u00e7o', ... ],
+ *   monthShortNames: ['jan', 'fev', 'mar', ... ],
+ *   dayNames: ['domingo', 'segunda-feira', 'ter\u00e7a-feira', ... ],
+ *   dayShortNames: ['dom', 'seg', 'ter', ... ],
+ * });
  * ```
  *
  * ### Component Input Level
@@ -41630,11 +41915,11 @@ var DateTime = (function () {
         /**
          * @output {any} Any expression to evaluate when the datetime selection has changed.
          */
-        this.change = new core_1.EventEmitter();
+        this.ionChange = new core_1.EventEmitter();
         /**
          * @output {any} Any expression to evaluate when the datetime selection was cancelled.
          */
-        this.cancel = new core_1.EventEmitter();
+        this.ionCancel = new core_1.EventEmitter();
         this._form.register(this);
         if (_item) {
             this.id = 'dt-' + _item.registerInput('datetime');
@@ -41654,7 +41939,7 @@ var DateTime = (function () {
         ev.stopPropagation();
         this.open();
     };
-    DateTime.prototype._keyup = function (ev) {
+    DateTime.prototype._keyup = function () {
         if (!this._isOpen) {
             this.open();
         }
@@ -41676,7 +41961,7 @@ var DateTime = (function () {
                 text: this.cancelText,
                 role: 'cancel',
                 handler: function () {
-                    _this.cancel.emit(null);
+                    _this.ionCancel.emit(null);
                 }
             },
             {
@@ -41684,13 +41969,13 @@ var DateTime = (function () {
                 handler: function (data) {
                     void 0;
                     _this.onChange(data);
-                    _this.change.emit(data);
+                    _this.ionChange.emit(data);
                 }
             }
         ];
         this.generate(picker);
         this.validate(picker);
-        picker.change.subscribe(function () {
+        picker.ionChange.subscribe(function () {
             _this.validate(picker);
         });
         this._nav.present(picker, pickerOptions);
@@ -42055,21 +42340,21 @@ var DateTime = (function () {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], DateTime.prototype, "change", void 0);
+    ], DateTime.prototype, "ionChange", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], DateTime.prototype, "cancel", void 0);
+    ], DateTime.prototype, "ionCancel", void 0);
     __decorate([
         core_1.HostListener('click', ['$event']), 
         __metadata('design:type', Function), 
-        __metadata('design:paramtypes', [Object]), 
+        __metadata('design:paramtypes', [UIEvent]), 
         __metadata('design:returntype', void 0)
     ], DateTime.prototype, "_click", null);
     __decorate([
-        core_1.HostListener('keyup.space', ['$event']), 
+        core_1.HostListener('keyup.space'), 
         __metadata('design:type', Function), 
-        __metadata('design:paramtypes', [Object]), 
+        __metadata('design:paramtypes', []), 
         __metadata('design:returntype', void 0)
     ], DateTime.prototype, "_keyup", null);
     __decorate([
@@ -42156,7 +42441,7 @@ function convertToArrayOfStrings(input, type) {
     }
 }
 
-},{"../../config/config":379,"../../util/datetime-util":404,"../../util/form":408,"../../util/util":411,"../item/item":330,"../nav/nav-controller":341,"../picker/picker":352,"@angular/common":8,"@angular/core":140}],320:[function(require,module,exports){
+},{"../../config/config":386,"../../util/datetime-util":410,"../../util/form":414,"../../util/util":417,"../item/item":335,"../nav/nav-controller":346,"../picker/picker":357,"@angular/common":12,"@angular/core":144}],325:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -42341,7 +42626,7 @@ var Icon = (function () {
 }());
 exports.Icon = Icon;
 
-},{"../../config/config":379,"@angular/core":140}],321:[function(require,module,exports){
+},{"../../config/config":386,"@angular/core":144}],326:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -42475,7 +42760,7 @@ var Img = (function () {
 }());
 exports.Img = Img;
 
-},{"../../platform/platform":390,"../../util/dom":405,"../../util/util":411,"@angular/core":140}],322:[function(require,module,exports){
+},{"../../platform/platform":396,"../../util/dom":411,"../../util/util":417,"@angular/core":144}],327:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -42533,7 +42818,7 @@ var InfiniteScrollContent = (function () {
 }());
 exports.InfiniteScrollContent = InfiniteScrollContent;
 
-},{"../../config/config":379,"./infinite-scroll":323,"@angular/core":140}],323:[function(require,module,exports){
+},{"../../config/config":386,"./infinite-scroll":328,"@angular/core":144}],328:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -42565,10 +42850,10 @@ var content_1 = require('../content/content');
  * <ion-content>
  *
  *  <ion-list>
- *    <ion-item *ngFor="let i of items">{{i}}</ion-item>
+ *    <ion-item *ngFor="let i of items">{% raw %}{{i}}{% endraw %}</ion-item>
  *  </ion-list>
  *
- *  <ion-infinite-scroll (infinite)="doInfinite($event)">
+ *  <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
  *    <ion-infinite-scroll-content></ion-infinite-scroll-content>
  *  </ion-infinite-scroll>
  *
@@ -42576,11 +42861,11 @@ var content_1 = require('../content/content');
  * ```
  *
  * ```ts
- * @Page({...})
+ * @Component({...})
  * export class NewsFeedPage {
+ *   items = [];
  *
  *   constructor() {
- *     this.items = [];
  *     for (var i = 0; i < 30; i++) {
  *       this.items.push( this.items.length );
  *     }
@@ -42613,7 +42898,7 @@ var content_1 = require('../content/content');
  *  ```html
  *  <ion-content>
  *
- *    <ion-infinite-scroll (infinite)="doInfinite($event)">
+ *    <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
  *      <ion-infinite-scroll-content
  *        loadingSpinner="bubbles"
  *        loadingText="Loading more data...">
@@ -42655,7 +42940,7 @@ var InfiniteScroll = (function () {
          * you must call the infinite scroll's `complete()` method when
          * your async operation has completed.
          */
-        this.infinite = new core_1.EventEmitter();
+        this.ionInfinite = new core_1.EventEmitter();
         _content.addCssClass('has-infinite-scroll');
     }
     Object.defineProperty(InfiniteScroll.prototype, "threshold", {
@@ -42686,7 +42971,7 @@ var InfiniteScroll = (function () {
         enumerable: true,
         configurable: true
     });
-    InfiniteScroll.prototype._onScroll = function (ev) {
+    InfiniteScroll.prototype._onScroll = function () {
         var _this = this;
         if (this.state === STATE_LOADING || this.state === STATE_DISABLED) {
             return 1;
@@ -42713,8 +42998,10 @@ var InfiniteScroll = (function () {
         var distanceFromInfinite = ((d.scrollHeight - infiniteHeight) - d.scrollTop) - reloadY;
         if (distanceFromInfinite < 0) {
             this._zone.run(function () {
-                _this.state = STATE_LOADING;
-                _this.infinite.emit(_this);
+                if (_this.state !== STATE_LOADING && _this.state !== STATE_DISABLED) {
+                    _this.state = STATE_LOADING;
+                    _this.ionInfinite.emit(_this);
+                }
             });
             return 5;
         }
@@ -42782,7 +43069,7 @@ var InfiniteScroll = (function () {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], InfiniteScroll.prototype, "infinite", void 0);
+    ], InfiniteScroll.prototype, "ionInfinite", void 0);
     InfiniteScroll = __decorate([
         core_1.Directive({
             selector: 'ion-infinite-scroll'
@@ -42797,7 +43084,7 @@ var STATE_ENABLED = 'enabled';
 var STATE_DISABLED = 'disabled';
 var STATE_LOADING = 'loading';
 
-},{"../content/content":318,"@angular/core":140}],324:[function(require,module,exports){
+},{"../content/content":323,"@angular/core":144}],329:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -42835,6 +43122,7 @@ var InputBase = (function () {
         this._autoCorrect = config.get('autocorrect', 'off');
         if (ngControl) {
             ngControl.valueAccessor = this;
+            this.inputControl = ngControl;
         }
         _form.register(this);
     }
@@ -42866,22 +43154,31 @@ var InputBase = (function () {
                 }
             }
         };
-        this.setItemControlCss();
+        this.setItemInputControlCss();
     };
     InputBase.prototype.ngAfterContentChecked = function () {
-        this.setItemControlCss();
+        this.setItemInputControlCss();
     };
-    InputBase.prototype.setItemControlCss = function () {
+    InputBase.prototype.setItemInputControlCss = function () {
         var item = this._item;
-        var nativeControl = this._native && this._native.ngControl;
-        if (item && nativeControl) {
-            item.setCssClass('ng-untouched', nativeControl.untouched);
-            item.setCssClass('ng-touched', nativeControl.touched);
-            item.setCssClass('ng-pristine', nativeControl.pristine);
-            item.setCssClass('ng-dirty', nativeControl.dirty);
-            item.setCssClass('ng-valid', nativeControl.valid);
-            item.setCssClass('ng-invalid', !nativeControl.valid);
+        var nativeInput = this._native;
+        var inputControl = this.inputControl;
+        // Set the control classes on the item
+        if (item && inputControl) {
+            this.setControlCss(item, inputControl);
         }
+        // Set the control classes on the native input
+        if (nativeInput && inputControl) {
+            this.setControlCss(nativeInput, inputControl);
+        }
+    };
+    InputBase.prototype.setControlCss = function (element, control) {
+        element.setCssClass('ng-untouched', control.untouched);
+        element.setCssClass('ng-touched', control.touched);
+        element.setCssClass('ng-pristine', control.pristine);
+        element.setCssClass('ng-dirty', control.dirty);
+        element.setCssClass('ng-valid', control.valid);
+        element.setCssClass('ng-invalid', !control.valid);
     };
     InputBase.prototype.ngOnDestroy = function () {
         this._form.deregister(this);
@@ -42972,7 +43269,7 @@ var InputBase = (function () {
                 this._autoComplete = ionInputEle.getAttribute('autocomplete');
             }
             nativeInputEle.setAttribute('autocomplete', this._autoComplete);
-            // by default set autocomplete="off" unless specified by the input
+            // by default set autocorrect="off" unless specified by the input
             if (ionInputEle.hasAttribute('autocorrect')) {
                 this._autoCorrect = ionInputEle.getAttribute('autocorrect');
             }
@@ -43336,7 +43633,7 @@ function getScrollAssistDuration(distanceToScroll) {
     return Math.min(400, Math.max(150, duration));
 }
 
-},{"../../util/dom":405,"../../util/util":411,"./native-input":326,"@angular/core":140}],325:[function(require,module,exports){
+},{"../../util/dom":411,"../../util/util":417,"./native-input":331,"@angular/core":144}],330:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -43383,33 +43680,44 @@ var platform_1 = require('../../platform/platform');
  * `checkbox`, `radio`, `toggle`, `range`, `select`, etc.
  *
  * @property [type] - The HTML input type (text, password, email, number, search, tel, or url)
- * @property [clearInput] - A clear icon will appear in the input which clears it
+ * @property [clearInput] - A clear icon will appear in the input when there is a value. Clicking it clears the input.
  *
  * @usage
  * ```html
- *  <ion-item>
- *    <ion-label>Username</ion-label>
- *    <ion-input></ion-input>
- *  </ion-item>
+ * <ion-list>
+ *   <ion-item>
+ *     <ion-label primary>Inline Label</ion-label>
+ *     <ion-input placeholder="Text Input"></ion-input>
+ *   </ion-item>
  *
- *  <ion-item>
- *    <ion-label fixed>Website</ion-label>
- *    <ion-input type="url"></ion-input>
- *  </ion-item>
+ *   <ion-item>
+ *     <ion-label primary fixed>Fixed Label</ion-label>
+ *     <ion-input type="tel" placeholder="Tel Input"></ion-input>
+ *   </ion-item>
  *
- *  <ion-item>
- *    <ion-label floating>Email</ion-label>
- *    <ion-input type="email"></ion-input>
- *  </ion-item>
+ *   <ion-item>
+ *     <ion-input type="number" placeholder="Number Input with no label"></ion-input>
+ *   </ion-item>
  *
- *  <ion-item>
- *    <ion-label stacked>Phone</ion-label>
- *    <ion-input type="tel"></ion-input>
- *  </ion-item>
+ *   <ion-item>
+ *     <ion-label primary stacked>Stacked Label</ion-label>
+ *     <ion-input type="email" placeholder="Email Input"></ion-input>
+ *   </ion-item>
  *
- *  <ion-item>
- *    <ion-input placeholder="Username" clearInput></ion-input>
- *  </ion-item>
+ *   <ion-item>
+ *     <ion-label primary stacked>Stacked Label</ion-label>
+ *     <ion-input type="password" placeholder="Password Input"></ion-input>
+ *   </ion-item>
+ *
+ *   <ion-item>
+ *     <ion-label primary floating>Floating Label</ion-label>
+ *     <ion-input></ion-input>
+ *   </ion-item>
+ *
+ *   <ion-item>
+ *     <ion-input placeholder="Clear Input" clearInput></ion-input>
+ *   </ion-item>
+ * </ion-list>
  * ```
  *
  * @demo /docs/v2/demos/input/
@@ -43422,14 +43730,14 @@ var TextInput = (function (_super) {
     /**
      * @private
      */
-    TextInput.prototype.inputBlurred = function (event) {
-        this.blur.emit(event);
+    TextInput.prototype.inputBlurred = function (ev) {
+        this.blur.emit(ev);
     };
     /**
      * @private
      */
-    TextInput.prototype.inputFocused = function (event) {
-        this.focus.emit(event);
+    TextInput.prototype.inputFocused = function (ev) {
+        this.focus.emit(ev);
     };
     /**
      * @private
@@ -43457,7 +43765,7 @@ var TextInput = (function (_super) {
         __param(6, core_1.Optional()),
         __param(7, core_1.Optional()),
         __param(8, core_1.Optional()), 
-        __metadata('design:paramtypes', [config_1.Config, form_1.Form, item_1.Item, app_1.IonicApp, platform_1.Platform, core_1.ElementRef, content_1.Content, nav_controller_1.NavController, common_1.NgControl])
+        __metadata('design:paramtypes', [config_1.Config, form_1.Form, item_1.Item, app_1.App, platform_1.Platform, core_1.ElementRef, content_1.Content, nav_controller_1.NavController, common_1.NgControl])
     ], TextInput);
     return TextInput;
 }(input_base_1.InputBase));
@@ -43516,14 +43824,14 @@ var TextArea = (function (_super) {
     /**
      * @private
      */
-    TextArea.prototype.inputBlurred = function (event) {
-        this.blur.emit(event);
+    TextArea.prototype.inputBlurred = function (ev) {
+        this.blur.emit(ev);
     };
     /**
      * @private
      */
-    TextArea.prototype.inputFocused = function (event) {
-        this.focus.emit(event);
+    TextArea.prototype.inputFocused = function (ev) {
+        this.focus.emit(ev);
     };
     TextArea = __decorate([
         core_1.Component({
@@ -43541,13 +43849,13 @@ var TextArea = (function (_super) {
         __param(6, core_1.Optional()),
         __param(7, core_1.Optional()),
         __param(8, core_1.Optional()), 
-        __metadata('design:paramtypes', [config_1.Config, form_1.Form, item_1.Item, app_1.IonicApp, platform_1.Platform, core_1.ElementRef, content_1.Content, nav_controller_1.NavController, common_1.NgControl])
+        __metadata('design:paramtypes', [config_1.Config, form_1.Form, item_1.Item, app_1.App, platform_1.Platform, core_1.ElementRef, content_1.Content, nav_controller_1.NavController, common_1.NgControl])
     ], TextArea);
     return TextArea;
 }(input_base_1.InputBase));
 exports.TextArea = TextArea;
 
-},{"../../config/config":379,"../../platform/platform":390,"../../util/form":408,"../app/app":314,"../content/content":318,"../item/item":330,"../nav/nav-controller":341,"./input-base":324,"./native-input":326,"@angular/common":8,"@angular/core":140}],326:[function(require,module,exports){
+},{"../../config/config":386,"../../platform/platform":396,"../../util/form":414,"../app/app":318,"../content/content":323,"../item/item":335,"../nav/nav-controller":346,"./input-base":329,"./native-input":331,"@angular/common":12,"@angular/core":144}],331:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -43683,6 +43991,9 @@ var NativeInput = (function () {
     NativeInput.prototype.getValue = function () {
         return this.element().value;
     };
+    NativeInput.prototype.setCssClass = function (cssClass, shouldAdd) {
+        this._renderer.setElementClass(this._elementRef.nativeElement, cssClass, shouldAdd);
+    };
     NativeInput.prototype.element = function () {
         return this._elementRef.nativeElement;
     };
@@ -43773,9 +44084,9 @@ var NextInput = (function () {
 }());
 exports.NextInput = NextInput;
 
-},{"../../config/config":379,"../../util/dom":405,"@angular/common":8,"@angular/core":140}],327:[function(require,module,exports){
+},{"../../config/config":386,"../../util/dom":411,"@angular/common":12,"@angular/core":144}],332:[function(require,module,exports){
 "use strict";
-var dom = require('../util/dom');
+var dom_1 = require('../util/dom');
 var ids = 0;
 /**
  * Base class for all Ionic components. Exposes some common functionality
@@ -43794,22 +44105,22 @@ var Ion = (function () {
         return this.elementRef.nativeElement;
     };
     Ion.prototype.getDimensions = function () {
-        return dom.getDimensions(this.elementRef.nativeElement, this._id);
+        return dom_1.getDimensions(this.elementRef.nativeElement, this._id);
     };
     Ion.prototype.width = function () {
-        return dom.getDimensions(this.elementRef.nativeElement, this._id).width;
+        return dom_1.getDimensions(this.elementRef.nativeElement, this._id).width;
     };
     Ion.prototype.height = function () {
-        return dom.getDimensions(this.elementRef.nativeElement, this._id).height;
+        return dom_1.getDimensions(this.elementRef.nativeElement, this._id).height;
     };
     Ion.prototype.ngOnDestroy = function () {
-        dom.clearDimensions(this._id);
+        dom_1.clearDimensions(this._id);
     };
     return Ion;
 }());
 exports.Ion = Ion;
 
-},{"../util/dom":405}],328:[function(require,module,exports){
+},{"../util/dom":411}],333:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -44028,7 +44339,7 @@ function isActive(itemContainerEle) {
 }
 var DRAG_THRESHOLD = 20;
 
-},{"../../gestures/drag-gesture":384,"../../gestures/hammer":386,"../../util/dom":405}],329:[function(require,module,exports){
+},{"../../gestures/drag-gesture":390,"../../gestures/hammer":392,"../../util/dom":411}],334:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -44048,46 +44359,44 @@ var list_1 = require('../list/list');
  * @name ItemSliding
  *
  * @description
- * Creates a list-item that can easily be swiped, deleted, reordered, edited, and more.
+ * A sliding item is a list item that can be swiped to reveal buttons. It requires
+ * an [Item](../Item) component as a child and a [List](../../list/List) component as
+ * a parent. All buttons to reveal can be placed in the `<ion-item-options>` element.
+ *
+ * ### Button Layout
+ * If an icon is placed with text in the option button, by default it will
+ * display the icon on top of the text. This can be changed to display the icon
+ * to the left of the text by setting `icon-left` as an attribute on the
+ * `<ion-item-options>` element.
+ *
+ * ```html
+ * <ion-item-options icon-left>
+ *   <button (click)="archive(item)">
+ *     <ion-icon name="archive"></ion-icon>
+ *     Archive
+ *   </button>
+ * </ion-item-options>
+ * ```
+ *
  *
  * @usage
  * ```html
  * <ion-list>
- *   <ion-item-sliding *ngFor="let item of items">
- *     <button ion-item (click)="itemTapped(item)">
- *       {{item.title}}
- *     </button>
+ *   <ion-item-sliding>
+ *     <ion-item>
+ *       Item
+ *     </ion-item>
  *     <ion-item-options>
  *       <button (click)="favorite(item)">Favorite</button>
- *       <button (click)="share(item)">Share</button>
+ *       <button danger (click)="share(item)">Share</button>
  *     </ion-item-options>
  *   </ion-item-sliding>
  * </ion-list>
- * ```
- * ItemSliding can be closed by API by adding #slidingItem in ion-item-sliding.
- * We grab a reference to the item reference by pass the `#slidingItem` to the share method.
- *
- * ```html
- * <ion-list>
- *   <ion-item-sliding *ngFor="#item of items" #slidingItem>
- *     <button ion-item (click)="itemTapped(item)">
- *       {{item}}
- *   </button>
- *     <ion-item-options>
- *       <button (click)="share(item, slidingItem)">Share</button>
- *     </ion-item-options>
- *   </ion-item-sliding>
- * </ion-list>
- * ```
- *
- * ```typescript
- * share(item, slidingItem) {
- *    slidingItem.close();
- * }
  * ```
  *
  * @demo /docs/v2/demos/item-sliding/
  * @see {@link /docs/v2/components#lists List Component Docs}
+ * @see {@link ../Item Item API Docs}
  * @see {@link ../../list/List List API Docs}
  */
 var ItemSliding = (function () {
@@ -44097,7 +44406,38 @@ var ItemSliding = (function () {
         elementRef.nativeElement.$ionSlide = ++slideIds;
     }
     /**
-     * @private
+     * Close the sliding item. Items can also be closed from the [List](../../list/List).
+     *
+     * The sliding item can be closed by garbbing a reference to `ItemSliding`. In the
+     * below example, the template reference variable `slidingItem` is placed on the element
+     * and passed to the `share` method.
+     *
+     * ```html
+     * <ion-list>
+     *   <ion-item-sliding #slidingItem>
+     *     <ion-item>
+     *       Item
+     *     </ion-item>
+     *     <ion-item-options>
+     *       <button (click)="share(slidingItem)">Share</button>
+     *     </ion-item-options>
+     *   </ion-item-sliding>
+     * </ion-list>
+     * ```
+     *
+     * ```ts
+     * import {Component} from '@angular/core';
+     * import {ItemSliding} from 'ionic-angular';
+     *
+     * @Component({...})
+     * export class MyClass {
+     *   constructor() { }
+     *
+     *   share(slidingItem: ItemSliding) {
+     *     slidingItem.close();
+     *   }
+     * }
+     * ```
      */
     ItemSliding.prototype.close = function () {
         this._list.closeSlidingItems();
@@ -44118,7 +44458,7 @@ var ItemSliding = (function () {
 exports.ItemSliding = ItemSliding;
 var slideIds = 0;
 
-},{"../list/list":332,"@angular/core":140}],330:[function(require,module,exports){
+},{"../list/list":337,"@angular/core":144}],335:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -44156,7 +44496,7 @@ var label_1 = require('../label/label');
  *
  *   // default item
  *   <ion-item>
- *     {{item.title}}
+ *     {% raw %}{{item.title}}{% endraw %}
  *   </ion-item>
  *
  * </ion-list>
@@ -44297,7 +44637,7 @@ var Item = (function () {
                 '<ion-label *ngIf="_viewLabel">' +
                 '<ng-content></ng-content>' +
                 '</ion-label>' +
-                '<ng-content select="ion-select,ion-input,ion-textarea,ion-datetime"></ng-content>' +
+                '<ng-content select="ion-select,ion-input,ion-textarea,ion-datetime,ion-range,[item-content]"></ng-content>' +
                 '</div>' +
                 '<ng-content select="[item-right],ion-radio,ion-toggle"></ng-content>' +
                 '</div>' +
@@ -44314,7 +44654,7 @@ var Item = (function () {
 }());
 exports.Item = Item;
 
-},{"../../util/form":408,"../button/button":316,"../icon/icon":320,"../label/label":331,"@angular/core":140}],331:[function(require,module,exports){
+},{"../../util/form":414,"../button/button":321,"../icon/icon":325,"../label/label":336,"@angular/core":144}],336:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -44375,7 +44715,7 @@ var core_1 = require('@angular/core');
  *
  * @demo /docs/v2/demos/label/
  * @see {@link ../../../../components#inputs Input Component Docs}
- * @see {@link ../Input Input API Docs}
+ * @see {@link ../../input/Input Input API Docs}
  *
  */
 var Label = (function () {
@@ -44435,7 +44775,7 @@ var Label = (function () {
 }());
 exports.Label = Label;
 
-},{"@angular/core":140}],332:[function(require,module,exports){
+},{"@angular/core":144}],337:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -44489,18 +44829,21 @@ var List = (function (_super) {
         this.ele = this.slidingGesture = null;
     };
     /**
-     * Enable sliding items if your page has them
+     * Enable the sliding items.
      *
      * ```ts
-     * import {Page, List} from 'ionic-angular';
-     * import {ViewChild} from '@angular/core';
-     * @Page...
+     * import {Component, ViewChild} from '@angular/core';
+     * import {List} from 'ionic-angular';
+     *
+     * @Component({...})
      * export class MyClass {
-     *    @ViewChild(List) list: List;
-     *    constructor(){}
-     *    stopSliding(){
-     *      this.list.enableSlidingItems(false);
-     *    }
+     *   @ViewChild(List) list: List;
+     *
+     *   constructor() { }
+     *
+     *   stopSliding() {
+     *     this.list.enableSlidingItems(false);
+     *   }
      * }
      * ```
      * @param {boolean} shouldEnable whether the item-sliding should be enabled or not
@@ -44523,18 +44866,21 @@ var List = (function (_super) {
         }
     };
     /**
-     * Enable sliding items if your page has
+     * Close the open sliding item.
      *
      * ```ts
-     * import {Page, List} from 'ionic-angular';
-     * import {ViewChild} from '@angular/core';
-     * @Page...
+     * import {Component, ViewChild} from '@angular/core';
+     * import {List} from 'ionic-angular';
+     *
+     * @Component({...})
      * export class MyClass {
-     *    @ViewChild(List) list: List;
-     *    constructor(){}
-     *    closeItems(){
-     *      this.list.closeSlidingItems();
-     *    }
+     *   @ViewChild(List) list: List;
+     *
+     *   constructor() { }
+     *
+     *   closeItems() {
+     *     this.list.closeSlidingItems();
+     *   }
      * }
      * ```
      */
@@ -44581,7 +44927,7 @@ var ListHeader = (function () {
 }());
 exports.ListHeader = ListHeader;
 
-},{"../ion":327,"../item/item-sliding-gesture":328,"@angular/core":140}],333:[function(require,module,exports){
+},{"../ion":332,"../item/item-sliding-gesture":333,"@angular/core":144}],338:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -44768,7 +45114,7 @@ var LoadingCmp = (function () {
         // If the user passed hide to the spinner we don't want to show it
         this.showSpinner = util_1.isDefined(this.d.spinner) && this.d.spinner !== 'hide';
     };
-    LoadingCmp.prototype.onPageDidEnter = function () {
+    LoadingCmp.prototype.ionViewDidEnter = function () {
         var _this = this;
         var activeElement = document.activeElement;
         if (document.activeElement) {
@@ -44787,7 +45133,7 @@ var LoadingCmp = (function () {
     LoadingCmp = __decorate([
         core_1.Component({
             selector: 'ion-loading',
-            template: '<div disable-activated class="backdrop" [class.hide-backdrop]="!d.showBackdrop" role="presentation"></div>' +
+            template: '<ion-backdrop [class.hide-backdrop]="!d.showBackdrop"></ion-backdrop>' +
                 '<div class="loading-wrapper">' +
                 '<div *ngIf="showSpinner" class="loading-spinner">' +
                 '<ion-spinner [name]="d.spinner"></ion-spinner>' +
@@ -44811,7 +45157,7 @@ var LoadingPopIn = (function (_super) {
     function LoadingPopIn(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = enteringView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.loading-wrapper'));
         wrapper.fromTo('opacity', '0.01', '1').fromTo('scale', '1.1', '1');
         backdrop.fromTo('opacity', '0.01', '0.3');
@@ -44829,7 +45175,7 @@ var LoadingPopOut = (function (_super) {
     function LoadingPopOut(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = leavingView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.loading-wrapper'));
         wrapper.fromTo('opacity', '1', '0').fromTo('scale', '1', '0.9');
         backdrop.fromTo('opacity', '0.3', '0');
@@ -44847,7 +45193,7 @@ var LoadingMdPopIn = (function (_super) {
     function LoadingMdPopIn(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = enteringView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.loading-wrapper'));
         wrapper.fromTo('opacity', '0.01', '1').fromTo('scale', '1.1', '1');
         backdrop.fromTo('opacity', '0.01', '0.50');
@@ -44865,7 +45211,7 @@ var LoadingMdPopOut = (function (_super) {
     function LoadingMdPopOut(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = leavingView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.loading-wrapper'));
         wrapper.fromTo('opacity', '1', '0').fromTo('scale', '1', '0.9');
         backdrop.fromTo('opacity', '0.50', '0');
@@ -44883,7 +45229,7 @@ var LoadingWpPopIn = (function (_super) {
     function LoadingWpPopIn(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = enteringView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.loading-wrapper'));
         wrapper.fromTo('opacity', '0.01', '1').fromTo('scale', '1.3', '1');
         backdrop.fromTo('opacity', '0.01', '0.16');
@@ -44901,7 +45247,7 @@ var LoadingWpPopOut = (function (_super) {
     function LoadingWpPopOut(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = leavingView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.loading-wrapper'));
         wrapper.fromTo('opacity', '1', '0').fromTo('scale', '1', '1.3');
         backdrop.fromTo('opacity', '0.16', '0');
@@ -44916,7 +45262,7 @@ var LoadingWpPopOut = (function (_super) {
 transition_1.Transition.register('loading-wp-pop-out', LoadingWpPopOut);
 var loadingIds = -1;
 
-},{"../../animations/animation":309,"../../config/config":379,"../../transitions/transition":399,"../../util/util":411,"../nav/nav-params":342,"../nav/view-controller":349,"@angular/core":140}],334:[function(require,module,exports){
+},{"../../animations/animation":313,"../../config/config":386,"../../transitions/transition":405,"../../util/util":417,"../nav/nav-params":347,"../nav/view-controller":354,"@angular/core":144}],339:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -44966,7 +45312,7 @@ var MenuClose = (function () {
     };
     __decorate([
         core_1.Input(), 
-        __metadata('design:type', Object)
+        __metadata('design:type', String)
     ], MenuClose.prototype, "menuClose", void 0);
     __decorate([
         core_1.HostListener('click'), 
@@ -44984,7 +45330,7 @@ var MenuClose = (function () {
 }());
 exports.MenuClose = MenuClose;
 
-},{"./menu-controller":335,"@angular/core":140}],335:[function(require,module,exports){
+},{"./menu-controller":340,"@angular/core":144}],340:[function(require,module,exports){
 "use strict";
 /**
  * @name MenuController
@@ -45017,9 +45363,10 @@ exports.MenuClose = MenuClose;
  * toggling the menu.
  *
  * ```ts
- * import{Page, MenuController} from 'ionic-angular';
+ * import {Component} from '@angular/core';
+ * import {MenuController} from 'ionic-angular';
  *
- * @Page({...})
+ * @Component({...})
  * export class MyPage {
  *
  *  constructor(private menu: MenuController) {
@@ -45134,6 +45481,11 @@ var MenuController = (function () {
             return menu.close();
         }
         return Promise.resolve(false);
+    };
+    MenuController.prototype.tempDisable = function (temporarilyDisable) {
+        this._menus.forEach(function (menu) {
+            menu.tempDisable(temporarilyDisable);
+        });
     };
     /**
      * Toggle the menu. If it's closed, it will open, and if opened, it
@@ -45251,15 +45603,15 @@ var MenuController = (function () {
     /**
      * @private
      */
-    MenuController.create = function (type, menuCmp) {
-        return new menuTypes[type](menuCmp);
+    MenuController.create = function (type, menuCmp, platform) {
+        return new menuTypes[type](menuCmp, platform);
     };
     return MenuController;
 }());
 exports.MenuController = MenuController;
 var menuTypes = {};
 
-},{}],336:[function(require,module,exports){
+},{}],341:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -45382,7 +45734,7 @@ var MenuTargetGesture = (function (_super) {
 }(MenuContentGesture));
 exports.MenuTargetGesture = MenuTargetGesture;
 
-},{"../../gestures/slide-edge-gesture":387,"../../util/util":411}],337:[function(require,module,exports){
+},{"../../gestures/slide-edge-gesture":393,"../../util/util":417}],342:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -45417,12 +45769,59 @@ var menu_controller_1 = require('./menu-controller');
  * <button menuToggle>Toggle Menu</button>
  * ```
  *
- * To toggle a certain menu by its id or side, give the `menuToggle`
+ * To toggle a specific menu by its id or side, give the `menuToggle`
  * directive a value.
  *
  * ```html
  * <button menuToggle="right">Toggle Right Menu</button>
  * ```
+ *
+ * If placing the `menuToggle` in a navbar or toolbar, it should be
+ * placed as a child of the `<ion-navbar>` or `<ion-toolbar>`, and not in
+ * the `<ion-buttons>` element:
+ *
+ * ```html
+ * <ion-navbar *navbar>
+ *   <ion-buttons start>
+ *     <button>
+ *       <ion-icon name="contact"></ion-icon>
+ *     </button>
+ *   </ion-buttons>
+ *   <button menuToggle>
+ *     <ion-icon name="menu"></ion-icon>
+ *   </button>
+ *   <ion-title>
+ *     Title
+ *   </ion-title>
+ *   <ion-buttons end>
+ *     <button (click)="doClick()">
+ *       <ion-icon name="more"></ion-icon>
+ *     </button>
+ *   </ion-buttons>
+ * </ion-navbar>
+ * ```
+ *
+ * Similar to `<ion-buttons>`, the `menuToggle` can be positioned using
+ * `start`, `end`, `left`, or `right`:
+ *
+ * ```html
+ * <ion-toolbar>
+ *   <button menuToggle right>
+ *     <ion-icon name="menu"></ion-icon>
+ *   </button>
+ *   <ion-title>
+ *     Title
+ *   </ion-title>
+ *   <ion-buttons end>
+ *     <button (click)="doClick()">
+ *       <ion-icon name="more"></ion-icon>
+ *     </button>
+ *   </ion-buttons>
+ * </ion-toolbar>
+ * ```
+ *
+ * See the [Toolbar API docs](../../toolbar/Toolbar) for more information
+ * on the different positions.
  *
  * @demo /docs/v2/demos/menu/
  * @see {@link /docs/v2/components#menus Menu Component Docs}
@@ -45466,7 +45865,7 @@ var MenuToggle = (function () {
     });
     __decorate([
         core_1.Input(), 
-        __metadata('design:type', Object)
+        __metadata('design:type', String)
     ], MenuToggle.prototype, "menuToggle", void 0);
     __decorate([
         core_1.HostListener('click'), 
@@ -45490,15 +45889,15 @@ var MenuToggle = (function () {
 }());
 exports.MenuToggle = MenuToggle;
 
-},{"../nav/view-controller":349,"../navbar/navbar":350,"./menu-controller":335,"@angular/core":140}],338:[function(require,module,exports){
+},{"../nav/view-controller":354,"../navbar/navbar":355,"./menu-controller":340,"@angular/core":144}],343:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var menu_controller_1 = require('./menu-controller');
 var animation_1 = require('../../animations/animation');
+var menu_controller_1 = require('./menu-controller');
 /**
  * @private
  * Menu Type
@@ -45553,7 +45952,7 @@ exports.MenuType = MenuType;
  */
 var MenuRevealType = (function (_super) {
     __extends(MenuRevealType, _super);
-    function MenuRevealType(menu) {
+    function MenuRevealType(menu, platform) {
         _super.call(this);
         var openedX = (menu.width() * (menu.side === 'right' ? -1 : 1)) + 'px';
         this.ani
@@ -45574,7 +45973,7 @@ menu_controller_1.MenuController.registerType('reveal', MenuRevealType);
  */
 var MenuPushType = (function (_super) {
     __extends(MenuPushType, _super);
-    function MenuPushType(menu) {
+    function MenuPushType(menu, platform) {
         _super.call(this);
         this.ani
             .easing('ease')
@@ -45582,8 +45981,8 @@ var MenuPushType = (function (_super) {
         var contentOpenedX, menuClosedX, menuOpenedX;
         if (menu.side === 'right') {
             contentOpenedX = -menu.width() + 'px';
-            menuOpenedX = (menu._platform.width() - menu.width()) + 'px';
-            menuClosedX = menu._platform.width() + 'px';
+            menuOpenedX = (platform.width() - menu.width()) + 'px';
+            menuClosedX = platform.width() + 'px';
         }
         else {
             contentOpenedX = menu.width() + 'px';
@@ -45608,7 +46007,7 @@ menu_controller_1.MenuController.registerType('push', MenuPushType);
  */
 var MenuOverlayType = (function (_super) {
     __extends(MenuOverlayType, _super);
-    function MenuOverlayType(menu) {
+    function MenuOverlayType(menu, platform) {
         _super.call(this);
         this.ani
             .easing('ease')
@@ -45616,8 +46015,8 @@ var MenuOverlayType = (function (_super) {
         var closedX, openedX;
         if (menu.side === 'right') {
             // right side
-            closedX = menu._platform.width() + 'px';
-            openedX = (menu._platform.width() - menu.width() - 8) + 'px';
+            closedX = platform.width() + 'px';
+            openedX = (platform.width() - menu.width() - 8) + 'px';
         }
         else {
             // left side
@@ -45635,7 +46034,7 @@ var MenuOverlayType = (function (_super) {
 }(MenuType));
 menu_controller_1.MenuController.registerType('overlay', MenuOverlayType);
 
-},{"../../animations/animation":309,"./menu-controller":335}],339:[function(require,module,exports){
+},{"../../animations/animation":313,"./menu-controller":340}],344:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -45651,9 +46050,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 var core_1 = require('@angular/core');
 var ion_1 = require('../ion');
 var config_1 = require('../../config/config');
@@ -45662,6 +46058,7 @@ var keyboard_1 = require('../../util/keyboard');
 var menu_gestures_1 = require('./menu-gestures');
 var menu_controller_1 = require('./menu-controller');
 var util_1 = require('../../util/util');
+var backdrop_1 = require('../backdrop/backdrop');
 /**
  * @name Menu
  * @description
@@ -45756,17 +46153,16 @@ var util_1 = require('../../util/util');
  * `push` for all modes, and then set the type to `overlay` for the `ios` mode.
  *
  * ```ts
- * @App({
- *   templateUrl: 'build/app.html',
- *   config: {
- *     menuType: 'push',
- *     platforms: {
- *      ios: {
- *        menuType: 'overlay',
- *      }
+ * import {ionicBootstrap} from 'ionic-angular';
+ *
+ * ionicBootstrap(MyApp, customProviders, {
+ *   menuType: 'push',
+ *   platforms: {
+ *     ios: {
+ *       menuType: 'overlay',
  *     }
  *   }
- * })
+ * });
  * ```
  *
  *
@@ -45802,13 +46198,12 @@ var util_1 = require('../../util/util');
  * when it is called.
  *
  * ```ts
- * import{Page, MenuController} from 'ionic-angular';
+ * import {Component} from '@angular/core';
+ * import {MenuController} from 'ionic-angular';
  *
- * @Page({...})
+ * @Component({...})
  * export class MyPage {
- *  constructor(private menu: MenuController) {
- *
- *  }
+ *  constructor(private menu: MenuController) {}
  *
  *  openMenu() {
  *    this.menu.open();
@@ -45850,7 +46245,15 @@ var Menu = (function (_super) {
         /**
          * @output {event} When the menu is being dragged open.
          */
-        this.opening = new core_1.EventEmitter();
+        this.ionDrag = new core_1.EventEmitter();
+        /**
+         * @output {event} When the menu has been opened.
+         */
+        this.ionOpen = new core_1.EventEmitter();
+        /**
+         * @output {event} When the menu has been closed.
+         */
+        this.ionClose = new core_1.EventEmitter();
     }
     Object.defineProperty(Menu.prototype, "enabled", {
         /**
@@ -45944,6 +46347,15 @@ var Menu = (function (_super) {
     /**
      * @private
      */
+    Menu.prototype.bdClick = function (ev) {
+        void 0;
+        ev.preventDefault();
+        ev.stopPropagation();
+        this._menuCtrl.close();
+    };
+    /**
+     * @private
+     */
     Menu.prototype._setListeners = function () {
         var self = this;
         if (self._init) {
@@ -45969,7 +46381,7 @@ var Menu = (function (_super) {
      */
     Menu.prototype._getType = function () {
         if (!this._type) {
-            this._type = menu_controller_1.MenuController.create(this.type, this);
+            this._type = menu_controller_1.MenuController.create(this.type, this, this._platform);
             if (this._config.get('animate') === false) {
                 this._type.ani.duration(0);
             }
@@ -45999,10 +46411,10 @@ var Menu = (function (_super) {
      */
     Menu.prototype.swipeStart = function () {
         // user started swiping the menu open/close
-        if (this._isPrevented() || !this._isEnabled || !this._isSwipeEnabled)
-            return;
-        this._before();
-        this._getType().setProgressStart(this.isOpen);
+        if (this._isEnabled && this._isSwipeEnabled && !this._isPrevented()) {
+            this._before();
+            this._getType().setProgressStart(this.isOpen);
+        }
     };
     /**
      * @private
@@ -46012,7 +46424,7 @@ var Menu = (function (_super) {
         if (this._isEnabled && this._isSwipeEnabled) {
             this._prevent();
             this._getType().setProgessStep(stepValue);
-            this.opening.next(stepValue);
+            this.ionDrag.emit(stepValue);
         }
     };
     /**
@@ -46029,9 +46441,6 @@ var Menu = (function (_super) {
             });
         }
     };
-    /**
-     * @private
-     */
     Menu.prototype._before = function () {
         // this places the menu into the correct location before it animates in
         // this css class doesn't actually kick off any animations
@@ -46042,13 +46451,11 @@ var Menu = (function (_super) {
             this._keyboard.close();
         }
     };
-    /**
-     * @private
-     */
     Menu.prototype._after = function (isOpen) {
         // keep opening/closing the menu disabled for a touch more yet
         // only add listeners/css if it's enabled and isOpen
         // and only remove listeners/css if it's not open
+        // emit opened/closed events
         if ((this._isEnabled && isOpen) || !isOpen) {
             this._prevent();
             this.isOpen = isOpen;
@@ -46056,24 +46463,34 @@ var Menu = (function (_super) {
             this._cntEle.removeEventListener('click', this.onContentClick);
             if (isOpen) {
                 this._cntEle.addEventListener('click', this.onContentClick);
+                this.ionOpen.emit(true);
             }
             else {
                 this.getNativeElement().classList.remove('show-menu');
                 this.getBackdropElement().classList.remove('show-backdrop');
+                this.ionClose.emit(true);
             }
         }
     };
     /**
      * @private
      */
+    Menu.prototype.tempDisable = function (temporarilyDisable) {
+        if (temporarilyDisable) {
+            this._prevEnabled = this._isEnabled;
+            this._getType().setProgessStep(0);
+            this.enable(false);
+        }
+        else {
+            this.enable(this._prevEnabled);
+            this._after(false);
+        }
+    };
     Menu.prototype._prevent = function () {
         // used to prevent unwanted opening/closing after swiping open/close
         // or swiping open the menu while pressing down on the MenuToggle
         this._preventTime = Date.now() + 20;
     };
-    /**
-     * @private
-     */
     Menu.prototype._isPrevented = function () {
         return this._preventTime > Date.now();
     };
@@ -46153,6 +46570,10 @@ var Menu = (function (_super) {
         this._cntEle = null;
     };
     __decorate([
+        core_1.ViewChild(backdrop_1.Backdrop), 
+        __metadata('design:type', backdrop_1.Backdrop)
+    ], Menu.prototype, "backdrop", void 0);
+    __decorate([
         core_1.Input(), 
         __metadata('design:type', Object)
     ], Menu.prototype, "content", void 0);
@@ -46187,7 +46608,15 @@ var Menu = (function (_super) {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Menu.prototype, "opening", void 0);
+    ], Menu.prototype, "ionDrag", void 0);
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', core_1.EventEmitter)
+    ], Menu.prototype, "ionOpen", void 0);
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', core_1.EventEmitter)
+    ], Menu.prototype, "ionClose", void 0);
     Menu = __decorate([
         core_1.Component({
             selector: 'ion-menu',
@@ -46195,8 +46624,7 @@ var Menu = (function (_super) {
                 'role': 'navigation'
             },
             template: '<ng-content></ng-content>' +
-                '<div tappable disable-activated class="backdrop"></div>',
-            directives: [core_1.forwardRef(function () { return MenuBackdrop; })],
+                '<ion-backdrop (click)="bdClick($event)" disableScroll="false"></ion-backdrop>',
             changeDetection: core_1.ChangeDetectionStrategy.OnPush,
             encapsulation: core_1.ViewEncapsulation.None,
         }), 
@@ -46205,39 +46633,8 @@ var Menu = (function (_super) {
     return Menu;
 }(ion_1.Ion));
 exports.Menu = Menu;
-/**
- * @private
- */
-var MenuBackdrop = (function () {
-    function MenuBackdrop(_menuCtrl, elementRef) {
-        this._menuCtrl = _menuCtrl;
-        this.elementRef = elementRef;
-        _menuCtrl.backdrop = this;
-    }
-    /**
-     * @private
-     */
-    MenuBackdrop.prototype.clicked = function (ev) {
-        void 0;
-        ev.preventDefault();
-        ev.stopPropagation();
-        this._menuCtrl.close();
-    };
-    MenuBackdrop = __decorate([
-        core_1.Directive({
-            selector: '.backdrop',
-            host: {
-                '(click)': 'clicked($event)',
-            }
-        }),
-        __param(0, core_1.Host()), 
-        __metadata('design:paramtypes', [Menu, core_1.ElementRef])
-    ], MenuBackdrop);
-    return MenuBackdrop;
-}());
-exports.MenuBackdrop = MenuBackdrop;
 
-},{"../../config/config":379,"../../platform/platform":390,"../../util/keyboard":409,"../../util/util":411,"../ion":327,"./menu-controller":335,"./menu-gestures":336,"@angular/core":140}],340:[function(require,module,exports){
+},{"../../config/config":386,"../../platform/platform":396,"../../util/keyboard":415,"../../util/util":417,"../backdrop/backdrop":319,"../ion":332,"./menu-controller":340,"./menu-gestures":341,"@angular/core":144}],345:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -46254,10 +46651,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
-var nav_params_1 = require('../nav/nav-params');
-var view_controller_1 = require('../nav/view-controller');
+var bootstrap_1 = require('../../config/bootstrap');
 var animation_1 = require('../../animations/animation');
+var nav_params_1 = require('../nav/nav-params');
+var util_1 = require('../../util/util');
 var transition_1 = require('../../transitions/transition');
+var view_controller_1 = require('../nav/view-controller');
+var dom_1 = require('../../util/dom');
 /**
  * @name Modal
  * @description
@@ -46286,7 +46686,7 @@ var transition_1 = require('../../transitions/transition');
  * ```ts
  * import {Page, Modal, NavController, NavParams} from 'ionic-angular';
  *
- * @Page(...)
+ * @Component(...)
  * class HomePage {
  *
  *  constructor(nav: NavController) {
@@ -46300,7 +46700,7 @@ var transition_1 = require('../../transitions/transition');
  *
  * }
  *
- * @Page(...)
+ * @Component(...)
  * class Profile {
  *
  *  constructor(params: NavParams) {
@@ -46316,9 +46716,10 @@ var transition_1 = require('../../transitions/transition');
  * modal.
  *
  * ```ts
- * import {Page, Modal, NavController, ViewController} from 'ionic-angular';
+ * import {Component} from '@angular/core';
+ * import {Modal, NavController, ViewController} from 'ionic-angular';
  *
- * @Page(...)
+ * @Component(...)
  * class HomePage {
  *
  *  constructor(nav: NavController) {
@@ -46340,7 +46741,7 @@ var transition_1 = require('../../transitions/transition');
  *
  * }
  *
- * @Page(...)
+ * @Component(...)
  * class Profile {
  *
  *  constructor(viewCtrl: ViewController) {
@@ -46361,8 +46762,9 @@ var Modal = (function (_super) {
     __extends(Modal, _super);
     function Modal(componentType, data) {
         if (data === void 0) { data = {}; }
-        data.componentToPresent = componentType;
-        _super.call(this, ModalComponent, data);
+        data.componentType = componentType;
+        _super.call(this, ModalCmp, data);
+        this.modalViewType = componentType.name;
         this.viewType = 'modal';
         this.isOverlay = true;
     }
@@ -46381,36 +46783,56 @@ var Modal = (function (_super) {
         if (data === void 0) { data = {}; }
         return new Modal(componentType, data);
     };
+    // Override the load method and load our child component
+    Modal.prototype.loaded = function (done) {
+        var _this = this;
+        // grab the instance, and proxy the ngAfterViewInit method
+        var originalNgAfterViewInit = this.instance.ngAfterViewInit;
+        this.instance.ngAfterViewInit = function () {
+            if (originalNgAfterViewInit) {
+                originalNgAfterViewInit();
+            }
+            _this.instance.loadComponent().then(function (componentRef) {
+                _this.setInstance(componentRef.instance);
+                done();
+            });
+        };
+    };
     return Modal;
 }(view_controller_1.ViewController));
 exports.Modal = Modal;
-var ModalComponent = (function () {
-    function ModalComponent(_loader, _navParams, _viewCtrl) {
+var ModalCmp = (function () {
+    function ModalCmp(_loader, _navParams) {
         this._loader = _loader;
         this._navParams = _navParams;
-        this._viewCtrl = _viewCtrl;
     }
-    ModalComponent.prototype.ngAfterViewInit = function () {
-        var _this = this;
-        var component = this._navParams.data.componentToPresent;
-        this._loader.loadNextToLocation(component, this.wrapper).then(function (componentInstance) {
-            _this._viewCtrl.setInstance(componentInstance.instance);
-            // TODO - validate what life cycle events aren't call and possibly call them here if needed
+    ModalCmp.prototype.loadComponent = function () {
+        var componentType = this._navParams.data.componentType;
+        bootstrap_1.addSelector(componentType, 'ion-page');
+        return this._loader.loadNextToLocation(componentType, this.viewport).then(function (componentRef) {
+            return componentRef;
         });
     };
+    ModalCmp.prototype.ngAfterViewInit = function () {
+        // intentionally kept empty
+    };
     __decorate([
-        core_1.ViewChild('wrapper', { read: core_1.ViewContainerRef }), 
+        core_1.ViewChild('viewport', { read: core_1.ViewContainerRef }), 
         __metadata('design:type', core_1.ViewContainerRef)
-    ], ModalComponent.prototype, "wrapper", void 0);
-    ModalComponent = __decorate([
+    ], ModalCmp.prototype, "viewport", void 0);
+    ModalCmp = __decorate([
         core_1.Component({
             selector: 'ion-modal',
-            template: "\n    <div class=\"backdrop\"></div>\n    <div class=\"modal-wrapper\">\n      <div #wrapper></div>\n    </div>\n  "
+            template: '<ion-backdrop disableScroll="false"></ion-backdrop>' +
+                '<div class="modal-wrapper">' +
+                '<div #viewport></div>' +
+                '</div>'
         }), 
-        __metadata('design:paramtypes', [core_1.DynamicComponentLoader, nav_params_1.NavParams, view_controller_1.ViewController])
-    ], ModalComponent);
-    return ModalComponent;
+        __metadata('design:paramtypes', [core_1.DynamicComponentLoader, nav_params_1.NavParams])
+    ], ModalCmp);
+    return ModalCmp;
 }());
+exports.ModalCmp = ModalCmp;
 /**
  * Animations for modals
  */
@@ -46419,17 +46841,18 @@ var ModalSlideIn = (function (_super) {
     function ModalSlideIn(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = enteringView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         backdrop.fromTo('opacity', 0.01, 0.4);
         var wrapper = new animation_1.Animation(ele.querySelector('.modal-wrapper'));
+        var page = ele.querySelector('ion-page');
+        // auto-add page css className created from component JS class name
+        var cssClassName = util_1.pascalCaseToDashCase(enteringView.modalViewType);
+        page.classList.add(cssClassName);
         wrapper.fromTo('translateY', '100%', '0%');
-        this
-            .element(enteringView.pageRef())
-            .easing('cubic-bezier(0.36,0.66,0.04,1)')
-            .duration(400)
-            .before.addClass('show-page')
-            .add(backdrop)
-            .add(wrapper);
+        var DURATION = 400;
+        var EASING = 'cubic-bezier(0.36,0.66,0.04,1)';
+        this.element(enteringView.pageRef()).easing(EASING).duration(DURATION).add(backdrop).add(wrapper);
+        this.element(new core_1.ElementRef(page)).easing(EASING).duration(DURATION).before.addClass('show-page');
         if (enteringView.hasNavbar()) {
             // entering page has a navbar
             var enteringNavBar = new animation_1.Animation(enteringView.navbarRef());
@@ -46445,10 +46868,15 @@ var ModalSlideOut = (function (_super) {
     function ModalSlideOut(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = leavingView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         backdrop.fromTo('opacity', 0.4, 0.0);
-        var wrapper = new animation_1.Animation(ele.querySelector('.modal-wrapper'));
-        wrapper.fromTo('translateY', '0%', '100%');
+        var wrapperEle = ele.querySelector('.modal-wrapper');
+        var wrapperEleRect = wrapperEle.getBoundingClientRect();
+        var wrapper = new animation_1.Animation(wrapperEle);
+        // height of the screen - top of the container tells us how much to scoot it down
+        // so it's off-screen
+        var screenDimensions = dom_1.windowDimensions();
+        wrapper.fromTo('translateY', '0px', (screenDimensions.height - wrapperEleRect.top) + "px");
         this
             .element(leavingView.pageRef())
             .easing('ease-out')
@@ -46464,18 +46892,18 @@ var ModalMDSlideIn = (function (_super) {
     function ModalMDSlideIn(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = enteringView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         backdrop.fromTo('opacity', 0.01, 0.4);
         var wrapper = new animation_1.Animation(ele.querySelector('.modal-wrapper'));
         wrapper.fromTo('translateY', '40px', '0px');
-        this
-            .element(enteringView.pageRef())
-            .easing('cubic-bezier(0.36,0.66,0.04,1)')
-            .duration(280)
-            .fadeIn()
-            .before.addClass('show-page')
-            .add(backdrop)
-            .add(wrapper);
+        var page = ele.querySelector('ion-page');
+        // auto-add page css className created from component JS class name
+        var cssClassName = util_1.pascalCaseToDashCase(enteringView.modalViewType);
+        page.classList.add(cssClassName);
+        var DURATION = 280;
+        var EASING = 'cubic-bezier(0.36,0.66,0.04,1)';
+        this.element(enteringView.pageRef()).easing(EASING).duration(DURATION).fadeIn().add(backdrop).add(wrapper);
+        this.element(new core_1.ElementRef(page)).easing(EASING).duration(DURATION).before.addClass('show-page');
         if (enteringView.hasNavbar()) {
             // entering page has a navbar
             var enteringNavBar = new animation_1.Animation(enteringView.navbarRef());
@@ -46491,7 +46919,7 @@ var ModalMDSlideOut = (function (_super) {
     function ModalMDSlideOut(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = leavingView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         backdrop.fromTo('opacity', 0.4, 0.0);
         var wrapper = new animation_1.Animation(ele.querySelector('.modal-wrapper'));
         wrapper.fromTo('translateY', '0px', '40px');
@@ -46507,7 +46935,7 @@ var ModalMDSlideOut = (function (_super) {
 }(transition_1.Transition));
 transition_1.Transition.register('modal-md-slide-out', ModalMDSlideOut);
 
-},{"../../animations/animation":309,"../../transitions/transition":399,"../nav/nav-params":342,"../nav/view-controller":349,"@angular/core":140}],341:[function(require,module,exports){
+},{"../../animations/animation":313,"../../config/bootstrap":385,"../../transitions/transition":405,"../../util/dom":411,"../../util/util":417,"../nav/nav-params":347,"../nav/view-controller":354,"@angular/core":144}],346:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -46515,9 +46943,11 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var core_1 = require('@angular/core');
+var bootstrap_1 = require('../../config/bootstrap');
 var ion_1 = require('../ion');
-var nav_params_1 = require('./nav-params');
 var util_1 = require('../../util/util');
+var nav_params_1 = require('./nav-params');
+var menu_controller_1 = require('../menu/menu-controller');
 var swipe_back_1 = require('./swipe-back');
 var transition_1 = require('../../transitions/transition');
 var view_controller_1 = require('./view-controller');
@@ -46568,12 +46998,9 @@ var view_controller_1 = require('./view-controller');
  *
  *
  * ## Page creation
- * _For more information on the `@Page` decorator see the [@Page API
- * reference](../../../decorators/Page/)._
- *
  * Pages are created when they are added to the navigation stack.  For methods
  * like [push()](#push), the NavController takes any component class that is
- * decorated with `@Page` as its first argument.  The NavController then
+ * decorated with `@Component` as its first argument.  The NavController then
  * compiles that component, adds it to the app and animates it into view.
  *
  * By default, pages are cached and left in the DOM if they are navigated away
@@ -46584,17 +47011,19 @@ var view_controller_1 = require('./view-controller');
  *
  * ## Lifecycle events
  * Lifecycle events are fired during various stages of navigation.  They can be
- * defined in any `@Page` decorated component class.
+ * defined in any component type which is pushed/popped from a `NavController`.
  *
  * ```ts
- * @Page({
+ * import {Component} from '@angular/core';
+ *
+ * @Component({
  *   template: 'Hello World'
  * })
  * class HelloWorld {
- *   onPageLoaded() {
+ *   ionViewLoaded() {
  *     console.log("I'm alive!");
  *   }
- *   onPageWillLeave() {
+ *   ionViewWillLeave() {
  *     console.log("Looks like I'm about to leave :(");
  *   }
  * }
@@ -46602,13 +47031,13 @@ var view_controller_1 = require('./view-controller');
  *
  *  | Page Event         | Description                                                                                                                                                                                                                                                                       |
  *  |--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
- *  | `onPageLoaded`     | Runs when the page has loaded. This event only happens once per page being created and added to the DOM. If a page leaves but is cached, then this event will not fire again on a subsequent viewing. The `onPageLoaded` event is good place to put your setup code for the page. |
- *  | `onPageWillEnter`  | Runs when the page is about to enter and become the active page.                                                                                                                                                                                                                  |
- *  | `onPageDidEnter`   | Runs when the page has fully entered and is now the active page. This event will fire, whether it was the first load or a cached page.                                                                                                                                            |
- *  | `onPageWillLeave`  | Runs when the page is about to leave and no longer be the active page.                                                                                                                                                                                                            |
- *  | `onPageDidLeave`   | Runs when the page has finished leaving and is no longer the active page.                                                                                                                                                                                                         |
- *  | `onPageWillUnload` | Runs when the page is about to be destroyed and have its elements removed.                                                                                                                                                                                                        |
- *  | `onPageDidUnload`  | Runs after the page has been destroyed and its elements have been removed.
+ *  | `ionViewLoaded`     | Runs when the page has loaded. This event only happens once per page being created and added to the DOM. If a page leaves but is cached, then this event will not fire again on a subsequent viewing. The `ionViewLoaded` event is good place to put your setup code for the page. |
+ *  | `ionViewWillEnter`  | Runs when the page is about to enter and become the active page.                                                                                                                                                                                                                  |
+ *  | `ionViewDidEnter`   | Runs when the page has fully entered and is now the active page. This event will fire, whether it was the first load or a cached page.                                                                                                                                            |
+ *  | `ionViewWillLeave`  | Runs when the page is about to leave and no longer be the active page.                                                                                                                                                                                                            |
+ *  | `ionViewDidLeave`   | Runs when the page has finished leaving and is no longer the active page.                                                                                                                                                                                                         |
+ *  | `ionViewWillUnload` | Runs when the page is about to be destroyed and have its elements removed.                                                                                                                                                                                                        |
+ *  | `ionViewDidUnload`  | Runs after the page has been destroyed and its elements have been removed.
  *
  *
  * ## Nav Transition Promises
@@ -46653,13 +47082,13 @@ var view_controller_1 = require('./view-controller');
  * Some methods on `NavController` allow for customizing the current transition.
  * To do this, we can pass an object with the modified properites.
  *
- * | Property  | Value     | Description                                          |
- * |-----------|-----------|------------------------------------------------------|
- * | animate   | `boolean` | Whether or not the transition should animate         |
- * | animation | `string`  | What kind of animation should be used                |
- * | direction | `string`  | The direction the page should animate                |
- * | duration  | `number`  | The length in milliseconds the animation should take |
- * | easing    | `string`  | The easing for the animation                         |
+ * | Property  | Value     | Description                                                                                                |
+ * |-----------|-----------|------------------------------------------------------------------------------------------------------------|
+ * | animate   | `boolean` | Whether or not the transition should animate.                                                              |
+ * | animation | `string`  | What kind of animation should be used.                                                                     |
+ * | direction | `string`  | The conceptual direction the user is navigating. For example, is the user navigating `forward`, or `back`? |
+ * | duration  | `number`  | The length in milliseconds the animation should take.                                                      |
+ * | easing    | `string`  | The easing for the animation.                                                                              |
  *
  *
  * @see {@link /docs/v2/components#navigation Navigation Component Docs}
@@ -46697,6 +47126,13 @@ var NavController = (function (_super) {
         this.providers = core_1.ReflectiveInjector.resolve([
             core_1.provide(NavController, { useValue: this })
         ]);
+        this.viewDidLoad = new core_1.EventEmitter();
+        this.viewWillEnter = new core_1.EventEmitter();
+        this.viewDidEnter = new core_1.EventEmitter();
+        this.viewWillLeave = new core_1.EventEmitter();
+        this.viewDidLeave = new core_1.EventEmitter();
+        this.viewWillUnload = new core_1.EventEmitter();
+        this.viewDidUnload = new core_1.EventEmitter();
     }
     /**
      * @private
@@ -46726,7 +47162,7 @@ var NavController = (function (_super) {
      *
      *
      *```ts
-     * import {Page, NavController} from 'ionic-angular'
+     * import {NavController} from 'ionic-angular'
      * import {Detail} from '../detail/detail'
      * import {Info} from '../info/info'
      *
@@ -46750,7 +47186,7 @@ var NavController = (function (_super) {
      *
      *
      * ```ts
-     * import {Page, NavController} from 'ionic-angular'
+     * import {NavController} from 'ionic-angular'
      * import {Detail} from '../detail/detail'
      *
      *  export class Home {
@@ -46770,7 +47206,7 @@ var NavController = (function (_super) {
      *
      *
      * ```ts
-     * import {Page, NavController} from 'ionic-angular';
+     * import {NavController} from 'ionic-angular';
      * import {Info} from '../info/info';
      * import {List} from '../list/list';
      * import {Detail} from '../detail/detail';
@@ -46804,16 +47240,6 @@ var NavController = (function (_super) {
         if (util_1.isBlank(opts)) {
             opts = {};
         }
-        // deprecated warning
-        pages.forEach(function (pg) {
-            if (pg['componentType']) {
-                pg.page = pg['componentType'];
-                void 0;
-            }
-            else if (!pg['page']) {
-                void 0;
-            }
-        });
         // remove existing views
         var leavingView = this._remove(0, this._views.length);
         // create view controllers out of the pages and insert the new views
@@ -46904,12 +47330,13 @@ var NavController = (function (_super) {
         return this.insertPages(-1, [{ page: page, params: params }], opts);
     };
     /**
-     * Present is how app display overlays on top of the content, from within the
+     * Present is how an app display overlays on top of the content, from within the
      * root level `NavController`. The `present` method is used by overlays, such
      * as `ActionSheet`, `Alert`, and `Modal`. The main difference between `push`
      * and `present` is that `present` takes a `ViewController` instance, whereas
-     * `push` takes a `Page` component class. Additionally, `present` will place
-     * the overlay in the root NavController's stack.
+     * `push` takes a component class which hasn't been instantiated yet.
+     * Additionally, `present` will place the overlay in the root NavController's
+     * stack.
      *
      * ```ts
      * class MyClass{
@@ -46951,8 +47378,10 @@ var NavController = (function (_super) {
         enteringView.setLeavingOpts({
             keyboardClose: false,
             direction: 'back',
-            animation: enteringView.getTransitionName('back')
+            animation: enteringView.getTransitionName('back'),
+            ev: opts.ev
         });
+        // present() always uses the root nav
         // start the transition
         return rootNav._insertViews(-1, [enteringView], opts);
     };
@@ -47156,6 +47585,9 @@ var NavController = (function (_super) {
      */
     NavController.prototype.popTo = function (view, opts) {
         var startIndex = this.indexOf(view);
+        if (startIndex < 0) {
+            return Promise.reject('View not found to pop to');
+        }
         var activeView = this.getByState(STATE_TRANS_ENTER) ||
             this.getByState(STATE_INIT_ENTER) ||
             this.getActive();
@@ -47182,6 +47614,7 @@ var NavController = (function (_super) {
      * @returns {Promise} Returns a promise which is resolved when the transition has completed.
      */
     NavController.prototype.remove = function (startIndex, removeCount, opts) {
+        var _this = this;
         if (startIndex === void 0) { startIndex = -1; }
         if (removeCount === void 0) { removeCount = 1; }
         if (startIndex === -1) {
@@ -47227,9 +47660,11 @@ var NavController = (function (_super) {
                         if (!parentNav['_tabs']) {
                             // Tabs can be a parent, but it is not a collection of views
                             // only we're looking for an actual NavController w/ stack of views
-                            leavingView.willLeave();
+                            leavingView.fireWillLeave();
+                            this.viewWillLeave.emit(leavingView);
                             return parentNav.pop(opts).then(function (rtnVal) {
-                                leavingView.didLeave();
+                                leavingView.fireDidLeave();
+                                _this.viewDidLeave.emit(leavingView);
                                 return rtnVal;
                             });
                         }
@@ -47316,7 +47751,8 @@ var NavController = (function (_super) {
             // set that it is the init leaving view
             // the first view to be removed, it should init leave
             view.state = STATE_INIT_LEAVE;
-            view.willUnload();
+            view.fireWillUnload();
+            this.viewWillUnload.emit(view);
             // from the index of the leaving view, go backwards and
             // find the first view that is inactive so it can be the entering
             for (var i = this.indexOf(view) - 1; i >= 0; i--) {
@@ -47346,8 +47782,10 @@ var NavController = (function (_super) {
         // remove views that have been set to be removed, but not
         // apart of any transitions that will eventually happen
         this._views.filter(function (v) { return v.state === STATE_REMOVE; }).forEach(function (view) {
-            view.willLeave();
-            view.didLeave();
+            view.fireWillLeave();
+            _this.viewWillLeave.emit(view);
+            view.fireDidLeave();
+            _this.viewDidLeave.emit(view);
             _this._views.splice(_this.indexOf(view), 1);
             view.destroy();
         });
@@ -47375,7 +47813,8 @@ var NavController = (function (_super) {
         if (!enteringView) {
             // if no entering view then create a bogus one
             enteringView = new view_controller_1.ViewController();
-            enteringView.loaded();
+            enteringView.fireLoaded();
+            this.viewDidLoad.emit(enteringView);
         }
         /* Async steps to complete a transition
           1. _render: compile the view and render it in the DOM. Load page if it hasn't loaded already. When done call postRender
@@ -47423,19 +47862,9 @@ var NavController = (function (_super) {
             // DOM WRITE
             this.setTransitioning(true, 500);
             this.loadPage(enteringView, null, opts, function () {
-                if (enteringView.onReady) {
-                    // this entering view needs to wait for it to be ready
-                    // this is used by Tabs to wait for the first page of
-                    // the first selected tab to be loaded
-                    enteringView.onReady(function () {
-                        enteringView.loaded();
-                        _this._postRender(transId, enteringView, leavingView, isAlreadyTransitioning, opts, done);
-                    });
-                }
-                else {
-                    enteringView.loaded();
-                    _this._postRender(transId, enteringView, leavingView, isAlreadyTransitioning, opts, done);
-                }
+                enteringView.fireLoaded();
+                _this.viewDidLoad.emit(enteringView);
+                _this._postRender(transId, enteringView, leavingView, isAlreadyTransitioning, opts, done);
             });
         }
     };
@@ -47486,12 +47915,14 @@ var NavController = (function (_super) {
             if (leavingView.fireOtherLifecycles) {
                 // only fire entering lifecycle if the leaving
                 // view hasn't explicitly set not to
-                enteringView.willEnter();
+                enteringView.fireWillEnter();
+                this.viewWillEnter.emit(enteringView);
             }
             if (enteringView.fireOtherLifecycles) {
                 // only fire leaving lifecycle if the entering
                 // view hasn't explicitly set not to
-                leavingView.willLeave();
+                leavingView.fireWillLeave();
+                this.viewWillLeave.emit(leavingView);
             }
         }
         else {
@@ -47525,7 +47956,8 @@ var NavController = (function (_super) {
                 duration: opts.duration,
                 easing: opts.easing,
                 renderDelay: opts.transitionDelay || _this._trnsDelay,
-                isRTL: _this.config.platform.isRTL()
+                isRTL: _this.config.platform.isRTL(),
+                ev: opts.ev,
             };
             var transAnimation = transition_1.Transition.createTransition(enteringView, leavingView, transitionOpts);
             _this._trans && _this._trans.destroy();
@@ -47577,12 +48009,14 @@ var NavController = (function (_super) {
                 if (leavingView.fireOtherLifecycles) {
                     // only fire entering lifecycle if the leaving
                     // view hasn't explicitly set not to
-                    enteringView.didEnter();
+                    enteringView.fireDidEnter();
+                    _this.viewDidEnter.emit(enteringView);
                 }
                 if (enteringView.fireOtherLifecycles) {
                     // only fire leaving lifecycle if the entering
                     // view hasn't explicitly set not to
-                    leavingView.didLeave();
+                    leavingView.fireDidLeave();
+                    _this.viewDidLeave.emit(leavingView);
                 }
             }
             if (enteringView.state === STATE_INACTIVE) {
@@ -47764,51 +48198,57 @@ var NavController = (function (_super) {
         if (!this._viewport || !view.componentType) {
             return;
         }
+        // add more providers to just this page
         var providers = this.providers.concat(core_1.ReflectiveInjector.resolve([
             core_1.provide(view_controller_1.ViewController, { useValue: view }),
             core_1.provide(nav_params_1.NavParams, { useValue: view.getNavParams() })
         ]));
+        // automatically set "ion-page" selector
+        bootstrap_1.addSelector(view.componentType, 'ion-page');
         // load the page component inside the nav
         this._loader.loadNextToLocation(view.componentType, this._viewport, providers).then(function (component) {
-            // the ElementRef of the actual ion-page created
-            var pageElementRef = component.location;
             // a new ComponentRef has been created
             // set the ComponentRef's instance to its ViewController
             view.setInstance(component.instance);
-            // remember the ChangeDetectorRef for this ViewController
-            view.setChangeDetector(component.changeDetectorRef);
-            // remember the ElementRef to the ion-page elementRef that was just created
-            view.setPageRef(pageElementRef);
-            // auto-add page css className created from component JS class name
-            var cssClassName = util_1.pascalCaseToDashCase(view.componentType['name']);
-            _this._renderer.setElementClass(pageElementRef.nativeElement, cssClassName, true);
-            view.onDestroy(function () {
-                // ensure the element is cleaned up for when the view pool reuses this element
-                _this._renderer.setElementAttribute(pageElementRef.nativeElement, 'class', null);
-                _this._renderer.setElementAttribute(pageElementRef.nativeElement, 'style', null);
-                component.destroy();
-            });
-            if (!navbarContainerRef) {
-                // there was not a navbar container ref already provided
-                // so use the location of the actual navbar template
-                navbarContainerRef = view.getNavbarViewRef();
-            }
-            // find a navbar template if one is in the page
-            var navbarTemplateRef = view.getNavbarTemplateRef();
-            // check if we have both a navbar ViewContainerRef and a template
-            if (navbarContainerRef && navbarTemplateRef) {
-                // let's now create the navbar view
-                var navbarViewRef_1 = navbarContainerRef.createEmbeddedView(navbarTemplateRef);
+            // the component has been loaded, so call the view controller's loaded method to load any dependencies into the dom
+            view.loaded(function () {
+                // the ElementRef of the actual ion-page created
+                var pageElementRef = component.location;
+                // remember the ChangeDetectorRef for this ViewController
+                view.setChangeDetector(component.changeDetectorRef);
+                // remember the ElementRef to the ion-page elementRef that was just created
+                view.setPageRef(pageElementRef);
+                // auto-add page css className created from component JS class name
+                var cssClassName = util_1.pascalCaseToDashCase(view.componentType['name']);
+                _this._renderer.setElementClass(pageElementRef.nativeElement, cssClassName, true);
                 view.onDestroy(function () {
-                    // manually destroy the navbar when the page is destroyed
-                    navbarViewRef_1.destroy();
+                    // ensure the element is cleaned up for when the view pool reuses this element
+                    _this._renderer.setElementAttribute(pageElementRef.nativeElement, 'class', null);
+                    _this._renderer.setElementAttribute(pageElementRef.nativeElement, 'style', null);
+                    component.destroy();
                 });
-            }
-            // options may have had a postLoad method
-            // used mainly by tabs
-            opts.postLoad && opts.postLoad(view);
-            // our job is done here
-            done(view);
+                if (!navbarContainerRef) {
+                    // there was not a navbar container ref already provided
+                    // so use the location of the actual navbar template
+                    navbarContainerRef = view.getNavbarViewRef();
+                }
+                // find a navbar template if one is in the page
+                var navbarTemplateRef = view.getNavbarTemplateRef();
+                // check if we have both a navbar ViewContainerRef and a template
+                if (navbarContainerRef && navbarTemplateRef) {
+                    // let's now create the navbar view
+                    var navbarViewRef_1 = navbarContainerRef.createEmbeddedView(navbarTemplateRef);
+                    view.onDestroy(function () {
+                        // manually destroy the navbar when the page is destroyed
+                        navbarViewRef_1.destroy();
+                    });
+                }
+                // options may have had a postLoad method
+                // used mainly by tabs
+                opts.postLoad && opts.postLoad(view);
+                // our job is done here
+                done(view);
+            });
         });
     };
     /**
@@ -47867,7 +48307,8 @@ var NavController = (function (_super) {
                     edge: 'left',
                     threshold: this._sbThreshold
                 };
-                this._sbGesture = new swipe_back_1.SwipeBackGesture(this.getNativeElement(), opts, this);
+                var menuCtrl = this._app.getAppInjector().get(menu_controller_1.MenuController);
+                this._sbGesture = new swipe_back_1.SwipeBackGesture(this.getNativeElement(), opts, this, menuCtrl);
             }
             if (this.canSwipeBack()) {
                 // it is be possible to swipe back
@@ -48075,7 +48516,7 @@ var INIT_ZINDEX = 100;
 var PORTAL_ZINDEX = 9999;
 var ctrlIds = -1;
 
-},{"../../transitions/transition":399,"../../util/util":411,"../ion":327,"./nav-params":342,"./swipe-back":348,"./view-controller":349,"@angular/core":140}],342:[function(require,module,exports){
+},{"../../config/bootstrap":385,"../../transitions/transition":405,"../../util/util":417,"../ion":332,"../menu/menu-controller":340,"./nav-params":347,"./swipe-back":353,"./view-controller":354,"@angular/core":144}],347:[function(require,module,exports){
 "use strict";
 /**
  * @name NavParams
@@ -48132,7 +48573,7 @@ var NavParams = (function () {
 }());
 exports.NavParams = NavParams;
 
-},{}],343:[function(require,module,exports){
+},{}],348:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -48173,13 +48614,13 @@ var NavPortal = (function (_super) {
         }),
         __param(0, core_1.Optional()),
         __param(1, core_1.Optional()), 
-        __metadata('design:paramtypes', [view_controller_1.ViewController, nav_controller_1.NavController, app_1.IonicApp, config_1.Config, keyboard_1.Keyboard, core_1.ElementRef, core_1.NgZone, core_1.Renderer, core_1.DynamicComponentLoader, core_1.ViewContainerRef])
+        __metadata('design:paramtypes', [view_controller_1.ViewController, nav_controller_1.NavController, app_1.App, config_1.Config, keyboard_1.Keyboard, core_1.ElementRef, core_1.NgZone, core_1.Renderer, core_1.DynamicComponentLoader, core_1.ViewContainerRef])
     ], NavPortal);
     return NavPortal;
 }(nav_controller_1.NavController));
 exports.NavPortal = NavPortal;
 
-},{"../../config/config":379,"../../util/keyboard":409,"../app/app":314,"./nav-controller":341,"./view-controller":349,"@angular/core":140}],344:[function(require,module,exports){
+},{"../../config/config":386,"../../util/keyboard":415,"../app/app":318,"./nav-controller":346,"./view-controller":354,"@angular/core":144}],349:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -48215,7 +48656,7 @@ var nav_registry_1 = require('./nav-registry');
  *
  * ```ts
  * import {LoginPage} from 'login';
- * @Page({
+ * @Component({
  *   template: `<button [navPush]="pushPage" [navParams]="params"></button>`
  * })
  * class MyPage {
@@ -48337,7 +48778,7 @@ var NavPop = (function () {
 }());
 exports.NavPop = NavPop;
 
-},{"./nav-controller":341,"./nav-registry":345,"@angular/core":140}],345:[function(require,module,exports){
+},{"./nav-controller":346,"./nav-registry":350,"@angular/core":144}],350:[function(require,module,exports){
 "use strict";
 /**
  * @private
@@ -48363,7 +48804,7 @@ var NavRegistry = (function () {
 }());
 exports.NavRegistry = NavRegistry;
 
-},{}],346:[function(require,module,exports){
+},{}],351:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -48391,7 +48832,7 @@ var NavRouter = (function () {
 }());
 exports.NavRouter = NavRouter;
 
-},{"@angular/core":140}],347:[function(require,module,exports){
+},{"@angular/core":144}],352:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -48438,15 +48879,18 @@ var view_controller_1 = require('./view-controller');
  *
  * @usage
  * ```ts
- * import {GettingStartedPage} from 'getting-started';
- * @App({
- *   template: `<ion-nav [root]="rootPage"></ion-nav>`
+ * import {Component} from '@angular/core';
+ * import {ionicBootstrap} from 'ionic-angular';
+ * import {GettingStartedPage} from './getting-started';
+ *
+ * @Component({
+ *   template: `<ion-nav [root]="root"></ion-nav>`
  * })
  * class MyApp {
- *   constructor(){
- *     this.rootPage = GettingStartedPage;
- *   }
+ *   root = GettingStartedPage;
  * }
+ *
+ * ionicBootstrap(MyApp);
  * ```
  *
  * ### Back Navigation
@@ -48619,13 +49063,13 @@ var Nav = (function (_super) {
         }),
         __param(0, core_1.Optional()),
         __param(1, core_1.Optional()), 
-        __metadata('design:paramtypes', [view_controller_1.ViewController, nav_controller_1.NavController, app_1.IonicApp, config_1.Config, keyboard_1.Keyboard, core_1.ElementRef, core_1.NgZone, core_1.Renderer, core_1.DynamicComponentLoader])
+        __metadata('design:paramtypes', [view_controller_1.ViewController, nav_controller_1.NavController, app_1.App, config_1.Config, keyboard_1.Keyboard, core_1.ElementRef, core_1.NgZone, core_1.Renderer, core_1.DynamicComponentLoader])
     ], Nav);
     return Nav;
 }(nav_controller_1.NavController));
 exports.Nav = Nav;
 
-},{"../../config/config":379,"../../util/keyboard":409,"../../util/util":411,"../app/app":314,"./nav-controller":341,"./nav-portal":343,"./view-controller":349,"@angular/core":140}],348:[function(require,module,exports){
+},{"../../config/config":386,"../../util/keyboard":415,"../../util/util":417,"../app/app":318,"./nav-controller":346,"./nav-portal":348,"./view-controller":354,"@angular/core":144}],353:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -48636,12 +49080,13 @@ var slide_edge_gesture_1 = require('../../gestures/slide-edge-gesture');
 var util_1 = require('../../util/util');
 var SwipeBackGesture = (function (_super) {
     __extends(SwipeBackGesture, _super);
-    function SwipeBackGesture(element, options, _nav) {
+    function SwipeBackGesture(element, options, _nav, _menuCtrl) {
         _super.call(this, element, util_1.assign({
             direction: 'x',
             maxEdgeStart: 75
         }, options));
         this._nav = _nav;
+        this._menuCtrl = _menuCtrl;
     }
     SwipeBackGesture.prototype.canStart = function (ev) {
         // the gesture swipe angle must be mainly horizontal and the
@@ -48657,9 +49102,10 @@ var SwipeBackGesture = (function (_super) {
         // nerp, not today
         return false;
     };
-    SwipeBackGesture.prototype.onSlideBeforeStart = function () {
+    SwipeBackGesture.prototype.onSlideBeforeStart = function (slideData, ev) {
         void 0;
         this._nav.swipeBackStart();
+        this._menuCtrl.tempDisable(true);
     };
     SwipeBackGesture.prototype.onSlide = function (slide) {
         var stepValue = (slide.distance / slide.max);
@@ -48671,12 +49117,13 @@ var SwipeBackGesture = (function (_super) {
         var currentStepValue = (slide.distance / slide.max);
         void 0;
         this._nav.swipeBackEnd(shouldComplete, currentStepValue);
+        this._menuCtrl.tempDisable(false);
     };
     return SwipeBackGesture;
 }(slide_edge_gesture_1.SlideEdgeGesture));
 exports.SwipeBackGesture = SwipeBackGesture;
 
-},{"../../gestures/slide-edge-gesture":387,"../../util/util":411}],349:[function(require,module,exports){
+},{"../../gestures/slide-edge-gesture":393,"../../util/util":417}],354:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -48696,14 +49143,16 @@ var util_1 = require('../../util/util');
  * Access various features and information about the current view.
  * @usage
  *  ```ts
- *  import {Page, ViewController} from 'ionic-angular';
- *  @Page....
- *  export class MyPage{
- *   constructor(viewCtrl: ViewController){
- *     this.viewCtrl = viewCtrl;
- *   }
- *  }
- *  ```
+ * import {Component} from '@angular/core';
+ * import {ViewController} from 'ionic-angular';
+ *
+ * @Component({...})
+ * export class MyPage{
+ *
+ *   constructor(public viewCtrl: ViewController) {}
+ *
+ * }
+ * ```
  */
 var ViewController = (function () {
     function ViewController(componentType, data) {
@@ -48746,6 +49195,12 @@ var ViewController = (function () {
         this._emitter = new core_1.EventEmitter();
         // passed in data could be NavParams, but all we care about is its data object
         this.data = (data instanceof nav_params_1.NavParams ? data.data : (util_1.isPresent(data) ? data : {}));
+        this.willEnter = new core_1.EventEmitter();
+        this.didEnter = new core_1.EventEmitter();
+        this.willLeave = new core_1.EventEmitter();
+        this.didLeave = new core_1.EventEmitter();
+        this.willUnload = new core_1.EventEmitter();
+        this.didUnload = new core_1.EventEmitter();
     }
     ViewController.prototype.subscribe = function (generatorOrNext) {
         return this._emitter.subscribe(generatorOrNext);
@@ -48759,9 +49214,11 @@ var ViewController = (function () {
     ViewController.prototype.onDismiss = function (callback) {
         this._onDismiss = callback;
     };
-    ViewController.prototype.dismiss = function (data, role) {
+    ViewController.prototype.dismiss = function (data, role, navOptions) {
         var _this = this;
-        return this._nav.remove(this._nav.indexOf(this), 1, this._leavingOpts).then(function () {
+        if (navOptions === void 0) { navOptions = {}; }
+        var options = util_1.merge({}, this._leavingOpts, navOptions);
+        return this._nav.remove(this._nav.indexOf(this), 1, options).then(function () {
             _this._onDismiss && _this._onDismiss(data, role);
             return data;
         });
@@ -48986,14 +49443,14 @@ var ViewController = (function () {
         return this._nbDir;
     };
     /**
-     * You can find out of the current view has a Navbar or not. Be sure to wrap this in an `onPageWillEnter` method in order to make sure the view has rendered fully.
+     * You can find out of the current view has a Navbar or not. Be sure to wrap this in an `ionViewWillEnter` method in order to make sure the view has rendered fully.
      *
      * ```typescript
      * export class Page1 {
      *  constructor(view: ViewController) {
      *    this.view = view
      *  }
-     *  onPageWillEnter(){
+     *  ionViewWillEnter(){
      *    console.log('Do we have a Navbar?', this.view.hasNavbar());
      *  }
      *}
@@ -49054,7 +49511,7 @@ var ViewController = (function () {
      *  constructor(viewCtrl: ViewController){
      *    this.viewCtrl = viewCtrl
      *  }
-     *  onPageWillEnter() {
+     *  ionViewWillEnter() {
      *    this.viewCtrl.setBackButtonText('Previous');
      *  }
      * }
@@ -49070,7 +49527,7 @@ var ViewController = (function () {
         }
     };
     /**
-     * Set if the back button for the current view is visible or not. Be sure to wrap this in `onPageWillEnter` to make sure the has been compleltly rendered.
+     * Set if the back button for the current view is visible or not. Be sure to wrap this in `ionViewWillEnter` to make sure the has been compleltly rendered.
      * @param {boolean} Set if this Page's back button should show or not.
      */
     ViewController.prototype.showBackButton = function (shouldShow) {
@@ -49086,6 +49543,16 @@ var ViewController = (function () {
         return this._loaded;
     };
     /**
+     * The loaded method is used to load any dynamic content/components
+     * into the dom before proceeding with the transition.  If a component needs
+     * dynamic component loading, extending ViewController and overriding
+     * this method is a good option
+     * @param {function} done is a callback that must be called when async loading/actions are completed
+     */
+    ViewController.prototype.loaded = function (done) {
+        done();
+    };
+    /**
      * @private
      * The view has loaded. This event only happens once per view being
      * created. If a view leaves but is cached, then this will not
@@ -49093,47 +49560,51 @@ var ViewController = (function () {
      * to put your setup code for the view; however, it is not the
      * recommended method to use when a view becomes active.
      */
-    ViewController.prototype.loaded = function () {
+    ViewController.prototype.fireLoaded = function () {
         this._loaded = true;
-        ctrlFn(this, 'onPageLoaded');
+        ctrlFn(this, 'Loaded');
     };
     /**
      * @private
      * The view is about to enter and become the active view.
      */
-    ViewController.prototype.willEnter = function () {
+    ViewController.prototype.fireWillEnter = function () {
         if (this._cd) {
             // ensure this has been re-attached to the change detector
             this._cd.reattach();
             // detect changes before we run any user code
             this._cd.detectChanges();
         }
-        ctrlFn(this, 'onPageWillEnter');
+        this.willEnter.emit(null);
+        ctrlFn(this, 'WillEnter');
     };
     /**
      * @private
      * The view has fully entered and is now the active view. This
      * will fire, whether it was the first load or loaded from the cache.
      */
-    ViewController.prototype.didEnter = function () {
+    ViewController.prototype.fireDidEnter = function () {
         var navbar = this.getNavbar();
         navbar && navbar.didEnter();
-        ctrlFn(this, 'onPageDidEnter');
+        this.didEnter.emit(null);
+        ctrlFn(this, 'DidEnter');
     };
     /**
      * @private
      * The view has is about to leave and no longer be the active view.
      */
-    ViewController.prototype.willLeave = function () {
-        ctrlFn(this, 'onPageWillLeave');
+    ViewController.prototype.fireWillLeave = function () {
+        this.willLeave.emit(null);
+        ctrlFn(this, 'WillLeave');
     };
     /**
      * @private
      * The view has finished leaving and is no longer the active view. This
      * will fire, whether it is cached or unloaded.
      */
-    ViewController.prototype.didLeave = function () {
-        ctrlFn(this, 'onPageDidLeave');
+    ViewController.prototype.fireDidLeave = function () {
+        this.didLeave.emit(null);
+        ctrlFn(this, 'DidLeave');
         // when this is not the active page
         // we no longer need to detect changes
         this._cd && this._cd.detach();
@@ -49142,8 +49613,9 @@ var ViewController = (function () {
      * @private
      * The view is about to be destroyed and have its elements removed.
      */
-    ViewController.prototype.willUnload = function () {
-        ctrlFn(this, 'onPageWillUnload');
+    ViewController.prototype.fireWillUnload = function () {
+        this.willUnload.emit(null);
+        ctrlFn(this, 'WillUnload');
     };
     /**
      * @private
@@ -49155,7 +49627,8 @@ var ViewController = (function () {
      * @private
      */
     ViewController.prototype.destroy = function () {
-        ctrlFn(this, 'onPageDidUnload');
+        this.didUnload.emit(null);
+        ctrlFn(this, 'DidUnload');
         for (var i = 0; i < this._destroys.length; i++) {
             this._destroys[i]();
         }
@@ -49170,17 +49643,30 @@ var ViewController = (function () {
 }());
 exports.ViewController = ViewController;
 function ctrlFn(viewCtrl, fnName) {
-    if (viewCtrl.instance && viewCtrl.instance[fnName]) {
-        try {
-            viewCtrl.instance[fnName]();
+    if (viewCtrl.instance) {
+        // deprecated warning: added 2016-06-01, beta.8
+        if (viewCtrl.instance['onPage' + fnName]) {
+            try {
+                void 0;
+                viewCtrl.instance['onPage' + fnName]();
+            }
+            catch (e) {
+                void 0;
+            }
         }
-        catch (e) {
-            void 0;
+        // fire off ionView lifecycle instance method
+        if (viewCtrl.instance['ionView' + fnName]) {
+            try {
+                viewCtrl.instance['ionView' + fnName]();
+            }
+            catch (e) {
+                void 0;
+            }
         }
     }
 }
 
-},{"../../util/util":411,"./nav-params":342,"@angular/core":140}],350:[function(require,module,exports){
+},{"../../util/util":417,"./nav-params":347,"@angular/core":144}],355:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -49403,7 +49889,7 @@ var Navbar = (function (_super) {
             directives: [BackButton, BackButtonText, ToolbarBackground]
         }),
         __param(1, core_1.Optional()), 
-        __metadata('design:paramtypes', [app_1.IonicApp, view_controller_1.ViewController, core_1.ElementRef, config_1.Config, core_1.Renderer])
+        __metadata('design:paramtypes', [app_1.App, view_controller_1.ViewController, core_1.ElementRef, config_1.Config, core_1.Renderer])
     ], Navbar);
     return Navbar;
 }(toolbar_1.ToolbarBase));
@@ -49432,7 +49918,7 @@ var NavbarTemplate = (function () {
 }());
 exports.NavbarTemplate = NavbarTemplate;
 
-},{"../../config/config":379,"../../util/util":411,"../app/app":314,"../ion":327,"../nav/nav-controller":341,"../nav/view-controller":349,"../toolbar/toolbar":374,"@angular/core":140}],351:[function(require,module,exports){
+},{"../../config/config":386,"../../util/util":417,"../app/app":318,"../ion":332,"../nav/nav-controller":346,"../nav/view-controller":354,"../toolbar/toolbar":381,"@angular/core":144}],356:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -49457,9 +49943,9 @@ var Option = (function () {
         this._elementRef = _elementRef;
         this._checked = false;
         /**
-         * @input {any} Event to evaluate when option has changed
+         * @input {any} Event to evaluate when option is selected
          */
-        this.select = new core_1.EventEmitter();
+        this.ionSelect = new core_1.EventEmitter();
     }
     Object.defineProperty(Option.prototype, "checked", {
         /**
@@ -49503,7 +49989,7 @@ var Option = (function () {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Option.prototype, "select", void 0);
+    ], Option.prototype, "ionSelect", void 0);
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Object)
@@ -49522,7 +50008,7 @@ var Option = (function () {
 }());
 exports.Option = Option;
 
-},{"../../util/util":411,"@angular/core":140}],352:[function(require,module,exports){
+},{"../../util/util":417,"@angular/core":144}],357:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -49539,6 +50025,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
+var platform_browser_1 = require('@angular/platform-browser');
 var animation_1 = require('../../animations/animation');
 var transition_1 = require('../../transitions/transition');
 var config_1 = require('../../config/config');
@@ -49561,7 +50048,7 @@ var Picker = (function (_super) {
         _super.call(this, PickerDisplayCmp, opts);
         this.viewType = 'picker';
         this.isOverlay = true;
-        this.change = new core_1.EventEmitter();
+        this.ionChange = new core_1.EventEmitter();
         // by default, pickers should not fire lifecycle events of other views
         // for example, when an picker enters, the current active view should
         // not fire its lifecycle events because it's not conceptually leaving
@@ -49606,7 +50093,7 @@ var Picker = (function (_super) {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Picker.prototype, "change", void 0);
+    ], Picker.prototype, "ionChange", void 0);
     return Picker;
 }(view_controller_1.ViewController));
 exports.Picker = Picker;
@@ -49614,12 +50101,14 @@ exports.Picker = Picker;
  * @private
  */
 var PickerColumnCmp = (function () {
-    function PickerColumnCmp(config) {
+    function PickerColumnCmp(config, _sanitizer) {
+        this._sanitizer = _sanitizer;
         this.y = 0;
         this.pos = [];
         this.msPrv = 0;
         this.startY = null;
-        this.change = new core_1.EventEmitter();
+        this.receivingEvents = false;
+        this.ionChange = new core_1.EventEmitter();
         this.rotateFactor = config.getNumber('pickerRotateFactor', 0);
     }
     PickerColumnCmp.prototype.ngAfterViewInit = function () {
@@ -49642,20 +50131,16 @@ var PickerColumnCmp = (function () {
         // remember where the pointer started from`
         this.startY = dom_1.pointerCoord(ev).y;
         // reset everything
+        this.receivingEvents = true;
         this.velocity = 0;
         this.pos.length = 0;
         this.pos.push(this.startY, Date.now());
-        var minY = this.col.options.length - 1;
+        var minY = (this.col.options.length - 1);
         var maxY = 0;
         for (var i = 0; i < this.col.options.length; i++) {
-            if (this.col.options[i].disabled) {
-                continue;
-            }
-            if (i < minY) {
-                minY = i;
-            }
-            if (i > maxY) {
-                maxY = i;
+            if (!this.col.options[i].disabled) {
+                minY = Math.min(minY, i);
+                maxY = Math.max(maxY, i);
             }
         }
         this.minY = (minY * this.optHeight * -1);
@@ -49664,34 +50149,39 @@ var PickerColumnCmp = (function () {
     PickerColumnCmp.prototype.pointerMove = function (ev) {
         ev.preventDefault();
         ev.stopPropagation();
-        if (this.startY !== null) {
-            if (this.isPrevented(ev)) {
-                return;
-            }
-            var currentY = dom_1.pointerCoord(ev).y;
-            this.pos.push(currentY, Date.now());
-            // update the scroll position relative to pointer start position
-            var y = this.y + (currentY - this.startY);
-            if (y > this.minY) {
-                // scrolling up higher than scroll area
-                y = Math.pow(y, 0.8);
-                this.bounceFrom = y;
-            }
-            else if (y < this.maxY) {
-                // scrolling down below scroll area
-                y += Math.pow(this.maxY - y, 0.9);
-                this.bounceFrom = y;
-            }
-            else {
-                this.bounceFrom = 0;
-            }
-            this.update(y, 0, false, false);
+        if (this.startY === null) {
+            return;
         }
+        if (this.isPrevented(ev)) {
+            return;
+        }
+        var currentY = dom_1.pointerCoord(ev).y;
+        this.pos.push(currentY, Date.now());
+        // update the scroll position relative to pointer start position
+        var y = this.y + (currentY - this.startY);
+        if (y > this.minY) {
+            // scrolling up higher than scroll area
+            y = Math.pow(y, 0.8);
+            this.bounceFrom = y;
+        }
+        else if (y < this.maxY) {
+            // scrolling down below scroll area
+            y += Math.pow(this.maxY - y, 0.9);
+            this.bounceFrom = y;
+        }
+        else {
+            this.bounceFrom = 0;
+        }
+        this.update(y, 0, false, false);
     };
     PickerColumnCmp.prototype.pointerEnd = function (ev) {
         if (this.isPrevented(ev)) {
             return;
         }
+        if (!this.receivingEvents) {
+            return;
+        }
+        this.receivingEvents = false;
         this.velocity = 0;
         if (this.bounceFrom > 0) {
             // bounce back up
@@ -49788,14 +50278,7 @@ var PickerColumnCmp = (function () {
         // ensure we've got a good round number :)
         y = Math.round(y);
         this.col.selectedIndex = Math.max(Math.abs(Math.round(y / this.optHeight)), 0);
-        var colElements = this.colEle.nativeElement.querySelectorAll('.picker-opt');
-        if (colElements.length !== this.col.options.length) {
-            // TODO: temporary until [style.transform] is fixed within ng2
-            void 0;
-            return;
-        }
-        for (var i = 0; i < colElements.length; i++) {
-            var ele = colElements[i];
+        for (var i = 0; i < this.col.options.length; i++) {
             var opt = this.col.options[i];
             var optTop = (i * this.optHeight);
             var optOffset = (optTop + y);
@@ -49814,11 +50297,8 @@ var PickerColumnCmp = (function () {
             else {
                 translateY = optOffset;
             }
-            // TODO: setting by [style.transform]="o.transform" within the template is currently broke
-            ele.style[dom_1.CSS.transform] = "rotateX(" + rotateX + "deg) translate3d(" + translateX + "px," + translateY + "px," + translateZ + "px)";
-            ele.style[dom_1.CSS.transitionDuration] = (duration > 0 ? duration + 'ms' : '');
-            ele.classList[this.col.selectedIndex === i ? 'add' : 'remove']('picker-opt-selected');
-            ele.classList[opt.disabled ? 'add' : 'remove']('picker-opt-disabled');
+            opt._trans = this._sanitizer.bypassSecurityTrustStyle("rotateX(" + rotateX + "deg) translate3d(" + translateX + "px," + translateY + "px," + translateZ + "px)");
+            opt._dur = (duration > 0 ? duration + 'ms' : '');
         }
         if (saveY) {
             this.y = y;
@@ -49832,7 +50312,7 @@ var PickerColumnCmp = (function () {
                 // new selected index has changed from the last index
                 // update the lastIndex and emit that it has changed
                 this.lastIndex = this.col.selectedIndex;
-                this.change.emit(this.col.options[this.col.selectedIndex]);
+                this.ionChange.emit(this.col.options[this.col.selectedIndex]);
             }
         }
     };
@@ -49840,14 +50320,9 @@ var PickerColumnCmp = (function () {
         var min = this.col.options.length - 1;
         var max = 0;
         for (var i = 0; i < this.col.options.length; i++) {
-            var opt = this.col.options[i];
-            if (!opt.disabled) {
-                if (i < min) {
-                    min = i;
-                }
-                if (i > max) {
-                    max = i;
-                }
+            if (!this.col.options[i].disabled) {
+                min = Math.min(min, i);
+                max = Math.max(max, i);
             }
         }
         var selectedIndex = util_1.clamp(min, this.col.selectedIndex, max);
@@ -49857,17 +50332,19 @@ var PickerColumnCmp = (function () {
         }
     };
     PickerColumnCmp.prototype.isPrevented = function (ev) {
+        var now = Date.now();
         if (ev.type.indexOf('touch') > -1) {
             // this is a touch event, so prevent mouse events for a while
-            this.msPrv = Date.now() + 2000;
+            this.msPrv = now + 2000;
         }
-        else if (this.msPrv > Date.now() && ev.type.indexOf('mouse') > -1) {
+        else if (this.msPrv > now && ev.type.indexOf('mouse') > -1) {
             // this is a mouse event, and a touch event already happend recently
             // prevent the calling method from continuing
             ev.preventDefault();
             ev.stopPropagation();
             return true;
         }
+        return false;
     };
     __decorate([
         core_1.ViewChild('colEle'), 
@@ -49880,13 +50357,13 @@ var PickerColumnCmp = (function () {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], PickerColumnCmp.prototype, "change", void 0);
+    ], PickerColumnCmp.prototype, "ionChange", void 0);
     PickerColumnCmp = __decorate([
         core_1.Component({
             selector: '.picker-col',
             template: '<div *ngIf="col.prefix" class="picker-prefix" [style.width]="col.prefixWidth">{{col.prefix}}</div>' +
                 '<div class="picker-opts" #colEle [style.width]="col.optionsWidth">' +
-                '<button *ngFor="let o of col.options; let i=index;" (click)="optClick($event, i)" type="button" category="picker-opt">' +
+                '<button *ngFor="let o of col.options; let i=index" [style.transform]="o._trans" [style.transitionDuration]="o._dur" [class.picker-opt-selected]="col.selectedIndex === i" [class.picker-opt-disabled]="o.disabled" (click)="optClick($event, i)" type="button" category="picker-opt">' +
                 '{{o.text}}' +
                 '</button>' +
                 '</div>' +
@@ -49900,10 +50377,10 @@ var PickerColumnCmp = (function () {
                 '(touchend)': 'pointerEnd($event)',
                 '(mousedown)': 'pointerStart($event)',
                 '(mousemove)': 'pointerMove($event)',
-                '(body:mouseup)': 'pointerEnd($event)',
+                '(body:mouseup)': 'pointerEnd($event)'
             }
         }), 
-        __metadata('design:paramtypes', [config_1.Config])
+        __metadata('design:paramtypes', [config_1.Config, platform_browser_1.DomSanitizationService])
     ], PickerColumnCmp);
     return PickerColumnCmp;
 }());
@@ -49925,7 +50402,7 @@ var PickerDisplayCmp = (function () {
         this.created = Date.now();
         this.lastClick = 0;
     }
-    PickerDisplayCmp.prototype.onPageLoaded = function () {
+    PickerDisplayCmp.prototype.ionViewLoaded = function () {
         // normalize the data
         var data = this.d;
         data.buttons = data.buttons.map(function (button) {
@@ -49974,7 +50451,7 @@ var PickerDisplayCmp = (function () {
     PickerDisplayCmp.prototype._colChange = function (selectedOption) {
         // one of the columns has changed its selected index
         var picker = this._viewCtrl;
-        picker.change.emit(this.getSelected());
+        picker.ionChange.emit(this.getSelected());
     };
     PickerDisplayCmp.prototype._keyUp = function (ev) {
         if (this.isEnabled() && this._viewCtrl.isLast()) {
@@ -49995,7 +50472,7 @@ var PickerDisplayCmp = (function () {
             }
         }
     };
-    PickerDisplayCmp.prototype.onPageDidEnter = function () {
+    PickerDisplayCmp.prototype.ionViewDidEnter = function () {
         var activeElement = document.activeElement;
         if (activeElement) {
             activeElement.blur();
@@ -50064,7 +50541,7 @@ var PickerDisplayCmp = (function () {
     PickerDisplayCmp = __decorate([
         core_1.Component({
             selector: 'ion-picker-cmp',
-            template: '<div (click)="bdClick()" tappable disable-activated class="backdrop" role="presentation"></div>' +
+            template: '<ion-backdrop (click)="bdClick()"></ion-backdrop>' +
                 '<div class="picker-wrapper">' +
                 '<div class="picker-toolbar">' +
                 '<div *ngFor="let b of d.buttons" class="picker-toolbar-button" [ngClass]="b.cssRole">' +
@@ -50075,7 +50552,7 @@ var PickerDisplayCmp = (function () {
                 '</div>' +
                 '<div class="picker-columns">' +
                 '<div class="picker-above-highlight"></div>' +
-                '<div *ngFor="let c of d.columns" [col]="c" class="picker-col"> (change)="_colChange($event)"</div>' +
+                '<div *ngFor="let c of d.columns" [col]="c" class="picker-col" (ionChange)="_colChange($event)"></div>' +
                 '<div class="picker-below-highlight"></div>' +
                 '</div>' +
                 '</div>',
@@ -50097,7 +50574,7 @@ var PickerSlideIn = (function (_super) {
     function PickerSlideIn(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = enteringView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.picker-wrapper'));
         backdrop.fromTo('opacity', 0.01, 0.26);
         wrapper.fromTo('translateY', '100%', '0%');
@@ -50111,7 +50588,7 @@ var PickerSlideOut = (function (_super) {
     function PickerSlideOut(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = leavingView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.picker-wrapper'));
         backdrop.fromTo('opacity', 0.26, 0);
         wrapper.fromTo('translateY', '0%', '100%');
@@ -50124,7 +50601,457 @@ var pickerIds = -1;
 var DECELERATION_FRICTION = 0.97;
 var FRAME_MS = (1000 / 60);
 
-},{"../../animations/animation":309,"../../config/config":379,"../../transitions/transition":399,"../../util/dom":405,"../../util/util":411,"../nav/nav-params":342,"../nav/view-controller":349,"@angular/core":140}],353:[function(require,module,exports){
+},{"../../animations/animation":313,"../../config/config":386,"../../transitions/transition":405,"../../util/dom":411,"../../util/util":417,"../nav/nav-params":347,"../nav/view-controller":354,"@angular/core":144,"@angular/platform-browser":252}],358:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var core_1 = require('@angular/core');
+var core_2 = require('@angular/core');
+var animation_1 = require('../../animations/animation');
+var transition_1 = require('../../transitions/transition');
+var config_1 = require('../../config/config');
+var nav_params_1 = require('../nav/nav-params');
+var util_1 = require('../../util/util');
+var dom_1 = require('../../util/dom');
+var view_controller_1 = require('../nav/view-controller');
+var POPOVER_IOS_BODY_PADDING = 2;
+var POPOVER_MD_BODY_PADDING = 12;
+/**
+ * @name Popover
+ * @description
+ * A Popover is a dialog that appears on top of the current page.
+ * It can be used for anything, but generally it is used for overflow
+ * actions that don't fit in the navigation bar.
+ *
+ * ### Creating
+ * A popover can be created by calling the `create` method. The view
+ * to display in the popover should be passed as the first argument.
+ * Any data to pass to the popover view can optionally be passed in
+ * the second argument. Options for the popover can optionally be
+ * passed in the third argument. See the [create](#create) method
+ * below for all available options.
+ *
+ * ### Presenting
+ * To present a popover, call the `present` method on the [NavController](../../nav/NavController).
+ * The first argument passed to the `present` should be the popover. In order
+ * to position the popover relative to the element clicked, the event needs to be
+ * passed as the second argument. If the event is not passed, the popover will be
+ * positioned in the center of the current view. See the [usage](#usage) section for
+ * an example of passing this event.
+ *
+ * ### Dismissing
+ * To dismiss the popover after creation, call the `dismiss()` method on the
+ * `Popover` instance. The popover can also be dismissed from within the popover's
+ * view by calling the `dismiss()` method on the [ViewController](../../nav/ViewController).
+ * The `onDismiss` function can be called to perform an action after the popover
+ * is dismissed. The popover will dismiss when the backdrop is clicked, but this
+ * can be disabled by setting `enableBackdropDismiss` to `false` in the popover
+ * options.
+ *
+ * > Note that after the component is dismissed, it will not be usable anymore and
+ * another one must be created. This can be avoided by wrapping the creation and
+ * presentation of the component in a reusable function as shown in the [usage](#usage)
+ * section below.
+ *
+ * @usage
+ *
+ * To open a popover on the click of a button, pass `$event` to the method
+ * which creates and presents the popover:
+ *
+ * ```html
+ * <button (click)="presentPopover($event)">
+ *   <ion-icon name="more"></ion-icon>
+ * </button>
+ * ```
+ *
+ * ```ts
+ * @Component({})
+ * class MyPage {
+ *   constructor(private nav: NavController) {}
+ *
+ *   presentPopover(myEvent) {
+ *     let popover = Popover.create(PopoverPage);
+ *     this.nav.present(popover, {
+ *       ev: myEvent
+ *     });
+ *   }
+ * }
+ * ```
+ *
+ * The `PopoverPage` will display inside of the popover, and
+ * can be anything. Below is an example of a page with items
+ * that close the popover on click.
+ *
+ * ```ts
+ * @Component({
+ *   template: `
+ *     <ion-list>
+ *       <ion-list-header>Ionic</ion-list-header>
+ *       <button ion-item (click)="close()">Learn Ionic</button>
+ *       <button ion-item (click)="close()">Documentation</button>
+ *       <button ion-item (click)="close()">Showcase</button>
+ *       <button ion-item (click)="close()">GitHub Repo</button>
+ *     </ion-list>
+ *   `
+ * })
+ * class PopoverPage {
+ *   constructor(private viewCtrl: ViewController) {}
+ *
+ *   close() {
+ *     this.viewCtrl.dismiss();
+ *   }
+ * }
+ * ```
+ *
+ *
+ * @demo /docs/v2/demos/popover/
+ */
+var Popover = (function (_super) {
+    __extends(Popover, _super);
+    function Popover(componentType, data, opts) {
+        if (data === void 0) { data = {}; }
+        if (opts === void 0) { opts = {}; }
+        opts.showBackdrop = util_1.isPresent(opts.showBackdrop) ? !!opts.showBackdrop : true;
+        opts.enableBackdropDismiss = util_1.isPresent(opts.enableBackdropDismiss) ? !!opts.enableBackdropDismiss : true;
+        data.componentType = componentType;
+        data.opts = opts;
+        _super.call(this, PopoverCmp, data);
+        this.viewType = 'popover';
+        this.isOverlay = true;
+        // by default, popovers should not fire lifecycle events of other views
+        // for example, when a popover enters, the current active view should
+        // not fire its lifecycle events because it's not conceptually leaving
+        this.fireOtherLifecycles = false;
+    }
+    /**
+    * @private
+    */
+    Popover.prototype.getTransitionName = function (direction) {
+        var key = (direction === 'back' ? 'popoverLeave' : 'popoverEnter');
+        return this._nav && this._nav.config.get(key);
+    };
+    /**
+     * Create a popover with the following options
+     *
+     * | Option                | Type       | Description                                                                                                      |
+     * |-----------------------|------------|------------------------------------------------------------------------------------------------------------------|
+     * | cssClass              |`string`    | An additional class for custom styles.                                                                           |
+     * | showBackdrop          |`boolean`   | Whether to show the backdrop. Default true.                                                                      |
+     * | enableBackdropDismiss |`boolean`   | Whether the popover should be dismissed by tapping the backdrop. Default true.                                   |
+     *
+     *
+     * @param {object} componentType The Popover
+     * @param {object} data Any data to pass to the Popover view
+     * @param {object} opts Popover options
+     */
+    Popover.create = function (componentType, data, opts) {
+        if (data === void 0) { data = {}; }
+        if (opts === void 0) { opts = {}; }
+        return new Popover(componentType, data, opts);
+    };
+    return Popover;
+}(view_controller_1.ViewController));
+exports.Popover = Popover;
+/**
+* @private
+*/
+var PopoverCmp = (function () {
+    function PopoverCmp(_loader, _elementRef, _renderer, _config, _navParams, _viewCtrl) {
+        this._loader = _loader;
+        this._elementRef = _elementRef;
+        this._renderer = _renderer;
+        this._config = _config;
+        this._navParams = _navParams;
+        this._viewCtrl = _viewCtrl;
+        this.d = _navParams.data.opts;
+        this.created = Date.now();
+        if (this.d.cssClass) {
+            _renderer.setElementClass(_elementRef.nativeElement, this.d.cssClass, true);
+        }
+        this.id = (++popoverIds);
+    }
+    PopoverCmp.prototype.ionViewWillEnter = function () {
+        var _this = this;
+        this._loader.loadNextToLocation(this._navParams.data.componentType, this.viewport).then(function (componentRef) {
+            _this._viewCtrl.setInstance(componentRef.instance);
+            // manually fire ionViewWillEnter() since PopoverCmp's ionViewWillEnter already happened
+            _this._viewCtrl.fireWillEnter();
+        });
+    };
+    PopoverCmp.prototype.ionViewDidEnter = function () {
+        var activeElement = document.activeElement;
+        if (document.activeElement) {
+            activeElement.blur();
+        }
+    };
+    PopoverCmp.prototype.dismiss = function (role) {
+        return this._viewCtrl.dismiss(null, role);
+    };
+    PopoverCmp.prototype.bdTouch = function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+    };
+    PopoverCmp.prototype.bdClick = function () {
+        if (this.isEnabled() && this.d.enableBackdropDismiss) {
+            this.dismiss('backdrop');
+        }
+    };
+    PopoverCmp.prototype.isEnabled = function () {
+        var tm = this._config.getNumber('overlayCreatedDiff', 750);
+        return (this.created + tm < Date.now());
+    };
+    __decorate([
+        core_1.ViewChild('viewport', { read: core_1.ViewContainerRef }), 
+        __metadata('design:type', core_1.ViewContainerRef)
+    ], PopoverCmp.prototype, "viewport", void 0);
+    PopoverCmp = __decorate([
+        core_1.Component({
+            selector: 'ion-popover',
+            template: '<ion-backdrop (click)="bdClick($event)" [class.hide-backdrop]="!d.showBackdrop"></ion-backdrop>' +
+                '<div class="popover-wrapper">' +
+                '<div class="popover-arrow"></div>' +
+                '<div class="popover-content">' +
+                '<div class="popover-viewport">' +
+                '<div #viewport></div>' +
+                '</div>' +
+                '</div>' +
+                '</div>'
+        }), 
+        __metadata('design:paramtypes', [core_1.DynamicComponentLoader, core_2.ElementRef, core_2.Renderer, config_1.Config, nav_params_1.NavParams, view_controller_1.ViewController])
+    ], PopoverCmp);
+    return PopoverCmp;
+}());
+/**
+ * Animations for popover
+ */
+var PopoverTransition = (function (_super) {
+    __extends(PopoverTransition, _super);
+    function PopoverTransition(opts) {
+        _super.call(this, opts);
+    }
+    PopoverTransition.prototype.mdPositionView = function (nativeEle, ev) {
+        var originY = 'top';
+        var originX = 'left';
+        var popoverWrapperEle = nativeEle.querySelector('.popover-wrapper');
+        // Popover content width and height
+        var popoverEle = nativeEle.querySelector('.popover-content');
+        var popoverDim = popoverEle.getBoundingClientRect();
+        var popoverWidth = popoverDim.width;
+        var popoverHeight = popoverDim.height;
+        // Window body width and height
+        var bodyWidth = window.innerWidth;
+        var bodyHeight = window.innerHeight;
+        // If ev was passed, use that for target element
+        var targetDim = ev && ev.target && ev.target.getBoundingClientRect();
+        var targetTop = targetDim && targetDim.top || (bodyHeight / 2) - (popoverHeight / 2);
+        var targetLeft = targetDim && targetDim.left || bodyWidth / 2 - (popoverWidth / 2);
+        var targetWidth = targetDim && targetDim.width || 0;
+        var targetHeight = targetDim && targetDim.height || 0;
+        var popoverCSS = {
+            top: targetTop,
+            left: targetLeft
+        };
+        // If the popover left is less than the padding it is off screen
+        // to the left so adjust it, else if the width of the popover
+        // exceeds the body width it is off screen to the right so adjust
+        if (popoverCSS.left < POPOVER_MD_BODY_PADDING) {
+            popoverCSS.left = POPOVER_MD_BODY_PADDING;
+        }
+        else if (popoverWidth + POPOVER_MD_BODY_PADDING + popoverCSS.left > bodyWidth) {
+            popoverCSS.left = bodyWidth - popoverWidth - POPOVER_MD_BODY_PADDING;
+            originX = 'right';
+        }
+        // If the popover when popped down stretches past bottom of screen,
+        // make it pop up if there's room above
+        if (targetTop + targetHeight + popoverHeight > bodyHeight && targetTop - popoverHeight > 0) {
+            popoverCSS.top = targetTop - popoverHeight;
+            nativeEle.className = nativeEle.className + ' popover-bottom';
+            originY = 'bottom';
+        }
+        else if (targetTop + targetHeight + popoverHeight > bodyHeight) {
+            popoverEle.style.bottom = POPOVER_MD_BODY_PADDING + 'px';
+        }
+        popoverEle.style.top = popoverCSS.top + 'px';
+        popoverEle.style.left = popoverCSS.left + 'px';
+        popoverEle.style[dom_1.CSS.transformOrigin] = originY + ' ' + originX;
+        // Since the transition starts before styling is done we
+        // want to wait for the styles to apply before showing the wrapper
+        popoverWrapperEle.style.opacity = '1';
+    };
+    PopoverTransition.prototype.iosPositionView = function (nativeEle, ev) {
+        var originY = 'top';
+        var originX = 'left';
+        var popoverWrapperEle = nativeEle.querySelector('.popover-wrapper');
+        // Popover content width and height
+        var popoverEle = nativeEle.querySelector('.popover-content');
+        var popoverDim = popoverEle.getBoundingClientRect();
+        var popoverWidth = popoverDim.width;
+        var popoverHeight = popoverDim.height;
+        // Window body width and height
+        var bodyWidth = window.innerWidth;
+        var bodyHeight = window.innerHeight;
+        // If ev was passed, use that for target element
+        var targetDim = ev && ev.target && ev.target.getBoundingClientRect();
+        var targetTop = targetDim && targetDim.top || (bodyHeight / 2) - (popoverHeight / 2);
+        var targetLeft = targetDim && targetDim.left || bodyWidth / 2;
+        var targetWidth = targetDim && targetDim.width || 0;
+        var targetHeight = targetDim && targetDim.height || 0;
+        // The arrow that shows above the popover on iOS
+        var arrowEle = nativeEle.querySelector('.popover-arrow');
+        var arrowDim = arrowEle.getBoundingClientRect();
+        var arrowWidth = arrowDim.width;
+        var arrowHeight = arrowDim.height;
+        var arrowCSS = {
+            top: targetTop + targetHeight,
+            left: targetLeft + (targetWidth / 2) - (arrowWidth / 2)
+        };
+        var popoverCSS = {
+            top: targetTop + targetHeight + (arrowHeight - 1),
+            left: targetLeft + (targetWidth / 2) - (popoverWidth / 2)
+        };
+        // If the popover left is less than the padding it is off screen
+        // to the left so adjust it, else if the width of the popover
+        // exceeds the body width it is off screen to the right so adjust
+        if (popoverCSS.left < POPOVER_IOS_BODY_PADDING) {
+            popoverCSS.left = POPOVER_IOS_BODY_PADDING;
+        }
+        else if (popoverWidth + POPOVER_IOS_BODY_PADDING + popoverCSS.left > bodyWidth) {
+            popoverCSS.left = bodyWidth - popoverWidth - POPOVER_IOS_BODY_PADDING;
+            originX = 'right';
+        }
+        // If the popover when popped down stretches past bottom of screen,
+        // make it pop up if there's room above
+        if (targetTop + targetHeight + popoverHeight > bodyHeight && targetTop - popoverHeight > 0) {
+            arrowCSS.top = targetTop - (arrowHeight + 1);
+            popoverCSS.top = targetTop - popoverHeight - (arrowHeight - 1);
+            nativeEle.className = nativeEle.className + ' popover-bottom';
+            originY = 'bottom';
+        }
+        else if (targetTop + targetHeight + popoverHeight > bodyHeight) {
+            popoverEle.style.bottom = POPOVER_IOS_BODY_PADDING + '%';
+        }
+        arrowEle.style.top = arrowCSS.top + 'px';
+        arrowEle.style.left = arrowCSS.left + 'px';
+        popoverEle.style.top = popoverCSS.top + 'px';
+        popoverEle.style.left = popoverCSS.left + 'px';
+        popoverEle.style[dom_1.CSS.transformOrigin] = originY + ' ' + originX;
+        // Since the transition starts before styling is done we
+        // want to wait for the styles to apply before showing the wrapper
+        popoverWrapperEle.style.opacity = '1';
+    };
+    return PopoverTransition;
+}(transition_1.Transition));
+var PopoverPopIn = (function (_super) {
+    __extends(PopoverPopIn, _super);
+    function PopoverPopIn(enteringView, leavingView, opts) {
+        _super.call(this, opts);
+        this.enteringView = enteringView;
+        this.leavingView = leavingView;
+        this.opts = opts;
+        var ele = enteringView.pageRef().nativeElement;
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
+        var wrapper = new animation_1.Animation(ele.querySelector('.popover-wrapper'));
+        wrapper.fromTo('opacity', '0.01', '1');
+        backdrop.fromTo('opacity', '0.01', '0.08');
+        this
+            .easing('ease')
+            .duration(100)
+            .add(backdrop)
+            .add(wrapper);
+    }
+    PopoverPopIn.prototype.play = function () {
+        var _this = this;
+        dom_1.nativeRaf(function () {
+            _this.iosPositionView(_this.enteringView.pageRef().nativeElement, _this.opts.ev);
+            _super.prototype.play.call(_this);
+        });
+    };
+    return PopoverPopIn;
+}(PopoverTransition));
+transition_1.Transition.register('popover-pop-in', PopoverPopIn);
+var PopoverPopOut = (function (_super) {
+    __extends(PopoverPopOut, _super);
+    function PopoverPopOut(enteringView, leavingView, opts) {
+        _super.call(this, opts);
+        this.enteringView = enteringView;
+        this.leavingView = leavingView;
+        this.opts = opts;
+        var ele = leavingView.pageRef().nativeElement;
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
+        var wrapper = new animation_1.Animation(ele.querySelector('.popover-wrapper'));
+        wrapper.fromTo('opacity', '1', '0');
+        backdrop.fromTo('opacity', '0.08', '0');
+        this
+            .easing('ease')
+            .duration(500)
+            .add(backdrop)
+            .add(wrapper);
+    }
+    return PopoverPopOut;
+}(PopoverTransition));
+transition_1.Transition.register('popover-pop-out', PopoverPopOut);
+var PopoverMdPopIn = (function (_super) {
+    __extends(PopoverMdPopIn, _super);
+    function PopoverMdPopIn(enteringView, leavingView, opts) {
+        _super.call(this, opts);
+        this.enteringView = enteringView;
+        this.leavingView = leavingView;
+        this.opts = opts;
+        var ele = enteringView.pageRef().nativeElement;
+        var content = new animation_1.Animation(ele.querySelector('.popover-content'));
+        var viewport = new animation_1.Animation(ele.querySelector('.popover-viewport'));
+        content.fromTo('scale', '0.001', '1');
+        viewport.fromTo('opacity', '0', '1');
+        this
+            .easing('cubic-bezier(0.36,0.66,0.04,1)')
+            .duration(300)
+            .add(content)
+            .add(viewport);
+    }
+    PopoverMdPopIn.prototype.play = function () {
+        var _this = this;
+        dom_1.nativeRaf(function () {
+            _this.mdPositionView(_this.enteringView.pageRef().nativeElement, _this.opts.ev);
+            _super.prototype.play.call(_this);
+        });
+    };
+    return PopoverMdPopIn;
+}(PopoverTransition));
+transition_1.Transition.register('popover-md-pop-in', PopoverMdPopIn);
+var PopoverMdPopOut = (function (_super) {
+    __extends(PopoverMdPopOut, _super);
+    function PopoverMdPopOut(enteringView, leavingView, opts) {
+        _super.call(this, opts);
+        this.enteringView = enteringView;
+        this.leavingView = leavingView;
+        this.opts = opts;
+        var ele = leavingView.pageRef().nativeElement;
+        var wrapper = new animation_1.Animation(ele.querySelector('.popover-wrapper'));
+        wrapper.fromTo('opacity', '1', '0');
+        this
+            .easing('ease')
+            .duration(500)
+            .fadeIn()
+            .add(wrapper);
+    }
+    return PopoverMdPopOut;
+}(PopoverTransition));
+transition_1.Transition.register('popover-md-pop-out', PopoverMdPopOut);
+var popoverIds = -1;
+
+},{"../../animations/animation":313,"../../config/config":386,"../../transitions/transition":405,"../../util/dom":411,"../../util/util":417,"../nav/nav-params":347,"../nav/view-controller":354,"@angular/core":144}],359:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -50189,7 +51116,7 @@ var RadioButton = (function () {
         /**
          * @output {any} expression to be evaluated when selected
          */
-        this.select = new core_1.EventEmitter();
+        this.ionSelect = new core_1.EventEmitter();
         _form.register(this);
         if (_group) {
             // register with the radiogroup
@@ -50255,7 +51182,7 @@ var RadioButton = (function () {
         ev.preventDefault();
         ev.stopPropagation();
         this.checked = true;
-        this.select.emit(this.value);
+        this.ionSelect.emit(this.value);
     };
     /**
      * @private
@@ -50275,7 +51202,7 @@ var RadioButton = (function () {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], RadioButton.prototype, "select", void 0);
+    ], RadioButton.prototype, "ionSelect", void 0);
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Object)
@@ -50291,7 +51218,7 @@ var RadioButton = (function () {
     __decorate([
         core_1.HostListener('click', ['$event']), 
         __metadata('design:type', Function), 
-        __metadata('design:paramtypes', [Object]), 
+        __metadata('design:paramtypes', [UIEvent]), 
         __metadata('design:returntype', void 0)
     ], RadioButton.prototype, "_click", null);
     RadioButton = __decorate([
@@ -50322,7 +51249,7 @@ var RadioButton = (function () {
 }());
 exports.RadioButton = RadioButton;
 
-},{"../../util/form":408,"../../util/util":411,"../item/item":330,"./radio-group":354,"@angular/core":140}],354:[function(require,module,exports){
+},{"../../util/form":414,"../../util/util":417,"../item/item":335,"./radio-group":360,"@angular/core":144}],360:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -50399,7 +51326,7 @@ var RadioGroup = (function () {
         /**
          * @output {any} expression to be evaluated when selection has been changed
          */
-        this.change = new core_1.EventEmitter();
+        this.ionChange = new core_1.EventEmitter();
         this.id = ++radioGroupIds;
     }
     /**
@@ -50411,7 +51338,7 @@ var RadioGroup = (function () {
         if (this._init) {
             this._update();
             this.onTouched();
-            this.change.emit(val);
+            this.ionChange.emit(val);
         }
         this._init = true;
     };
@@ -50437,7 +51364,7 @@ var RadioGroup = (function () {
             _this.value = val;
             _this._update();
             _this.onTouched();
-            _this.change.emit(val);
+            _this.ionChange.emit(val);
         };
     };
     /**
@@ -50473,7 +51400,7 @@ var RadioGroup = (function () {
         var _this = this;
         this._btns.push(button);
         // listen for radiobutton select events
-        button.select.subscribe(function (val) {
+        button.ionSelect.subscribe(function (val) {
             // this radiobutton has been selected
             _this.onChange(val);
         });
@@ -50515,7 +51442,7 @@ var RadioGroup = (function () {
         this.value = val;
         this._update();
         this.onTouched();
-        this.change.emit(val);
+        this.ionChange.emit(val);
     };
     /**
      * @private
@@ -50524,7 +51451,7 @@ var RadioGroup = (function () {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], RadioGroup.prototype, "change", void 0);
+    ], RadioGroup.prototype, "ionChange", void 0);
     __decorate([
         core_1.ContentChild(list_1.ListHeader), 
         __metadata('design:type', Object), 
@@ -50546,7 +51473,701 @@ var RadioGroup = (function () {
 exports.RadioGroup = RadioGroup;
 var radioGroupIds = -1;
 
-},{"../../util/util":411,"../list/list":332,"@angular/common":8,"@angular/core":140}],355:[function(require,module,exports){
+},{"../../util/util":417,"../list/list":337,"@angular/common":12,"@angular/core":144}],361:[function(require,module,exports){
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var core_1 = require('@angular/core');
+var common_1 = require('@angular/common');
+var form_1 = require('../../util/form');
+var util_1 = require('../../util/util');
+var item_1 = require('../item/item');
+var dom_1 = require('../../util/dom');
+var RANGE_VALUE_ACCESSOR = new core_1.Provider(common_1.NG_VALUE_ACCESSOR, { useExisting: core_1.forwardRef(function () { return Range; }), multi: true });
+/**
+ * @private
+ */
+var RangeKnob = (function () {
+    function RangeKnob(range) {
+        this.range = range;
+    }
+    Object.defineProperty(RangeKnob.prototype, "ratio", {
+        get: function () {
+            return this._ratio;
+        },
+        set: function (ratio) {
+            this._ratio = util_1.clamp(0, ratio, 1);
+            this._val = this.range.ratioToValue(this._ratio);
+            if (this.range.snaps) {
+                this._ratio = this.range.valueToRatio(this._val);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RangeKnob.prototype, "value", {
+        get: function () {
+            return this._val;
+        },
+        set: function (val) {
+            if (util_1.isString(val)) {
+                val = Math.round(val);
+            }
+            if (util_1.isNumber(val) && !isNaN(val)) {
+                this._ratio = this.range.valueToRatio(val);
+                this._val = this.range.ratioToValue(this._ratio);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    RangeKnob.prototype.position = function () {
+        this._x = this._ratio * 100 + "%";
+    };
+    RangeKnob.prototype.ngOnInit = function () {
+        if (util_1.isPresent(this.range.value)) {
+            // we already have a value
+            if (this.range.dualKnobs) {
+                // we have a value and there are two knobs
+                if (this.upper) {
+                    // this is the upper knob
+                    this.value = this.range.value.upper;
+                }
+                else {
+                    // this is the lower knob
+                    this.value = this.range.value.lower;
+                }
+            }
+            else {
+                // we have a value and there is only one knob
+                this.value = this.range.value;
+            }
+        }
+        else {
+            // we do not have a value so set defaults
+            this.ratio = ((this.range.dualKnobs && this.upper) ? 1 : 0);
+        }
+        this.position();
+    };
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Boolean)
+    ], RangeKnob.prototype, "upper", void 0);
+    RangeKnob = __decorate([
+        core_1.Component({
+            selector: '.range-knob-handle',
+            template: '<div class="range-pin" *ngIf="range.pin">{{_val}}</div>' +
+                '<div class="range-knob"></div>',
+            host: {
+                '[class.range-knob-pressed]': 'pressed',
+                '[class.range-knob-min]': '_val===range.min',
+                '[class.range-knob-max]': '_val===range.max',
+                '[style.left]': '_x',
+                '[style.top]': '_y',
+                '[style.transform]': '_trns',
+                '[attr.aria-valuenow]': '_val',
+                '[attr.aria-valuemin]': 'range.min',
+                '[attr.aria-valuemax]': 'range.max',
+                'role': 'slider',
+                'tabindex': '0'
+            }
+        }),
+        __param(0, core_1.Inject(core_1.forwardRef(function () { return Range; }))), 
+        __metadata('design:paramtypes', [Range])
+    ], RangeKnob);
+    return RangeKnob;
+}());
+exports.RangeKnob = RangeKnob;
+/**
+ * @name Range
+ * @description
+ * The Range slider lets users select from a range of values by moving
+ * the slider knob. It can accept dual knobs, but by default one knob
+ * controls the value of the range.
+ *
+ * ### Range Labels
+ * Labels can be placed on either side of the range by adding the
+ * `range-left` or `range-right` property to the element. The element
+ * doesn't have to be an `ion-label`, it can be added to any element
+ * to place it to the left or right of the range. See [usage](#usage)
+ * below for examples.
+ *
+ *
+ * ### Minimum and Maximum Values
+ * Minimum and maximum values can be passed to the range through the `min`
+ * and `max` properties, respectively. By default, the range sets the `min`
+ * to `0` and the `max` to `100`.
+ *
+ *
+ * ### Steps and Snaps
+ * The `step` property specifies the value granularity of the range's value.
+ * It can be useful to set the `step` when the value isn't in increments of `1`.
+ * Setting the `step` property will show tick marks on the range for each step.
+ * The `snaps` property can be set to automatically move the knob to the nearest
+ * tick mark based on the step property value.
+ *
+ *
+ * ### Dual Knobs
+ * Setting the `dualKnobs` property to `true` on the range component will
+ * enable two knobs on the range. If the range has two knobs, the value will
+ * be an object containing two properties: `lower` and `upper`.
+ *
+ *
+ * @usage
+ * ```html
+ * <ion-list>
+ *   <ion-item>
+ *     <ion-range [(ngModel)]="singleValue" danger pin="true"></ion-range>
+ *   </ion-item>
+ *
+ *   <ion-item>
+ *     <ion-range min="-200" max="200" [(ngModel)]="saturation" secondary>
+ *       <ion-label range-left>-200</ion-label>
+ *       <ion-label range-right>200</ion-label>
+ *     </ion-range>
+ *   </ion-item>
+ *
+ *  <ion-item>
+ *    <ion-range min="20" max="80" step="2" [(ngModel)]="brightness">
+ *      <ion-icon small range-left name="sunny"></ion-icon>
+ *      <ion-icon range-right name="sunny"></ion-icon>
+ *    </ion-range>
+ *  </ion-item>
+ *
+ *   <ion-item>
+ *     <ion-label>step=100, snaps, {{singleValue4}}</ion-label>
+ *     <ion-range min="1000" max="2000" step="100" snaps="true" secondary [(ngModel)]="singleValue4"></ion-range>
+ *   </ion-item>
+ *
+ *   <ion-item>
+ *     <ion-label>dual, step=3, snaps, {{dualValue2 | json}}</ion-label>
+ *     <ion-range dualKnobs="true" [(ngModel)]="dualValue2" min="21" max="72" step="3" snaps="true"></ion-range>
+ *   </ion-item>
+ * </ion-list>
+ * ```
+ *
+ *
+ * @demo /docs/v2/demos/range/
+ */
+var Range = (function () {
+    function Range(_form, _item, _renderer) {
+        this._form = _form;
+        this._item = _item;
+        this._renderer = _renderer;
+        this._dual = false;
+        this._disabled = false;
+        this._start = null;
+        this._min = 0;
+        this._max = 100;
+        this._step = 1;
+        this._snaps = false;
+        this._removes = [];
+        /**
+         * @output {Range} Expression to evaluate when the range value changes.
+         */
+        this.ionChange = new core_1.EventEmitter();
+        _form.register(this);
+        if (_item) {
+            this.id = 'rng-' + _item.registerInput('range');
+            this._labelId = 'lbl-' + _item.id;
+            _item.setCssClass('item-range', true);
+        }
+    }
+    Object.defineProperty(Range.prototype, "min", {
+        /**
+         * @input {number} Minimum integer value of the range. Defaults to `0`.
+         */
+        get: function () {
+            return this._min;
+        },
+        set: function (val) {
+            val = Math.round(val);
+            if (!isNaN(val)) {
+                this._min = val;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Range.prototype, "max", {
+        /**
+         * @input {number} Maximum integer value of the range. Defaults to `100`.
+         */
+        get: function () {
+            return this._max;
+        },
+        set: function (val) {
+            val = Math.round(val);
+            if (!isNaN(val)) {
+                this._max = val;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Range.prototype, "step", {
+        /**
+         * @input {number} Specifies the value granularity. Defaults to `1`.
+         */
+        get: function () {
+            return this._step;
+        },
+        set: function (val) {
+            val = Math.round(val);
+            if (!isNaN(val) && val > 0) {
+                this._step = val;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Range.prototype, "snaps", {
+        /**
+         * @input {number} If true, the knob snaps to tick marks evenly spaced based on the step property value. Defaults to `false`.
+         */
+        get: function () {
+            return this._snaps;
+        },
+        set: function (val) {
+            this._snaps = util_1.isTrueProperty(val);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Range.prototype, "pin", {
+        /**
+         * @input {number} If true, a pin with integer value is shown when the knob is pressed. Defaults to `false`.
+         */
+        get: function () {
+            return this._pin;
+        },
+        set: function (val) {
+            this._pin = util_1.isTrueProperty(val);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Range.prototype, "dualKnobs", {
+        /**
+         * @input {boolean} Show two knobs. Defaults to `false`.
+         */
+        get: function () {
+            return this._dual;
+        },
+        set: function (val) {
+            this._dual = util_1.isTrueProperty(val);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * @private
+     */
+    Range.prototype.ngAfterViewInit = function () {
+        var barL = '';
+        var barR = '';
+        var firstRatio = this._knobs.first.ratio;
+        if (this._dual) {
+            var lastRatio = this._knobs.last.ratio;
+            barL = (Math.min(firstRatio, lastRatio) * 100) + "%";
+            barR = (100 - (Math.max(firstRatio, lastRatio) * 100)) + "%";
+        }
+        else {
+            barR = (100 - (firstRatio * 100)) + "%";
+        }
+        this._renderer.setElementStyle(this._bar.nativeElement, 'left', barL);
+        this._renderer.setElementStyle(this._bar.nativeElement, 'right', barR);
+        // add touchstart/mousedown listeners
+        this._renderer.listen(this._slider.nativeElement, 'touchstart', this.pointerDown.bind(this));
+        this._mouseRemove = this._renderer.listen(this._slider.nativeElement, 'mousedown', this.pointerDown.bind(this));
+        this.createTicks();
+    };
+    /**
+     * @private
+     */
+    Range.prototype.pointerDown = function (ev) {
+        void 0;
+        // prevent default so scrolling does not happen
+        ev.preventDefault();
+        ev.stopPropagation();
+        if (ev.type === 'touchstart') {
+            // if this was a touchstart, then let's remove the mousedown
+            this._mouseRemove && this._mouseRemove();
+        }
+        // get the start coordinates
+        this._start = dom_1.pointerCoord(ev);
+        // get the full dimensions of the slider element
+        var rect = this._rect = this._slider.nativeElement.getBoundingClientRect();
+        // figure out the offset
+        // the start of the pointer could actually
+        // have been left or right of the slider bar
+        if (this._start.x < rect.left) {
+            rect.xOffset = (this._start.x - rect.left);
+        }
+        else if (this._start.x > rect.right) {
+            rect.xOffset = (this._start.x - rect.right);
+        }
+        else {
+            rect.xOffset = 0;
+        }
+        // figure out which knob we're interacting with
+        this.setActiveKnob(this._start, rect);
+        // update the ratio for the active knob
+        this.updateKnob(this._start, rect);
+        // ensure past listeners have been removed
+        this.clearListeners();
+        // update the active knob's position
+        this._active.position();
+        this._pressed = this._active.pressed = true;
+        // add a move listener depending on touch/mouse
+        var renderer = this._renderer;
+        var removes = this._removes;
+        if (ev.type === 'touchstart') {
+            removes.push(renderer.listen(this._slider.nativeElement, 'touchmove', this.pointerMove.bind(this)));
+            removes.push(renderer.listen(this._slider.nativeElement, 'touchend', this.pointerUp.bind(this)));
+        }
+        else {
+            removes.push(renderer.listenGlobal('body', 'mousemove', this.pointerMove.bind(this)));
+            removes.push(renderer.listenGlobal('body', 'mouseup', this.pointerUp.bind(this)));
+        }
+    };
+    /**
+     * @private
+     */
+    Range.prototype.pointerMove = function (ev) {
+        void 0;
+        // prevent default so scrolling does not happen
+        ev.preventDefault();
+        ev.stopPropagation();
+        if (this._start !== null && this._active !== null) {
+            // only use pointer move if it's a valid pointer
+            // and we already have start coordinates
+            // update the ratio for the active knob
+            this.updateKnob(dom_1.pointerCoord(ev), this._rect);
+            // update the active knob's position
+            this._active.position();
+            this._pressed = this._active.pressed = true;
+        }
+        else {
+            // ensure listeners have been removed
+            this.clearListeners();
+        }
+    };
+    /**
+     * @private
+     */
+    Range.prototype.pointerUp = function (ev) {
+        void 0;
+        // prevent default so scrolling does not happen
+        ev.preventDefault();
+        ev.stopPropagation();
+        // update the ratio for the active knob
+        this.updateKnob(dom_1.pointerCoord(ev), this._rect);
+        // update the active knob's position
+        this._active.position();
+        // clear the start coordinates and active knob
+        this._start = this._active = null;
+        // ensure listeners have been removed
+        this.clearListeners();
+    };
+    /**
+     * @private
+     */
+    Range.prototype.clearListeners = function () {
+        this._pressed = this._knobs.first.pressed = this._knobs.last.pressed = false;
+        for (var i = 0; i < this._removes.length; i++) {
+            this._removes[i]();
+        }
+        this._removes.length = 0;
+    };
+    /**
+     * @private
+     */
+    Range.prototype.setActiveKnob = function (current, rect) {
+        // figure out which knob is the closest one to the pointer
+        var ratio = (current.x - rect.left) / (rect.width);
+        if (this._dual && Math.abs(ratio - this._knobs.first.ratio) > Math.abs(ratio - this._knobs.last.ratio)) {
+            this._active = this._knobs.last;
+        }
+        else {
+            this._active = this._knobs.first;
+        }
+    };
+    /**
+     * @private
+     */
+    Range.prototype.updateKnob = function (current, rect) {
+        // figure out where the pointer is currently at
+        // update the knob being interacted with
+        if (this._active) {
+            var oldVal = this._active.value;
+            this._active.ratio = (current.x - rect.left) / (rect.width);
+            var newVal = this._active.value;
+            if (oldVal !== newVal) {
+                // value has been updated
+                if (this._dual) {
+                    this.value = {
+                        lower: Math.min(this._knobs.first.value, this._knobs.last.value),
+                        upper: Math.max(this._knobs.first.value, this._knobs.last.value),
+                    };
+                }
+                else {
+                    this.value = newVal;
+                }
+                this.onChange(this.value);
+                this.ionChange.emit(this);
+            }
+            this.updateBar();
+        }
+    };
+    /**
+     * @private
+     */
+    Range.prototype.updateBar = function () {
+        var firstRatio = this._knobs.first.ratio;
+        if (this._dual) {
+            var lastRatio = this._knobs.last.ratio;
+            this._barL = (Math.min(firstRatio, lastRatio) * 100) + "%";
+            this._barR = (100 - (Math.max(firstRatio, lastRatio) * 100)) + "%";
+        }
+        else {
+            this._barL = '';
+            this._barR = (100 - (firstRatio * 100)) + "%";
+        }
+        this.updateTicks();
+    };
+    /**
+     * @private
+     */
+    Range.prototype.createTicks = function () {
+        var _this = this;
+        if (this._snaps) {
+            dom_1.raf(function () {
+                // TODO: Fix to not use RAF
+                _this._ticks = [];
+                for (var value = _this._min; value <= _this._max; value += _this._step) {
+                    var ratio = _this.valueToRatio(value);
+                    _this._ticks.push({
+                        ratio: ratio,
+                        left: ratio * 100 + "%",
+                    });
+                }
+                _this.updateTicks();
+            });
+        }
+    };
+    /**
+     * @private
+     */
+    Range.prototype.updateTicks = function () {
+        if (this._snaps) {
+            var ratio_1 = this.ratio;
+            if (this._dual) {
+                var upperRatio_1 = this.ratioUpper;
+                this._ticks.forEach(function (t) {
+                    t.active = (t.ratio >= ratio_1 && t.ratio <= upperRatio_1);
+                });
+            }
+            else {
+                this._ticks.forEach(function (t) {
+                    t.active = (t.ratio <= ratio_1);
+                });
+            }
+        }
+    };
+    /**
+     * @private
+     */
+    Range.prototype.ratioToValue = function (ratio) {
+        ratio = Math.round(((this._max - this._min) * ratio) + this._min);
+        return Math.round(ratio / this._step) * this._step;
+    };
+    /**
+     * @private
+     */
+    Range.prototype.valueToRatio = function (value) {
+        value = Math.round(util_1.clamp(this._min, value, this._max) / this._step) * this._step;
+        return (value - this._min) / (this._max - this._min);
+    };
+    /**
+     * @private
+     */
+    Range.prototype.writeValue = function (val) {
+        if (util_1.isPresent(val)) {
+            var knobs = this._knobs;
+            this.value = val;
+            if (this._knobs) {
+                if (this._dual) {
+                    knobs.first.value = val.lower;
+                    knobs.last.value = val.upper;
+                    knobs.last.position();
+                }
+                else {
+                    knobs.first.value = val;
+                }
+                knobs.first.position();
+                this.updateBar();
+            }
+        }
+    };
+    /**
+     * @private
+     */
+    Range.prototype.registerOnChange = function (fn) {
+        var _this = this;
+        this._fn = fn;
+        this.onChange = function (val) {
+            fn(val);
+            _this.onTouched();
+        };
+    };
+    /**
+     * @private
+     */
+    Range.prototype.registerOnTouched = function (fn) { this.onTouched = fn; };
+    Object.defineProperty(Range.prototype, "disabled", {
+        /**
+         * @input {boolean} Whether or not the range is disabled. Defaults to `false`.
+         */
+        get: function () {
+            return this._disabled;
+        },
+        set: function (val) {
+            this._disabled = util_1.isTrueProperty(val);
+            this._item && this._item.setCssClass('item-range-disabled', this._disabled);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Range.prototype, "ratio", {
+        /**
+         * Returns the ratio of the knob's is current location, which is a number between `0` and `1`.
+         * If two knobs are used, this property represents the lower value.
+         */
+        get: function () {
+            if (this._dual) {
+                return Math.min(this._knobs.first.ratio, this._knobs.last.ratio);
+            }
+            return this._knobs.first.ratio;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Range.prototype, "ratioUpper", {
+        /**
+         * Returns the ratio of the upper value's is current location, which is a number between `0` and `1`.
+         * If there is only one knob, then this will return `null`.
+         */
+        get: function () {
+            if (this._dual) {
+                return Math.max(this._knobs.first.ratio, this._knobs.last.ratio);
+            }
+            return null;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * @private
+     */
+    Range.prototype.onChange = function (val) {
+        // used when this input does not have an ngModel or ngControl
+        this.onTouched();
+    };
+    /**
+     * @private
+     */
+    Range.prototype.onTouched = function () { };
+    /**
+     * @private
+     */
+    Range.prototype.ngOnDestroy = function () {
+        this._form.deregister(this);
+        this.clearListeners();
+    };
+    __decorate([
+        core_1.ViewChild('bar'), 
+        __metadata('design:type', core_1.ElementRef)
+    ], Range.prototype, "_bar", void 0);
+    __decorate([
+        core_1.ViewChild('slider'), 
+        __metadata('design:type', core_1.ElementRef)
+    ], Range.prototype, "_slider", void 0);
+    __decorate([
+        core_1.ViewChildren(RangeKnob), 
+        __metadata('design:type', core_1.QueryList)
+    ], Range.prototype, "_knobs", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Number)
+    ], Range.prototype, "min", null);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Number)
+    ], Range.prototype, "max", null);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Number)
+    ], Range.prototype, "step", null);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Boolean)
+    ], Range.prototype, "snaps", null);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Boolean)
+    ], Range.prototype, "pin", null);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Boolean)
+    ], Range.prototype, "dualKnobs", null);
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', core_1.EventEmitter)
+    ], Range.prototype, "ionChange", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Boolean)
+    ], Range.prototype, "disabled", null);
+    Range = __decorate([
+        core_1.Component({
+            selector: 'ion-range',
+            template: '<ng-content select="[range-left]"></ng-content>' +
+                '<div class="range-slider" #slider>' +
+                '<div class="range-tick" *ngFor="let t of _ticks" [style.left]="t.left" [class.range-tick-active]="t.active"></div>' +
+                '<div class="range-bar"></div>' +
+                '<div class="range-bar range-bar-active" [style.left]="_barL" [style.right]="_barR" #bar></div>' +
+                '<div class="range-knob-handle"></div>' +
+                '<div class="range-knob-handle" [upper]="true" *ngIf="_dual"></div>' +
+                '</div>' +
+                '<ng-content select="[range-right]"></ng-content>',
+            host: {
+                '[class.range-disabled]': '_disabled',
+                '[class.range-pressed]': '_pressed',
+                '[class.range-has-pin]': '_pin'
+            },
+            directives: [RangeKnob],
+            providers: [RANGE_VALUE_ACCESSOR],
+            encapsulation: core_1.ViewEncapsulation.None,
+        }),
+        __param(1, core_1.Optional()), 
+        __metadata('design:paramtypes', [form_1.Form, item_1.Item, core_1.Renderer])
+    ], Range);
+    return Range;
+}());
+exports.Range = Range;
+
+},{"../../util/dom":411,"../../util/form":414,"../../util/util":417,"../item/item":335,"@angular/common":12,"@angular/core":144}],362:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -50573,10 +52194,10 @@ var RefresherContent = (function () {
      */
     RefresherContent.prototype.ngOnInit = function () {
         if (!this.pullingIcon) {
-            this.pullingIcon = this._config.get('refresherPullingIcon', 'arrow-down');
+            this.pullingIcon = this._config.get('ionPullIcon', 'arrow-down');
         }
         if (!this.refreshingSpinner) {
-            this.refreshingSpinner = this._config.get('refresherRefreshingSpinner', this._config.get('spinner', 'ios'));
+            this.refreshingSpinner = this._config.get('ionRefreshingSpinner', this._config.get('spinner', 'ios'));
         }
     };
     __decorate([
@@ -50621,7 +52242,7 @@ var RefresherContent = (function () {
 }());
 exports.RefresherContent = RefresherContent;
 
-},{"../../config/config":379,"./refresher":356,"@angular/core":140}],356:[function(require,module,exports){
+},{"../../config/config":386,"./refresher":363,"@angular/core":144}],363:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -50658,7 +52279,7 @@ var dom_1 = require('../../util/dom');
  * ```html
  * <ion-content>
  *
- *   <ion-refresher (refresh)="doRefresh($event)">
+ *   <ion-refresher (ionRefresh)="doRefresh($event)">
  *     <ion-refresher-content></ion-refresher-content>
  *   </ion-refresher>
  *
@@ -50666,7 +52287,7 @@ var dom_1 = require('../../util/dom');
  * ```
  *
  * ```ts
- * @Page({...})
+ * @Component({...})
  * export class NewsFeedPage {
  *
  *   doRefresh(refresher) {
@@ -50692,7 +52313,7 @@ var dom_1 = require('../../util/dom');
  *  ```html
  *  <ion-content>
  *
- *    <ion-refresher (refresh)="doRefresh($event)">
+ *    <ion-refresher (ionRefresh)="doRefresh($event)">
  *      <ion-refresher-content
  *        pullingIcon="arrow-dropdown"
  *        pullingText="Pull to refresh"
@@ -50786,15 +52407,15 @@ var Refresher = (function () {
          * updated to `refreshing`. From within your refresh handler, you must call the
          * `complete()` method when your async operation has completed.
          */
-        this.refresh = new core_1.EventEmitter();
+        this.ionRefresh = new core_1.EventEmitter();
         /**
          * @output {event} While the user is pulling down the content and exposing the refresher.
          */
-        this.pulling = new core_1.EventEmitter();
+        this.ionPull = new core_1.EventEmitter();
         /**
          * @output {event} When the user begins to start pulling down.
          */
-        this.start = new core_1.EventEmitter();
+        this.ionStart = new core_1.EventEmitter();
         _content.addCssClass('has-refresher');
         // deprecated warning
         var ele = elementRef.nativeElement;
@@ -50925,10 +52546,10 @@ var Refresher = (function () {
         // emit "start" if it hasn't started yet
         if (!this._didStart) {
             this._didStart = true;
-            this.start.emit(this);
+            this.ionStart.emit(this);
         }
         // emit "pulling" on every move
-        this.pulling.emit(this);
+        this.ionPull.emit(this);
         // do nothing if the delta is less than the pull threshold
         if (this.deltaY < this.pullMin) {
             // ensure it stays in the pulling state, cuz its not ready yet
@@ -50981,7 +52602,7 @@ var Refresher = (function () {
         this._setCss(this.pullMin, (this.snapbackDuration + 'ms'), true, '');
         // emit "refresh" because it was pulled down far enough
         // and they let go to begin refreshing
-        this.refresh.emit(this);
+        this.ionRefresh.emit(this);
     };
     /**
      * Call `complete()` when your async operation has completed.
@@ -51109,15 +52730,15 @@ var Refresher = (function () {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Refresher.prototype, "refresh", void 0);
+    ], Refresher.prototype, "ionRefresh", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Refresher.prototype, "pulling", void 0);
+    ], Refresher.prototype, "ionPull", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Refresher.prototype, "start", void 0);
+    ], Refresher.prototype, "ionStart", void 0);
     Refresher = __decorate([
         core_1.Directive({
             selector: 'ion-refresher',
@@ -51138,7 +52759,7 @@ var STATE_REFRESHING = 'refreshing';
 var STATE_CANCELLING = 'cancelling';
 var STATE_COMPLETING = 'completing';
 
-},{"../../util/dom":405,"../../util/util":411,"../content/content":318,"@angular/core":140}],357:[function(require,module,exports){
+},{"../../util/dom":411,"../../util/util":417,"../content/content":323,"@angular/core":144}],364:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -51159,7 +52780,7 @@ var ion_1 = require('../ion');
 /**
  * @name Scroll
  * @description
- * Scroll is a non-flexboxed scroll area that can scroll horizontally or vertically. `ion-Scroll` Can be used in places were you may not need a full page scroller, but a highly customized one, such as image scubber or comment scroller.
+ * Scroll is a non-flexboxed scroll area that can scroll horizontally or vertically. `ion-Scroll` Can be used in places where you may not need a full page scroller, but a highly customized one, such as image scubber or comment scroller.
  * @usage
  * ```html
  * <ion-scroll scrollX="true">
@@ -51237,7 +52858,7 @@ var Scroll = (function (_super) {
 }(ion_1.Ion));
 exports.Scroll = Scroll;
 
-},{"../ion":327,"@angular/core":140}],358:[function(require,module,exports){
+},{"../ion":332,"@angular/core":144}],365:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -51258,26 +52879,16 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var core_1 = require('@angular/core');
 var common_1 = require('@angular/common');
-var ion_1 = require('../ion');
 var config_1 = require('../../config/config');
+var ion_1 = require('../ion');
 var util_1 = require('../../util/util');
 /**
 * @private
 */
 var SearchbarInput = (function () {
-    function SearchbarInput(_elementRef) {
-        this._elementRef = _elementRef;
+    function SearchbarInput(elementRef) {
+        this.elementRef = elementRef;
     }
-    SearchbarInput.prototype.stopInput = function (ev) {
-        ev.preventDefault();
-        ev.stopPropagation();
-    };
-    __decorate([
-        core_1.HostListener('input', ['$event']), 
-        __metadata('design:type', Function), 
-        __metadata('design:paramtypes', [Object]), 
-        __metadata('design:returntype', void 0)
-    ], SearchbarInput.prototype, "stopInput", null);
     SearchbarInput = __decorate([
         core_1.Directive({
             selector: '.searchbar-input',
@@ -51298,8 +52909,8 @@ exports.SearchbarInput = SearchbarInput;
  * <ion-searchbar
  *   [(ngModel)]="myInput"
  *   [hideCancelButton]="shouldHideCancel"
- *   (input)="onInput($event)"
- *   (cancel)="onCancel($event)">
+ *   (ionInput)="onInput($event)"
+ *   (ionCancel)="onCancel($event)">
  * </ion-searchbar>
  * ```
  *
@@ -51319,23 +52930,23 @@ var Searchbar = (function (_super) {
         /**
          * @output {event} When the Searchbar input has changed including cleared
          */
-        this.input = new core_1.EventEmitter();
+        this.ionInput = new core_1.EventEmitter();
         /**
          * @output {event} When the Searchbar input has blurred
          */
-        this.blur = new core_1.EventEmitter();
+        this.ionBlur = new core_1.EventEmitter();
         /**
          * @output {event} When the Searchbar input has focused
          */
-        this.focus = new core_1.EventEmitter();
+        this.ionFocus = new core_1.EventEmitter();
         /**
          * @output {event} When the cancel button is clicked
          */
-        this.cancel = new core_1.EventEmitter();
+        this.ionCancel = new core_1.EventEmitter();
         /**
          * @output {event} When the clear input button is clicked
          */
-        this.clear = new core_1.EventEmitter();
+        this.ionClear = new core_1.EventEmitter();
         /**
          * @private
          */
@@ -51438,7 +53049,7 @@ var Searchbar = (function (_super) {
         this._tmr = setTimeout(function () {
             _this.value = value;
             _this.onChange(value);
-            _this.input.emit(_this);
+            _this.ionInput.emit(_this);
         }, Math.round(this.debounce));
     };
     /**
@@ -51446,7 +53057,7 @@ var Searchbar = (function (_super) {
      * Sets the Searchbar to focused and aligned left on input focus.
      */
     Searchbar.prototype.inputFocused = function () {
-        this.focus.emit(this);
+        this.ionFocus.emit(this);
         this.isFocused = true;
         this.shouldLeftAlign = true;
         this.setElementLeft();
@@ -51460,11 +53071,11 @@ var Searchbar = (function (_super) {
         // blurInput determines if it should blur
         // if we are clearing the input we still want to stay focused in the input
         if (this.blurInput === false) {
-            this.searchbarInput._elementRef.nativeElement.focus();
+            this.searchbarInput.elementRef.nativeElement.focus();
             this.blurInput = true;
             return;
         }
-        this.blur.emit(this);
+        this.ionBlur.emit(this);
         this.isFocused = false;
         this.shouldLeftAlign = this.value && this.value.trim() !== '';
         this.setElementLeft();
@@ -51474,10 +53085,10 @@ var Searchbar = (function (_super) {
      * Clears the input field and triggers the control change.
      */
     Searchbar.prototype.clearInput = function () {
-        this.clear.emit(this);
+        this.ionClear.emit(this);
         this.value = '';
         this.onChange(this.value);
-        this.input.emit(this);
+        this.ionInput.emit(this);
         this.blurInput = false;
     };
     /**
@@ -51487,7 +53098,7 @@ var Searchbar = (function (_super) {
      * then calls the custom cancel function if the user passed one in.
      */
     Searchbar.prototype.cancelSearchbar = function () {
-        this.cancel.emit(this);
+        this.ionCancel.emit(this);
         this.clearInput();
         this.blurInput = true;
     };
@@ -51514,7 +53125,7 @@ var Searchbar = (function (_super) {
     };
     __decorate([
         core_1.ViewChild(SearchbarInput), 
-        __metadata('design:type', Object)
+        __metadata('design:type', SearchbarInput)
     ], Searchbar.prototype, "searchbarInput", void 0);
     __decorate([
         core_1.Input(), 
@@ -51539,30 +53150,30 @@ var Searchbar = (function (_super) {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Searchbar.prototype, "input", void 0);
+    ], Searchbar.prototype, "ionInput", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Searchbar.prototype, "blur", void 0);
+    ], Searchbar.prototype, "ionBlur", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Searchbar.prototype, "focus", void 0);
+    ], Searchbar.prototype, "ionFocus", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Searchbar.prototype, "cancel", void 0);
+    ], Searchbar.prototype, "ionCancel", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Searchbar.prototype, "clear", void 0);
+    ], Searchbar.prototype, "ionClear", void 0);
     __decorate([
         core_1.HostBinding('class.searchbar-focused'), 
-        __metadata('design:type', Object)
+        __metadata('design:type', Boolean)
     ], Searchbar.prototype, "isFocused", void 0);
     __decorate([
         core_1.HostBinding('class.searchbar-left-aligned'), 
-        __metadata('design:type', Object)
+        __metadata('design:type', Boolean)
     ], Searchbar.prototype, "shouldLeftAlign", void 0);
     Searchbar = __decorate([
         core_1.Component({
@@ -51590,7 +53201,7 @@ var Searchbar = (function (_super) {
 }(ion_1.Ion));
 exports.Searchbar = Searchbar;
 
-},{"../../config/config":379,"../../util/util":411,"../ion":327,"@angular/common":8,"@angular/core":140}],359:[function(require,module,exports){
+},{"../../config/config":386,"../../util/util":417,"../ion":332,"@angular/common":12,"@angular/core":144}],366:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -51614,10 +53225,10 @@ var util_1 = require('../../util/util');
  * @usage
  * ```html
  * <ion-segment [(ngModel)]="relationship" primary>
- *   <ion-segment-button value="friends" (select)="selectedFriends()">
+ *   <ion-segment-button value="friends" (ionSelect)="selectedFriends()">
  *     Friends
  *   </ion-segment-button>
- *   <ion-segment-button value="enemies" (select)="selectedEnemies()">
+ *   <ion-segment-button value="enemies" (ionSelect)="selectedEnemies()">
  *     Enemies
  *   </ion-segment-button>
  * </ion-segment>
@@ -51654,7 +53265,7 @@ var SegmentButton = (function () {
         /**
          * @output {SegmentButton} expression to evaluate when a segment button has been clicked
          */
-        this.select = new core_1.EventEmitter();
+        this.ionSelect = new core_1.EventEmitter();
     }
     Object.defineProperty(SegmentButton.prototype, "disabled", {
         /**
@@ -51680,9 +53291,9 @@ var SegmentButton = (function () {
      * @private
      * On click of a SegmentButton
      */
-    SegmentButton.prototype.onClick = function (ev) {
+    SegmentButton.prototype.onClick = function () {
         void 0;
-        this.select.emit(this);
+        this.ionSelect.emit(this);
     };
     /**
      * @private
@@ -51710,15 +53321,15 @@ var SegmentButton = (function () {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], SegmentButton.prototype, "select", void 0);
+    ], SegmentButton.prototype, "ionSelect", void 0);
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Boolean)
     ], SegmentButton.prototype, "disabled", null);
     __decorate([
-        core_1.HostListener('click', ['$event']), 
+        core_1.HostListener('click'), 
         __metadata('design:type', Function), 
-        __metadata('design:paramtypes', [Object]), 
+        __metadata('design:paramtypes', []), 
         __metadata('design:returntype', void 0)
     ], SegmentButton.prototype, "onClick", null);
     SegmentButton = __decorate([
@@ -51748,7 +53359,7 @@ exports.SegmentButton = SegmentButton;
  *
  * @usage
  * ```html
- * <ion-segment [(ngModel)]="relationship" (change)="onSegmentChanged($event)" danger>
+ * <ion-segment [(ngModel)]="relationship" (ionChange)="onSegmentChanged($event)" danger>
  *   <ion-segment-button value="friends">
  *     Friends
  *   </ion-segment-button>
@@ -51787,7 +53398,7 @@ var Segment = (function () {
         /**
          * @output {Any}  expression to evaluate when a segment button has been changed
          */
-        this.change = new core_1.EventEmitter();
+        this.ionChange = new core_1.EventEmitter();
         /**
          * @private
          */
@@ -51842,10 +53453,10 @@ var Segment = (function () {
         var buttons = this._buttons.toArray();
         for (var _i = 0, buttons_3 = buttons; _i < buttons_3.length; _i++) {
             var button = buttons_3[_i];
-            button.select.subscribe(function (selectedButton) {
+            button.ionSelect.subscribe(function (selectedButton) {
                 _this.writeValue(selectedButton.value);
                 _this.onChange(selectedButton.value);
-                _this.change.emit(selectedButton);
+                _this.ionChange.emit(selectedButton);
             });
             if (util_1.isPresent(this.value)) {
                 button.isActive = (button.value === this.value);
@@ -51868,7 +53479,7 @@ var Segment = (function () {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Segment.prototype, "change", void 0);
+    ], Segment.prototype, "ionChange", void 0);
     __decorate([
         core_1.ContentChildren(SegmentButton), 
         __metadata('design:type', core_1.QueryList)
@@ -51888,7 +53499,7 @@ var Segment = (function () {
 }());
 exports.Segment = Segment;
 
-},{"../../util/util":411,"@angular/common":8,"@angular/core":140}],360:[function(require,module,exports){
+},{"../../util/util":417,"@angular/common":12,"@angular/core":144}],367:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -52049,11 +53660,11 @@ var Select = (function () {
         /**
          * @output {any} Any expression you want to evaluate when the selection has changed.
          */
-        this.change = new core_1.EventEmitter();
+        this.ionChange = new core_1.EventEmitter();
         /**
          * @output {any} Any expression you want to evaluate when the selection was cancelled.
          */
-        this.cancel = new core_1.EventEmitter();
+        this.ionCancel = new core_1.EventEmitter();
         this._form.register(this);
         if (_item) {
             this.id = 'sel-' + _item.registerInput('select');
@@ -52073,7 +53684,7 @@ var Select = (function () {
         ev.stopPropagation();
         this._open();
     };
-    Select.prototype._keyup = function (ev) {
+    Select.prototype._keyup = function () {
         if (!this._isOpen) {
             this._open();
         }
@@ -52092,7 +53703,7 @@ var Select = (function () {
                 text: this.cancelText,
                 role: 'cancel',
                 handler: function () {
-                    _this.cancel.emit(null);
+                    _this.ionCancel.emit(null);
                 }
             }];
         // if the alertOptions didn't provide an title then use the label's text
@@ -52116,7 +53727,7 @@ var Select = (function () {
                     text: input.text,
                     handler: function () {
                         _this.onChange(input.value);
-                        _this.change.emit(input.value);
+                        _this.ionChange.emit(input.value);
                     }
                 };
             }));
@@ -52150,7 +53761,7 @@ var Select = (function () {
                 text: this.okText,
                 handler: function (selectedValues) {
                     _this.onChange(selectedValues);
-                    _this.change.emit(selectedValues);
+                    _this.ionChange.emit(selectedValues);
                 }
             });
         }
@@ -52307,21 +53918,21 @@ var Select = (function () {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Select.prototype, "change", void 0);
+    ], Select.prototype, "ionChange", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Select.prototype, "cancel", void 0);
+    ], Select.prototype, "ionCancel", void 0);
     __decorate([
         core_1.HostListener('click', ['$event']), 
         __metadata('design:type', Function), 
-        __metadata('design:paramtypes', [Object]), 
+        __metadata('design:paramtypes', [UIEvent]), 
         __metadata('design:returntype', void 0)
     ], Select.prototype, "_click", null);
     __decorate([
-        core_1.HostListener('keyup.space', ['$event']), 
+        core_1.HostListener('keyup.space'), 
         __metadata('design:type', Function), 
-        __metadata('design:paramtypes', [Object]), 
+        __metadata('design:paramtypes', []), 
         __metadata('design:returntype', void 0)
     ], Select.prototype, "_keyup", null);
     __decorate([
@@ -52365,7 +53976,7 @@ var Select = (function () {
 }());
 exports.Select = Select;
 
-},{"../../util/form":408,"../../util/util":411,"../action-sheet/action-sheet":312,"../alert/alert":313,"../item/item":330,"../nav/nav-controller":341,"../option/option":351,"@angular/common":8,"@angular/core":140}],361:[function(require,module,exports){
+},{"../../util/form":414,"../../util/util":417,"../action-sheet/action-sheet":316,"../alert/alert":317,"../item/item":335,"../nav/nav-controller":346,"../option/option":356,"@angular/common":12,"@angular/core":144}],368:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -52549,7 +54160,7 @@ var HideWhen = (function (_super) {
 }(DisplayWhen));
 exports.HideWhen = HideWhen;
 
-},{"../../platform/platform":390,"@angular/core":140}],362:[function(require,module,exports){
+},{"../../platform/platform":396,"@angular/core":144}],369:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -52632,7 +54243,7 @@ var swiper_widget_1 = require('./swiper-widget');
  *
  * @usage
  *
- * You can add slides to a `@Page` using the following template:
+ * You can add slides to a `@Component` using the following template:
  *
  * ```html
  * <ion-slides>
@@ -52651,9 +54262,10 @@ var swiper_widget_1 = require('./swiper-widget');
  * To add [options](#configuring), we will define them in `mySlideOptions` in our class `MyPage`:
  *
  * ```ts
- * import {Page, Slides} from 'ionic-angular';
+ * import {Component} from '@angular/core';
+ * import {Slides} from 'ionic-angular';
  *
- * @Page({
+ * @Component({
  *   templateUrl: 'my-page.html'
  * })
  * class MyPage {
@@ -52710,10 +54322,10 @@ var swiper_widget_1 = require('./swiper-widget');
  * ```
  *
  * We can also add events to listen to on the `<ion-slides>` element.
- * Let's add the `didChange` event and call a method when the slide changes:
+ * Let's add the `ionDidChange` event and call a method when the slide changes:
  *
  * ```html
- * <ion-slides #mySlider (didChange)="onSlideChanged()" [options]="mySlideOptions">
+ * <ion-slides #mySlider (ionDidChange)="onSlideChanged()" [options]="mySlideOptions">
  * ```
  *
  * In our class, we add the `onSlideChanged()` method which gets the active
@@ -52753,25 +54365,17 @@ var Slides = (function (_super) {
         var _this = this;
         _super.call(this, elementRef);
         /**
-         * @private Deprecated
-         */
-        this.slideChangeStart = new core_1.EventEmitter();
-        /**
-         * @private Deprecated
-         */
-        this.change = new core_1.EventEmitter();
-        /**
          * @output {any} Expression to evaluate when a slide change starts.
          */
-        this.willChange = new core_1.EventEmitter();
+        this.ionWillChange = new core_1.EventEmitter();
         /**
          * @output {any} Expression to evaluate when a slide change ends.
          */
-        this.didChange = new core_1.EventEmitter();
+        this.ionDidChange = new core_1.EventEmitter();
         /**
          * @output {any} Expression to evaluate when a slide moves.
          */
-        this.move = new core_1.EventEmitter();
+        this.ionDrag = new core_1.EventEmitter();
         this.rapidUpdate = util_2.debounce(function () {
             _this.update();
         }, 10);
@@ -52799,9 +54403,6 @@ var Slides = (function (_super) {
             // Zoom should be passed as an option
             void 0;
         }
-        // Deprecated 04-18 beta.5
-        void 0;
-        void 0;
         if (util_2.isPresent(this.options.pager)) {
             this.showPager = util_2.isTrueProperty(this.options.pager);
         }
@@ -52830,15 +54431,11 @@ var Slides = (function (_super) {
             return _this.options.onTransitionEnd && _this.options.onTransitionEnd(swiper, e);
         };
         options.onSlideChangeStart = function (swiper) {
-            // TODO deprecated 2016-04-18
-            _this.slideChangeStart.emit(swiper);
-            _this.willChange.emit(swiper);
+            _this.ionWillChange.emit(swiper);
             return _this.options.onSlideChangeStart && _this.options.onSlideChangeStart(swiper);
         };
         options.onSlideChangeEnd = function (swiper) {
-            // TODO deprecated 2016-04-18
-            _this.change.emit(swiper);
-            _this.didChange.emit(swiper);
+            _this.ionDidChange.emit(swiper);
             return _this.options.onSlideChangeEnd && _this.options.onSlideChangeEnd(swiper);
         };
         options.onLazyImageLoad = function (swiper, slide, img) {
@@ -52848,7 +54445,7 @@ var Slides = (function (_super) {
             return _this.options.onLazyImageReady && _this.options.onLazyImageReady(swiper, slide, img);
         };
         options.onSliderMove = function (swiper, e) {
-            _this.move.emit(swiper);
+            _this.ionDrag.emit(swiper);
             return _this.options.onSliderMove && _this.options.onSliderMove(swiper, e);
         };
         setTimeout(function () {
@@ -52892,7 +54489,7 @@ var Slides = (function (_super) {
     Slides.prototype.onLazyImageReady = function (swiper, slide, img) {
     };
     /*
-    nextButton(swiper, e) {
+    nextButton(swiper: any, e: any) {
     }
     prevButton() {
     }
@@ -52913,7 +54510,7 @@ var Slides = (function (_super) {
         this.scale = 1;
         this.zoomLastPosX = 0;
         this.zoomLastPosY = 0;
-        var last_scale, startX, startY, posX = 0, posY = 0, zoomRect;
+        var lastScale, startX, startY, posX = 0, posY = 0, zoomRect;
         this.viewportWidth = this.getNativeElement().offsetWidth;
         this.viewportHeight = this.getNativeElement().offsetHeight;
         this.zoomElement.addEventListener('touchstart', function (e) {
@@ -52926,11 +54523,11 @@ var Slides = (function (_super) {
             _this.onTouchEnd(e);
         });
         this.zoomGesture.on('pinchstart', function (e) {
-            last_scale = _this.scale;
+            lastScale = _this.scale;
             void 0;
         });
         this.zoomGesture.on('pinch', function (e) {
-            _this.scale = Math.max(1, Math.min(last_scale * e.scale, 10));
+            _this.scale = Math.max(1, Math.min(lastScale * e.scale, 10));
             void 0;
             _this.zoomElement.style[dom_1.CSS.transform] = 'scale(' + _this.scale + ')';
             zoomRect = _this.zoomElement.getBoundingClientRect();
@@ -53144,7 +54741,7 @@ var Slides = (function (_super) {
      *
      * @param {number} index  The index number of the slide.
      * @param {number} speed  Transition duration (in ms). Optional.
-     * @param {boolean} runCallbacks  Whether or not to emit the `willChange`/`didChange` events. Optional. Default true.
+     * @param {boolean} runCallbacks  Whether or not to emit the `ionWillChange`/`ionDidChange` events. Optional. Default true.
      */
     Slides.prototype.slideTo = function (index, speed, runCallbacks) {
         this.slider.slideTo(index, speed, runCallbacks);
@@ -53153,7 +54750,7 @@ var Slides = (function (_super) {
      * Transition to the next slide.
      *
      * @param {number} speed  Transition duration (in ms). Optional.
-     * @param {boolean} runCallbacks  Whether or not to emit the `willChange`/`didChange` events. Optional. Default true.
+     * @param {boolean} runCallbacks  Whether or not to emit the `ionWillChange`/`ionDidChange` events. Optional. Default true.
      */
     Slides.prototype.slideNext = function (speed, runCallbacks) {
         this.slider.slideNext(runCallbacks, speed);
@@ -53162,7 +54759,7 @@ var Slides = (function (_super) {
      * Transition to the previous slide.
      *
      * @param {number} speed  Transition duration (in ms). Optional.
-     * @param {boolean} runCallbacks  Whether or not to emit the `willChange`/`didChange` events. Optional. Default true.
+     * @param {boolean} runCallbacks  Whether or not to emit the `ionWillChange`/`ionDidChange` events. Optional. Default true.
      */
     Slides.prototype.slidePrev = function (speed, runCallbacks) {
         this.slider.slidePrev(runCallbacks, speed);
@@ -53242,23 +54839,15 @@ var Slides = (function (_super) {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Slides.prototype, "slideChangeStart", void 0);
+    ], Slides.prototype, "ionWillChange", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Slides.prototype, "change", void 0);
+    ], Slides.prototype, "ionDidChange", void 0);
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Slides.prototype, "willChange", void 0);
-    __decorate([
-        core_1.Output(), 
-        __metadata('design:type', core_1.EventEmitter)
-    ], Slides.prototype, "didChange", void 0);
-    __decorate([
-        core_1.Output(), 
-        __metadata('design:type', core_1.EventEmitter)
-    ], Slides.prototype, "move", void 0);
+    ], Slides.prototype, "ionDrag", void 0);
     Slides = __decorate([
         core_1.Component({
             selector: 'ion-slides',
@@ -53291,10 +54880,14 @@ exports.Slides = Slides;
  */
 var Slide = (function () {
     function Slide(elementRef, slides) {
+        this.slides = slides;
         this.ele = elementRef.nativeElement;
         this.ele.classList.add('swiper-slide');
         slides.rapidUpdate();
     }
+    Slide.prototype.ngOnDestroy = function () {
+        this.slides.rapidUpdate();
+    };
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Object)
@@ -53332,7 +54925,7 @@ var SlideLazy = (function () {
 exports.SlideLazy = SlideLazy;
 var slidesId = -1;
 
-},{"../../animations/animation":309,"../../gestures/gesture":385,"../../util":402,"../../util/dom":405,"../../util/util":411,"../ion":327,"./swiper-widget":363,"@angular/common":8,"@angular/core":140}],363:[function(require,module,exports){
+},{"../../animations/animation":313,"../../gestures/gesture":391,"../../util":408,"../../util/dom":411,"../../util/util":417,"../ion":332,"./swiper-widget":370,"@angular/common":12,"@angular/core":144}],370:[function(require,module,exports){
 /**
  * Swiper 3.1.2
  * Most modern mobile touch slider and framework with hardware accelerated transitions
@@ -57288,7 +58881,7 @@ function Swiper(container, params) {
       }
   }
 
-},{}],364:[function(require,module,exports){
+},{}],371:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -57585,7 +59178,7 @@ var SPINNERS = {
     }
 };
 
-},{"../../config/config":379,"@angular/common":8,"@angular/core":140}],365:[function(require,module,exports){
+},{"../../config/config":386,"@angular/common":12,"@angular/core":144}],372:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -57612,7 +59205,7 @@ var TabButton = (function (_super) {
     __extends(TabButton, _super);
     function TabButton(config, elementRef) {
         _super.call(this, elementRef);
-        this.select = new core_1.EventEmitter();
+        this.ionSelect = new core_1.EventEmitter();
         this.disHover = (config.get('hoverCSS') === false);
         this._layout = config.get('tabbarLayout');
     }
@@ -57625,8 +59218,9 @@ var TabButton = (function (_super) {
         this.hasIconOnly = (this.hasIcon && !this.hasTitle);
         this.hasBadge = !!this.tab.tabBadge;
     };
-    TabButton.prototype.onClick = function () {
-        this.select.emit(this.tab);
+    TabButton.prototype.onClick = function (ev) {
+        this.ionSelect.emit(this.tab);
+        ev.preventDefault();
     };
     __decorate([
         core_1.Input(), 
@@ -57635,11 +59229,11 @@ var TabButton = (function (_super) {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], TabButton.prototype, "select", void 0);
+    ], TabButton.prototype, "ionSelect", void 0);
     __decorate([
-        core_1.HostListener('click'), 
+        core_1.HostListener('click', ['$event']), 
         __metadata('design:type', Function), 
-        __metadata('design:paramtypes', []), 
+        __metadata('design:paramtypes', [UIEvent]), 
         __metadata('design:returntype', void 0)
     ], TabButton.prototype, "onClick", null);
     TabButton = __decorate([
@@ -57663,7 +59257,7 @@ var TabButton = (function (_super) {
 }(ion_1.Ion));
 exports.TabButton = TabButton;
 
-},{"../../config/config":379,"../ion":327,"./tab":367,"@angular/core":140}],366:[function(require,module,exports){
+},{"../../config/config":386,"../ion":332,"./tab":374,"@angular/core":144}],373:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -57707,7 +59301,7 @@ var TabHighlight = (function () {
 }());
 exports.TabHighlight = TabHighlight;
 
-},{"../../util/dom":405,"@angular/core":140}],367:[function(require,module,exports){
+},{"../../util/dom":411,"@angular/core":144}],374:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -57808,13 +59402,13 @@ var tabs_1 = require('./tabs');
  * ```
  *
  * Sometimes you may want to call a method instead of navigating to a new
- * page. You can use the `(select)` event to call a method on your class when
+ * page. You can use the `(ionSelect)` event to call a method on your class when
  * the tab is selected. Below is an example of presenting a modal from one of
  * the tabs.
  *
  * ```html
  * <ion-tabs preloadTabs="false">
- *   <ion-tab (select)="chat()"></ion-tab>
+ *   <ion-tab (ionSelect)="chat()"></ion-tab>
  * </ion-tabs>
  * ```
  *
@@ -57849,7 +59443,7 @@ var Tab = (function (_super) {
         /**
          * @output {Tab} Method to call when the current tab is selected
          */
-        this.select = new core_1.EventEmitter();
+        this.ionSelect = new core_1.EventEmitter();
         parentTabs.add(this);
         this._panelId = 'tabpanel-' + this.id;
         this._btnId = 'tab-' + this.id;
@@ -57937,6 +59531,7 @@ var Tab = (function (_super) {
      * @private
      */
     Tab.prototype.loadPage = function (viewCtrl, navbarContainerRef, opts, done) {
+        var _this = this;
         // by default a page's navbar goes into the shared tab's navbar section
         navbarContainerRef = this.parent.navbarContainerRef;
         var isTabSubPage = (this.parent.subPages && viewCtrl.index > 0);
@@ -57946,8 +59541,12 @@ var Tab = (function (_super) {
             navbarContainerRef = null;
         }
         _super.prototype.loadPage.call(this, viewCtrl, navbarContainerRef, opts, function () {
-            if (viewCtrl.instance) {
-                viewCtrl.instance._tabSubPage = isTabSubPage;
+            if (isTabSubPage) {
+                // add the .tab-subpage css class to tabs pages that should act like subpages
+                var pageEleRef = viewCtrl.pageRef();
+                if (pageEleRef) {
+                    _this._renderer.setElementClass(pageEleRef.nativeElement, 'tab-subpage', true);
+                }
             }
             done();
         });
@@ -58028,7 +59627,7 @@ var Tab = (function (_super) {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Tab.prototype, "select", void 0);
+    ], Tab.prototype, "ionSelect", void 0);
     __decorate([
         core_1.ViewChild('viewport', { read: core_1.ViewContainerRef }), 
         __metadata('design:type', core_1.ViewContainerRef), 
@@ -58047,13 +59646,13 @@ var Tab = (function (_super) {
             encapsulation: core_1.ViewEncapsulation.None,
         }),
         __param(0, core_1.Inject(core_1.forwardRef(function () { return tabs_1.Tabs; }))), 
-        __metadata('design:paramtypes', [tabs_1.Tabs, app_1.IonicApp, config_1.Config, keyboard_1.Keyboard, core_1.ElementRef, core_1.NgZone, core_1.Renderer, core_1.DynamicComponentLoader, core_1.ChangeDetectorRef])
+        __metadata('design:paramtypes', [tabs_1.Tabs, app_1.App, config_1.Config, keyboard_1.Keyboard, core_1.ElementRef, core_1.NgZone, core_1.Renderer, core_1.DynamicComponentLoader, core_1.ChangeDetectorRef])
     ], Tab);
     return Tab;
 }(nav_controller_1.NavController));
 exports.Tab = Tab;
 
-},{"../../config/config":379,"../../util/keyboard":409,"../../util/util":411,"../app/app":314,"../nav/nav-controller":341,"./tabs":368,"@angular/core":140}],368:[function(require,module,exports){
+},{"../../config/config":386,"../../util/keyboard":415,"../../util/util":417,"../app/app":318,"../nav/nav-controller":346,"./tabs":375,"@angular/core":144}],375:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -58075,13 +59674,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var core_1 = require('@angular/core');
 var app_1 = require('../app/app');
 var config_1 = require('../../config/config');
+var ion_1 = require('../ion');
+var util_1 = require('../../util/util');
+var nav_controller_1 = require('../nav/nav-controller');
+var platform_1 = require('../../platform/platform');
 var tab_button_1 = require('./tab-button');
 var tab_highlight_1 = require('./tab-highlight');
-var ion_1 = require('../ion');
-var platform_1 = require('../../platform/platform');
-var nav_controller_1 = require('../nav/nav-controller');
 var view_controller_1 = require('../nav/view-controller');
-var util_1 = require('../../util/util');
 /**
  * @name Tabs
  * @description
@@ -58119,7 +59718,7 @@ var util_1 = require('../../util/util');
  *
  * @usage
  *
- * You can add a basic tabs template to a `@Page` using the following
+ * You can add a basic tabs template to a `@Component` using the following
  * template:
  *
  * ```html
@@ -58133,7 +59732,7 @@ var util_1 = require('../../util/util');
  * Where `tab1Root`, `tab2Root`, and `tab3Root` are each a page:
  *
  *```ts
- * @Page({
+ * @Component({
  *   templateUrl: 'build/pages/tabs/tabs.html'
  * })
  * export class TabsPage {
@@ -58184,9 +59783,9 @@ var util_1 = require('../../util/util');
  *```ts
  * export class TabsPage {
  *
- * @ViewChild('myTabs) tabRef: Tabs
+ * @ViewChild('myTabs') tabRef: Tabs;
  *
- * onPageDidEnter() {
+ * ionViewDidEnter() {
  *   this.tabRef.select(2);
  *  }
  *
@@ -58217,11 +59816,11 @@ var Tabs = (function (_super) {
         /**
          * @input {any} Expression to evaluate when the tab changes.
          */
-        this.change = new core_1.EventEmitter();
+        this.ionChange = new core_1.EventEmitter();
         this.parent = parent;
         this.id = ++tabIds;
-        this.subPages = _config.getBoolean('tabSubPages');
-        this._useHighlight = _config.getBoolean('tabbarHighlight');
+        this.subPages = _config.getBoolean('tabSubPages', false);
+        this._useHighlight = _config.getBoolean('tabbarHighlight', false);
         this._sbPadding = _config.getBoolean('statusbarPadding', false);
         if (parent) {
             // this Tabs has a parent Nav
@@ -58237,7 +59836,7 @@ var Tabs = (function (_super) {
         if (viewCtrl) {
             viewCtrl.setContent(this);
             viewCtrl.setContentRef(_elementRef);
-            viewCtrl.onReady = function (done) {
+            viewCtrl.loaded = function (done) {
                 _this._onReady = done;
             };
         }
@@ -58255,7 +59854,7 @@ var Tabs = (function (_super) {
             });
         }
         this._btns.toArray().forEach(function (tabButton) {
-            tabButton.select.subscribe(function (tab) {
+            tabButton.ionSelect.subscribe(function (tab) {
                 _this.select(tab);
             });
         });
@@ -58327,13 +59926,13 @@ var Tabs = (function (_super) {
         var deselectedPage;
         if (deselectedTab) {
             deselectedPage = deselectedTab.getActive();
-            deselectedPage && deselectedPage.willLeave();
+            deselectedPage && deselectedPage.fireWillLeave();
         }
         var selectedPage = selectedTab.getActive();
-        selectedPage && selectedPage.willEnter();
+        selectedPage && selectedPage.fireWillEnter();
         selectedTab.load(opts, function () {
-            selectedTab.select.emit(selectedTab);
-            _this.change.emit(selectedTab);
+            selectedTab.ionSelect.emit(selectedTab);
+            _this.ionChange.emit(selectedTab);
             if (selectedTab.root) {
                 // only show the selectedTab if it has a root
                 // it's possible the tab is only for opening modal's or signing out
@@ -58346,8 +59945,8 @@ var Tabs = (function (_super) {
                     _this._highlight.select(selectedTab);
                 }
             }
-            selectedPage && selectedPage.didEnter();
-            deselectedPage && deselectedPage.didLeave();
+            selectedPage && selectedPage.fireDidEnter();
+            deselectedPage && deselectedPage.fireDidLeave();
             if (_this._onReady) {
                 _this._onReady();
                 _this._onReady = null;
@@ -58399,8 +59998,8 @@ var Tabs = (function (_super) {
         }
         var instance = active.instance;
         // If they have a custom tab selected handler, call it
-        if (instance.tabSelected) {
-            return instance.tabSelected();
+        if (instance.ionSelected) {
+            return instance.ionSelected();
         }
         // If we're a few pages deep, pop to root
         if (tab.length() > 1) {
@@ -58451,7 +60050,7 @@ var Tabs = (function (_super) {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Tabs.prototype, "change", void 0);
+    ], Tabs.prototype, "ionChange", void 0);
     __decorate([
         core_1.ViewChild(tab_highlight_1.TabHighlight), 
         __metadata('design:type', tab_highlight_1.TabHighlight)
@@ -58468,7 +60067,7 @@ var Tabs = (function (_super) {
                 '</ion-navbar-section>' +
                 '<ion-tabbar-section>' +
                 '<tabbar role="tablist">' +
-                '<a *ngFor="let t of _tabs" [tab]="t" class="tab-button" [class.tab-disabled]="!t.enabled" [class.tab-hidden]="!t.show" role="tab">' +
+                '<a *ngFor="let t of _tabs" [tab]="t" class="tab-button" [class.tab-disabled]="!t.enabled" [class.tab-hidden]="!t.show" role="tab" href="#">' +
                 '<ion-icon *ngIf="t.tabIcon" [name]="t.tabIcon" [isActive]="t.isSelected" class="tab-button-icon"></ion-icon>' +
                 '<span *ngIf="t.tabTitle" class="tab-button-text">{{t.tabTitle}}</span>' +
                 '<ion-badge *ngIf="t.tabBadge" class="tab-badge" [ngClass]="\'badge-\' + t.tabBadgeStyle">{{t.tabBadge}}</ion-badge>' +
@@ -58489,7 +60088,7 @@ var Tabs = (function (_super) {
         }),
         __param(0, core_1.Optional()),
         __param(1, core_1.Optional()), 
-        __metadata('design:paramtypes', [nav_controller_1.NavController, view_controller_1.ViewController, app_1.IonicApp, config_1.Config, core_1.ElementRef, platform_1.Platform, core_1.Renderer])
+        __metadata('design:paramtypes', [nav_controller_1.NavController, view_controller_1.ViewController, app_1.App, config_1.Config, core_1.ElementRef, platform_1.Platform, core_1.Renderer])
     ], Tabs);
     return Tabs;
 }(ion_1.Ion));
@@ -58510,18 +60109,17 @@ var TabNavBarAnchor = (function () {
     return TabNavBarAnchor;
 }());
 
-},{"../../config/config":379,"../../platform/platform":390,"../../util/util":411,"../app/app":314,"../ion":327,"../nav/nav-controller":341,"../nav/view-controller":349,"./tab-button":365,"./tab-highlight":366,"@angular/core":140}],369:[function(require,module,exports){
+},{"../../config/config":386,"../../platform/platform":396,"../../util/util":417,"../app/app":318,"../ion":332,"../nav/nav-controller":346,"../nav/view-controller":354,"./tab-button":372,"./tab-highlight":373,"@angular/core":144}],376:[function(require,module,exports){
 "use strict";
 var dom_1 = require('../../util/dom');
 var Activator = (function () {
-    function Activator(app, config, _zone) {
+    function Activator(app, config) {
         this.app = app;
-        this._zone = _zone;
         this._queue = [];
         this._active = [];
         this._css = config.get('activatedClass') || 'activated';
     }
-    Activator.prototype.downAction = function (ev, activatableEle, pointerX, pointerY) {
+    Activator.prototype.downAction = function (ev, activatableEle, startCoord) {
         // the user just pressed down
         var self = this;
         if (self.disableActivated(ev)) {
@@ -58529,28 +60127,23 @@ var Activator = (function () {
         }
         // queue to have this element activated
         self._queue.push(activatableEle);
-        this._zone.runOutsideAngular(function () {
-            dom_1.rafFrames(2, function () {
-                var activatableEle;
-                for (var i = 0; i < self._queue.length; i++) {
-                    activatableEle = self._queue[i];
-                    if (activatableEle && activatableEle.parentNode) {
-                        self._active.push(activatableEle);
-                        activatableEle.classList.add(self._css);
-                    }
+        dom_1.rafFrames(2, function () {
+            var activatableEle;
+            for (var i = 0; i < self._queue.length; i++) {
+                activatableEle = self._queue[i];
+                if (activatableEle && activatableEle.parentNode) {
+                    self._active.push(activatableEle);
+                    activatableEle.classList.add(self._css);
                 }
-                self._queue = [];
-            });
+            }
+            self._queue = [];
         });
     };
-    Activator.prototype.upAction = function (ev, activatableEle, pointerX, pointerY) {
+    Activator.prototype.upAction = function (ev, activatableEle, startCoord) {
+        var _this = this;
         // the user was pressing down, then just let up
-        var self = this;
-        function activateUp() {
-            self.clearState();
-        }
-        this._zone.runOutsideAngular(function () {
-            dom_1.rafFrames(CLEAR_STATE_DEFERS, activateUp);
+        dom_1.rafFrames(CLEAR_STATE_DEFERS, function () {
+            _this.clearState();
         });
     };
     Activator.prototype.clearState = function () {
@@ -58560,7 +60153,7 @@ var Activator = (function () {
             // the app is actively disabled, so don't bother deactivating anything.
             // this makes it easier on the GPU so it doesn't have to redraw any
             // buttons during a transition. This will retry in XX milliseconds.
-            setTimeout(function () {
+            dom_1.nativeTimeout(function () {
                 _this.clearState();
             }, 600);
         }
@@ -58598,7 +60191,7 @@ var Activator = (function () {
 exports.Activator = Activator;
 var CLEAR_STATE_DEFERS = 5;
 
-},{"../../util/dom":405}],370:[function(require,module,exports){
+},{"../../util/dom":411}],377:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -58607,89 +60200,87 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var activator_1 = require('./activator');
 var dom_1 = require('../../util/dom');
-var win = window;
 /**
  * @private
  */
 var RippleActivator = (function (_super) {
     __extends(RippleActivator, _super);
-    function RippleActivator(app, config, zone) {
-        _super.call(this, app, config, zone);
+    function RippleActivator(app, config) {
+        _super.call(this, app, config);
     }
-    RippleActivator.prototype.downAction = function (ev, activatableEle, pointerX, pointerY) {
+    RippleActivator.prototype.downAction = function (ev, activatableEle, startCoord) {
         var self = this;
         if (self.disableActivated(ev)) {
             return;
         }
         // queue to have this element activated
         self._queue.push(activatableEle);
-        this._zone.runOutsideAngular(function () {
-            dom_1.nativeRaf(function () {
-                var i;
-                for (i = 0; i < self._queue.length; i++) {
-                    var queuedEle = self._queue[i];
-                    if (queuedEle && queuedEle.parentNode) {
-                        self._active.push(queuedEle);
-                        // DOM WRITE
-                        queuedEle.classList.add(self._css);
-                        var j = queuedEle.childElementCount;
-                        while (j--) {
-                            var rippleEle = queuedEle.children[j];
-                            if (rippleEle.tagName === 'ION-BUTTON-EFFECT') {
-                                // DOM WRITE
-                                rippleEle.style.left = '-9999px';
-                                rippleEle.style.opacity = '';
-                                rippleEle.style[dom_1.CSS.transform] = 'scale(0.001) translateZ(0px)';
-                                rippleEle.style[dom_1.CSS.transition] = '';
-                                // DOM READ
-                                var clientRect = activatableEle.getBoundingClientRect();
-                                rippleEle.$top = clientRect.top;
-                                rippleEle.$left = clientRect.left;
-                                rippleEle.$width = clientRect.width;
-                                rippleEle.$height = clientRect.height;
-                                break;
-                            }
+        dom_1.nativeRaf(function () {
+            for (var i = 0; i < self._queue.length; i++) {
+                var queuedEle = self._queue[i];
+                if (queuedEle && queuedEle.parentNode) {
+                    self._active.push(queuedEle);
+                    // DOM WRITE
+                    queuedEle.classList.add(self._css);
+                    var j = queuedEle.childElementCount;
+                    while (j--) {
+                        var rippleEle = queuedEle.children[j];
+                        if (rippleEle.tagName === 'ION-BUTTON-EFFECT') {
+                            // DOM WRITE
+                            rippleEle.style.left = '-9999px';
+                            rippleEle.style.opacity = '';
+                            rippleEle.style[dom_1.CSS.transform] = 'scale(0.001) translateZ(0px)';
+                            rippleEle.style[dom_1.CSS.transition] = '';
+                            // DOM READ
+                            var clientRect = activatableEle.getBoundingClientRect();
+                            rippleEle.$top = clientRect.top;
+                            rippleEle.$left = clientRect.left;
+                            rippleEle.$width = clientRect.width;
+                            rippleEle.$height = clientRect.height;
+                            break;
                         }
                     }
                 }
-                self._queue = [];
-            });
+            }
+            self._queue = [];
         });
     };
-    RippleActivator.prototype.upAction = function (ev, activatableEle, pointerX, pointerY) {
+    RippleActivator.prototype.upAction = function (ev, activatableEle, startCoord) {
         var self = this;
-        var i = activatableEle.childElementCount;
-        while (i--) {
-            var rippleEle = activatableEle.children[i];
-            if (rippleEle.tagName === 'ION-BUTTON-EFFECT') {
-                var clientPointerX = (pointerX - rippleEle.$left);
-                var clientPointerY = (pointerY - rippleEle.$top);
-                var x = Math.max(Math.abs(rippleEle.$width - clientPointerX), clientPointerX) * 2;
-                var y = Math.max(Math.abs(rippleEle.$height - clientPointerY), clientPointerY) * 2;
-                var diameter = Math.min(Math.max(Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)), 64), 240);
-                if (activatableEle.hasAttribute('ion-item')) {
-                    diameter = Math.min(diameter, 140);
+        if (!dom_1.hasPointerMoved(6, startCoord, dom_1.pointerCoord(ev))) {
+            var i = activatableEle.childElementCount;
+            while (i--) {
+                var rippleEle = activatableEle.children[i];
+                if (rippleEle.tagName === 'ION-BUTTON-EFFECT') {
+                    var clientPointerX = (startCoord.x - rippleEle.$left);
+                    var clientPointerY = (startCoord.y - rippleEle.$top);
+                    var x = Math.max(Math.abs(rippleEle.$width - clientPointerX), clientPointerX) * 2;
+                    var y = Math.max(Math.abs(rippleEle.$height - clientPointerY), clientPointerY) * 2;
+                    var diameter = Math.min(Math.max(Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)), 64), 240);
+                    if (activatableEle.hasAttribute('ion-item')) {
+                        diameter = Math.min(diameter, 140);
+                    }
+                    var radius = Math.sqrt(rippleEle.$width + rippleEle.$height);
+                    var scaleTransitionDuration = Math.max(1600 * Math.sqrt(radius / TOUCH_DOWN_ACCEL) + 0.5, 260);
+                    var opacityTransitionDuration = scaleTransitionDuration * 0.7;
+                    var opacityTransitionDelay = scaleTransitionDuration - opacityTransitionDuration;
+                    // DOM WRITE
+                    rippleEle.style.width = rippleEle.style.height = diameter + 'px';
+                    rippleEle.style.marginTop = rippleEle.style.marginLeft = -(diameter / 2) + 'px';
+                    rippleEle.style.left = clientPointerX + 'px';
+                    rippleEle.style.top = clientPointerY + 'px';
+                    rippleEle.style.opacity = '0';
+                    rippleEle.style[dom_1.CSS.transform] = 'scale(1) translateZ(0px)';
+                    rippleEle.style[dom_1.CSS.transition] = 'transform ' +
+                        scaleTransitionDuration +
+                        'ms,opacity ' +
+                        opacityTransitionDuration +
+                        'ms ' +
+                        opacityTransitionDelay + 'ms';
                 }
-                var radius = Math.sqrt(rippleEle.$width + rippleEle.$height);
-                var scaleTransitionDuration = Math.max(1600 * Math.sqrt(radius / TOUCH_DOWN_ACCEL) + 0.5, 260);
-                var opacityTransitionDuration = scaleTransitionDuration * 0.7;
-                var opacityTransitionDelay = scaleTransitionDuration - opacityTransitionDuration;
-                // DOM WRITE
-                rippleEle.style.width = rippleEle.style.height = diameter + 'px';
-                rippleEle.style.marginTop = rippleEle.style.marginLeft = -(diameter / 2) + 'px';
-                rippleEle.style.left = clientPointerX + 'px';
-                rippleEle.style.top = clientPointerY + 'px';
-                rippleEle.style.opacity = '0';
-                rippleEle.style[dom_1.CSS.transform] = 'scale(1) translateZ(0px)';
-                rippleEle.style[dom_1.CSS.transition] = 'transform ' +
-                    scaleTransitionDuration +
-                    'ms,opacity ' +
-                    opacityTransitionDuration +
-                    'ms ' +
-                    opacityTransitionDelay + 'ms';
             }
         }
-        _super.prototype.upAction.call(this, ev, activatableEle, pointerX, pointerY);
+        _super.prototype.upAction.call(this, ev, activatableEle, startCoord);
     };
     RippleActivator.prototype.deactivate = function () {
         // remove the active class from all active elements
@@ -58707,7 +60298,7 @@ var RippleActivator = (function (_super) {
 exports.RippleActivator = RippleActivator;
 var TOUCH_DOWN_ACCEL = 300;
 
-},{"../../util/dom":405,"./activator":369}],371:[function(require,module,exports){
+},{"../../util/dom":411,"./activator":376}],378:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -58730,16 +60321,15 @@ var ripple_1 = require('./ripple');
 var TapClick = (function () {
     function TapClick(config, app, zone) {
         this.app = app;
-        this.zone = zone;
         this.lastTouch = 0;
         this.disableClick = 0;
         this.lastActivated = 0;
         var self = this;
         if (config.get('activator') === 'ripple') {
-            self.activator = new ripple_1.RippleActivator(app, config, zone);
+            self.activator = new ripple_1.RippleActivator(app, config);
         }
         else if (config.get('activator') === 'highlight') {
-            self.activator = new activator_1.Activator(app, config, zone);
+            self.activator = new activator_1.Activator(app, config);
         }
         self.usePolyfill = (config.get('tapPolyfill') === true);
         zone.runOutsideAngular(function () {
@@ -58813,7 +60403,7 @@ var TapClick = (function () {
             this.startCoord = dom_1.pointerCoord(ev);
             var now = Date.now();
             if (this.lastActivated + 150 < now) {
-                this.activator && this.activator.downAction(ev, activatableEle, this.startCoord.x, this.startCoord.y);
+                this.activator && this.activator.downAction(ev, activatableEle, this.startCoord);
                 this.lastActivated = now;
             }
             this.moveListeners(true);
@@ -58823,9 +60413,11 @@ var TapClick = (function () {
         }
     };
     TapClick.prototype.pointerEnd = function (ev) {
-        var activatableEle = getActivatableTarget(ev.target);
-        if (activatableEle && this.startCoord) {
-            this.activator && this.activator.upAction(ev, activatableEle, this.startCoord.x, this.startCoord.y);
+        if (this.startCoord && this.activator) {
+            var activatableEle = getActivatableTarget(ev.target);
+            if (activatableEle) {
+                this.activator.upAction(ev, activatableEle, this.startCoord);
+            }
         }
         this.moveListeners(false);
     };
@@ -58859,7 +60451,7 @@ var TapClick = (function () {
     };
     TapClick = __decorate([
         core_1.Injectable(), 
-        __metadata('design:paramtypes', [config_1.Config, app_1.IonicApp, core_1.NgZone])
+        __metadata('design:paramtypes', [config_1.Config, app_1.App, core_1.NgZone])
     ], TapClick);
     return TapClick;
 }());
@@ -58903,7 +60495,7 @@ var POINTER_TOLERANCE = 4;
 var POINTER_MOVE_UNTIL_CANCEL = 10;
 var DISABLE_NATIVE_CLICK_AMOUNT = 2500;
 
-},{"../../config/config":379,"../../util/dom":405,"../app/app":314,"./activator":369,"./ripple":370,"@angular/core":140}],372:[function(require,module,exports){
+},{"../../config/config":386,"../../util/dom":411,"../app/app":318,"./activator":376,"./ripple":377,"@angular/core":144}],379:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -58980,7 +60572,6 @@ var Toast = (function (_super) {
     __extends(Toast, _super);
     function Toast(opts) {
         if (opts === void 0) { opts = {}; }
-        opts.enableBackdropDismiss = util_1.isPresent(opts.enableBackdropDismiss) ? !!opts.enableBackdropDismiss : true;
         opts.dismissOnPageChange = util_1.isPresent(opts.dismissOnPageChange) ? !!opts.dismissOnPageChange : false;
         _super.call(this, ToastCmp, opts);
         this.viewType = 'toast';
@@ -59015,7 +60606,6 @@ var Toast = (function (_super) {
      *  | cssClass              | `string`  | -               | Any additional class for custom styles.                                                                       |
      *  | showCloseButton       | `boolean` | false           | Whether or not to show a button to close the toast.                                                           |
      *  | closeButtonText       | `string`  | "Close"         | Text to display in the close button.                                                                          |
-     *  | enableBackdropDismiss | `boolean` | true            | Whether the toast should be dismissed by tapping the backdrop.                                                |
      *  | dismissOnPageChange   | `boolean` | false           | Whether to dismiss the toast when navigating to a new page.                                                   |
      *
      * @param {object} opts Toast options. See the above table for available options.
@@ -59047,7 +60637,7 @@ var ToastCmp = (function () {
             this.hdrId = 'toast-hdr-' + this.id;
         }
     }
-    ToastCmp.prototype.onPageDidEnter = function () {
+    ToastCmp.prototype.ionViewDidEnter = function () {
         var _this = this;
         var activeElement = document.activeElement;
         if (activeElement) {
@@ -59063,11 +60653,6 @@ var ToastCmp = (function () {
                 setTimeout(function () {
                     _this.dismiss('backdrop');
                 }, this.d.duration);
-        }
-    };
-    ToastCmp.prototype.bdClick = function () {
-        if (this.isEnabled() && this.d.enableBackdropDismiss) {
-            this.dismiss('backdrop');
         }
     };
     ToastCmp.prototype.cbClick = function () {
@@ -59087,7 +60672,7 @@ var ToastCmp = (function () {
     ToastCmp = __decorate([
         core_1.Component({
             selector: 'ion-toast',
-            template: "\n    <div (click)=\"bdClick()\" tappable disable-activated class=\"backdrop\" role=\"presentation\"></div>\n    <div class=\"toast-wrapper\">\n      <div class=\"toast-container\">\n        <div class=\"toast-message\" id=\"{{hdrId}}\" *ngIf=\"d.message\">{{d.message}}</div>\n        <button clear class=\"toast-button\" *ngIf=\"d.showCloseButton\" (click)=\"cbClick()\">\n          {{ d.closeButtonText || 'Close' }}\n         </button>\n      </div>\n    </div>\n  ",
+            template: "\n    <div class=\"toast-wrapper\">\n      <div class=\"toast-container\">\n        <div class=\"toast-message\" id=\"{{hdrId}}\" *ngIf=\"d.message\">{{d.message}}</div>\n        <button clear class=\"toast-button\" *ngIf=\"d.showCloseButton\" (click)=\"cbClick()\">\n          {{ d.closeButtonText || 'Close' }}\n         </button>\n      </div>\n    </div>\n  ",
             host: {
                 'role': 'dialog',
                 '[attr.aria-labelledby]': 'hdrId',
@@ -59125,7 +60710,7 @@ var ToastMdSlideIn = (function (_super) {
     function ToastMdSlideIn(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = enteringView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.toast-wrapper'));
         backdrop.fromTo('opacity', 0, 0);
         wrapper.fromTo('translateY', '120%', '0%');
@@ -59139,7 +60724,7 @@ var ToastMdSlideOut = (function (_super) {
         _super.call(this, opts);
         var ele = leavingView.pageRef().nativeElement;
         var wrapper = new animation_1.Animation(ele.querySelector('.toast-wrapper'));
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         wrapper.fromTo('translateY', '0%', '120%');
         backdrop.fromTo('opacity', 0, 0);
         this.easing('cubic-bezier(.36,.66,.04,1)').duration(450).add(backdrop).add(wrapper);
@@ -59151,7 +60736,7 @@ var ToastWpPopIn = (function (_super) {
     function ToastWpPopIn(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = enteringView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.toast-wrapper'));
         wrapper.fromTo('opacity', '0.01', '1').fromTo('scale', '1.3', '1');
         backdrop.fromTo('opacity', 0, 0);
@@ -59164,7 +60749,7 @@ var ToastWpPopOut = (function (_super) {
     function ToastWpPopOut(enteringView, leavingView, opts) {
         _super.call(this, opts);
         var ele = leavingView.pageRef().nativeElement;
-        var backdrop = new animation_1.Animation(ele.querySelector('.backdrop'));
+        var backdrop = new animation_1.Animation(ele.querySelector('ion-backdrop'));
         var wrapper = new animation_1.Animation(ele.querySelector('.toast-wrapper'));
         wrapper.fromTo('opacity', '1', '0').fromTo('scale', '1', '1.3');
         backdrop.fromTo('opacity', 0, 0);
@@ -59180,7 +60765,7 @@ transition_1.Transition.register('toast-wp-slide-out', ToastWpPopOut);
 transition_1.Transition.register('toast-wp-slide-in', ToastWpPopIn);
 var toastIds = -1;
 
-},{"../../animations/animation":309,"../../config/config":379,"../../transitions/transition":399,"../../util/util":411,"../nav/nav-controller":341,"../nav/nav-params":342,"../nav/view-controller":349,"@angular/core":140}],373:[function(require,module,exports){
+},{"../../animations/animation":313,"../../config/config":386,"../../transitions/transition":405,"../../util/util":417,"../nav/nav-controller":346,"../nav/nav-params":347,"../nav/view-controller":354,"@angular/core":144}],380:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -59253,7 +60838,7 @@ var Toggle = (function () {
         /**
          * @output {Toggle} expression to evaluate when the toggle value changes
          */
-        this.change = new core_1.EventEmitter();
+        this.ionChange = new core_1.EventEmitter();
         this._form.register(this);
         if (_item) {
             this.id = 'tgl-' + _item.registerInput('toggle');
@@ -59333,7 +60918,9 @@ var Toggle = (function () {
     Toggle.prototype._setChecked = function (isChecked) {
         if (isChecked !== this._checked) {
             this._checked = isChecked;
-            this.change.emit(this);
+            if (this._init) {
+                this.ionChange.emit(this);
+            }
             this._item && this._item.setCssClass('item-toggle-checked', isChecked);
         }
     };
@@ -59387,6 +60974,12 @@ var Toggle = (function () {
     /**
      * @private
      */
+    Toggle.prototype.ngAfterContentInit = function () {
+        this._init = true;
+    };
+    /**
+     * @private
+     */
     Toggle.prototype.ngOnDestroy = function () {
         this._form.deregister(this);
     };
@@ -59406,7 +60999,7 @@ var Toggle = (function () {
     __decorate([
         core_1.Output(), 
         __metadata('design:type', core_1.EventEmitter)
-    ], Toggle.prototype, "change", void 0);
+    ], Toggle.prototype, "ionChange", void 0);
     __decorate([
         core_1.Input(), 
         __metadata('design:type', Boolean)
@@ -59450,7 +61043,7 @@ var Toggle = (function () {
 }());
 exports.Toggle = Toggle;
 
-},{"../../util/dom":405,"../../util/form":408,"../../util/util":411,"../item/item":330,"@angular/common":8,"@angular/core":140}],374:[function(require,module,exports){
+},{"../../util/dom":411,"../../util/form":414,"../../util/util":417,"../item/item":335,"@angular/common":12,"@angular/core":144}],381:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -59525,17 +61118,41 @@ exports.ToolbarBase = ToolbarBase;
 /**
  * @name Toolbar
  * @description
- * The toolbar is generic bar that sits above or below content.
- * Unlike an `Navbar`, `Toolbar` can be used for a subheader as well.
- * Since it's based on flexbox, you can place the toolbar where you
- * need it and flexbox will handle everything else. Toolbars will automatically
- * assume they should be placed before an `ion-content`, so to specify that you want it
- * below, you can add the property `position="bottom"`. This will change the flex order
+ * A Toolbar is a generic bar that is positioned above or below content.
+ * Unlike a [Navbar](../../nav/Navbar), a toolbar can be used as a subheader.
+ * Toolbars are positioned automatically at the `top`, but they can be
+ * positioned at the bottom by setting `position="bottom"` on the component.
+ *
+ *
+ * ### Buttons in a Toolbar
+ * Buttons placed in a toolbar should be placed inside of the `<ion-buttons>`
+ * element. An exception to this is a [menuToggle](../../menu/MenuToggle) button.
+ * It should not be placed inside of the `<ion-buttons>` element. Both the
+ * `<ion-buttons>` element and the `menuToggle` can be positioned inside of the
+ * toolbar using different properties. The below chart has a description of each
  * property.
+ *
+ * | Property    | Description                                                                                                           |
+ * |-------------|-----------------------------------------------------------------------------------------------------------------------|
+ * | `start`     | Positions element to the left of the content in `ios` mode, and directly to the right in `md` and `wp` mode.    |
+ * | `end`       | Positions element to the right of the content in `ios` mode, and to the far right in `md` and `wp` mode.        |
+ * | `left`      | Positions element to the left of all other elements.                                                            |
+ * | `right`     | Positions element to the right of all other elements.                                                           |
+ *
+ * See [usage](#usage) below for some examples.
+ *
  *
  * @usage
  * ```html
  * <ion-toolbar>
+ *   <ion-buttons start>
+ *     <button>
+ *       <ion-icon name="contact"></ion-icon>
+ *     </button>
+ *     <button>
+ *       <ion-icon name="search"></ion-icon>
+ *     </button>
+ *   </ion-buttons>
  *   <ion-title>My Toolbar Title</ion-title>
  * </ion-toolbar>
  *
@@ -59543,16 +61160,28 @@ exports.ToolbarBase = ToolbarBase;
  *   <ion-title>I'm a subheader</ion-title>
  * </ion-toolbar>
  *
- *  <ion-content></ion-content>
+ * <ion-content></ion-content>
  *
  * <ion-toolbar position="bottom">
  *   <ion-title>I'm a subfooter</ion-title>
+ *   <ion-buttons right>
+ *     <button>
+ *       <ion-icon name="menu"></ion-icon>
+ *     </button>
+ *   </ion-buttons>
  * </ion-toolbar>
  *
  * <ion-toolbar position="bottom">
  *   <ion-title>I'm a footer</ion-title>
+ *   <ion-buttons end>
+ *     <button>
+ *       <ion-icon name="more"></ion-icon>
+ *     </button>
+ *     <button>
+ *       <ion-icon name="options"></ion-icon>
+ *     </button>
+ *   </ion-buttons>
  * </ion-toolbar>
- *
  *  ```
  *
  * @property {any} [position] - set position of the toolbar, `top` or `bottom`.
@@ -59593,20 +61222,27 @@ exports.Toolbar = Toolbar;
  * @name Title
  * @description
  * `ion-title` is a component that sets the title of the `Toolbar` or `Navbar`
+ *
  * @usage
+ *
+ * ```html
+ * <ion-navbar *navbar>
+ *    <ion-title>Tab 1</ion-title>
+ * </ion-navbar>
+ * ```
+ *
+ * Or to create a navbar with a toolbar as a subheader:
+ *
  * ```html
  * <ion-navbar *navbar>
  *    <ion-title>Tab 1</ion-title>
  * </ion-navbar>
  *
- *<!-- or if you wanted to create a subheader title-->
- * <ion-navbar *navbar>
- *    <ion-title>Tab 1</ion-title>
- * </ion-navbar>
  * <ion-toolbar>
- *   <ion-title>SubHeader</ion-title>
+ *   <ion-title>Subheader</ion-title>
  * </ion-toolbar>
- *  ```
+ * ```
+ *
  * @demo /docs/v2/demos/title/
  */
 var ToolbarTitle = (function (_super) {
@@ -59647,20 +61283,6 @@ var ToolbarItem = (function () {
         toolbar && toolbar.addItemRef(elementRef);
         navbar && navbar.addItemRef(elementRef);
         this.inToolbar = !!(toolbar || navbar);
-        // Deprecation warning
-        if (elementRef.nativeElement.tagName === 'ION-NAV-ITEMS') {
-            if (elementRef.nativeElement.hasAttribute('primary')) {
-                void 0;
-                elementRef.nativeElement.setAttribute('start', '');
-            }
-            else if (elementRef.nativeElement.hasAttribute('secondary')) {
-                void 0;
-                elementRef.nativeElement.setAttribute('end', '');
-            }
-            else {
-                void 0;
-            }
-        }
     }
     Object.defineProperty(ToolbarItem.prototype, "_buttons", {
         set: function (buttons) {
@@ -59689,7 +61311,7 @@ var ToolbarItem = (function () {
 }());
 exports.ToolbarItem = ToolbarItem;
 
-},{"../../config/config":379,"../button/button":316,"../ion":327,"../nav/view-controller":349,"../navbar/navbar":350,"@angular/core":140}],375:[function(require,module,exports){
+},{"../../config/config":386,"../button/button":321,"../ion":332,"../nav/view-controller":354,"../navbar/navbar":355,"@angular/core":144}],382:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -59745,7 +61367,7 @@ var VirtualItem = (function () {
 }());
 exports.VirtualItem = VirtualItem;
 
-},{"@angular/core":140}],376:[function(require,module,exports){
+},{"@angular/core":144}],383:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -59792,7 +61414,7 @@ var img_1 = require('../img/img');
  * <ion-list [virtualScroll]="items">
  *
  *   <ion-item *virtualItem="#item">
- *     {{ item }}
+ *     {% raw %}{{ item }}{% endraw %}
  *   </ion-item>
  *
  * </ion-list>
@@ -59813,11 +61435,11 @@ var img_1 = require('../img/img');
  * <ion-list [virtualScroll]="items" [headerFn]="myHeaderFn">
  *
  *   <ion-item-divider *virtualHeader="#header">
- *     Header: {{ header }}
+ *     Header: {% raw %}{{ header }}{% endraw %}
  *   </ion-item-divider>
  *
  *   <ion-item *virtualItem="#item">
- *     Item: {{ item }}
+ *     Item: {% raw %}{{ item }}{% endraw %}
  *   </ion-item>
  *
  * </ion-list>
@@ -59880,7 +61502,7 @@ var img_1 = require('../img/img');
  *     <ion-avatar item-left>
  *       <ion-img [src]="item.avatarUrl"></ion-img>
  *     </ion-avatar>
- *     {{ item.firstName }} {{ item.lastName }}
+ *    {% raw %} {{ item.firstName }} {{ item.lastName }}{% endraw %}
  *   </ion-item>
  *
  * </ion-list>
@@ -60371,7 +61993,7 @@ var SCROLL_END_TIMEOUT_MS = 140;
 var QUEUE_CHANGE_DETECTION = 0;
 var QUEUE_WRITE_TO_NODES = 1;
 
-},{"../../config/config":379,"../../platform/platform":390,"../../util/dom":405,"../../util/util":411,"../content/content":318,"../img/img":321,"../nav/view-controller":349,"./virtual-item":375,"./virtual-util":377,"@angular/core":140}],377:[function(require,module,exports){
+},{"../../config/config":386,"../../platform/platform":396,"../../util/dom":411,"../../util/util":417,"../content/content":323,"../img/img":326,"../nav/view-controller":354,"./virtual-item":382,"./virtual-util":384,"@angular/core":144}],384:[function(require,module,exports){
 "use strict";
 var dom_1 = require('../../util/dom');
 /**
@@ -60897,37 +62519,71 @@ var TEMPLATE_FOOTER = 2;
 var VIEWABLE_RENDERED_PADDING = 3;
 var REQUIRED_DOM_READS = 2;
 
-},{"../../util/dom":405}],378:[function(require,module,exports){
+},{"../../util/dom":411}],385:[function(require,module,exports){
 "use strict";
+var platform_browser_dynamic_1 = require('@angular/platform-browser-dynamic');
 var core_1 = require('@angular/core');
 var router_1 = require('@angular/router');
 var common_1 = require('@angular/common');
 var http_1 = require('@angular/http');
+var app_1 = require('../components/app/app');
 var click_block_1 = require('../util/click-block');
 var config_1 = require('./config');
 var events_1 = require('../util/events');
 var feature_detect_1 = require('../util/feature-detect');
 var form_1 = require('../util/form');
-var app_1 = require('../components/app/app');
+var directives_1 = require('./directives');
+var util_1 = require('../util/util');
 var keyboard_1 = require('../util/keyboard');
 var menu_controller_1 = require('../components/menu/menu-controller');
+var dom_1 = require('../util/dom');
 var nav_registry_1 = require('../components/nav/nav-registry');
 var platform_1 = require('../platform/platform');
-var dom_1 = require('../util/dom');
 var scroll_view_1 = require('../util/scroll-view');
 var tap_click_1 = require('../components/tap-click/tap-click');
 var translate_1 = require('../translation/translate');
-/**
- * @private
- */
-function ionicProviders(args) {
-    if (args === void 0) { args = {}; }
-    var platform = new platform_1.Platform();
-    var navRegistry = new nav_registry_1.NavRegistry(args.pages);
-    var config = args.config;
+var _reflect = Reflect;
+function ionicBootstrap(appRootComponent, customProviders, config) {
+    // get all Ionic Providers
+    var providers = ionicProviders(customProviders, config);
+    // automatically set "ion-app" selector to users root component
+    addSelector(appRootComponent, 'ion-app');
+    // call angular bootstrap
+    return platform_browser_dynamic_1.bootstrap(appRootComponent, providers).then(function (ngComponentRef) {
+        // ionic app has finished bootstrapping
+        return ionicPostBootstrap(ngComponentRef);
+    });
+}
+exports.ionicBootstrap = ionicBootstrap;
+function ionicPostBootstrap(ngComponentRef) {
+    var app = ngComponentRef.injector.get(app_1.App);
+    app.setAppInjector(ngComponentRef.injector);
+    // prepare platform ready
+    var platform = ngComponentRef.injector.get(platform_1.Platform);
+    platform.setZone(ngComponentRef.injector.get(core_1.NgZone));
+    platform.prepareReady();
+    // TODO: Use PLATFORM_INITIALIZER
+    ngComponentRef.injector.get(tap_click_1.TapClick);
+    // TODO: Use Renderer
+    ngComponentRef.location.nativeElement.classList.add('app-init');
+    return ngComponentRef;
+}
+exports.ionicPostBootstrap = ionicPostBootstrap;
+function ionicProviders(customProviders, config) {
+    var directives = directives_1.IONIC_DIRECTIVES;
+    // add custom providers to Ionic's app
+    customProviders = util_1.isPresent(customProviders) ? customProviders : [];
+    // create an instance of Config
     if (!(config instanceof config_1.Config)) {
         config = new config_1.Config(config);
     }
+    // enable production mode if config set to true
+    if (config.getBoolean('prodMode')) {
+        core_1.enableProdMode();
+    }
+    // create an instance of Platform
+    var platform = new platform_1.Platform();
+    // initialize platform
     platform.setUrl(window.location.href);
     platform.setUserAgent(window.navigator.userAgent);
     platform.setNavigatorPlatform(window.navigator.platform);
@@ -60936,40 +62592,30 @@ function ionicProviders(args) {
     var clickBlock = new click_block_1.ClickBlock();
     var events = new events_1.Events();
     var featureDetect = new feature_detect_1.FeatureDetect();
+    var navRegistry = new nav_registry_1.NavRegistry();
     setupDom(window, document, config, platform, clickBlock, featureDetect);
     bindEvents(window, document, platform, events);
     return [
-        app_1.IonicApp,
+        app_1.App,
         core_1.provide(click_block_1.ClickBlock, { useValue: clickBlock }),
         core_1.provide(config_1.Config, { useValue: config }),
-        core_1.provide(platform_1.Platform, { useValue: platform }),
-        core_1.provide(feature_detect_1.FeatureDetect, { useValue: featureDetect }),
         core_1.provide(events_1.Events, { useValue: events }),
-        core_1.provide(nav_registry_1.NavRegistry, { useValue: navRegistry }),
-        tap_click_1.TapClick,
+        core_1.provide(feature_detect_1.FeatureDetect, { useValue: featureDetect }),
         form_1.Form,
         keyboard_1.Keyboard,
         menu_controller_1.MenuController,
+        core_1.provide(nav_registry_1.NavRegistry, { useValue: navRegistry }),
+        core_1.provide(platform_1.Platform, { useValue: platform }),
         translate_1.Translate,
+        tap_click_1.TapClick,
+        core_1.provide(core_1.PLATFORM_DIRECTIVES, { useValue: [directives], multi: true }),
         router_1.ROUTER_PROVIDERS,
         core_1.provide(common_1.LocationStrategy, { useClass: common_1.HashLocationStrategy }),
         http_1.HTTP_PROVIDERS,
+        customProviders
     ];
 }
 exports.ionicProviders = ionicProviders;
-/**
- * @private
- */
-function postBootstrap(appRef, prodMode) {
-    appRef.injector.get(tap_click_1.TapClick);
-    var app = appRef.injector.get(app_1.IonicApp);
-    var platform = appRef.injector.get(platform_1.Platform);
-    platform.setZone(appRef.injector.get(core_1.NgZone));
-    platform.prepareReady();
-    app.setProd(prodMode);
-    app.setAppInjector(appRef.injector);
-}
-exports.postBootstrap = postBootstrap;
 function setupDom(window, document, config, platform, clickBlock, featureDetect) {
     var bodyEle = document.body;
     var mode = config.get('mode');
@@ -60981,6 +62627,9 @@ function setupDom(window, document, config, platform, clickBlock, featureDetect)
         linkEle.removeAttribute(modeLinkAttr);
         linkEle.href = href;
     }
+    var headStyle = document.createElement('style');
+    headStyle.innerHTML = 'ion-app{display:none}';
+    document.head.appendChild(headStyle);
     // set the mode class name
     // ios/md/wp
     bodyEle.classList.add(mode);
@@ -61005,9 +62654,6 @@ function setupDom(window, document, config, platform, clickBlock, featureDetect)
     // enable :hover CSS when the "hoverCSS" setting is not false
     if (config.get('hoverCSS') !== false) {
         bodyEle.classList.add('enable-hover');
-    }
-    if (config.get('clickBlock')) {
-        clickBlock.enable();
     }
     // run feature detection tests
     featureDetect.run(window, document);
@@ -61039,14 +62685,27 @@ function bindEvents(window, document, platform, events) {
         }
     });
     // start listening for resizes XXms after the app starts
-    setTimeout(function () {
+    dom_1.nativeTimeout(function () {
         window.addEventListener('resize', function () {
             platform.windowResize();
         });
     }, 2000);
 }
+/**
+ * @private
+ */
+function addSelector(type, selector) {
+    if (type) {
+        var annotations = _reflect.getMetadata('annotations', type);
+        if (annotations && !annotations[0].selector) {
+            annotations[0].selector = selector;
+            _reflect.defineMetadata('annotations', annotations, type);
+        }
+    }
+}
+exports.addSelector = addSelector;
 
-},{"../components/app/app":314,"../components/menu/menu-controller":335,"../components/nav/nav-registry":345,"../components/tap-click/tap-click":371,"../platform/platform":390,"../translation/translate":400,"../util/click-block":403,"../util/dom":405,"../util/events":406,"../util/feature-detect":407,"../util/form":408,"../util/keyboard":409,"../util/scroll-view":410,"./config":379,"@angular/common":8,"@angular/core":140,"@angular/http":216,"@angular/router":287}],379:[function(require,module,exports){
+},{"../components/app/app":318,"../components/menu/menu-controller":340,"../components/nav/nav-registry":350,"../components/tap-click/tap-click":378,"../platform/platform":396,"../translation/translate":406,"../util/click-block":409,"../util/dom":411,"../util/events":412,"../util/feature-detect":413,"../util/form":414,"../util/keyboard":415,"../util/scroll-view":416,"../util/util":417,"./config":386,"./directives":387,"@angular/common":12,"@angular/core":144,"@angular/http":220,"@angular/platform-browser-dynamic":241,"@angular/router":291}],386:[function(require,module,exports){
 /**
 * @ngdoc service
 * @name Config
@@ -61065,66 +62724,57 @@ var util_1 = require('../util/util');
  * You can set the tab placement, icon mode, animations, and more here.
  *
  * ```ts
- * @App({
- *   template: `<ion-nav [root]="root"></ion-nav>`
- *   config: {
- *     backButtonText: 'Go Back',
- *     iconMode: 'ios',
- *     modalEnter: 'modal-slide-in',
- *     modalLeave: 'modal-slide-out',
- *     tabbarPlacement: 'bottom',
- *     pageTransition: 'ios',
- *   }
- * })
+ * import {ionicBootstrap} from 'ionic-angular';
+ *
+ * ionicBootstrap(AppRoot, customProviders, {
+ *   backButtonText: 'Go Back',
+ *   iconMode: 'ios',
+ *   modalEnter: 'modal-slide-in',
+ *   modalLeave: 'modal-slide-out',
+ *   tabbarPlacement: 'bottom',
+ *   pageTransition: 'ios',
+ * });
  * ```
  *
- * To change the mode to always use Material Design (md).
+ *
+ * Config can be overwritten at multiple levels allowing for more granular configuration.
+ * Below is an example where an app can override any setting we want based on a platform.
  *
  * ```ts
- * @App({
- *   template: `<ion-nav [root]="root"></ion-nav>`
- *   config: {
- *     mode: 'md'
+ * import {ionicBootstrap} from 'ionic-angular';
+ *
+ * ionicBootstrap(AppRoot, customProviders, {
+ *   tabbarPlacement: 'bottom',
+ *   platforms: {
+ *   ios: {
+ *     tabbarPlacement: 'top',
  *   }
- * })
+ * });
  * ```
  *
- * Config can be overwritten at multiple levels allowing for more configuration. Taking the example from earlier, we can override any setting we want based on a platform.
- * ```ts
- * @App({
- *   template: `<ion-nav [root]="root"></ion-nav>`
- *   config: {
- *     tabbarPlacement: 'bottom',
- *     platforms: {
- *      ios: {
- *        tabbarPlacement: 'top',
- *      }
- *     }
- *   }
- * })
- * ```
- *
- * We could also configure these values at a component level. Take `tabbarPlacement`, we can configure this as a property on our `ion-tabs`.
+ * We could also configure these values at a component level. Take `tabbarPlacement`,
+ * we can configure this as a property on our `ion-tabs`.
  *
  * ```html
  * <ion-tabs tabbarPlacement="top">
- *    <ion-tab tabTitle="Dash" tabIcon="pulse" [root]="tabRoot"></ion-tab>
- *  </ion-tabs>
+ *   <ion-tab tabTitle="Dash" tabIcon="pulse" [root]="tabRoot"></ion-tab>
+ * </ion-tabs>
  * ```
  *
- * The last way we could configure is through URL query strings. This is useful for testing while in the browser.
- * Simply add `?ionic<PROPERTYNAME>=<value>` to the url.
+ * The last way we could configure is through URL query strings. This is useful for testing
+ * while in the browser. Simply add `?ionic<PROPERTYNAME>=<value>` to the url.
  *
  * ```bash
  * http://localhost:8100/?ionicTabbarPlacement=bottom
  * ```
  *
- * Custom values can be added to config, and looked up at a later point in time.
+ * Any value can be added to config, and looked up at a later in any component.
  *
- * ``` javascript
+ * ```js
  * config.set('ios', 'favoriteColor', 'green');
+ *
  * // from any page in your app:
- * config.get('favoriteColor'); // 'green'
+ * config.get('favoriteColor'); // 'green' when iOS
  * ```
  *
  *
@@ -61153,6 +62803,9 @@ var util_1 = require('../util/util');
  * | `pageTransitionDelay`    | `number`            | The delay in milliseconds before the transition starts while changing pages.                                                                     |
  * | `pickerEnter`            | `string`            | The name of the transition to use while a picker is presented.                                                                                   |
  * | `pickerLeave`            | `string`            | The name of the transition to use while a picker is dismissed.                                                                                   |
+ * | `popoverEnter`           | `string`            | The name of the transition to use while a popover is presented.                                                                                  |
+ * | `popoverLeave`           | `string`            | The name of the transition to use while a popover is dismissed.                                                                                  |
+ * | `prodMode`               | `boolean`           | Disable development mode, which turns off assertions and other checks within the framework. One important assertion this disables verifies that a change detection pass does not result in additional changes to any bindings (also known as unidirectional data flow).
  * | `spinner`                | `string`            | The default spinner to use when a name is not defined.                                                                                           |
  * | `tabbarHighlight`        | `boolean`           | Whether to show a highlight line under the tab when it is selected.                                                                              |
  * | `tabbarLayout`           | `string`            | The layout to use for all tabs. Available options: `"icon-top"`, `"icon-left"`, `"icon-right"`, `"icon-bottom"`, `"icon-hide"`, `"title-hide"`.  |
@@ -61384,12 +63037,13 @@ var Config = (function () {
 exports.Config = Config;
 var modeConfigs = {};
 
-},{"../platform/platform":390,"../util/util":411}],380:[function(require,module,exports){
+},{"../platform/platform":396,"../util/util":417}],387:[function(require,module,exports){
 "use strict";
 var common_1 = require('@angular/common');
 var menu_1 = require('../components/menu/menu');
 var menu_toggle_1 = require('../components/menu/menu-toggle');
 var menu_close_1 = require('../components/menu/menu-close');
+var backdrop_1 = require('../components/backdrop/backdrop');
 var badge_1 = require('../components/badge/badge');
 var button_1 = require('../components/button/button');
 var content_1 = require('../components/content/content');
@@ -61420,6 +63074,7 @@ var label_1 = require('../components/label/label');
 var segment_1 = require('../components/segment/segment');
 var radio_button_1 = require('../components/radio/radio-button');
 var radio_group_1 = require('../components/radio/radio-group');
+var range_1 = require('../components/range/range');
 var searchbar_1 = require('../components/searchbar/searchbar');
 var nav_1 = require('../components/nav/nav');
 var nav_push_1 = require('../components/nav/nav-push');
@@ -61430,41 +63085,9 @@ var show_hide_when_1 = require('../components/show-hide-when/show-hide-when');
  * @name IONIC_DIRECTIVES
  * @description
  * The core Ionic directives as well as Angular's `CORE_DIRECTIVES` and `FORM_DIRECTIVES` are
- * available automatically when you bootstrap your app with the `@App` decorator. This means
- * if you are using custom components you no longer need to import `IONIC_DIRECTIVES` as they
- * are part of the `@App`s default directives.
- *
- * If you would like to **not** have them included by default, you would need to bootstrap
- * the app differently.
- *
- * Instead of starting your app like so:
- *
- * ```typescript
- * @App({
- *  template: "<ion-nav></ion-nav>"
- * })
- *
- * export class MyApp{
- *
- * }
- * ```
- *
- * We would use Angulars default way of bootstrap an app, import `IONIC_DIRECTIVES` and `ionicProviders`, then
- * declare `ionicProviders` as a dependencey.
- *
- * ```typescript
- *  import {IONIC_DIRECTIVES, ionicProviders} from 'ionic-angular';
- *  import {bootstrap} from '@angular/platform/browser';
- *
- *  @Component({
- *      //default selector, and theme.
- *      directives: [IONIC_DIRECTIVES]
- *  })
- *  class App {}
- *
- *  bootstrap(App,ionicProviders())
- * ```
- *
+ * available automatically when you bootstrap your app with the `ionicBootstrap`. This means
+ * if you are using custom components you do not need to import `IONIC_DIRECTIVES` as they
+ * are part of the app's default directives.
  *
  *
  * #### Angular
@@ -61534,6 +63157,7 @@ exports.IONIC_DIRECTIVES = [
     menu_1.Menu,
     menu_toggle_1.MenuToggle,
     menu_close_1.MenuClose,
+    backdrop_1.Backdrop,
     badge_1.Badge,
     button_1.Button,
     content_1.Content,
@@ -61574,6 +63198,7 @@ exports.IONIC_DIRECTIVES = [
     checkbox_1.Checkbox,
     radio_group_1.RadioGroup,
     radio_button_1.RadioButton,
+    range_1.Range,
     select_1.Select,
     option_1.Option,
     datetime_1.DateTime,
@@ -61592,7 +63217,7 @@ exports.IONIC_DIRECTIVES = [
     show_hide_when_1.HideWhen
 ];
 
-},{"../components/badge/badge":315,"../components/button/button":316,"../components/checkbox/checkbox":317,"../components/content/content":318,"../components/datetime/datetime":319,"../components/icon/icon":320,"../components/img/img":321,"../components/infinite-scroll/infinite-scroll":323,"../components/infinite-scroll/infinite-scroll-content":322,"../components/input/input":325,"../components/item/item":330,"../components/item/item-sliding":329,"../components/label/label":331,"../components/list/list":332,"../components/menu/menu":339,"../components/menu/menu-close":334,"../components/menu/menu-toggle":337,"../components/nav/nav":347,"../components/nav/nav-push":344,"../components/nav/nav-router":346,"../components/navbar/navbar":350,"../components/option/option":351,"../components/radio/radio-button":353,"../components/radio/radio-group":354,"../components/refresher/refresher":356,"../components/refresher/refresher-content":355,"../components/scroll/scroll":357,"../components/searchbar/searchbar":358,"../components/segment/segment":359,"../components/select/select":360,"../components/show-hide-when/show-hide-when":361,"../components/slides/slides":362,"../components/spinner/spinner":364,"../components/tabs/tab":367,"../components/tabs/tabs":368,"../components/toggle/toggle":373,"../components/toolbar/toolbar":374,"../components/virtual-scroll/virtual-item":375,"../components/virtual-scroll/virtual-scroll":376,"@angular/common":8}],381:[function(require,module,exports){
+},{"../components/backdrop/backdrop":319,"../components/badge/badge":320,"../components/button/button":321,"../components/checkbox/checkbox":322,"../components/content/content":323,"../components/datetime/datetime":324,"../components/icon/icon":325,"../components/img/img":326,"../components/infinite-scroll/infinite-scroll":328,"../components/infinite-scroll/infinite-scroll-content":327,"../components/input/input":330,"../components/item/item":335,"../components/item/item-sliding":334,"../components/label/label":336,"../components/list/list":337,"../components/menu/menu":344,"../components/menu/menu-close":339,"../components/menu/menu-toggle":342,"../components/nav/nav":352,"../components/nav/nav-push":349,"../components/nav/nav-router":351,"../components/navbar/navbar":355,"../components/option/option":356,"../components/radio/radio-button":359,"../components/radio/radio-group":360,"../components/range/range":361,"../components/refresher/refresher":363,"../components/refresher/refresher-content":362,"../components/scroll/scroll":364,"../components/searchbar/searchbar":365,"../components/segment/segment":366,"../components/select/select":367,"../components/show-hide-when/show-hide-when":368,"../components/slides/slides":369,"../components/spinner/spinner":371,"../components/tabs/tab":374,"../components/tabs/tabs":375,"../components/toggle/toggle":380,"../components/toolbar/toolbar":381,"../components/virtual-scroll/virtual-item":382,"../components/virtual-scroll/virtual-scroll":383,"@angular/common":12}],388:[function(require,module,exports){
 "use strict";
 var config_1 = require('./config');
 // iOS Mode Settings
@@ -61615,8 +63240,12 @@ config_1.Config.setModeConfig('ios', {
     pickerEnter: 'picker-slide-in',
     pickerLeave: 'picker-slide-out',
     pickerRotateFactor: -0.46,
+    popoverEnter: 'popover-pop-in',
+    popoverLeave: 'popover-pop-out',
     spinner: 'ios',
+    tabbarHighlight: false,
     tabbarPlacement: 'bottom',
+    tabSubPages: false,
     toastEnter: 'toast-slide-in',
     toastLeave: 'toast-slide-out',
 });
@@ -61636,9 +63265,12 @@ config_1.Config.setModeConfig('md', {
     modalEnter: 'modal-md-slide-in',
     modalLeave: 'modal-md-slide-out',
     pageTransition: 'md-transition',
-    pageTransitionDelay: 96,
+    pageTransitionDelay: 16,
     pickerEnter: 'picker-slide-in',
     pickerLeave: 'picker-slide-out',
+    pickerRotateFactor: 0,
+    popoverEnter: 'popover-md-pop-in',
+    popoverLeave: 'popover-md-pop-out',
     spinner: 'crescent',
     tabbarHighlight: true,
     tabbarPlacement: 'top',
@@ -61665,6 +63297,9 @@ config_1.Config.setModeConfig('wp', {
     pageTransitionDelay: 96,
     pickerEnter: 'picker-slide-in',
     pickerLeave: 'picker-slide-out',
+    pickerRotateFactor: 0,
+    popoverEnter: 'popover-md-pop-in',
+    popoverLeave: 'popover-md-pop-out',
     spinner: 'circles',
     tabbarPlacement: 'top',
     tabSubPages: true,
@@ -61672,118 +63307,17 @@ config_1.Config.setModeConfig('wp', {
     toastLeave: 'toast-wp-slide-out',
 });
 
-},{"./config":379}],382:[function(require,module,exports){
-"use strict";
-var core_1 = require('@angular/core');
-var platform_browser_dynamic_1 = require('@angular/platform-browser-dynamic');
-var bootstrap_1 = require('../config/bootstrap');
-var directives_1 = require('../config/directives');
-var _reflect = Reflect;
-/**
-* @name App
-* @description
-* App is an Ionic decorator that bootstraps an application. It can be passed a
-* number of arguments that act as global config variables for the app.
-* `@App` is similar to Angular's `@Component` in which it can accept a `template`
-* property that has an inline template, or a `templateUrl` property that points
-* to an external html template. The `@App` decorator runs the Angular bootstrapping
-* process automatically, however you can bootstrap your app separately if you prefer.
-* Additionally, `@App` will automatically bootstrap with all of Ionic's
-* core components, meaning they won't all have to be individually imported and added
-* to each component's `directives` property.
-*
-* @usage
-* ```ts
-* import {App} from 'ionic-angular';
-*
-* @App({
-*   templateUrl: 'app/app.html',
-*   providers: [DataService]
-* })
-*
-* export class MyApp{
-*   // Anything we would want to do at the root of our app
-* }
-* ```
-*
-* @property {object} [config] - the app's {@link /docs/v2/api/config/Config/ Config} object.
-* @property {boolean} [prodMode] - Enable Angular's production mode, which turns off assertions and other checks within the framework. Additionally, this config sets the return value of `isProd()` which is on the `IonicApp` instance. Defaults to `false`.
-* @property {array}  [pipes] - any pipes for your app.
-* @property {array}  [providers] - any providers for your app.
-* @property {string} [template] - the template to use for the app root.
-* @property {string} [templateUrl] - a relative URL pointing to the template to use for the app root.
-*/
-function App(args) {
-    if (args === void 0) { args = {}; }
-    return function (cls) {
-        // get current annotations
-        var annotations = _reflect.getMetadata('annotations', cls) || [];
-        args.selector = 'ion-app';
-        // if no template was provided, default so it has a root <ion-nav>
-        if (!args.templateUrl && !args.template) {
-            args.template = '<ion-nav></ion-nav>';
-        }
-        // create @Component
-        annotations.push(new core_1.Component(args));
-        // redefine with added annotations
-        _reflect.defineMetadata('annotations', annotations, cls);
-        // define array of bootstrap providers
-        var providers = bootstrap_1.ionicProviders(args).concat(args.providers || []);
-        // auto add Ionic directives
-        var directives = args.directives ? args.directives.concat(directives_1.IONIC_DIRECTIVES) : directives_1.IONIC_DIRECTIVES;
-        // automatically provide all of Ionic's directives to every component
-        providers.push(core_1.provide(core_1.PLATFORM_DIRECTIVES, { useValue: [directives], multi: true }));
-        if (args.prodMode) {
-            core_1.enableProdMode();
-        }
-        platform_browser_dynamic_1.bootstrap(cls, providers).then(function (appRef) {
-            bootstrap_1.postBootstrap(appRef, args.prodMode);
-        });
-        return cls;
-    };
-}
-exports.App = App;
-
-},{"../config/bootstrap":378,"../config/directives":380,"@angular/core":140,"@angular/platform-browser-dynamic":237}],383:[function(require,module,exports){
+},{"./config":386}],389:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var _reflect = Reflect;
 /**
- * @name Page
- * @description
- *
- * The Page decorator indicates that the decorated class is an Ionic
- * navigation component, meaning it can be navigated to using a
- * [NavController](../../nav/NavController).
- *
- * Since the app has already been bootstrapped with Ionic's core directives, it
- * is not needed to include `IONIC_DIRECTIVES` in the directives property. Additionally,
- * Angular's [CORE_DIRECTIVES](https://angular.io/docs/ts/latest/api/common/CORE_DIRECTIVES-let.html)
- * and [FORM_DIRECTIVES](https://angular.io/docs/ts/latest/api/common/FORM_DIRECTIVES-let.html),
- * are also already provided, so you only need to supply any custom components and directives
- * to your pages:
- *
- * @usage
- *
- * ```ts
- * @Page({
- *   template: `
- *    <ion-content>
- *      I am a page!
- *    </ion-content>
- *   `
- * })
- * class MyPage {}
- * ```
- *
- * Pages have their content automatically wrapped in `<ion-page>`, so although
- * you may see these tags if you inspect your markup, you don't need to include
- * them in your templates.
- *
- * For more information on how pages are created, see the [NavController API Docs](../../components/nav/NavController/#creating_pages)
+ * @private
  */
 function Page(config) {
     return function (cls) {
+        // deprecated warning: added beta.8 2016-05-27
+        void 0;
         config.selector = 'ion-page';
         config.host = config.host || {};
         config.host['[hidden]'] = '_hidden';
@@ -61796,7 +63330,7 @@ function Page(config) {
 }
 exports.Page = Page;
 
-},{"@angular/core":140}],384:[function(require,module,exports){
+},{"@angular/core":144}],390:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -61841,7 +63375,7 @@ var DragGesture = (function (_super) {
 }(gesture_1.Gesture));
 exports.DragGesture = DragGesture;
 
-},{"../util":402,"./gesture":385}],385:[function(require,module,exports){
+},{"../util":408,"./gesture":391}],391:[function(require,module,exports){
 "use strict";
 var util_1 = require('../util');
 var hammer_1 = require('./hammer');
@@ -61886,11 +63420,12 @@ var Gesture = (function () {
         this.isListening = true;
     };
     Gesture.prototype.unlisten = function () {
-        var type, i;
+        var eventType;
+        var i;
         if (this._hammer && this.isListening) {
-            for (type in this._callbacks) {
-                for (i = 0; i < this._callbacks[type].length; i++) {
-                    this._hammer.off(type, this._callbacks[type]);
+            for (eventType in this._callbacks) {
+                for (i = 0; i < this._callbacks[eventType].length; i++) {
+                    this._hammer.off(eventType, this._callbacks[eventType]);
                 }
             }
             this._hammer.destroy();
@@ -61907,7 +63442,7 @@ var Gesture = (function () {
 }());
 exports.Gesture = Gesture;
 
-},{"../util":402,"./hammer":386}],386:[function(require,module,exports){
+},{"../util":408,"./hammer":392}],392:[function(require,module,exports){
 "use strict";
 /* tslint:disable */
 var util_1 = require('../util/util');
@@ -64061,7 +65596,7 @@ util_1.assign(Hammer, {
 });
 win.Hammer = Hammer;
 
-},{"../util/util":411}],387:[function(require,module,exports){
+},{"../util/util":417}],393:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -64109,7 +65644,7 @@ var SlideEdgeGesture = (function (_super) {
 }(slide_gesture_1.SlideGesture));
 exports.SlideEdgeGesture = SlideEdgeGesture;
 
-},{"../util/dom":405,"../util/util":411,"./slide-gesture":388}],388:[function(require,module,exports){
+},{"../util/dom":411,"../util/util":417,"./slide-gesture":394}],394:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -64186,7 +65721,7 @@ var SlideGesture = (function (_super) {
 }(drag_gesture_1.DragGesture));
 exports.SlideGesture = SlideGesture;
 
-},{"../util":402,"./drag-gesture":384}],389:[function(require,module,exports){
+},{"../util":408,"./drag-gesture":390}],395:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -64194,9 +65729,12 @@ function __export(m) {
 __export(require('./config/bootstrap'));
 __export(require('./config/config'));
 __export(require('./config/directives'));
-__export(require('./decorators/app'));
 __export(require('./decorators/page'));
 __export(require('./components'));
+__export(require('./gestures/drag-gesture'));
+__export(require('./gestures/gesture'));
+__export(require('./gestures/slide-edge-gesture'));
+__export(require('./gestures/slide-gesture'));
 __export(require('./platform/platform'));
 __export(require('./platform/storage'));
 __export(require('./util/click-block'));
@@ -64215,7 +65753,7 @@ require('./transitions/transition-ios');
 require('./transitions/transition-md');
 require('./transitions/transition-wp');
 
-},{"./animations/animation":309,"./animations/builtins":310,"./components":311,"./config/bootstrap":378,"./config/config":379,"./config/directives":380,"./config/modes":381,"./decorators/app":382,"./decorators/page":383,"./platform/platform":390,"./platform/registry":391,"./platform/storage":392,"./transitions/transition":399,"./transitions/transition-ios":396,"./transitions/transition-md":397,"./transitions/transition-wp":398,"./translation/translate":400,"./translation/translate_pipe":401,"./util/click-block":403,"./util/events":406,"./util/form":408,"./util/keyboard":409}],390:[function(require,module,exports){
+},{"./animations/animation":313,"./animations/builtins":314,"./components":315,"./config/bootstrap":385,"./config/config":386,"./config/directives":387,"./config/modes":388,"./decorators/page":389,"./gestures/drag-gesture":390,"./gestures/gesture":391,"./gestures/slide-edge-gesture":393,"./gestures/slide-gesture":394,"./platform/platform":396,"./platform/registry":397,"./platform/storage":398,"./transitions/transition":405,"./transitions/transition-ios":402,"./transitions/transition-md":403,"./transitions/transition-wp":404,"./translation/translate":406,"./translation/translate_pipe":407,"./util/click-block":409,"./util/events":412,"./util/form":414,"./util/keyboard":415}],396:[function(require,module,exports){
 "use strict";
 var core_1 = require('@angular/core');
 var util_1 = require('../util/util');
@@ -64235,7 +65773,7 @@ var dom_1 = require('../util/dom');
  * ```ts
  * import {Platform} from 'ionic-angular';
  *
- * @Page({...})
+ * @Component({...})
  * export MyPage {
  *   constructor(platform: Platform) {
  *     this.platform = platform;
@@ -64260,7 +65798,7 @@ var Platform = (function () {
         * with a hardware back button in the same sense an Android or Windows device
         * does. It's important to note that this event does not emit when the Ionic
         * app's back button within the navbar is clicked, but this event is only
-        * referencing the platform's hardward back button.
+        * referencing the platform's hardware back button.
         */
         this.backButton = new core_1.EventEmitter();
         /**
@@ -64301,7 +65839,7 @@ var Platform = (function () {
      * ```
      * import {Platform} from 'ionic-angular';
      *
-     * @Page({...})
+     * @Component({...})
      * export MyPage {
      *   constructor(platform: Platform) {
      *     this.platform = platform;
@@ -64343,7 +65881,7 @@ var Platform = (function () {
      * ```
      * import {Platform} from 'ionic-angular';
      *
-     * @Page({...})
+     * @Component({...})
      * export MyPage {
      *   constructor(platform: Platform) {
      *     this.platform = platform;
@@ -64365,7 +65903,7 @@ var Platform = (function () {
      * ```
      * import {Platform} from 'ionic-angular';
      *
-     * @Page({...})
+     * @Component({...})
      * export MyPage {
      *   constructor(platform: Platform) {
      *     this.platform = platform;
@@ -64409,9 +65947,10 @@ var Platform = (function () {
      * the status bar plugin, so the web should not run status bar plugin logic.
      *
      * ```
-     * import {App, Platform} from 'ionic-angular';
+     * import {Component} from '@angular/core';
+     * import {Platform} from 'ionic-angular';
      *
-     * @App({...})
+     * @Component({...})
      * export MyApp {
      *   constructor(platform: Platform) {
      *     platform.ready().then((readySource) => {
@@ -64517,9 +66056,7 @@ var Platform = (function () {
     // Provided NOOP methods so they do not error when
     // called by engines (the browser)that do not provide them
     /**
-    * The `exitApp` method is useful when running from a native platform,
-    * such as Cordova. This adds the ability to place the Cordova app
-    * in the background.
+    * @private
     */
     Platform.prototype.exitApp = function () { };
     // Getter/Setter Methods
@@ -64878,7 +66415,7 @@ var PlatformNode = (function () {
 var platformRegistry = {};
 var platformDefault = null;
 
-},{"../util/dom":405,"../util/util":411,"@angular/core":140}],391:[function(require,module,exports){
+},{"../util/dom":411,"../util/util":417,"@angular/core":144}],397:[function(require,module,exports){
 "use strict";
 var platform_1 = require('./platform');
 var dom_1 = require('../util/dom');
@@ -65032,14 +66569,14 @@ platform_1.Platform.register({
                 doc.addEventListener('deviceready', function () {
                     // 3) cordova deviceready event triggered
                     // add cordova listeners to emit platform events
-                    doc.addEventListener('backbutton', function () {
-                        p.backButton.emit(null);
+                    doc.addEventListener('backbutton', function (ev) {
+                        p.backButton.emit(ev);
                     });
-                    doc.addEventListener('pause', function () {
-                        p.pause.emit(null);
+                    doc.addEventListener('pause', function (ev) {
+                        p.pause.emit(ev);
                     });
-                    doc.addEventListener('resume', function () {
-                        p.resume.emit(null);
+                    doc.addEventListener('resume', function (ev) {
+                        p.resume.emit(ev);
                     });
                     // cordova has its own exitApp method
                     p.exitApp = function () {
@@ -65063,7 +66600,7 @@ function isIOSDevice(p) {
     return p.testNavigatorPlatform('iphone|ipad|ipod');
 }
 
-},{"../util/dom":405,"./platform":390}],392:[function(require,module,exports){
+},{"../util/dom":411,"./platform":396}],398:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -65072,7 +66609,7 @@ __export(require('./storage/storage'));
 __export(require('./storage/local-storage'));
 __export(require('./storage/sql'));
 
-},{"./storage/local-storage":393,"./storage/sql":394,"./storage/storage":395}],393:[function(require,module,exports){
+},{"./storage/local-storage":399,"./storage/sql":400,"./storage/storage":401}],399:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -65094,8 +66631,9 @@ var storage_1 = require('./storage');
  *
  * @usage
  * ```ts
- * import {Page, Storage, LocalStorage} from 'ionic-angular';
- * @Page({
+ * import {Component} from '@angular/core';
+ * import {Storage, LocalStorage} from 'ionic-angular';
+ * @Component({
  *   template: `<ion-content></ion-content>`
  * });
  * export class MyClass{
@@ -65182,7 +66720,7 @@ var LocalStorage = (function (_super) {
 }(storage_1.StorageEngine));
 exports.LocalStorage = LocalStorage;
 
-},{"./storage":395}],394:[function(require,module,exports){
+},{"./storage":401}],400:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -65317,6 +66855,10 @@ var SqlStorage = (function (_super) {
     SqlStorage.prototype.remove = function (key) {
         return this.query('delete from kv where key = ?', [key]);
     };
+    /**
+    * Clear all keys/values of your database.
+    * @return {Promise} that resolves or rejects with an object of the form { tx: Transaction, res: Result (or err)}
+    */
     SqlStorage.prototype.clear = function () {
         return this.query('delete from kv');
     };
@@ -65327,7 +66869,7 @@ var SqlStorage = (function (_super) {
 }(storage_1.StorageEngine));
 exports.SqlStorage = SqlStorage;
 
-},{"../../util/util":411,"./storage":395}],395:[function(require,module,exports){
+},{"../../util/util":417,"./storage":401}],401:[function(require,module,exports){
 "use strict";
 /**
  * Storage is an easy way to store key/value pairs and other complicated
@@ -65408,7 +66950,7 @@ var StorageEngine = (function () {
 }());
 exports.StorageEngine = StorageEngine;
 
-},{}],396:[function(require,module,exports){
+},{}],402:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -65581,7 +67123,7 @@ var IOSTransition = (function (_super) {
 }(transition_1.Transition));
 transition_1.Transition.register('ios-transition', IOSTransition);
 
-},{"../animations/animation":309,"./transition":399}],397:[function(require,module,exports){
+},{"../animations/animation":313,"./transition":405}],403:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -65642,7 +67184,7 @@ var MDTransition = (function (_super) {
 }(transition_1.Transition));
 transition_1.Transition.register('md-transition', MDTransition);
 
-},{"../animations/animation":309,"./transition":399}],398:[function(require,module,exports){
+},{"../animations/animation":313,"./transition":405}],404:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -65701,7 +67243,7 @@ var WPTransition = (function (_super) {
 }(transition_1.Transition));
 transition_1.Transition.register('wp-transition', WPTransition);
 
-},{"../animations/animation":309,"./transition":399}],399:[function(require,module,exports){
+},{"../animations/animation":313,"./transition":405}],405:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -65735,7 +67277,7 @@ var Transition = (function (_super) {
 exports.Transition = Transition;
 var TransitionRegistry = {};
 
-},{"../animations/animation":309}],400:[function(require,module,exports){
+},{"../animations/animation":313}],406:[function(require,module,exports){
 "use strict";
 /**
  * @private
@@ -65800,7 +67342,7 @@ var Translate = (function () {
 }());
 exports.Translate = Translate;
 
-},{}],401:[function(require,module,exports){
+},{}],407:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -65846,7 +67388,7 @@ var TranslatePipe = (function () {
 }());
 exports.TranslatePipe = TranslatePipe;
 
-},{"./translate":400,"@angular/core":140}],402:[function(require,module,exports){
+},{"./translate":406,"@angular/core":144}],408:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -65856,12 +67398,13 @@ exports.dom = domUtil;
 __export(require('./util/util'));
 __export(require('./util/datetime-util'));
 
-},{"./util/datetime-util":404,"./util/dom":405,"./util/util":411}],403:[function(require,module,exports){
+},{"./util/datetime-util":410,"./util/dom":411,"./util/util":417}],409:[function(require,module,exports){
 "use strict";
 var dom_1 = require('./dom');
 var CSS_CLICK_BLOCK = 'click-block-active';
 var DEFAULT_EXPIRE = 330;
-var cbEle, fallbackTimerId;
+var cbEle;
+var fallbackTimerId;
 var isShowing = false;
 /**
  * @private
@@ -65908,7 +67451,7 @@ function hide() {
     }
 }
 
-},{"./dom":405}],404:[function(require,module,exports){
+},{"./dom":411}],410:[function(require,module,exports){
 "use strict";
 var util_1 = require('./util');
 function renderDateTime(template, value, locale) {
@@ -66135,6 +67678,12 @@ function updateDate(existingData, newData) {
         // eww, invalid data
         void 0;
     }
+    else {
+        // blank data, clear everything out
+        for (var k in existingData) {
+            delete existingData[k];
+        }
+    }
 }
 exports.updateDate = updateDate;
 function parseTemplate(template) {
@@ -66205,7 +67754,7 @@ function convertDataToISO(data) {
                             // YYYY-MM-DDTHH:mm:SS.SSS
                             rtn += '.' + threeDigit(data.millisecond);
                         }
-                        if (data.tzOffset === 0) {
+                        if (util_1.isBlank(data.tzOffset) || data.tzOffset === 0) {
                             // YYYY-MM-DDTHH:mm:SSZ
                             rtn += 'Z';
                         }
@@ -66328,7 +67877,7 @@ var MONTH_SHORT_NAMES = [
     'Dec',
 ];
 
-},{"./util":411}],405:[function(require,module,exports){
+},{"./util":417}],411:[function(require,module,exports){
 "use strict";
 // RequestAnimationFrame Polyfill (Android 4.3 and below)
 /*! @author Paul Irish */
@@ -66337,7 +67886,7 @@ var MONTH_SHORT_NAMES = [
     var rafLastTime = 0;
     var win = window;
     if (!win.requestAnimationFrame) {
-        win.requestAnimationFrame = function (callback, element) {
+        win.requestAnimationFrame = function (callback) {
             var currTime = Date.now();
             var timeToCall = Math.max(0, 16 - (currTime - rafLastTime));
             var id = window.setTimeout(function () {
@@ -66375,7 +67924,8 @@ exports.rafFrames = rafFrames;
 exports.CSS = {};
 (function () {
     // transform
-    var i, keys = ['webkitTransform', 'transform', '-webkit-transform', 'webkit-transform',
+    var i;
+    var keys = ['webkitTransform', 'transform', '-webkit-transform', 'webkit-transform',
         '-moz-transform', 'moz-transform', 'MozTransform', 'mozTransform', 'msTransform'];
     for (i = 0; i < keys.length; i++) {
         if (document.documentElement.style[keys[i]] !== undefined) {
@@ -66401,6 +67951,8 @@ exports.CSS = {};
     exports.CSS.transitionDelay = (isWebkit ? '-webkit-' : '') + 'transition-delay';
     // To be sure transitionend works everywhere, include *both* the webkit and non-webkit events
     exports.CSS.transitionEnd = (isWebkit ? 'webkitTransitionEnd ' : '') + 'transitionend';
+    // transform origin
+    exports.CSS.transformOrigin = (isWebkit ? '-webkit-' : '') + 'transform-origin';
 })();
 function transitionEnd(el, callback) {
     if (el) {
@@ -66592,7 +68144,7 @@ function flushDimensionCache() {
 exports.flushDimensionCache = flushDimensionCache;
 var dimensionCache = {};
 
-},{}],406:[function(require,module,exports){
+},{}],412:[function(require,module,exports){
 "use strict";
 /**
  * @name Events
@@ -66700,7 +68252,7 @@ var Events = (function () {
 }());
 exports.Events = Events;
 
-},{}],407:[function(require,module,exports){
+},{}],413:[function(require,module,exports){
 "use strict";
 var FeatureDetect = (function () {
     function FeatureDetect() {
@@ -66721,12 +68273,6 @@ var FeatureDetect = (function () {
 }());
 exports.FeatureDetect = FeatureDetect;
 var featureDetects = {};
-// FeatureDetect.add('sticky', function(window, document) {
-//   // css position sticky
-//   let ele = document.createElement('div');
-//   ele.style.cssText = 'position:-webkit-sticky;position:sticky';
-//   return ele.style.position.indexOf('sticky') > -1;
-// });
 FeatureDetect.add('hairlines', function (window, document, body) {
     /**
     * Hairline Shim
@@ -66747,7 +68293,7 @@ FeatureDetect.add('hairlines', function (window, document, body) {
     return canDo;
 });
 
-},{}],408:[function(require,module,exports){
+},{}],414:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -66833,7 +68379,7 @@ var Form = (function () {
 }());
 exports.Form = Form;
 
-},{"@angular/core":140}],409:[function(require,module,exports){
+},{"@angular/core":144}],415:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -67017,7 +68563,7 @@ exports.Keyboard = Keyboard;
 var KEYBOARD_CLOSE_POLLING = 150;
 var KEYBOARD_POLLING_CHECKS_MAX = 100;
 
-},{"../config/config":379,"./dom":405,"./form":408,"@angular/core":140}],410:[function(require,module,exports){
+},{"../config/config":386,"./dom":411,"./form":414,"@angular/core":144}],416:[function(require,module,exports){
 "use strict";
 var dom_1 = require('../util/dom');
 var ScrollView = (function () {
@@ -67240,7 +68786,7 @@ var MIN_VELOCITY_CONTINUE_DECELERATION = 0.12;
 var DECELERATION_FRICTION = 0.97;
 var FRAME_MS = (1000 / 60);
 
-},{"../util/dom":405}],411:[function(require,module,exports){
+},{"../util/dom":411}],417:[function(require,module,exports){
 "use strict";
 /**
  * Given a min and max, restrict the given number
@@ -67407,28 +68953,6 @@ function nextUid() {
     return ++uid;
 }
 exports.nextUid = nextUid;
-exports.array = {
-    find: function (arr, cb) {
-        for (var i = 0, ii = arr.length; i < ii; i++) {
-            if (cb(arr[i], i))
-                return arr[i];
-        }
-    },
-    remove: function (arr, itemOrIndex) {
-        var index = -1;
-        if (exports.isNumber(itemOrIndex)) {
-            index = itemOrIndex;
-        }
-        else {
-            index = arr.indexOf(itemOrIndex);
-        }
-        if (index < 0) {
-            return false;
-        }
-        arr.splice(index, 1);
-        return true;
-    }
-};
 /**
  * Grab all query strings keys and values.
  * @param url
@@ -67452,42 +68976,8 @@ function getQuerystring(url) {
     return queryParams;
 }
 exports.getQuerystring = getQuerystring;
-/**
- * Throttle the given fun, only allowing it to be
- * called at most every `wait` ms.
- */
-function throttle(fn, wait, options) {
-    var context, args, result;
-    var timeout = null;
-    var previous = 0;
-    options || (options = {});
-    var later = function () {
-        previous = options.leading === false ? 0 : Date.now();
-        timeout = null;
-        result = fn.apply(context, args);
-    };
-    return function () {
-        var now = Date.now();
-        if (!previous && options.leading === false)
-            previous = now;
-        var remaining = wait - (now - previous);
-        context = this;
-        args = arguments;
-        if (remaining <= 0) {
-            clearTimeout(timeout);
-            timeout = null;
-            previous = now;
-            result = fn.apply(context, args);
-        }
-        else if (!timeout && options.trailing !== false) {
-            timeout = setTimeout(later, remaining);
-        }
-        return result;
-    };
-}
-exports.throttle = throttle;
 
-},{}],412:[function(require,module,exports){
+},{}],418:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -67678,7 +69168,7 @@ setTimeout(function () {
     }
 }, DEVICE_READY_TIMEOUT);
 
-},{"./ng1":413,"./plugins/actionsheet":414,"./plugins/admob":415,"./plugins/appavailability":416,"./plugins/apprate":417,"./plugins/appversion":418,"./plugins/background-geolocation":419,"./plugins/badge":420,"./plugins/barcodescanner":421,"./plugins/base64togallery":422,"./plugins/batterystatus":423,"./plugins/ble":424,"./plugins/bluetoothserial":425,"./plugins/calendar":426,"./plugins/camera":427,"./plugins/clipboard":428,"./plugins/contacts":429,"./plugins/datepicker":430,"./plugins/dbmeter":431,"./plugins/device":432,"./plugins/deviceaccounts":433,"./plugins/devicemotion":434,"./plugins/deviceorientation":435,"./plugins/diagnostic":436,"./plugins/dialogs":437,"./plugins/emailcomposer":438,"./plugins/facebook":439,"./plugins/file":440,"./plugins/filetransfer":441,"./plugins/flashlight":442,"./plugins/geolocation":443,"./plugins/globalization":444,"./plugins/googleanalytics":445,"./plugins/googlemaps":446,"./plugins/hotspot":447,"./plugins/imagepicker":448,"./plugins/inappbrowser":449,"./plugins/insomnia":450,"./plugins/keyboard":451,"./plugins/launchnavigator":452,"./plugins/localnotifications":453,"./plugins/media":454,"./plugins/network":455,"./plugins/plugin":456,"./plugins/push":457,"./plugins/screenshot":458,"./plugins/sms":459,"./plugins/socialsharing":460,"./plugins/spinnerdialog":461,"./plugins/splashscreen":462,"./plugins/sqlite":463,"./plugins/statusbar":464,"./plugins/toast":465,"./plugins/touchid":466,"./plugins/vibration":467,"./plugins/webintent":468}],413:[function(require,module,exports){
+},{"./ng1":419,"./plugins/actionsheet":420,"./plugins/admob":421,"./plugins/appavailability":422,"./plugins/apprate":423,"./plugins/appversion":424,"./plugins/background-geolocation":425,"./plugins/badge":426,"./plugins/barcodescanner":427,"./plugins/base64togallery":428,"./plugins/batterystatus":429,"./plugins/ble":430,"./plugins/bluetoothserial":431,"./plugins/calendar":432,"./plugins/camera":433,"./plugins/clipboard":434,"./plugins/contacts":435,"./plugins/datepicker":436,"./plugins/dbmeter":437,"./plugins/device":438,"./plugins/deviceaccounts":439,"./plugins/devicemotion":440,"./plugins/deviceorientation":441,"./plugins/diagnostic":442,"./plugins/dialogs":443,"./plugins/emailcomposer":444,"./plugins/facebook":445,"./plugins/file":446,"./plugins/filetransfer":447,"./plugins/flashlight":448,"./plugins/geolocation":449,"./plugins/globalization":450,"./plugins/googleanalytics":451,"./plugins/googlemaps":452,"./plugins/hotspot":453,"./plugins/imagepicker":454,"./plugins/inappbrowser":455,"./plugins/insomnia":456,"./plugins/keyboard":457,"./plugins/launchnavigator":458,"./plugins/localnotifications":459,"./plugins/media":460,"./plugins/network":461,"./plugins/plugin":462,"./plugins/push":463,"./plugins/screenshot":464,"./plugins/sms":465,"./plugins/socialsharing":466,"./plugins/spinnerdialog":467,"./plugins/splashscreen":468,"./plugins/sqlite":469,"./plugins/statusbar":470,"./plugins/toast":471,"./plugins/touchid":472,"./plugins/vibration":473,"./plugins/webintent":474}],419:[function(require,module,exports){
 "use strict";
 /**
  * Initialize the ngCordova Angular module if we're running in ng1
@@ -67704,7 +69194,7 @@ function publishAngular1Service(config, cls) {
 }
 exports.publishAngular1Service = publishAngular1Service;
 
-},{}],414:[function(require,module,exports){
+},{}],420:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -67780,7 +69270,7 @@ var ActionSheet = (function () {
 }());
 exports.ActionSheet = ActionSheet;
 
-},{"./plugin":456}],415:[function(require,module,exports){
+},{"./plugin":462}],421:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -67984,7 +69474,7 @@ var AdMob = (function () {
 }());
 exports.AdMob = AdMob;
 
-},{"./plugin":456}],416:[function(require,module,exports){
+},{"./plugin":462}],422:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -68044,7 +69534,7 @@ var AppAvailability = (function () {
 }());
 exports.AppAvailability = AppAvailability;
 
-},{"./plugin":456}],417:[function(require,module,exports){
+},{"./plugin":462}],423:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -68125,7 +69615,7 @@ var AppRate = (function () {
 }());
 exports.AppRate = AppRate;
 
-},{"./plugin":456}],418:[function(require,module,exports){
+},{"./plugin":462}],424:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -68199,7 +69689,7 @@ var AppVersion = (function () {
 }());
 exports.AppVersion = AppVersion;
 
-},{"./plugin":456}],419:[function(require,module,exports){
+},{"./plugin":462}],425:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -68405,7 +69895,7 @@ var BackgroundGeolocation = (function () {
 }());
 exports.BackgroundGeolocation = BackgroundGeolocation;
 
-},{"./plugin":456}],420:[function(require,module,exports){
+},{"./plugin":462}],426:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -68503,7 +69993,7 @@ var Badge = (function () {
 }());
 exports.Badge = Badge;
 
-},{"./plugin":456}],421:[function(require,module,exports){
+},{"./plugin":462}],427:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -68554,7 +70044,7 @@ var BarcodeScanner = (function () {
 }());
 exports.BarcodeScanner = BarcodeScanner;
 
-},{"./plugin":456}],422:[function(require,module,exports){
+},{"./plugin":462}],428:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -68603,7 +70093,7 @@ var Base64ToGallery = (function () {
 }());
 exports.Base64ToGallery = Base64ToGallery;
 
-},{"./plugin":456}],423:[function(require,module,exports){
+},{"./plugin":462}],429:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -68682,7 +70172,7 @@ var BatteryStatus = (function () {
 }());
 exports.BatteryStatus = BatteryStatus;
 
-},{"./plugin":456}],424:[function(require,module,exports){
+},{"./plugin":462}],430:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -69106,7 +70596,7 @@ var BLE = (function () {
 }());
 exports.BLE = BLE;
 
-},{"./plugin":456}],425:[function(require,module,exports){
+},{"./plugin":462}],431:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -69360,7 +70850,7 @@ var BluetoothSerial = (function () {
 }());
 exports.BluetoothSerial = BluetoothSerial;
 
-},{"./plugin":456}],426:[function(require,module,exports){
+},{"./plugin":462}],432:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -69688,7 +71178,7 @@ var Calendar = (function () {
 }());
 exports.Calendar = Calendar;
 
-},{"./plugin":456}],427:[function(require,module,exports){
+},{"./plugin":462}],433:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -69816,7 +71306,7 @@ var Camera = (function () {
 }());
 exports.Camera = Camera;
 
-},{"./plugin":456}],428:[function(require,module,exports){
+},{"./plugin":462}],434:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -69884,7 +71374,7 @@ var Clipboard = (function () {
 }());
 exports.Clipboard = Clipboard;
 
-},{"./plugin":456}],429:[function(require,module,exports){
+},{"./plugin":462}],435:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -69976,7 +71466,7 @@ var Contacts = (function () {
 }());
 exports.Contacts = Contacts;
 
-},{"./plugin":456}],430:[function(require,module,exports){
+},{"./plugin":462}],436:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -70033,7 +71523,7 @@ var DatePicker = (function () {
 }());
 exports.DatePicker = DatePicker;
 
-},{"./plugin":456}],431:[function(require,module,exports){
+},{"./plugin":462}],437:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -70121,7 +71611,7 @@ var DBMeter = (function () {
 }());
 exports.DBMeter = DBMeter;
 
-},{"./plugin":456}],432:[function(require,module,exports){
+},{"./plugin":462}],438:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -70171,7 +71661,7 @@ var Device = (function () {
 }());
 exports.Device = Device;
 
-},{"./plugin":456}],433:[function(require,module,exports){
+},{"./plugin":462}],439:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -70223,7 +71713,7 @@ var DeviceAccounts = (function () {
 }());
 exports.DeviceAccounts = DeviceAccounts;
 
-},{"./plugin":456}],434:[function(require,module,exports){
+},{"./plugin":462}],440:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -70309,7 +71799,7 @@ var DeviceMotion = (function () {
 }());
 exports.DeviceMotion = DeviceMotion;
 
-},{"./plugin":456}],435:[function(require,module,exports){
+},{"./plugin":462}],441:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -70381,7 +71871,7 @@ var DeviceOrientation = (function () {
 }());
 exports.DeviceOrientation = DeviceOrientation;
 
-},{"./plugin":456}],436:[function(require,module,exports){
+},{"./plugin":462}],442:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -70592,7 +72082,7 @@ var Diagnostic = (function () {
 }());
 exports.Diagnostic = Diagnostic;
 
-},{"./plugin":456}],437:[function(require,module,exports){
+},{"./plugin":462}],443:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -70697,7 +72187,7 @@ var Dialogs = (function () {
 }());
 exports.Dialogs = Dialogs;
 
-},{"./plugin":456}],438:[function(require,module,exports){
+},{"./plugin":462}],444:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -70802,7 +72292,7 @@ var EmailComposer = (function () {
 }());
 exports.EmailComposer = EmailComposer;
 
-},{"./plugin":456}],439:[function(require,module,exports){
+},{"./plugin":462}],445:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -71060,7 +72550,7 @@ var Facebook = (function () {
 }());
 exports.Facebook = Facebook;
 
-},{"./plugin":456}],440:[function(require,module,exports){
+},{"./plugin":462}],446:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -71637,7 +73127,7 @@ var File = (function () {
 }());
 exports.File = File;
 
-},{"./plugin":456}],441:[function(require,module,exports){
+},{"./plugin":462}],447:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -71735,7 +73225,7 @@ var Transfer = (function () {
 }());
 exports.Transfer = Transfer;
 
-},{"./plugin":456}],442:[function(require,module,exports){
+},{"./plugin":462}],448:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -71814,7 +73304,7 @@ var Flashlight = (function () {
 }());
 exports.Flashlight = Flashlight;
 
-},{"./plugin":456}],443:[function(require,module,exports){
+},{"./plugin":462}],449:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -71899,7 +73389,7 @@ var Geolocation = (function () {
 }());
 exports.Geolocation = Geolocation;
 
-},{"./plugin":456}],444:[function(require,module,exports){
+},{"./plugin":462}],450:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -72050,7 +73540,7 @@ var Globalization = (function () {
 }());
 exports.Globalization = Globalization;
 
-},{"./plugin":456}],445:[function(require,module,exports){
+},{"./plugin":462}],451:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -72197,7 +73687,7 @@ var GoogleAnalytics = (function () {
 }());
 exports.GoogleAnalytics = GoogleAnalytics;
 
-},{"./plugin":456}],446:[function(require,module,exports){
+},{"./plugin":462}],452:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -72239,7 +73729,7 @@ var GoogleMaps = (function () {
 }());
 exports.GoogleMaps = GoogleMaps;
 
-},{"./plugin":456}],447:[function(require,module,exports){
+},{"./plugin":462}],453:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -72497,7 +73987,7 @@ var Hotspot = (function () {
 }());
 exports.Hotspot = Hotspot;
 
-},{"./plugin":456}],448:[function(require,module,exports){
+},{"./plugin":462}],454:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -72554,7 +74044,7 @@ var ImagePicker = (function () {
 }());
 exports.ImagePicker = ImagePicker;
 
-},{"./plugin":456}],449:[function(require,module,exports){
+},{"./plugin":462}],455:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -72590,7 +74080,7 @@ var InAppBrowser = (function () {
 }());
 exports.InAppBrowser = InAppBrowser;
 
-},{"./plugin":456}],450:[function(require,module,exports){
+},{"./plugin":462}],456:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -72653,7 +74143,7 @@ var Insomnia = (function () {
 }());
 exports.Insomnia = Insomnia;
 
-},{"./plugin":456}],451:[function(require,module,exports){
+},{"./plugin":462}],457:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -72747,7 +74237,7 @@ var Keyboard = (function () {
 }());
 exports.Keyboard = Keyboard;
 
-},{"./plugin":456}],452:[function(require,module,exports){
+},{"./plugin":462}],458:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -72805,7 +74295,7 @@ var LaunchNavigator = (function () {
 }());
 exports.LaunchNavigator = LaunchNavigator;
 
-},{"./plugin":456}],453:[function(require,module,exports){
+},{"./plugin":462}],459:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -73029,7 +74519,7 @@ var LocalNotifications = (function () {
 }());
 exports.LocalNotifications = LocalNotifications;
 
-},{"./plugin":456}],454:[function(require,module,exports){
+},{"./plugin":462}],460:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -73224,7 +74714,7 @@ var MediaError = (function () {
 }());
 exports.MediaError = MediaError;
 
-},{"./plugin":456}],455:[function(require,module,exports){
+},{"./plugin":462}],461:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -73367,7 +74857,7 @@ var Connection = (function () {
 }());
 exports.Connection = Connection;
 
-},{"./plugin":456}],456:[function(require,module,exports){
+},{"./plugin":462}],462:[function(require,module,exports){
 "use strict";
 var util_1 = require('../util');
 var Rx_1 = require('rxjs/Rx');
@@ -73712,7 +75202,7 @@ function InstanceProperty(target, key, descriptor) {
 }
 exports.InstanceProperty = InstanceProperty;
 
-},{"../util":469,"rxjs/Rx":479}],457:[function(require,module,exports){
+},{"../util":475,"rxjs/Rx":485}],463:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -73786,7 +75276,7 @@ var Push = (function () {
 }());
 exports.Push = Push;
 
-},{"./plugin":456}],458:[function(require,module,exports){
+},{"./plugin":462}],464:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -73848,7 +75338,7 @@ var Screenshot = (function () {
 }());
 exports.Screenshot = Screenshot;
 
-},{"./plugin":456}],459:[function(require,module,exports){
+},{"./plugin":462}],465:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -73900,7 +75390,7 @@ var SMS = (function () {
 }());
 exports.SMS = SMS;
 
-},{"./plugin":456}],460:[function(require,module,exports){
+},{"./plugin":462}],466:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -74059,7 +75549,7 @@ var SocialSharing = (function () {
 }());
 exports.SocialSharing = SocialSharing;
 
-},{"./plugin":456}],461:[function(require,module,exports){
+},{"./plugin":462}],467:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -74119,7 +75609,7 @@ var SpinnerDialog = (function () {
 }());
 exports.SpinnerDialog = SpinnerDialog;
 
-},{"./plugin":456}],462:[function(require,module,exports){
+},{"./plugin":462}],468:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -74174,7 +75664,7 @@ var Splashscreen = (function () {
 }());
 exports.Splashscreen = Splashscreen;
 
-},{"./plugin":456}],463:[function(require,module,exports){
+},{"./plugin":462}],469:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -74303,7 +75793,7 @@ var SQLite = (function () {
 }());
 exports.SQLite = SQLite;
 
-},{"./plugin":456}],464:[function(require,module,exports){
+},{"./plugin":462}],470:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -74458,7 +75948,7 @@ var StatusBar = (function () {
 }());
 exports.StatusBar = StatusBar;
 
-},{"./plugin":456}],465:[function(require,module,exports){
+},{"./plugin":462}],471:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -74608,7 +76098,7 @@ var Toast = (function () {
 }());
 exports.Toast = Toast;
 
-},{"./plugin":456}],466:[function(require,module,exports){
+},{"./plugin":462}],472:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -74698,7 +76188,7 @@ var TouchID = (function () {
 }());
 exports.TouchID = TouchID;
 
-},{"./plugin":456}],467:[function(require,module,exports){
+},{"./plugin":462}],473:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -74754,7 +76244,7 @@ var Vibration = (function () {
 }());
 exports.Vibration = Vibration;
 
-},{"./plugin":456}],468:[function(require,module,exports){
+},{"./plugin":462}],474:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -74823,7 +76313,7 @@ var WebIntent = (function () {
 }());
 exports.WebIntent = WebIntent;
 
-},{"./plugin":456}],469:[function(require,module,exports){
+},{"./plugin":462}],475:[function(require,module,exports){
 "use strict";
 function get(obj, path) {
     for (var i = 0, path = path.split('.'), len = path.length; i < len; i++) {
@@ -74837,7 +76327,7 @@ function get(obj, path) {
 exports.get = get;
 ;
 
-},{}],470:[function(require,module,exports){
+},{}],476:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -74891,7 +76381,7 @@ var AsyncSubject = (function (_super) {
 }(Subject_1.Subject));
 exports.AsyncSubject = AsyncSubject;
 
-},{"./Subject":480}],471:[function(require,module,exports){
+},{"./Subject":486}],477:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -74946,7 +76436,7 @@ var BehaviorSubject = (function (_super) {
 }(Subject_1.Subject));
 exports.BehaviorSubject = BehaviorSubject;
 
-},{"./Subject":480,"./util/ObjectUnsubscribedError":728,"./util/throwError":742}],472:[function(require,module,exports){
+},{"./Subject":486,"./util/ObjectUnsubscribedError":734,"./util/throwError":748}],478:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -74983,7 +76473,7 @@ var InnerSubscriber = (function (_super) {
 }(Subscriber_1.Subscriber));
 exports.InnerSubscriber = InnerSubscriber;
 
-},{"./Subscriber":482}],473:[function(require,module,exports){
+},{"./Subscriber":488}],479:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('./Observable');
 /**
@@ -75110,7 +76600,7 @@ var Notification = (function () {
 }());
 exports.Notification = Notification;
 
-},{"./Observable":474}],474:[function(require,module,exports){
+},{"./Observable":480}],480:[function(require,module,exports){
 "use strict";
 var root_1 = require('./util/root');
 var observable_1 = require('./symbol/observable');
@@ -75246,7 +76736,7 @@ var Observable = (function () {
 }());
 exports.Observable = Observable;
 
-},{"./symbol/observable":720,"./util/root":740,"./util/toSubscriber":743}],475:[function(require,module,exports){
+},{"./symbol/observable":726,"./util/root":746,"./util/toSubscriber":749}],481:[function(require,module,exports){
 "use strict";
 exports.empty = {
     isUnsubscribed: true,
@@ -75255,7 +76745,7 @@ exports.empty = {
     complete: function () { }
 };
 
-},{}],476:[function(require,module,exports){
+},{}],482:[function(require,module,exports){
 "use strict";
 var Subscriber_1 = require('./Subscriber');
 var Operator = (function () {
@@ -75268,7 +76758,7 @@ var Operator = (function () {
 }());
 exports.Operator = Operator;
 
-},{"./Subscriber":482}],477:[function(require,module,exports){
+},{"./Subscriber":488}],483:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -75299,7 +76789,7 @@ var OuterSubscriber = (function (_super) {
 }(Subscriber_1.Subscriber));
 exports.OuterSubscriber = OuterSubscriber;
 
-},{"./Subscriber":482}],478:[function(require,module,exports){
+},{"./Subscriber":488}],484:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -75379,7 +76869,7 @@ var ReplayEvent = (function () {
     return ReplayEvent;
 }());
 
-},{"./Subject":480,"./operator/observeOn":667,"./scheduler/queue":718}],479:[function(require,module,exports){
+},{"./Subject":486,"./operator/observeOn":673,"./scheduler/queue":724}],485:[function(require,module,exports){
 "use strict";
 /* tslint:disable:no-unused-variable */
 // Subject imported before Observable to bypass circular dependency issue since
@@ -75566,7 +77056,7 @@ var Symbol = {
 };
 exports.Symbol = Symbol;
 
-},{"./AsyncSubject":470,"./BehaviorSubject":471,"./Notification":473,"./Observable":474,"./Operator":476,"./ReplaySubject":478,"./Subject":480,"./Subscriber":482,"./Subscription":483,"./add/observable/bindCallback":484,"./add/observable/bindNodeCallback":485,"./add/observable/combineLatest":486,"./add/observable/concat":487,"./add/observable/defer":488,"./add/observable/empty":489,"./add/observable/forkJoin":490,"./add/observable/from":491,"./add/observable/fromEvent":492,"./add/observable/fromEventPattern":493,"./add/observable/fromPromise":494,"./add/observable/interval":495,"./add/observable/merge":496,"./add/observable/never":497,"./add/observable/of":498,"./add/observable/race":499,"./add/observable/range":500,"./add/observable/throw":501,"./add/observable/timer":502,"./add/observable/zip":503,"./add/operator/audit":504,"./add/operator/auditTime":505,"./add/operator/buffer":506,"./add/operator/bufferCount":507,"./add/operator/bufferTime":508,"./add/operator/bufferToggle":509,"./add/operator/bufferWhen":510,"./add/operator/cache":511,"./add/operator/catch":512,"./add/operator/combineAll":513,"./add/operator/combineLatest":514,"./add/operator/concat":515,"./add/operator/concatAll":516,"./add/operator/concatMap":517,"./add/operator/concatMapTo":518,"./add/operator/count":519,"./add/operator/debounce":520,"./add/operator/debounceTime":521,"./add/operator/defaultIfEmpty":522,"./add/operator/delay":523,"./add/operator/delayWhen":524,"./add/operator/dematerialize":525,"./add/operator/distinctUntilChanged":526,"./add/operator/do":527,"./add/operator/every":528,"./add/operator/expand":529,"./add/operator/filter":530,"./add/operator/finally":531,"./add/operator/first":532,"./add/operator/groupBy":533,"./add/operator/ignoreElements":534,"./add/operator/last":535,"./add/operator/let":536,"./add/operator/map":537,"./add/operator/mapTo":538,"./add/operator/materialize":539,"./add/operator/merge":540,"./add/operator/mergeAll":541,"./add/operator/mergeMap":542,"./add/operator/mergeMapTo":543,"./add/operator/multicast":544,"./add/operator/observeOn":545,"./add/operator/partition":546,"./add/operator/pluck":547,"./add/operator/publish":548,"./add/operator/publishBehavior":549,"./add/operator/publishLast":550,"./add/operator/publishReplay":551,"./add/operator/race":552,"./add/operator/reduce":553,"./add/operator/repeat":554,"./add/operator/retry":555,"./add/operator/retryWhen":556,"./add/operator/sample":557,"./add/operator/sampleTime":558,"./add/operator/scan":559,"./add/operator/share":560,"./add/operator/single":561,"./add/operator/skip":562,"./add/operator/skipUntil":563,"./add/operator/skipWhile":564,"./add/operator/startWith":565,"./add/operator/subscribeOn":566,"./add/operator/switch":567,"./add/operator/switchMap":568,"./add/operator/switchMapTo":569,"./add/operator/take":570,"./add/operator/takeLast":571,"./add/operator/takeUntil":572,"./add/operator/takeWhile":573,"./add/operator/throttle":574,"./add/operator/throttleTime":575,"./add/operator/timeout":576,"./add/operator/timeoutWith":577,"./add/operator/toArray":578,"./add/operator/toPromise":579,"./add/operator/window":580,"./add/operator/windowCount":581,"./add/operator/windowTime":582,"./add/operator/windowToggle":583,"./add/operator/windowWhen":584,"./add/operator/withLatestFrom":585,"./add/operator/zip":586,"./add/operator/zipAll":587,"./observable/ConnectableObservable":592,"./scheduler/asap":716,"./scheduler/async":717,"./scheduler/queue":718,"./symbol/iterator":719,"./symbol/observable":720,"./symbol/rxSubscriber":721,"./util/ArgumentOutOfRangeError":722,"./util/EmptyError":723,"./util/ObjectUnsubscribedError":728,"./util/UnsubscriptionError":729}],480:[function(require,module,exports){
+},{"./AsyncSubject":476,"./BehaviorSubject":477,"./Notification":479,"./Observable":480,"./Operator":482,"./ReplaySubject":484,"./Subject":486,"./Subscriber":488,"./Subscription":489,"./add/observable/bindCallback":490,"./add/observable/bindNodeCallback":491,"./add/observable/combineLatest":492,"./add/observable/concat":493,"./add/observable/defer":494,"./add/observable/empty":495,"./add/observable/forkJoin":496,"./add/observable/from":497,"./add/observable/fromEvent":498,"./add/observable/fromEventPattern":499,"./add/observable/fromPromise":500,"./add/observable/interval":501,"./add/observable/merge":502,"./add/observable/never":503,"./add/observable/of":504,"./add/observable/race":505,"./add/observable/range":506,"./add/observable/throw":507,"./add/observable/timer":508,"./add/observable/zip":509,"./add/operator/audit":510,"./add/operator/auditTime":511,"./add/operator/buffer":512,"./add/operator/bufferCount":513,"./add/operator/bufferTime":514,"./add/operator/bufferToggle":515,"./add/operator/bufferWhen":516,"./add/operator/cache":517,"./add/operator/catch":518,"./add/operator/combineAll":519,"./add/operator/combineLatest":520,"./add/operator/concat":521,"./add/operator/concatAll":522,"./add/operator/concatMap":523,"./add/operator/concatMapTo":524,"./add/operator/count":525,"./add/operator/debounce":526,"./add/operator/debounceTime":527,"./add/operator/defaultIfEmpty":528,"./add/operator/delay":529,"./add/operator/delayWhen":530,"./add/operator/dematerialize":531,"./add/operator/distinctUntilChanged":532,"./add/operator/do":533,"./add/operator/every":534,"./add/operator/expand":535,"./add/operator/filter":536,"./add/operator/finally":537,"./add/operator/first":538,"./add/operator/groupBy":539,"./add/operator/ignoreElements":540,"./add/operator/last":541,"./add/operator/let":542,"./add/operator/map":543,"./add/operator/mapTo":544,"./add/operator/materialize":545,"./add/operator/merge":546,"./add/operator/mergeAll":547,"./add/operator/mergeMap":548,"./add/operator/mergeMapTo":549,"./add/operator/multicast":550,"./add/operator/observeOn":551,"./add/operator/partition":552,"./add/operator/pluck":553,"./add/operator/publish":554,"./add/operator/publishBehavior":555,"./add/operator/publishLast":556,"./add/operator/publishReplay":557,"./add/operator/race":558,"./add/operator/reduce":559,"./add/operator/repeat":560,"./add/operator/retry":561,"./add/operator/retryWhen":562,"./add/operator/sample":563,"./add/operator/sampleTime":564,"./add/operator/scan":565,"./add/operator/share":566,"./add/operator/single":567,"./add/operator/skip":568,"./add/operator/skipUntil":569,"./add/operator/skipWhile":570,"./add/operator/startWith":571,"./add/operator/subscribeOn":572,"./add/operator/switch":573,"./add/operator/switchMap":574,"./add/operator/switchMapTo":575,"./add/operator/take":576,"./add/operator/takeLast":577,"./add/operator/takeUntil":578,"./add/operator/takeWhile":579,"./add/operator/throttle":580,"./add/operator/throttleTime":581,"./add/operator/timeout":582,"./add/operator/timeoutWith":583,"./add/operator/toArray":584,"./add/operator/toPromise":585,"./add/operator/window":586,"./add/operator/windowCount":587,"./add/operator/windowTime":588,"./add/operator/windowToggle":589,"./add/operator/windowWhen":590,"./add/operator/withLatestFrom":591,"./add/operator/zip":592,"./add/operator/zipAll":593,"./observable/ConnectableObservable":598,"./scheduler/asap":722,"./scheduler/async":723,"./scheduler/queue":724,"./symbol/iterator":725,"./symbol/observable":726,"./symbol/rxSubscriber":727,"./util/ArgumentOutOfRangeError":728,"./util/EmptyError":729,"./util/ObjectUnsubscribedError":734,"./util/UnsubscriptionError":735}],486:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -75773,7 +77263,7 @@ var SubjectObservable = (function (_super) {
     return SubjectObservable;
 }(Observable_1.Observable));
 
-},{"./Observable":474,"./SubjectSubscription":481,"./Subscriber":482,"./Subscription":483,"./symbol/rxSubscriber":721,"./util/ObjectUnsubscribedError":728,"./util/throwError":742}],481:[function(require,module,exports){
+},{"./Observable":480,"./SubjectSubscription":487,"./Subscriber":488,"./Subscription":489,"./symbol/rxSubscriber":727,"./util/ObjectUnsubscribedError":734,"./util/throwError":748}],487:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -75814,7 +77304,7 @@ var SubjectSubscription = (function (_super) {
 }(Subscription_1.Subscription));
 exports.SubjectSubscription = SubjectSubscription;
 
-},{"./Subscription":483}],482:[function(require,module,exports){
+},{"./Subscription":489}],488:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -76066,7 +77556,7 @@ var SafeSubscriber = (function (_super) {
     return SafeSubscriber;
 }(Subscriber));
 
-},{"./Observer":475,"./Subscription":483,"./symbol/rxSubscriber":721,"./util/isFunction":733}],483:[function(require,module,exports){
+},{"./Observer":481,"./Subscription":489,"./symbol/rxSubscriber":727,"./util/isFunction":739}],489:[function(require,module,exports){
 "use strict";
 var isArray_1 = require('./util/isArray');
 var isObject_1 = require('./util/isObject');
@@ -76217,634 +77707,634 @@ var Subscription = (function () {
 }());
 exports.Subscription = Subscription;
 
-},{"./util/UnsubscriptionError":729,"./util/errorObject":730,"./util/isArray":731,"./util/isFunction":733,"./util/isObject":735,"./util/tryCatch":744}],484:[function(require,module,exports){
+},{"./util/UnsubscriptionError":735,"./util/errorObject":736,"./util/isArray":737,"./util/isFunction":739,"./util/isObject":741,"./util/tryCatch":750}],490:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var bindCallback_1 = require('../../observable/bindCallback');
 Observable_1.Observable.bindCallback = bindCallback_1.bindCallback;
 
-},{"../../Observable":474,"../../observable/bindCallback":608}],485:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/bindCallback":614}],491:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var bindNodeCallback_1 = require('../../observable/bindNodeCallback');
 Observable_1.Observable.bindNodeCallback = bindNodeCallback_1.bindNodeCallback;
 
-},{"../../Observable":474,"../../observable/bindNodeCallback":609}],486:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/bindNodeCallback":615}],492:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var combineLatest_1 = require('../../operator/combineLatest');
 Observable_1.Observable.combineLatest = combineLatest_1.combineLatestStatic;
 
-},{"../../Observable":474,"../../operator/combineLatest":636}],487:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/combineLatest":642}],493:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var concat_1 = require('../../observable/concat');
 Observable_1.Observable.concat = concat_1.concat;
 
-},{"../../Observable":474,"../../observable/concat":610}],488:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/concat":616}],494:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var defer_1 = require('../../observable/defer');
 Observable_1.Observable.defer = defer_1.defer;
 
-},{"../../Observable":474,"../../observable/defer":611}],489:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/defer":617}],495:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var empty_1 = require('../../observable/empty');
 Observable_1.Observable.empty = empty_1.empty;
 
-},{"../../Observable":474,"../../observable/empty":612}],490:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/empty":618}],496:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var forkJoin_1 = require('../../observable/forkJoin');
 Observable_1.Observable.forkJoin = forkJoin_1.forkJoin;
 
-},{"../../Observable":474,"../../observable/forkJoin":613}],491:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/forkJoin":619}],497:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var from_1 = require('../../observable/from');
 Observable_1.Observable.from = from_1.from;
 
-},{"../../Observable":474,"../../observable/from":614}],492:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/from":620}],498:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var fromEvent_1 = require('../../observable/fromEvent');
 Observable_1.Observable.fromEvent = fromEvent_1.fromEvent;
 
-},{"../../Observable":474,"../../observable/fromEvent":615}],493:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/fromEvent":621}],499:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var fromEventPattern_1 = require('../../observable/fromEventPattern');
 Observable_1.Observable.fromEventPattern = fromEventPattern_1.fromEventPattern;
 
-},{"../../Observable":474,"../../observable/fromEventPattern":616}],494:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/fromEventPattern":622}],500:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var fromPromise_1 = require('../../observable/fromPromise');
 Observable_1.Observable.fromPromise = fromPromise_1.fromPromise;
 
-},{"../../Observable":474,"../../observable/fromPromise":617}],495:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/fromPromise":623}],501:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var interval_1 = require('../../observable/interval');
 Observable_1.Observable.interval = interval_1.interval;
 
-},{"../../Observable":474,"../../observable/interval":618}],496:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/interval":624}],502:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var merge_1 = require('../../observable/merge');
 Observable_1.Observable.merge = merge_1.merge;
 
-},{"../../Observable":474,"../../observable/merge":619}],497:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/merge":625}],503:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var never_1 = require('../../observable/never');
 Observable_1.Observable.never = never_1.never;
 
-},{"../../Observable":474,"../../observable/never":620}],498:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/never":626}],504:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var of_1 = require('../../observable/of');
 Observable_1.Observable.of = of_1.of;
 
-},{"../../Observable":474,"../../observable/of":621}],499:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/of":627}],505:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var race_1 = require('../../operator/race');
 Observable_1.Observable.race = race_1.raceStatic;
 
-},{"../../Observable":474,"../../operator/race":674}],500:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/race":680}],506:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var range_1 = require('../../observable/range');
 Observable_1.Observable.range = range_1.range;
 
-},{"../../Observable":474,"../../observable/range":622}],501:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/range":628}],507:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var throw_1 = require('../../observable/throw');
 Observable_1.Observable.throw = throw_1._throw;
 
-},{"../../Observable":474,"../../observable/throw":623}],502:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/throw":629}],508:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var timer_1 = require('../../observable/timer');
 Observable_1.Observable.timer = timer_1.timer;
 
-},{"../../Observable":474,"../../observable/timer":624}],503:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/timer":630}],509:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var zip_1 = require('../../observable/zip');
 Observable_1.Observable.zip = zip_1.zip;
 
-},{"../../Observable":474,"../../observable/zip":625}],504:[function(require,module,exports){
+},{"../../Observable":480,"../../observable/zip":631}],510:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var audit_1 = require('../../operator/audit');
 Observable_1.Observable.prototype.audit = audit_1.audit;
 
-},{"../../Observable":474,"../../operator/audit":626}],505:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/audit":632}],511:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var auditTime_1 = require('../../operator/auditTime');
 Observable_1.Observable.prototype.auditTime = auditTime_1.auditTime;
 
-},{"../../Observable":474,"../../operator/auditTime":627}],506:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/auditTime":633}],512:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var buffer_1 = require('../../operator/buffer');
 Observable_1.Observable.prototype.buffer = buffer_1.buffer;
 
-},{"../../Observable":474,"../../operator/buffer":628}],507:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/buffer":634}],513:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var bufferCount_1 = require('../../operator/bufferCount');
 Observable_1.Observable.prototype.bufferCount = bufferCount_1.bufferCount;
 
-},{"../../Observable":474,"../../operator/bufferCount":629}],508:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/bufferCount":635}],514:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var bufferTime_1 = require('../../operator/bufferTime');
 Observable_1.Observable.prototype.bufferTime = bufferTime_1.bufferTime;
 
-},{"../../Observable":474,"../../operator/bufferTime":630}],509:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/bufferTime":636}],515:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var bufferToggle_1 = require('../../operator/bufferToggle');
 Observable_1.Observable.prototype.bufferToggle = bufferToggle_1.bufferToggle;
 
-},{"../../Observable":474,"../../operator/bufferToggle":631}],510:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/bufferToggle":637}],516:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var bufferWhen_1 = require('../../operator/bufferWhen');
 Observable_1.Observable.prototype.bufferWhen = bufferWhen_1.bufferWhen;
 
-},{"../../Observable":474,"../../operator/bufferWhen":632}],511:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/bufferWhen":638}],517:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var cache_1 = require('../../operator/cache');
 Observable_1.Observable.prototype.cache = cache_1.cache;
 
-},{"../../Observable":474,"../../operator/cache":633}],512:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/cache":639}],518:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var catch_1 = require('../../operator/catch');
 Observable_1.Observable.prototype.catch = catch_1._catch;
 
-},{"../../Observable":474,"../../operator/catch":634}],513:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/catch":640}],519:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var combineAll_1 = require('../../operator/combineAll');
 Observable_1.Observable.prototype.combineAll = combineAll_1.combineAll;
 
-},{"../../Observable":474,"../../operator/combineAll":635}],514:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/combineAll":641}],520:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var combineLatest_1 = require('../../operator/combineLatest');
 Observable_1.Observable.prototype.combineLatest = combineLatest_1.combineLatest;
 
-},{"../../Observable":474,"../../operator/combineLatest":636}],515:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/combineLatest":642}],521:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var concat_1 = require('../../operator/concat');
 Observable_1.Observable.prototype.concat = concat_1.concat;
 
-},{"../../Observable":474,"../../operator/concat":637}],516:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/concat":643}],522:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var concatAll_1 = require('../../operator/concatAll');
 Observable_1.Observable.prototype.concatAll = concatAll_1.concatAll;
 
-},{"../../Observable":474,"../../operator/concatAll":638}],517:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/concatAll":644}],523:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var concatMap_1 = require('../../operator/concatMap');
 Observable_1.Observable.prototype.concatMap = concatMap_1.concatMap;
 
-},{"../../Observable":474,"../../operator/concatMap":639}],518:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/concatMap":645}],524:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var concatMapTo_1 = require('../../operator/concatMapTo');
 Observable_1.Observable.prototype.concatMapTo = concatMapTo_1.concatMapTo;
 
-},{"../../Observable":474,"../../operator/concatMapTo":640}],519:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/concatMapTo":646}],525:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var count_1 = require('../../operator/count');
 Observable_1.Observable.prototype.count = count_1.count;
 
-},{"../../Observable":474,"../../operator/count":641}],520:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/count":647}],526:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var debounce_1 = require('../../operator/debounce');
 Observable_1.Observable.prototype.debounce = debounce_1.debounce;
 
-},{"../../Observable":474,"../../operator/debounce":642}],521:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/debounce":648}],527:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var debounceTime_1 = require('../../operator/debounceTime');
 Observable_1.Observable.prototype.debounceTime = debounceTime_1.debounceTime;
 
-},{"../../Observable":474,"../../operator/debounceTime":643}],522:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/debounceTime":649}],528:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var defaultIfEmpty_1 = require('../../operator/defaultIfEmpty');
 Observable_1.Observable.prototype.defaultIfEmpty = defaultIfEmpty_1.defaultIfEmpty;
 
-},{"../../Observable":474,"../../operator/defaultIfEmpty":644}],523:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/defaultIfEmpty":650}],529:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var delay_1 = require('../../operator/delay');
 Observable_1.Observable.prototype.delay = delay_1.delay;
 
-},{"../../Observable":474,"../../operator/delay":645}],524:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/delay":651}],530:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var delayWhen_1 = require('../../operator/delayWhen');
 Observable_1.Observable.prototype.delayWhen = delayWhen_1.delayWhen;
 
-},{"../../Observable":474,"../../operator/delayWhen":646}],525:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/delayWhen":652}],531:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var dematerialize_1 = require('../../operator/dematerialize');
 Observable_1.Observable.prototype.dematerialize = dematerialize_1.dematerialize;
 
-},{"../../Observable":474,"../../operator/dematerialize":647}],526:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/dematerialize":653}],532:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var distinctUntilChanged_1 = require('../../operator/distinctUntilChanged');
 Observable_1.Observable.prototype.distinctUntilChanged = distinctUntilChanged_1.distinctUntilChanged;
 
-},{"../../Observable":474,"../../operator/distinctUntilChanged":648}],527:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/distinctUntilChanged":654}],533:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var do_1 = require('../../operator/do');
 Observable_1.Observable.prototype.do = do_1._do;
 
-},{"../../Observable":474,"../../operator/do":649}],528:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/do":655}],534:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var every_1 = require('../../operator/every');
 Observable_1.Observable.prototype.every = every_1.every;
 
-},{"../../Observable":474,"../../operator/every":650}],529:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/every":656}],535:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var expand_1 = require('../../operator/expand');
 Observable_1.Observable.prototype.expand = expand_1.expand;
 
-},{"../../Observable":474,"../../operator/expand":651}],530:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/expand":657}],536:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var filter_1 = require('../../operator/filter');
 Observable_1.Observable.prototype.filter = filter_1.filter;
 
-},{"../../Observable":474,"../../operator/filter":652}],531:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/filter":658}],537:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var finally_1 = require('../../operator/finally');
 Observable_1.Observable.prototype.finally = finally_1._finally;
 
-},{"../../Observable":474,"../../operator/finally":653}],532:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/finally":659}],538:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var first_1 = require('../../operator/first');
 Observable_1.Observable.prototype.first = first_1.first;
 
-},{"../../Observable":474,"../../operator/first":654}],533:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/first":660}],539:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var groupBy_1 = require('../../operator/groupBy');
 Observable_1.Observable.prototype.groupBy = groupBy_1.groupBy;
 
-},{"../../Observable":474,"../../operator/groupBy":655}],534:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/groupBy":661}],540:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var ignoreElements_1 = require('../../operator/ignoreElements');
 Observable_1.Observable.prototype.ignoreElements = ignoreElements_1.ignoreElements;
 
-},{"../../Observable":474,"../../operator/ignoreElements":656}],535:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/ignoreElements":662}],541:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var last_1 = require('../../operator/last');
 Observable_1.Observable.prototype.last = last_1.last;
 
-},{"../../Observable":474,"../../operator/last":657}],536:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/last":663}],542:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var let_1 = require('../../operator/let');
 Observable_1.Observable.prototype.let = let_1.letProto;
 Observable_1.Observable.prototype.letBind = let_1.letProto;
 
-},{"../../Observable":474,"../../operator/let":658}],537:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/let":664}],543:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var map_1 = require('../../operator/map');
 Observable_1.Observable.prototype.map = map_1.map;
 
-},{"../../Observable":474,"../../operator/map":659}],538:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/map":665}],544:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var mapTo_1 = require('../../operator/mapTo');
 Observable_1.Observable.prototype.mapTo = mapTo_1.mapTo;
 
-},{"../../Observable":474,"../../operator/mapTo":660}],539:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/mapTo":666}],545:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var materialize_1 = require('../../operator/materialize');
 Observable_1.Observable.prototype.materialize = materialize_1.materialize;
 
-},{"../../Observable":474,"../../operator/materialize":661}],540:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/materialize":667}],546:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var merge_1 = require('../../operator/merge');
 Observable_1.Observable.prototype.merge = merge_1.merge;
 
-},{"../../Observable":474,"../../operator/merge":662}],541:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/merge":668}],547:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var mergeAll_1 = require('../../operator/mergeAll');
 Observable_1.Observable.prototype.mergeAll = mergeAll_1.mergeAll;
 
-},{"../../Observable":474,"../../operator/mergeAll":663}],542:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/mergeAll":669}],548:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var mergeMap_1 = require('../../operator/mergeMap');
 Observable_1.Observable.prototype.mergeMap = mergeMap_1.mergeMap;
 Observable_1.Observable.prototype.flatMap = mergeMap_1.mergeMap;
 
-},{"../../Observable":474,"../../operator/mergeMap":664}],543:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/mergeMap":670}],549:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var mergeMapTo_1 = require('../../operator/mergeMapTo');
 Observable_1.Observable.prototype.flatMapTo = mergeMapTo_1.mergeMapTo;
 Observable_1.Observable.prototype.mergeMapTo = mergeMapTo_1.mergeMapTo;
 
-},{"../../Observable":474,"../../operator/mergeMapTo":665}],544:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/mergeMapTo":671}],550:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var multicast_1 = require('../../operator/multicast');
 Observable_1.Observable.prototype.multicast = multicast_1.multicast;
 
-},{"../../Observable":474,"../../operator/multicast":666}],545:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/multicast":672}],551:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var observeOn_1 = require('../../operator/observeOn');
 Observable_1.Observable.prototype.observeOn = observeOn_1.observeOn;
 
-},{"../../Observable":474,"../../operator/observeOn":667}],546:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/observeOn":673}],552:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var partition_1 = require('../../operator/partition');
 Observable_1.Observable.prototype.partition = partition_1.partition;
 
-},{"../../Observable":474,"../../operator/partition":668}],547:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/partition":674}],553:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var pluck_1 = require('../../operator/pluck');
 Observable_1.Observable.prototype.pluck = pluck_1.pluck;
 
-},{"../../Observable":474,"../../operator/pluck":669}],548:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/pluck":675}],554:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var publish_1 = require('../../operator/publish');
 Observable_1.Observable.prototype.publish = publish_1.publish;
 
-},{"../../Observable":474,"../../operator/publish":670}],549:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/publish":676}],555:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var publishBehavior_1 = require('../../operator/publishBehavior');
 Observable_1.Observable.prototype.publishBehavior = publishBehavior_1.publishBehavior;
 
-},{"../../Observable":474,"../../operator/publishBehavior":671}],550:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/publishBehavior":677}],556:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var publishLast_1 = require('../../operator/publishLast');
 Observable_1.Observable.prototype.publishLast = publishLast_1.publishLast;
 
-},{"../../Observable":474,"../../operator/publishLast":672}],551:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/publishLast":678}],557:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var publishReplay_1 = require('../../operator/publishReplay');
 Observable_1.Observable.prototype.publishReplay = publishReplay_1.publishReplay;
 
-},{"../../Observable":474,"../../operator/publishReplay":673}],552:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/publishReplay":679}],558:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var race_1 = require('../../operator/race');
 Observable_1.Observable.prototype.race = race_1.race;
 
-},{"../../Observable":474,"../../operator/race":674}],553:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/race":680}],559:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var reduce_1 = require('../../operator/reduce');
 Observable_1.Observable.prototype.reduce = reduce_1.reduce;
 
-},{"../../Observable":474,"../../operator/reduce":675}],554:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/reduce":681}],560:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var repeat_1 = require('../../operator/repeat');
 Observable_1.Observable.prototype.repeat = repeat_1.repeat;
 
-},{"../../Observable":474,"../../operator/repeat":676}],555:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/repeat":682}],561:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var retry_1 = require('../../operator/retry');
 Observable_1.Observable.prototype.retry = retry_1.retry;
 
-},{"../../Observable":474,"../../operator/retry":677}],556:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/retry":683}],562:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var retryWhen_1 = require('../../operator/retryWhen');
 Observable_1.Observable.prototype.retryWhen = retryWhen_1.retryWhen;
 
-},{"../../Observable":474,"../../operator/retryWhen":678}],557:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/retryWhen":684}],563:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var sample_1 = require('../../operator/sample');
 Observable_1.Observable.prototype.sample = sample_1.sample;
 
-},{"../../Observable":474,"../../operator/sample":679}],558:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/sample":685}],564:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var sampleTime_1 = require('../../operator/sampleTime');
 Observable_1.Observable.prototype.sampleTime = sampleTime_1.sampleTime;
 
-},{"../../Observable":474,"../../operator/sampleTime":680}],559:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/sampleTime":686}],565:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var scan_1 = require('../../operator/scan');
 Observable_1.Observable.prototype.scan = scan_1.scan;
 
-},{"../../Observable":474,"../../operator/scan":681}],560:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/scan":687}],566:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var share_1 = require('../../operator/share');
 Observable_1.Observable.prototype.share = share_1.share;
 
-},{"../../Observable":474,"../../operator/share":682}],561:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/share":688}],567:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var single_1 = require('../../operator/single');
 Observable_1.Observable.prototype.single = single_1.single;
 
-},{"../../Observable":474,"../../operator/single":683}],562:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/single":689}],568:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var skip_1 = require('../../operator/skip');
 Observable_1.Observable.prototype.skip = skip_1.skip;
 
-},{"../../Observable":474,"../../operator/skip":684}],563:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/skip":690}],569:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var skipUntil_1 = require('../../operator/skipUntil');
 Observable_1.Observable.prototype.skipUntil = skipUntil_1.skipUntil;
 
-},{"../../Observable":474,"../../operator/skipUntil":685}],564:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/skipUntil":691}],570:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var skipWhile_1 = require('../../operator/skipWhile');
 Observable_1.Observable.prototype.skipWhile = skipWhile_1.skipWhile;
 
-},{"../../Observable":474,"../../operator/skipWhile":686}],565:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/skipWhile":692}],571:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var startWith_1 = require('../../operator/startWith');
 Observable_1.Observable.prototype.startWith = startWith_1.startWith;
 
-},{"../../Observable":474,"../../operator/startWith":687}],566:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/startWith":693}],572:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var subscribeOn_1 = require('../../operator/subscribeOn');
 Observable_1.Observable.prototype.subscribeOn = subscribeOn_1.subscribeOn;
 
-},{"../../Observable":474,"../../operator/subscribeOn":688}],567:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/subscribeOn":694}],573:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var switch_1 = require('../../operator/switch');
 Observable_1.Observable.prototype.switch = switch_1._switch;
 
-},{"../../Observable":474,"../../operator/switch":689}],568:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/switch":695}],574:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var switchMap_1 = require('../../operator/switchMap');
 Observable_1.Observable.prototype.switchMap = switchMap_1.switchMap;
 
-},{"../../Observable":474,"../../operator/switchMap":690}],569:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/switchMap":696}],575:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var switchMapTo_1 = require('../../operator/switchMapTo');
 Observable_1.Observable.prototype.switchMapTo = switchMapTo_1.switchMapTo;
 
-},{"../../Observable":474,"../../operator/switchMapTo":691}],570:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/switchMapTo":697}],576:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var take_1 = require('../../operator/take');
 Observable_1.Observable.prototype.take = take_1.take;
 
-},{"../../Observable":474,"../../operator/take":692}],571:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/take":698}],577:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var takeLast_1 = require('../../operator/takeLast');
 Observable_1.Observable.prototype.takeLast = takeLast_1.takeLast;
 
-},{"../../Observable":474,"../../operator/takeLast":693}],572:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/takeLast":699}],578:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var takeUntil_1 = require('../../operator/takeUntil');
 Observable_1.Observable.prototype.takeUntil = takeUntil_1.takeUntil;
 
-},{"../../Observable":474,"../../operator/takeUntil":694}],573:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/takeUntil":700}],579:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var takeWhile_1 = require('../../operator/takeWhile');
 Observable_1.Observable.prototype.takeWhile = takeWhile_1.takeWhile;
 
-},{"../../Observable":474,"../../operator/takeWhile":695}],574:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/takeWhile":701}],580:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var throttle_1 = require('../../operator/throttle');
 Observable_1.Observable.prototype.throttle = throttle_1.throttle;
 
-},{"../../Observable":474,"../../operator/throttle":696}],575:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/throttle":702}],581:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var throttleTime_1 = require('../../operator/throttleTime');
 Observable_1.Observable.prototype.throttleTime = throttleTime_1.throttleTime;
 
-},{"../../Observable":474,"../../operator/throttleTime":697}],576:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/throttleTime":703}],582:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var timeout_1 = require('../../operator/timeout');
 Observable_1.Observable.prototype.timeout = timeout_1.timeout;
 
-},{"../../Observable":474,"../../operator/timeout":698}],577:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/timeout":704}],583:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var timeoutWith_1 = require('../../operator/timeoutWith');
 Observable_1.Observable.prototype.timeoutWith = timeoutWith_1.timeoutWith;
 
-},{"../../Observable":474,"../../operator/timeoutWith":699}],578:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/timeoutWith":705}],584:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var toArray_1 = require('../../operator/toArray');
 Observable_1.Observable.prototype.toArray = toArray_1.toArray;
 
-},{"../../Observable":474,"../../operator/toArray":700}],579:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/toArray":706}],585:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var toPromise_1 = require('../../operator/toPromise');
 Observable_1.Observable.prototype.toPromise = toPromise_1.toPromise;
 
-},{"../../Observable":474,"../../operator/toPromise":701}],580:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/toPromise":707}],586:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var window_1 = require('../../operator/window');
 Observable_1.Observable.prototype.window = window_1.window;
 
-},{"../../Observable":474,"../../operator/window":702}],581:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/window":708}],587:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var windowCount_1 = require('../../operator/windowCount');
 Observable_1.Observable.prototype.windowCount = windowCount_1.windowCount;
 
-},{"../../Observable":474,"../../operator/windowCount":703}],582:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/windowCount":709}],588:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var windowTime_1 = require('../../operator/windowTime');
 Observable_1.Observable.prototype.windowTime = windowTime_1.windowTime;
 
-},{"../../Observable":474,"../../operator/windowTime":704}],583:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/windowTime":710}],589:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var windowToggle_1 = require('../../operator/windowToggle');
 Observable_1.Observable.prototype.windowToggle = windowToggle_1.windowToggle;
 
-},{"../../Observable":474,"../../operator/windowToggle":705}],584:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/windowToggle":711}],590:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var windowWhen_1 = require('../../operator/windowWhen');
 Observable_1.Observable.prototype.windowWhen = windowWhen_1.windowWhen;
 
-},{"../../Observable":474,"../../operator/windowWhen":706}],585:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/windowWhen":712}],591:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var withLatestFrom_1 = require('../../operator/withLatestFrom');
 Observable_1.Observable.prototype.withLatestFrom = withLatestFrom_1.withLatestFrom;
 
-},{"../../Observable":474,"../../operator/withLatestFrom":707}],586:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/withLatestFrom":713}],592:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var zip_1 = require('../../operator/zip');
 Observable_1.Observable.prototype.zip = zip_1.zipProto;
 
-},{"../../Observable":474,"../../operator/zip":708}],587:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/zip":714}],593:[function(require,module,exports){
 "use strict";
 var Observable_1 = require('../../Observable');
 var zipAll_1 = require('../../operator/zipAll');
 Observable_1.Observable.prototype.zipAll = zipAll_1.zipAll;
 
-},{"../../Observable":474,"../../operator/zipAll":709}],588:[function(require,module,exports){
+},{"../../Observable":480,"../../operator/zipAll":715}],594:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -76920,7 +78410,7 @@ var ArrayLikeObservable = (function (_super) {
 }(Observable_1.Observable));
 exports.ArrayLikeObservable = ArrayLikeObservable;
 
-},{"../Observable":474,"./EmptyObservable":594,"./ScalarObservable":605}],589:[function(require,module,exports){
+},{"../Observable":480,"./EmptyObservable":600,"./ScalarObservable":611}],595:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -77043,7 +78533,7 @@ var ArrayObservable = (function (_super) {
 }(Observable_1.Observable));
 exports.ArrayObservable = ArrayObservable;
 
-},{"../Observable":474,"../util/isScheduler":737,"./EmptyObservable":594,"./ScalarObservable":605}],590:[function(require,module,exports){
+},{"../Observable":480,"../util/isScheduler":743,"./EmptyObservable":600,"./ScalarObservable":611}],596:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -77186,7 +78676,7 @@ function dispatchError(arg) {
     subject.error(err);
 }
 
-},{"../AsyncSubject":470,"../Observable":474,"../util/errorObject":730,"../util/tryCatch":744}],591:[function(require,module,exports){
+},{"../AsyncSubject":476,"../Observable":480,"../util/errorObject":736,"../util/tryCatch":750}],597:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -77333,7 +78823,7 @@ function dispatchError(arg) {
     subject.error(err);
 }
 
-},{"../AsyncSubject":470,"../Observable":474,"../util/errorObject":730,"../util/tryCatch":744}],592:[function(require,module,exports){
+},{"../AsyncSubject":476,"../Observable":480,"../util/errorObject":736,"../util/tryCatch":750}],598:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -77482,7 +78972,7 @@ var RefCountSubscriber = (function (_super) {
     return RefCountSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Observable":474,"../Subscriber":482,"../Subscription":483}],593:[function(require,module,exports){
+},{"../Observable":480,"../Subscriber":488,"../Subscription":489}],599:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -77576,7 +79066,7 @@ var DeferSubscriber = (function (_super) {
     return DeferSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../Observable":474,"../OuterSubscriber":477,"../util/subscribeToResult":741}],594:[function(require,module,exports){
+},{"../Observable":480,"../OuterSubscriber":483,"../util/subscribeToResult":747}],600:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -77652,7 +79142,7 @@ var EmptyObservable = (function (_super) {
 }(Observable_1.Observable));
 exports.EmptyObservable = EmptyObservable;
 
-},{"../Observable":474}],595:[function(require,module,exports){
+},{"../Observable":480}],601:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -77735,7 +79225,7 @@ var ErrorObservable = (function (_super) {
 }(Observable_1.Observable));
 exports.ErrorObservable = ErrorObservable;
 
-},{"../Observable":474}],596:[function(require,module,exports){
+},{"../Observable":480}],602:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -77847,7 +79337,7 @@ var ForkJoinSubscriber = (function (_super) {
     return ForkJoinSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../Observable":474,"../OuterSubscriber":477,"../util/isArray":731,"../util/subscribeToResult":741,"./EmptyObservable":594}],597:[function(require,module,exports){
+},{"../Observable":480,"../OuterSubscriber":483,"../util/isArray":737,"../util/subscribeToResult":747,"./EmptyObservable":600}],603:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -77942,7 +79432,7 @@ var FromEventObservable = (function (_super) {
 }(Observable_1.Observable));
 exports.FromEventObservable = FromEventObservable;
 
-},{"../Observable":474,"../Subscription":483,"../util/errorObject":730,"../util/tryCatch":744}],598:[function(require,module,exports){
+},{"../Observable":480,"../Subscription":489,"../util/errorObject":736,"../util/tryCatch":750}],604:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -78004,7 +79494,7 @@ var FromEventPatternObservable = (function (_super) {
 }(Observable_1.Observable));
 exports.FromEventPatternObservable = FromEventPatternObservable;
 
-},{"../Observable":474,"../Subscription":483,"../util/errorObject":730,"../util/tryCatch":744}],599:[function(require,module,exports){
+},{"../Observable":480,"../Subscription":489,"../util/errorObject":736,"../util/tryCatch":750}],605:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -78082,7 +79572,7 @@ var FromObservable = (function (_super) {
 }(Observable_1.Observable));
 exports.FromObservable = FromObservable;
 
-},{"../Observable":474,"../operator/observeOn":667,"../symbol/iterator":719,"../symbol/observable":720,"../util/isArray":731,"../util/isFunction":733,"../util/isPromise":736,"../util/isScheduler":737,"./ArrayLikeObservable":588,"./ArrayObservable":589,"./IteratorObservable":601,"./PromiseObservable":603}],600:[function(require,module,exports){
+},{"../Observable":480,"../operator/observeOn":673,"../symbol/iterator":725,"../symbol/observable":726,"../util/isArray":737,"../util/isFunction":739,"../util/isPromise":742,"../util/isScheduler":743,"./ArrayLikeObservable":594,"./ArrayObservable":595,"./IteratorObservable":607,"./PromiseObservable":609}],606:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -78171,7 +79661,7 @@ var IntervalObservable = (function (_super) {
 }(Observable_1.Observable));
 exports.IntervalObservable = IntervalObservable;
 
-},{"../Observable":474,"../scheduler/async":717,"../util/isNumeric":734}],601:[function(require,module,exports){
+},{"../Observable":480,"../scheduler/async":723,"../util/isNumeric":740}],607:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -78365,7 +79855,7 @@ function sign(value) {
     return valueAsNumber < 0 ? -1 : 1;
 }
 
-},{"../Observable":474,"../symbol/iterator":719,"../util/errorObject":730,"../util/isFunction":733,"../util/isObject":735,"../util/root":740,"../util/tryCatch":744}],602:[function(require,module,exports){
+},{"../Observable":480,"../symbol/iterator":725,"../util/errorObject":736,"../util/isFunction":739,"../util/isObject":741,"../util/root":746,"../util/tryCatch":750}],608:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -78425,7 +79915,7 @@ var NeverObservable = (function (_super) {
 }(Observable_1.Observable));
 exports.NeverObservable = NeverObservable;
 
-},{"../Observable":474,"../util/noop":738}],603:[function(require,module,exports){
+},{"../Observable":480,"../util/noop":744}],609:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -78531,7 +80021,7 @@ function dispatchError(arg) {
     }
 }
 
-},{"../Observable":474,"../util/root":740}],604:[function(require,module,exports){
+},{"../Observable":480,"../util/root":746}],610:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -78628,7 +80118,7 @@ var RangeObservable = (function (_super) {
 }(Observable_1.Observable));
 exports.RangeObservable = RangeObservable;
 
-},{"../Observable":474}],605:[function(require,module,exports){
+},{"../Observable":480}],611:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -78684,7 +80174,7 @@ var ScalarObservable = (function (_super) {
 }(Observable_1.Observable));
 exports.ScalarObservable = ScalarObservable;
 
-},{"../Observable":474}],606:[function(require,module,exports){
+},{"../Observable":480}],612:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -78736,7 +80226,7 @@ var SubscribeOnObservable = (function (_super) {
 }(Observable_1.Observable));
 exports.SubscribeOnObservable = SubscribeOnObservable;
 
-},{"../Observable":474,"../scheduler/asap":716,"../util/isNumeric":734}],607:[function(require,module,exports){
+},{"../Observable":480,"../scheduler/asap":722,"../util/isNumeric":740}],613:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -78844,97 +80334,97 @@ var TimerObservable = (function (_super) {
 }(Observable_1.Observable));
 exports.TimerObservable = TimerObservable;
 
-},{"../Observable":474,"../scheduler/async":717,"../util/isDate":732,"../util/isNumeric":734,"../util/isScheduler":737}],608:[function(require,module,exports){
+},{"../Observable":480,"../scheduler/async":723,"../util/isDate":738,"../util/isNumeric":740,"../util/isScheduler":743}],614:[function(require,module,exports){
 "use strict";
 var BoundCallbackObservable_1 = require('./BoundCallbackObservable');
 exports.bindCallback = BoundCallbackObservable_1.BoundCallbackObservable.create;
 
-},{"./BoundCallbackObservable":590}],609:[function(require,module,exports){
+},{"./BoundCallbackObservable":596}],615:[function(require,module,exports){
 "use strict";
 var BoundNodeCallbackObservable_1 = require('./BoundNodeCallbackObservable');
 exports.bindNodeCallback = BoundNodeCallbackObservable_1.BoundNodeCallbackObservable.create;
 
-},{"./BoundNodeCallbackObservable":591}],610:[function(require,module,exports){
+},{"./BoundNodeCallbackObservable":597}],616:[function(require,module,exports){
 "use strict";
 var concat_1 = require('../operator/concat');
 exports.concat = concat_1.concatStatic;
 
-},{"../operator/concat":637}],611:[function(require,module,exports){
+},{"../operator/concat":643}],617:[function(require,module,exports){
 "use strict";
 var DeferObservable_1 = require('./DeferObservable');
 exports.defer = DeferObservable_1.DeferObservable.create;
 
-},{"./DeferObservable":593}],612:[function(require,module,exports){
+},{"./DeferObservable":599}],618:[function(require,module,exports){
 "use strict";
 var EmptyObservable_1 = require('./EmptyObservable');
 exports.empty = EmptyObservable_1.EmptyObservable.create;
 
-},{"./EmptyObservable":594}],613:[function(require,module,exports){
+},{"./EmptyObservable":600}],619:[function(require,module,exports){
 "use strict";
 var ForkJoinObservable_1 = require('./ForkJoinObservable');
 exports.forkJoin = ForkJoinObservable_1.ForkJoinObservable.create;
 
-},{"./ForkJoinObservable":596}],614:[function(require,module,exports){
+},{"./ForkJoinObservable":602}],620:[function(require,module,exports){
 "use strict";
 var FromObservable_1 = require('./FromObservable');
 exports.from = FromObservable_1.FromObservable.create;
 
-},{"./FromObservable":599}],615:[function(require,module,exports){
+},{"./FromObservable":605}],621:[function(require,module,exports){
 "use strict";
 var FromEventObservable_1 = require('./FromEventObservable');
 exports.fromEvent = FromEventObservable_1.FromEventObservable.create;
 
-},{"./FromEventObservable":597}],616:[function(require,module,exports){
+},{"./FromEventObservable":603}],622:[function(require,module,exports){
 "use strict";
 var FromEventPatternObservable_1 = require('./FromEventPatternObservable');
 exports.fromEventPattern = FromEventPatternObservable_1.FromEventPatternObservable.create;
 
-},{"./FromEventPatternObservable":598}],617:[function(require,module,exports){
+},{"./FromEventPatternObservable":604}],623:[function(require,module,exports){
 "use strict";
 var PromiseObservable_1 = require('./PromiseObservable');
 exports.fromPromise = PromiseObservable_1.PromiseObservable.create;
 
-},{"./PromiseObservable":603}],618:[function(require,module,exports){
+},{"./PromiseObservable":609}],624:[function(require,module,exports){
 "use strict";
 var IntervalObservable_1 = require('./IntervalObservable');
 exports.interval = IntervalObservable_1.IntervalObservable.create;
 
-},{"./IntervalObservable":600}],619:[function(require,module,exports){
+},{"./IntervalObservable":606}],625:[function(require,module,exports){
 "use strict";
 var merge_1 = require('../operator/merge');
 exports.merge = merge_1.mergeStatic;
 
-},{"../operator/merge":662}],620:[function(require,module,exports){
+},{"../operator/merge":668}],626:[function(require,module,exports){
 "use strict";
 var NeverObservable_1 = require('./NeverObservable');
 exports.never = NeverObservable_1.NeverObservable.create;
 
-},{"./NeverObservable":602}],621:[function(require,module,exports){
+},{"./NeverObservable":608}],627:[function(require,module,exports){
 "use strict";
 var ArrayObservable_1 = require('./ArrayObservable');
 exports.of = ArrayObservable_1.ArrayObservable.of;
 
-},{"./ArrayObservable":589}],622:[function(require,module,exports){
+},{"./ArrayObservable":595}],628:[function(require,module,exports){
 "use strict";
 var RangeObservable_1 = require('./RangeObservable');
 exports.range = RangeObservable_1.RangeObservable.create;
 
-},{"./RangeObservable":604}],623:[function(require,module,exports){
+},{"./RangeObservable":610}],629:[function(require,module,exports){
 "use strict";
 var ErrorObservable_1 = require('./ErrorObservable');
 exports._throw = ErrorObservable_1.ErrorObservable.create;
 
-},{"./ErrorObservable":595}],624:[function(require,module,exports){
+},{"./ErrorObservable":601}],630:[function(require,module,exports){
 "use strict";
 var TimerObservable_1 = require('./TimerObservable');
 exports.timer = TimerObservable_1.TimerObservable.create;
 
-},{"./TimerObservable":607}],625:[function(require,module,exports){
+},{"./TimerObservable":613}],631:[function(require,module,exports){
 "use strict";
 var zip_1 = require('../operator/zip');
 exports.zip = zip_1.zipStatic;
 
-},{"../operator/zip":708}],626:[function(require,module,exports){
+},{"../operator/zip":714}],632:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -79011,7 +80501,7 @@ var AuditSubscriber = (function (_super) {
     return AuditSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../util/errorObject":730,"../util/subscribeToResult":741,"../util/tryCatch":744}],627:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../util/errorObject":736,"../util/subscribeToResult":747,"../util/tryCatch":750}],633:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -79081,7 +80571,7 @@ function dispatchNext(subscriber) {
     subscriber.clearThrottle();
 }
 
-},{"../Subscriber":482,"../scheduler/async":717}],628:[function(require,module,exports){
+},{"../Subscriber":488,"../scheduler/async":723}],634:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -79158,7 +80648,7 @@ var BufferSubscriber = (function (_super) {
     return BufferSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../util/subscribeToResult":741}],629:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../util/subscribeToResult":747}],635:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -79272,7 +80762,7 @@ var BufferCountSubscriber = (function (_super) {
     return BufferCountSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482}],630:[function(require,module,exports){
+},{"../Subscriber":488}],636:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -79421,7 +80911,7 @@ function dispatchBufferClose(arg) {
     subscriber.closeBuffer(buffer);
 }
 
-},{"../Subscriber":482,"../scheduler/async":717}],631:[function(require,module,exports){
+},{"../Subscriber":488,"../scheduler/async":723}],637:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -79574,7 +81064,7 @@ var BufferToggleSubscriber = (function (_super) {
     return BufferToggleSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../Subscription":483,"../util/subscribeToResult":741}],632:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../Subscription":489,"../util/subscribeToResult":747}],638:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -79697,7 +81187,7 @@ var BufferWhenSubscriber = (function (_super) {
     return BufferWhenSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../Subscription":483,"../util/errorObject":730,"../util/subscribeToResult":741,"../util/tryCatch":744}],633:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../Subscription":489,"../util/errorObject":736,"../util/subscribeToResult":747,"../util/tryCatch":750}],639:[function(require,module,exports){
 "use strict";
 var publishReplay_1 = require('./publishReplay');
 /**
@@ -79715,7 +81205,7 @@ function cache(bufferSize, windowTime, scheduler) {
 }
 exports.cache = cache;
 
-},{"./publishReplay":673}],634:[function(require,module,exports){
+},{"./publishReplay":679}],640:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -79783,7 +81273,7 @@ var CatchSubscriber = (function (_super) {
     return CatchSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482}],635:[function(require,module,exports){
+},{"../Subscriber":488}],641:[function(require,module,exports){
 "use strict";
 var combineLatest_1 = require('./combineLatest');
 /**
@@ -79831,7 +81321,7 @@ function combineAll(project) {
 }
 exports.combineAll = combineAll;
 
-},{"./combineLatest":636}],636:[function(require,module,exports){
+},{"./combineLatest":642}],642:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -80017,7 +81507,7 @@ var CombineLatestSubscriber = (function (_super) {
 }(OuterSubscriber_1.OuterSubscriber));
 exports.CombineLatestSubscriber = CombineLatestSubscriber;
 
-},{"../OuterSubscriber":477,"../observable/ArrayObservable":589,"../util/isArray":731,"../util/isScheduler":737,"../util/subscribeToResult":741}],637:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../observable/ArrayObservable":595,"../util/isArray":737,"../util/isScheduler":743,"../util/subscribeToResult":747}],643:[function(require,module,exports){
 "use strict";
 var isScheduler_1 = require('../util/isScheduler');
 var ArrayObservable_1 = require('../observable/ArrayObservable');
@@ -80126,7 +81616,7 @@ function concatStatic() {
 }
 exports.concatStatic = concatStatic;
 
-},{"../observable/ArrayObservable":589,"../util/isScheduler":737,"./mergeAll":663}],638:[function(require,module,exports){
+},{"../observable/ArrayObservable":595,"../util/isScheduler":743,"./mergeAll":669}],644:[function(require,module,exports){
 "use strict";
 var mergeAll_1 = require('./mergeAll');
 /**
@@ -80176,7 +81666,7 @@ function concatAll() {
 }
 exports.concatAll = concatAll;
 
-},{"./mergeAll":663}],639:[function(require,module,exports){
+},{"./mergeAll":669}],645:[function(require,module,exports){
 "use strict";
 var mergeMap_1 = require('./mergeMap');
 /**
@@ -80240,7 +81730,7 @@ function concatMap(project, resultSelector) {
 }
 exports.concatMap = concatMap;
 
-},{"./mergeMap":664}],640:[function(require,module,exports){
+},{"./mergeMap":670}],646:[function(require,module,exports){
 "use strict";
 var mergeMapTo_1 = require('./mergeMapTo');
 /**
@@ -80298,7 +81788,7 @@ function concatMapTo(innerObservable, resultSelector) {
 }
 exports.concatMapTo = concatMapTo;
 
-},{"./mergeMapTo":665}],641:[function(require,module,exports){
+},{"./mergeMapTo":671}],647:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -80407,7 +81897,7 @@ var CountSubscriber = (function (_super) {
     return CountSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482}],642:[function(require,module,exports){
+},{"../Subscriber":488}],648:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -80505,7 +81995,7 @@ var DebounceSubscriber = (function (_super) {
     return DebounceSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../util/subscribeToResult":741}],643:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../util/subscribeToResult":747}],649:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -80590,7 +82080,7 @@ function dispatchNext(subscriber) {
     subscriber.debouncedNext();
 }
 
-},{"../Subscriber":482,"../scheduler/async":717}],644:[function(require,module,exports){
+},{"../Subscriber":488,"../scheduler/async":723}],650:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -80644,7 +82134,7 @@ var DefaultIfEmptySubscriber = (function (_super) {
     return DefaultIfEmptySubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482}],645:[function(require,module,exports){
+},{"../Subscriber":488}],651:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -80780,7 +82270,7 @@ var DelayMessage = (function () {
     return DelayMessage;
 }());
 
-},{"../Notification":473,"../Subscriber":482,"../scheduler/async":717,"../util/isDate":732}],646:[function(require,module,exports){
+},{"../Notification":479,"../Subscriber":488,"../scheduler/async":723,"../util/isDate":738}],652:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -80935,7 +82425,7 @@ var SubscriptionDelaySubscriber = (function (_super) {
     return SubscriptionDelaySubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Observable":474,"../OuterSubscriber":477,"../Subscriber":482,"../util/subscribeToResult":741}],647:[function(require,module,exports){
+},{"../Observable":480,"../OuterSubscriber":483,"../Subscriber":488,"../util/subscribeToResult":747}],653:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -80980,7 +82470,7 @@ var DeMaterializeSubscriber = (function (_super) {
     return DeMaterializeSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482}],648:[function(require,module,exports){
+},{"../Subscriber":488}],654:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -81058,7 +82548,7 @@ var DistinctUntilChangedSubscriber = (function (_super) {
     return DistinctUntilChangedSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482,"../util/errorObject":730,"../util/tryCatch":744}],649:[function(require,module,exports){
+},{"../Subscriber":488,"../util/errorObject":736,"../util/tryCatch":750}],655:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -81171,7 +82661,7 @@ var DoSubscriber = (function (_super) {
     return DoSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482}],650:[function(require,module,exports){
+},{"../Subscriber":488}],656:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -81241,7 +82731,7 @@ var EverySubscriber = (function (_super) {
     return EverySubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482}],651:[function(require,module,exports){
+},{"../Subscriber":488}],657:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -81357,7 +82847,7 @@ var ExpandSubscriber = (function (_super) {
 }(OuterSubscriber_1.OuterSubscriber));
 exports.ExpandSubscriber = ExpandSubscriber;
 
-},{"../OuterSubscriber":477,"../util/errorObject":730,"../util/subscribeToResult":741,"../util/tryCatch":744}],652:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../util/errorObject":736,"../util/subscribeToResult":747,"../util/tryCatch":750}],658:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -81451,7 +82941,7 @@ var FilterSubscriber = (function (_super) {
     return FilterSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482}],653:[function(require,module,exports){
+},{"../Subscriber":488}],659:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -81495,7 +82985,7 @@ var FinallySubscriber = (function (_super) {
     return FinallySubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482,"../Subscription":483}],654:[function(require,module,exports){
+},{"../Subscriber":488,"../Subscription":489}],660:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -81644,7 +83134,7 @@ var FirstSubscriber = (function (_super) {
     return FirstSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482,"../util/EmptyError":723}],655:[function(require,module,exports){
+},{"../Subscriber":488,"../util/EmptyError":729}],661:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -81895,7 +83385,7 @@ var InnerRefCountSubscription = (function (_super) {
     return InnerRefCountSubscription;
 }(Subscription_1.Subscription));
 
-},{"../Observable":474,"../Subject":480,"../Subscriber":482,"../Subscription":483,"../util/FastMap":724,"../util/Map":726}],656:[function(require,module,exports){
+},{"../Observable":480,"../Subject":486,"../Subscriber":488,"../Subscription":489,"../util/FastMap":730,"../util/Map":732}],662:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -81943,7 +83433,7 @@ var IgnoreElementsSubscriber = (function (_super) {
     return IgnoreElementsSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482,"../util/noop":738}],657:[function(require,module,exports){
+},{"../Subscriber":488,"../util/noop":744}],663:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -82062,7 +83552,7 @@ var LastSubscriber = (function (_super) {
     return LastSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482,"../util/EmptyError":723}],658:[function(require,module,exports){
+},{"../Subscriber":488,"../util/EmptyError":729}],664:[function(require,module,exports){
 "use strict";
 /**
  * @param func
@@ -82075,7 +83565,7 @@ function letProto(func) {
 }
 exports.letProto = letProto;
 
-},{}],659:[function(require,module,exports){
+},{}],665:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -82162,7 +83652,7 @@ var MapSubscriber = (function (_super) {
     return MapSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482}],660:[function(require,module,exports){
+},{"../Subscriber":488}],666:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -82226,7 +83716,7 @@ var MapToSubscriber = (function (_super) {
     return MapToSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482}],661:[function(require,module,exports){
+},{"../Subscriber":488}],667:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -82288,7 +83778,7 @@ var MaterializeSubscriber = (function (_super) {
     return MaterializeSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Notification":473,"../Subscriber":482}],662:[function(require,module,exports){
+},{"../Notification":479,"../Subscriber":488}],668:[function(require,module,exports){
 "use strict";
 var ArrayObservable_1 = require('../observable/ArrayObservable');
 var mergeAll_1 = require('./mergeAll');
@@ -82419,7 +83909,7 @@ function mergeStatic() {
 }
 exports.mergeStatic = mergeStatic;
 
-},{"../observable/ArrayObservable":589,"../util/isScheduler":737,"./mergeAll":663}],663:[function(require,module,exports){
+},{"../observable/ArrayObservable":595,"../util/isScheduler":743,"./mergeAll":669}],669:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -82531,7 +84021,7 @@ var MergeAllSubscriber = (function (_super) {
 }(OuterSubscriber_1.OuterSubscriber));
 exports.MergeAllSubscriber = MergeAllSubscriber;
 
-},{"../OuterSubscriber":477,"../util/subscribeToResult":741}],664:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../util/subscribeToResult":747}],670:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -82693,7 +84183,7 @@ var MergeMapSubscriber = (function (_super) {
 }(OuterSubscriber_1.OuterSubscriber));
 exports.MergeMapSubscriber = MergeMapSubscriber;
 
-},{"../OuterSubscriber":477,"../util/subscribeToResult":741}],665:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../util/subscribeToResult":747}],671:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -82848,7 +84338,7 @@ var MergeMapToSubscriber = (function (_super) {
 }(OuterSubscriber_1.OuterSubscriber));
 exports.MergeMapToSubscriber = MergeMapToSubscriber;
 
-},{"../OuterSubscriber":477,"../util/subscribeToResult":741}],666:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../util/subscribeToResult":747}],672:[function(require,module,exports){
 "use strict";
 var ConnectableObservable_1 = require('../observable/ConnectableObservable');
 /**
@@ -82881,7 +84371,7 @@ function multicast(subjectOrSubjectFactory) {
 }
 exports.multicast = multicast;
 
-},{"../observable/ConnectableObservable":592}],667:[function(require,module,exports){
+},{"../observable/ConnectableObservable":598}],673:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -82957,7 +84447,7 @@ var ObserveOnMessage = (function () {
 }());
 exports.ObserveOnMessage = ObserveOnMessage;
 
-},{"../Notification":473,"../Subscriber":482}],668:[function(require,module,exports){
+},{"../Notification":479,"../Subscriber":488}],674:[function(require,module,exports){
 "use strict";
 var not_1 = require('../util/not');
 var filter_1 = require('./filter');
@@ -82976,7 +84466,7 @@ function partition(predicate, thisArg) {
 }
 exports.partition = partition;
 
-},{"../util/not":739,"./filter":652}],669:[function(require,module,exports){
+},{"../util/not":745,"./filter":658}],675:[function(require,module,exports){
 "use strict";
 var map_1 = require('./map');
 /**
@@ -83035,7 +84525,7 @@ function plucker(props, length) {
     return mapper;
 }
 
-},{"./map":659}],670:[function(require,module,exports){
+},{"./map":665}],676:[function(require,module,exports){
 "use strict";
 var Subject_1 = require('../Subject');
 var multicast_1 = require('./multicast');
@@ -83054,7 +84544,7 @@ function publish() {
 }
 exports.publish = publish;
 
-},{"../Subject":480,"./multicast":666}],671:[function(require,module,exports){
+},{"../Subject":486,"./multicast":672}],677:[function(require,module,exports){
 "use strict";
 var BehaviorSubject_1 = require('../BehaviorSubject');
 var multicast_1 = require('./multicast');
@@ -83069,7 +84559,7 @@ function publishBehavior(value) {
 }
 exports.publishBehavior = publishBehavior;
 
-},{"../BehaviorSubject":471,"./multicast":666}],672:[function(require,module,exports){
+},{"../BehaviorSubject":477,"./multicast":672}],678:[function(require,module,exports){
 "use strict";
 var AsyncSubject_1 = require('../AsyncSubject');
 var multicast_1 = require('./multicast');
@@ -83083,7 +84573,7 @@ function publishLast() {
 }
 exports.publishLast = publishLast;
 
-},{"../AsyncSubject":470,"./multicast":666}],673:[function(require,module,exports){
+},{"../AsyncSubject":476,"./multicast":672}],679:[function(require,module,exports){
 "use strict";
 var ReplaySubject_1 = require('../ReplaySubject');
 var multicast_1 = require('./multicast');
@@ -83102,7 +84592,7 @@ function publishReplay(bufferSize, windowTime, scheduler) {
 }
 exports.publishReplay = publishReplay;
 
-},{"../ReplaySubject":478,"./multicast":666}],674:[function(require,module,exports){
+},{"../ReplaySubject":484,"./multicast":672}],680:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -83212,7 +84702,7 @@ var RaceSubscriber = (function (_super) {
 }(OuterSubscriber_1.OuterSubscriber));
 exports.RaceSubscriber = RaceSubscriber;
 
-},{"../OuterSubscriber":477,"../observable/ArrayObservable":589,"../util/isArray":731,"../util/subscribeToResult":741}],675:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../observable/ArrayObservable":595,"../util/isArray":737,"../util/subscribeToResult":747}],681:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -83297,7 +84787,7 @@ var ReduceSubscriber = (function (_super) {
 }(Subscriber_1.Subscriber));
 exports.ReduceSubscriber = ReduceSubscriber;
 
-},{"../Subscriber":482}],676:[function(require,module,exports){
+},{"../Subscriber":488}],682:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -83373,7 +84863,7 @@ var RepeatSubscriber = (function (_super) {
     return RepeatSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482,"../observable/EmptyObservable":594}],677:[function(require,module,exports){
+},{"../Subscriber":488,"../observable/EmptyObservable":600}],683:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -83443,7 +84933,7 @@ var RetrySubscriber = (function (_super) {
     return RetrySubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482}],678:[function(require,module,exports){
+},{"../Subscriber":488}],684:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -83550,7 +85040,7 @@ var RetryWhenSubscriber = (function (_super) {
     return RetryWhenSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../Subject":480,"../util/errorObject":730,"../util/subscribeToResult":741,"../util/tryCatch":744}],679:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../Subject":486,"../util/errorObject":736,"../util/subscribeToResult":747,"../util/tryCatch":750}],685:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -83616,7 +85106,7 @@ var SampleSubscriber = (function (_super) {
     return SampleSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../util/subscribeToResult":741}],680:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../util/subscribeToResult":747}],686:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -83679,7 +85169,7 @@ function dispatchNotification(state) {
     this.schedule(state, delay);
 }
 
-},{"../Subscriber":482,"../scheduler/async":717}],681:[function(require,module,exports){
+},{"../Subscriber":488,"../scheduler/async":723}],687:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -83787,7 +85277,7 @@ var ScanSubscriber = (function (_super) {
     return ScanSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482}],682:[function(require,module,exports){
+},{"../Subscriber":488}],688:[function(require,module,exports){
 "use strict";
 var multicast_1 = require('./multicast');
 var Subject_1 = require('../Subject');
@@ -83812,7 +85302,7 @@ function share() {
 exports.share = share;
 ;
 
-},{"../Subject":480,"./multicast":666}],683:[function(require,module,exports){
+},{"../Subject":486,"./multicast":672}],689:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -83908,7 +85398,7 @@ var SingleSubscriber = (function (_super) {
     return SingleSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482,"../util/EmptyError":723}],684:[function(require,module,exports){
+},{"../Subscriber":488,"../util/EmptyError":729}],690:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -83960,7 +85450,7 @@ var SkipSubscriber = (function (_super) {
     return SkipSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482}],685:[function(require,module,exports){
+},{"../Subscriber":488}],691:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -84032,7 +85522,7 @@ var SkipUntilSubscriber = (function (_super) {
     return SkipUntilSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../util/subscribeToResult":741}],686:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../util/subscribeToResult":747}],692:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -84099,7 +85589,7 @@ var SkipWhileSubscriber = (function (_super) {
     return SkipWhileSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482}],687:[function(require,module,exports){
+},{"../Subscriber":488}],693:[function(require,module,exports){
 "use strict";
 var ArrayObservable_1 = require('../observable/ArrayObservable');
 var ScalarObservable_1 = require('../observable/ScalarObservable');
@@ -84143,7 +85633,7 @@ function startWith() {
 }
 exports.startWith = startWith;
 
-},{"../observable/ArrayObservable":589,"../observable/EmptyObservable":594,"../observable/ScalarObservable":605,"../util/isScheduler":737,"./concat":637}],688:[function(require,module,exports){
+},{"../observable/ArrayObservable":595,"../observable/EmptyObservable":600,"../observable/ScalarObservable":611,"../util/isScheduler":743,"./concat":643}],694:[function(require,module,exports){
 "use strict";
 var SubscribeOnObservable_1 = require('../observable/SubscribeOnObservable');
 /**
@@ -84163,7 +85653,7 @@ function subscribeOn(scheduler, delay) {
 }
 exports.subscribeOn = subscribeOn;
 
-},{"../observable/SubscribeOnObservable":606}],689:[function(require,module,exports){
+},{"../observable/SubscribeOnObservable":612}],695:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -84272,7 +85762,7 @@ var SwitchSubscriber = (function (_super) {
     return SwitchSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../util/subscribeToResult":741}],690:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../util/subscribeToResult":747}],696:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -84412,7 +85902,7 @@ var SwitchMapSubscriber = (function (_super) {
     return SwitchMapSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../util/subscribeToResult":741}],691:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../util/subscribeToResult":747}],697:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -84539,7 +86029,7 @@ var SwitchMapToSubscriber = (function (_super) {
     return SwitchMapToSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../util/subscribeToResult":741}],692:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../util/subscribeToResult":747}],698:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -84603,7 +86093,7 @@ var TakeSubscriber = (function (_super) {
     return TakeSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482,"../observable/EmptyObservable":594,"../util/ArgumentOutOfRangeError":722}],693:[function(require,module,exports){
+},{"../Subscriber":488,"../observable/EmptyObservable":600,"../util/ArgumentOutOfRangeError":728}],699:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -84683,7 +86173,7 @@ var TakeLastSubscriber = (function (_super) {
     return TakeLastSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482,"../observable/EmptyObservable":594,"../util/ArgumentOutOfRangeError":722}],694:[function(require,module,exports){
+},{"../Subscriber":488,"../observable/EmptyObservable":600,"../util/ArgumentOutOfRangeError":728}],700:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -84732,7 +86222,7 @@ var TakeUntilSubscriber = (function (_super) {
     return TakeUntilSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../util/subscribeToResult":741}],695:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../util/subscribeToResult":747}],701:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -84795,7 +86285,7 @@ var TakeWhileSubscriber = (function (_super) {
     return TakeWhileSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482}],696:[function(require,module,exports){
+},{"../Subscriber":488}],702:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -84872,7 +86362,7 @@ var ThrottleSubscriber = (function (_super) {
     return ThrottleSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../util/subscribeToResult":741}],697:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../util/subscribeToResult":747}],703:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -84936,7 +86426,7 @@ function dispatchNext(arg) {
     subscriber.clearThrottle();
 }
 
-},{"../Subscriber":482,"../scheduler/async":717}],698:[function(require,module,exports){
+},{"../Subscriber":488,"../scheduler/async":723}],704:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -85039,7 +86529,7 @@ var TimeoutSubscriber = (function (_super) {
     return TimeoutSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482,"../scheduler/async":717,"../util/isDate":732}],699:[function(require,module,exports){
+},{"../Subscriber":488,"../scheduler/async":723,"../util/isDate":738}],705:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -85150,7 +86640,7 @@ var TimeoutWithSubscriber = (function (_super) {
     return TimeoutWithSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../scheduler/async":717,"../util/isDate":732,"../util/subscribeToResult":741}],700:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../scheduler/async":723,"../util/isDate":738,"../util/subscribeToResult":747}],706:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -85196,7 +86686,7 @@ var ToArraySubscriber = (function (_super) {
     return ToArraySubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subscriber":482}],701:[function(require,module,exports){
+},{"../Subscriber":488}],707:[function(require,module,exports){
 "use strict";
 var root_1 = require('../util/root');
 /**
@@ -85225,7 +86715,7 @@ function toPromise(PromiseCtor) {
 }
 exports.toPromise = toPromise;
 
-},{"../util/root":740}],702:[function(require,module,exports){
+},{"../util/root":746}],708:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -85331,7 +86821,7 @@ var WindowSubscriber = (function (_super) {
     return WindowSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../Subject":480,"../util/subscribeToResult":741}],703:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../Subject":486,"../util/subscribeToResult":747}],709:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -85458,7 +86948,7 @@ var WindowCountSubscriber = (function (_super) {
     return WindowCountSubscriber;
 }(Subscriber_1.Subscriber));
 
-},{"../Subject":480,"../Subscriber":482}],704:[function(require,module,exports){
+},{"../Subject":486,"../Subscriber":488}],710:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -85629,7 +87119,7 @@ function dispatchWindowClose(arg) {
     subscriber.closeWindow(window);
 }
 
-},{"../Subject":480,"../Subscriber":482,"../scheduler/async":717}],705:[function(require,module,exports){
+},{"../Subject":486,"../Subscriber":488,"../scheduler/async":723}],711:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -85810,7 +87300,7 @@ var WindowToggleSubscriber = (function (_super) {
     return WindowToggleSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../Subject":480,"../Subscription":483,"../util/errorObject":730,"../util/subscribeToResult":741,"../util/tryCatch":744}],706:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../Subject":486,"../Subscription":489,"../util/errorObject":736,"../util/subscribeToResult":747,"../util/tryCatch":750}],712:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -85939,7 +87429,7 @@ var WindowSubscriber = (function (_super) {
     return WindowSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../Subject":480,"../util/errorObject":730,"../util/subscribeToResult":741,"../util/tryCatch":744}],707:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../Subject":486,"../util/errorObject":736,"../util/subscribeToResult":747,"../util/tryCatch":750}],713:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -86070,7 +87560,7 @@ var WithLatestFromSubscriber = (function (_super) {
     return WithLatestFromSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../util/subscribeToResult":741}],708:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../util/subscribeToResult":747}],714:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -86325,7 +87815,7 @@ var ZipBufferIterator = (function (_super) {
     return ZipBufferIterator;
 }(OuterSubscriber_1.OuterSubscriber));
 
-},{"../OuterSubscriber":477,"../Subscriber":482,"../observable/ArrayObservable":589,"../symbol/iterator":719,"../util/isArray":731,"../util/subscribeToResult":741}],709:[function(require,module,exports){
+},{"../OuterSubscriber":483,"../Subscriber":488,"../observable/ArrayObservable":595,"../symbol/iterator":725,"../util/isArray":737,"../util/subscribeToResult":747}],715:[function(require,module,exports){
 "use strict";
 var zip_1 = require('./zip');
 /**
@@ -86339,7 +87829,7 @@ function zipAll(project) {
 }
 exports.zipAll = zipAll;
 
-},{"./zip":708}],710:[function(require,module,exports){
+},{"./zip":714}],716:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -86391,7 +87881,7 @@ var AsapAction = (function (_super) {
 }(FutureAction_1.FutureAction));
 exports.AsapAction = AsapAction;
 
-},{"../util/Immediate":725,"./FutureAction":713}],711:[function(require,module,exports){
+},{"../util/Immediate":731,"./FutureAction":719}],717:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -86412,7 +87902,7 @@ var AsapScheduler = (function (_super) {
 }(QueueScheduler_1.QueueScheduler));
 exports.AsapScheduler = AsapScheduler;
 
-},{"./AsapAction":710,"./QueueScheduler":715}],712:[function(require,module,exports){
+},{"./AsapAction":716,"./QueueScheduler":721}],718:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -86433,7 +87923,7 @@ var AsyncScheduler = (function (_super) {
 }(QueueScheduler_1.QueueScheduler));
 exports.AsyncScheduler = AsyncScheduler;
 
-},{"./FutureAction":713,"./QueueScheduler":715}],713:[function(require,module,exports){
+},{"./FutureAction":719,"./QueueScheduler":721}],719:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -86569,7 +88059,7 @@ var FutureAction = (function (_super) {
 }(Subscription_1.Subscription));
 exports.FutureAction = FutureAction;
 
-},{"../Subscription":483,"../util/root":740}],714:[function(require,module,exports){
+},{"../Subscription":489,"../util/root":746}],720:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -86603,7 +88093,7 @@ var QueueAction = (function (_super) {
 }(FutureAction_1.FutureAction));
 exports.QueueAction = QueueAction;
 
-},{"./FutureAction":713}],715:[function(require,module,exports){
+},{"./FutureAction":719}],721:[function(require,module,exports){
 "use strict";
 var QueueAction_1 = require('./QueueAction');
 var FutureAction_1 = require('./FutureAction');
@@ -86648,22 +88138,22 @@ var QueueScheduler = (function () {
 }());
 exports.QueueScheduler = QueueScheduler;
 
-},{"./FutureAction":713,"./QueueAction":714}],716:[function(require,module,exports){
+},{"./FutureAction":719,"./QueueAction":720}],722:[function(require,module,exports){
 "use strict";
 var AsapScheduler_1 = require('./AsapScheduler');
 exports.asap = new AsapScheduler_1.AsapScheduler();
 
-},{"./AsapScheduler":711}],717:[function(require,module,exports){
+},{"./AsapScheduler":717}],723:[function(require,module,exports){
 "use strict";
 var AsyncScheduler_1 = require('./AsyncScheduler');
 exports.async = new AsyncScheduler_1.AsyncScheduler();
 
-},{"./AsyncScheduler":712}],718:[function(require,module,exports){
+},{"./AsyncScheduler":718}],724:[function(require,module,exports){
 "use strict";
 var QueueScheduler_1 = require('./QueueScheduler');
 exports.queue = new QueueScheduler_1.QueueScheduler();
 
-},{"./QueueScheduler":715}],719:[function(require,module,exports){
+},{"./QueueScheduler":721}],725:[function(require,module,exports){
 "use strict";
 var root_1 = require('../util/root');
 var Symbol = root_1.root.Symbol;
@@ -86696,7 +88186,7 @@ else {
     }
 }
 
-},{"../util/root":740}],720:[function(require,module,exports){
+},{"../util/root":746}],726:[function(require,module,exports){
 "use strict";
 var root_1 = require('../util/root');
 var Symbol = root_1.root.Symbol;
@@ -86718,14 +88208,14 @@ else {
     exports.$$observable = '@@observable';
 }
 
-},{"../util/root":740}],721:[function(require,module,exports){
+},{"../util/root":746}],727:[function(require,module,exports){
 "use strict";
 var root_1 = require('../util/root');
 var Symbol = root_1.root.Symbol;
 exports.$$rxSubscriber = (typeof Symbol === 'function' && typeof Symbol.for === 'function') ?
     Symbol.for('rxSubscriber') : '@@rxSubscriber';
 
-},{"../util/root":740}],722:[function(require,module,exports){
+},{"../util/root":746}],728:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -86752,7 +88242,7 @@ var ArgumentOutOfRangeError = (function (_super) {
 }(Error));
 exports.ArgumentOutOfRangeError = ArgumentOutOfRangeError;
 
-},{}],723:[function(require,module,exports){
+},{}],729:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -86779,7 +88269,7 @@ var EmptyError = (function (_super) {
 }(Error));
 exports.EmptyError = EmptyError;
 
-},{}],724:[function(require,module,exports){
+},{}],730:[function(require,module,exports){
 "use strict";
 var FastMap = (function () {
     function FastMap() {
@@ -86811,7 +88301,7 @@ var FastMap = (function () {
 }());
 exports.FastMap = FastMap;
 
-},{}],725:[function(require,module,exports){
+},{}],731:[function(require,module,exports){
 /**
 Some credit for this helper goes to http://github.com/YuzuJS/setImmediate
 */
@@ -87021,13 +88511,13 @@ var ImmediateDefinition = (function () {
 exports.ImmediateDefinition = ImmediateDefinition;
 exports.Immediate = new ImmediateDefinition(root_1.root);
 
-},{"./root":740}],726:[function(require,module,exports){
+},{"./root":746}],732:[function(require,module,exports){
 "use strict";
 var root_1 = require('./root');
 var MapPolyfill_1 = require('./MapPolyfill');
 exports.Map = root_1.root.Map || (function () { return MapPolyfill_1.MapPolyfill; })();
 
-},{"./MapPolyfill":727,"./root":740}],727:[function(require,module,exports){
+},{"./MapPolyfill":733,"./root":746}],733:[function(require,module,exports){
 "use strict";
 var MapPolyfill = (function () {
     function MapPolyfill() {
@@ -87075,7 +88565,7 @@ var MapPolyfill = (function () {
 }());
 exports.MapPolyfill = MapPolyfill;
 
-},{}],728:[function(require,module,exports){
+},{}],734:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -87101,7 +88591,7 @@ var ObjectUnsubscribedError = (function (_super) {
 }(Error));
 exports.ObjectUnsubscribedError = ObjectUnsubscribedError;
 
-},{}],729:[function(require,module,exports){
+},{}],735:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -87124,30 +88614,30 @@ var UnsubscriptionError = (function (_super) {
 }(Error));
 exports.UnsubscriptionError = UnsubscriptionError;
 
-},{}],730:[function(require,module,exports){
+},{}],736:[function(require,module,exports){
 "use strict";
 // typeof any so that it we don't have to cast when comparing a result to the error object
 exports.errorObject = { e: {} };
 
-},{}],731:[function(require,module,exports){
+},{}],737:[function(require,module,exports){
 "use strict";
 exports.isArray = Array.isArray || (function (x) { return x && typeof x.length === 'number'; });
 
-},{}],732:[function(require,module,exports){
+},{}],738:[function(require,module,exports){
 "use strict";
 function isDate(value) {
     return value instanceof Date && !isNaN(+value);
 }
 exports.isDate = isDate;
 
-},{}],733:[function(require,module,exports){
+},{}],739:[function(require,module,exports){
 "use strict";
 function isFunction(x) {
     return typeof x === 'function';
 }
 exports.isFunction = isFunction;
 
-},{}],734:[function(require,module,exports){
+},{}],740:[function(require,module,exports){
 "use strict";
 var isArray_1 = require('../util/isArray');
 function isNumeric(val) {
@@ -87160,34 +88650,34 @@ function isNumeric(val) {
 exports.isNumeric = isNumeric;
 ;
 
-},{"../util/isArray":731}],735:[function(require,module,exports){
+},{"../util/isArray":737}],741:[function(require,module,exports){
 "use strict";
 function isObject(x) {
     return x != null && typeof x === 'object';
 }
 exports.isObject = isObject;
 
-},{}],736:[function(require,module,exports){
+},{}],742:[function(require,module,exports){
 "use strict";
 function isPromise(value) {
     return value && typeof value.subscribe !== 'function' && typeof value.then === 'function';
 }
 exports.isPromise = isPromise;
 
-},{}],737:[function(require,module,exports){
+},{}],743:[function(require,module,exports){
 "use strict";
 function isScheduler(value) {
     return value && typeof value.schedule === 'function';
 }
 exports.isScheduler = isScheduler;
 
-},{}],738:[function(require,module,exports){
+},{}],744:[function(require,module,exports){
 "use strict";
 /* tslint:disable:no-empty */
 function noop() { }
 exports.noop = noop;
 
-},{}],739:[function(require,module,exports){
+},{}],745:[function(require,module,exports){
 "use strict";
 function not(pred, thisArg) {
     function notPred() {
@@ -87199,7 +88689,7 @@ function not(pred, thisArg) {
 }
 exports.not = not;
 
-},{}],740:[function(require,module,exports){
+},{}],746:[function(require,module,exports){
 (function (global){
 "use strict";
 var objectTypes = {
@@ -87221,7 +88711,7 @@ if (freeGlobal && (freeGlobal.global === freeGlobal || freeGlobal.window === fre
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],741:[function(require,module,exports){
+},{}],747:[function(require,module,exports){
 "use strict";
 var root_1 = require('./root');
 var isArray_1 = require('./isArray');
@@ -87293,12 +88783,12 @@ function subscribeToResult(outerSubscriber, result, outerValue, outerIndex) {
 }
 exports.subscribeToResult = subscribeToResult;
 
-},{"../InnerSubscriber":472,"../Observable":474,"../symbol/iterator":719,"../symbol/observable":720,"./isArray":731,"./isPromise":736,"./root":740}],742:[function(require,module,exports){
+},{"../InnerSubscriber":478,"../Observable":480,"../symbol/iterator":725,"../symbol/observable":726,"./isArray":737,"./isPromise":742,"./root":746}],748:[function(require,module,exports){
 "use strict";
 function throwError(e) { throw e; }
 exports.throwError = throwError;
 
-},{}],743:[function(require,module,exports){
+},{}],749:[function(require,module,exports){
 "use strict";
 var Subscriber_1 = require('../Subscriber');
 var rxSubscriber_1 = require('../symbol/rxSubscriber');
@@ -87315,7 +88805,7 @@ function toSubscriber(nextOrObserver, error, complete) {
 }
 exports.toSubscriber = toSubscriber;
 
-},{"../Subscriber":482,"../symbol/rxSubscriber":721}],744:[function(require,module,exports){
+},{"../Subscriber":488,"../symbol/rxSubscriber":727}],750:[function(require,module,exports){
 "use strict";
 var errorObject_1 = require('./errorObject');
 var tryCatchTarget;
@@ -87335,9 +88825,9 @@ function tryCatch(fn) {
 exports.tryCatch = tryCatch;
 ;
 
-},{"./errorObject":730}],745:[function(require,module,exports){
+},{"./errorObject":736}],751:[function(require,module,exports){
 
-},{}]},{},[1,745])
+},{}]},{},[1,751])
 
 
 //# sourceMappingURL=app.bundle.js.map

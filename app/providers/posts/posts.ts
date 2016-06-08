@@ -3,13 +3,13 @@ import {Http} from '@angular/http';
 import 'rxjs/add/operator/map';
 
 /*
-  Generated class for the Menus provider.
+  Generated class for the Posts provider.
 
   See https://angular.io/docs/ts/latest/guide/dependency-injection.html
   for more info on providers and Angular 2 DI.
 */
 @Injectable()
-export class Menus {
+export class Posts {
   data: any = null;
 
   constructor(public http: Http) {}
@@ -27,12 +27,13 @@ export class Menus {
       // then on the response it'll map the JSON data to a parsed JS object.
       // Next we process the data and resolve the promise with the new data.
 
-    this.http.get('http://reactordev.com/apv2/wp-json/wp-api-menus/v2/menus/9')
+    this.http.get('http://reactordev.com/apv2/wp-json/wp/v2/posts')
         .map(res => res.json())
         .subscribe(data => {
           // we've got back the raw data, now generate the core schedule data
           // and save the data for later reference
-          this.data = data.items;
+          this.data = data;
+          console.warn(data);
           resolve(this.data);
         });
     });

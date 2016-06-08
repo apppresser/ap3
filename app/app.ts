@@ -1,22 +1,23 @@
 import {ViewChild} from '@angular/core';
-import {App, Platform, MenuController, Nav} from 'ionic-angular';
+import {Component} from '@angular/core';
+import {ionicBootstrap, Platform, MenuController, Nav, Toast} from 'ionic-angular';
 import {StatusBar} from 'ionic-native';
 import {HelloIonicPage} from './pages/hello-ionic/hello-ionic';
 import {NewPage} from './pages/new-page/new-page';
 import {ListPage} from './pages/list/list';
+import {PostList} from './pages/post-list/post-list';
 import Iframe from './pages/iframe';
 import {Menus} from './providers/menus/menus';
+import {Posts} from './providers/posts/posts';
+import {TabsPage} from './pages/tabs/tabs';
 // import {Push} from 'ionic-native';
 
+/** Make sure to put any providers into the brackets in ionicBootstrap below or they won't work **/
 
-@App({
+@Component({
   templateUrl: 'build/app.html',
-  providers: [Menus],
-  config: {
-    iconMode: 'ios',
-    pageTransition: 'ios',
-  } // http://ionicframework.com/docs/v2/api/config/Config/
 })
+
 class MyApp {
   @ViewChild(Nav) nav: Nav;
 
@@ -40,13 +41,14 @@ class MyApp {
       // Loads menu from WordPress API
       this.pages = pages;
 
-      this.pages.unshift({ 'title': 'Home', 'url': '', 'component': HelloIonicPage });
+      this.pages.unshift({ 'title': 'Local Home', 'url': '', 'component': HelloIonicPage });
 
       // Add pages manually here, can use different components like this...
-      let a = { 'title': 'New Page', 'url': '', 'component': NewPage };
-      let b = { 'title': 'List Page', 'url': '', 'component': ListPage };
+      let a = { 'title': 'Tabs', 'url': '', 'component': TabsPage };
+      let b = { 'title': 'WP Posts', 'url': '', 'component': PostList };
+      let c = { 'title': 'Local Posts', 'url': '', 'component': ListPage };
 
-      this.pages.push(a, b);
+      this.pages.push(a, b, c);
 
     });
 
@@ -65,18 +67,40 @@ class MyApp {
       //   console.log("Got Token:", token.token);
       // });
 
+      
+      this.presentToast();
+
+
     });
 
     // When WP site loads, attach our click events
     window.addEventListener('message', (e) => {
+
       console.log('postMessage', e.data);
+
+      if( e.data === 'site_loaded' ) {
+
+        var iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
+
+        // TODO: can't find elements this way, not sure why
+        var shareBtns = iframedoc.getElementsByClassName("appshare");
+
+        console.warn(shareBtns);
+
+        // Add click events to all appshare buttons
+        for (var i = 0; i < shareBtns.length; i++) {
+          shareBtns[i].addEventListener('click', () => {
+            alert('click');
+          }, false);
+        }
+      }
 
       // if it's not our json object, return
       if (e.data.indexOf('{') != 0)
         return;
 
       var data = JSON.parse(e.data);
-      console.warn(data);
+
       if ( data.url ) {
         let page = { title: data.title, component: Iframe, url: data.url };
         this.nav.push(Iframe, page);
@@ -85,6 +109,19 @@ class MyApp {
       }
     }, false);
 
+  }
+
+  presentToast() {
+      let toast = Toast.create({
+      message: 'This is a toast message',
+      duration: 3000
+      });
+
+      toast.onDismiss(() => {
+      console.log('Dismissed toast');
+      });
+
+      this.nav.present(toast);
   }
 
   openPage(page) {
@@ -99,3 +136,13 @@ class MyApp {
   }
 
 }
+
+// Pass the main app component as the first argument
+// Pass any providers for your app in the second argument
+// Set any config for your app as the third argument:
+// http://ionicframework.com/docs/v2/api/config/Config/
+
+ionicBootstrap(MyApp, [Menus, Posts], {
+  tabbarPlacement: 'bottom',
+  // http://ionicframework.com/docs/v2/api/config/Config/
+})
