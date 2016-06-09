@@ -14,6 +14,7 @@ var core_2 = require('@angular/core');
 var ionic_angular_1 = require('ionic-angular');
 var ionic_native_1 = require('ionic-native');
 var hello_ionic_1 = require('./pages/hello-ionic/hello-ionic');
+var new_page_1 = require('./pages/new-page/new-page');
 var list_1 = require('./pages/list/list');
 var post_list_1 = require('./pages/post-list/post-list');
 var iframe_1 = require('./pages/iframe');
@@ -21,6 +22,7 @@ var menus_1 = require('./providers/menus/menus');
 var posts_1 = require('./providers/posts/posts');
 var tabs_1 = require('./pages/tabs/tabs');
 // import {Push} from 'ionic-native';
+/** Make sure to put any providers into the brackets in ionicBootstrap below or they won't work **/
 var MyApp = (function () {
     function MyApp(platform, menuService, menu) {
         this.platform = platform;
@@ -43,7 +45,8 @@ var MyApp = (function () {
             var a = { 'title': 'Tabs', 'url': '', 'component': tabs_1.TabsPage };
             var b = { 'title': 'WP Posts', 'url': '', 'component': post_list_1.PostList };
             var c = { 'title': 'Local Posts', 'url': '', 'component': list_1.ListPage };
-            _this.pages.push(a, b, c);
+            var d = { 'title': 'New Page', 'url': '', 'component': new_page_1.NewPage, 'classes': 'home' };
+            _this.pages.push(a, b, c, d);
         });
     };
     MyApp.prototype.initializeApp = function () {
@@ -128,7 +131,7 @@ ionic_angular_1.ionicBootstrap(MyApp, [menus_1.Menus, posts_1.Posts], {
     tabbarPlacement: 'bottom',
 });
 
-},{"./pages/hello-ionic/hello-ionic":2,"./pages/iframe":3,"./pages/list/list":5,"./pages/post-list/post-list":8,"./pages/tabs/tabs":9,"./providers/menus/menus":10,"./providers/posts/posts":11,"@angular/core":144,"ionic-angular":395,"ionic-native":418}],2:[function(require,module,exports){
+},{"./pages/hello-ionic/hello-ionic":2,"./pages/iframe":3,"./pages/list/list":5,"./pages/new-page/new-page":6,"./pages/post-list/post-list":8,"./pages/tabs/tabs":9,"./providers/menus/menus":10,"./providers/posts/posts":11,"@angular/core":144,"ionic-angular":395,"ionic-native":418}],2:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -300,24 +303,49 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
+var ionic_angular_1 = require('ionic-angular');
 var NewPage = (function () {
-    function NewPage() {
+    function NewPage(nav) {
+        this.nav = nav;
         console.log('NewPage loaded');
     }
-    NewPage.prototype.fart = function () {
-        alert('phhhhrt');
+    NewPage.prototype.presentActionSheet = function () {
+        var actionSheet = ionic_angular_1.ActionSheet.create({
+            title: 'Modify your album',
+            buttons: [
+                {
+                    text: 'Destructive',
+                    role: 'destructive',
+                    handler: function () {
+                        console.log('Destructive clicked');
+                    }
+                }, {
+                    text: 'Archive',
+                    handler: function () {
+                        console.log('Archive clicked');
+                    }
+                }, {
+                    text: 'Cancel',
+                    role: 'cancel',
+                    handler: function () {
+                        console.log('Cancel clicked');
+                    }
+                }
+            ]
+        });
+        this.nav.present(actionSheet);
     };
     NewPage = __decorate([
         core_1.Component({
             templateUrl: 'build/pages/new-page/new-page.html'
         }), 
-        __metadata('design:paramtypes', [])
+        __metadata('design:paramtypes', [ionic_angular_1.Nav])
     ], NewPage);
     return NewPage;
 }());
 exports.NewPage = NewPage;
 
-},{"@angular/core":144}],7:[function(require,module,exports){
+},{"@angular/core":144,"ionic-angular":395}],7:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -446,9 +474,11 @@ require('rxjs/add/operator/map');
   for more info on providers and Angular 2 DI.
 */
 var Menus = (function () {
+    // 'http://reactordev.com/apv2/wp-json/wp-api-menus/v2/menus/9'
     function Menus(http) {
         this.http = http;
         this.data = null;
+        this.url = 'http://www.wp4.dev/wp-json/wp-api-menus/v2/menus/215';
     }
     Menus.prototype.load = function () {
         var _this = this;
@@ -461,7 +491,7 @@ var Menus = (function () {
             // We're using Angular Http provider to request the data,
             // then on the response it'll map the JSON data to a parsed JS object.
             // Next we process the data and resolve the promise with the new data.
-            _this.http.get('http://reactordev.com/apv2/wp-json/wp-api-menus/v2/menus/9')
+            _this.http.get(_this.url)
                 .map(function (res) { return res.json(); })
                 .subscribe(function (data) {
                 // we've got back the raw data, now generate the core schedule data

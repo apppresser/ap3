@@ -11,6 +11,38 @@
 
   <h3>Welcome to your first Ionic app!</h3>
 
+  <ion-card>
+  <ion-card-header>
+    Header
+  </ion-card-header>
+  <ion-card-content>
+    The British use the term "header", but the American term "head-shot" the English simply refuse to adopt.
+  </ion-card-content>
+</ion-card>
+
+  
+<h2>Segment</h2>
+
+<div [ngSwitch]="pet">
+  <ion-list *ngSwitchWhen="'puppies'">
+    <ion-item>
+      <h2>Ruby</h2>
+    </ion-item>
+    <ion-item>
+      <h2>Tuesday</h2>
+    </ion-item>
+  </ion-list>
+
+  <ion-list *ngSwitchWhen="'kittens'">
+    <ion-item>
+      <h2>Luna</h2>
+    </ion-item>
+    <ion-item>
+      <h2>Grill</h2>
+    </ion-item>
+  </ion-list>
+</div>
+
   <p>
     This starter project is our way of helping you get a functional app running in record time.
   </p>
@@ -25,3 +57,14 @@
   </p>
 
 </ion-content>
+
+<ion-toolbar position="bottom">
+  <ion-segment [(ngModel)]="pet">
+    <ion-segment-button value="kittens">
+      Kittens
+    </ion-segment-button>
+    <ion-segment-button value="puppies">
+      Puppies
+    </ion-segment-button>
+  </ion-segment>
+</ion-toolbar>

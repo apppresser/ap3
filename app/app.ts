@@ -1,6 +1,6 @@
 import {ViewChild} from '@angular/core';
 import {Component} from '@angular/core';
-import {ionicBootstrap, Platform, MenuController, Nav, Toast} from 'ionic-angular';
+import {ionicBootstrap, Platform, MenuController, Nav, Toast, ActionSheet} from 'ionic-angular';
 import {StatusBar} from 'ionic-native';
 import {HelloIonicPage} from './pages/hello-ionic/hello-ionic';
 import {NewPage} from './pages/new-page/new-page';
@@ -23,7 +23,7 @@ class MyApp {
 
   // make HelloIonicPage the root (or first) page
   rootPage: any = HelloIonicPage;
-  pages: Array<{title: string, url: string, component: any}>;
+  pages: Array<{title: string, url: string, component: any, classes: any}>;
 
   constructor(
     private platform: Platform,
@@ -47,8 +47,9 @@ class MyApp {
       let a = { 'title': 'Tabs', 'url': '', 'component': TabsPage };
       let b = { 'title': 'WP Posts', 'url': '', 'component': PostList };
       let c = { 'title': 'Local Posts', 'url': '', 'component': ListPage };
+      let d = { 'title': 'New Page', 'url': '', 'component': NewPage, 'classes': 'home' };
 
-      this.pages.push(a, b, c);
+      this.pages.push(a, b, c, d);
 
     });
 

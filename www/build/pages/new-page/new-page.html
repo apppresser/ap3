@@ -18,7 +18,16 @@
     Follow along on the tutorial section of the Ionic docs!
   </p>
   <p>
-    <button primary (click)="fart()">Fart</button>
+    <button primary (click)="presentActionSheet()">Action Sheet</button>
   </p>
 
+  <ion-item>
+  <ion-label>Start Time</ion-label>
+  <ion-datetime displayFormat="h:mm A" pickerFormat="h mm A"></ion-datetime>
+</ion-item>
+
 </ion-content>
+
+<ion-toolbar position="bottom">
+  <ion-title>Footer</ion-title>
+</ion-toolbar>
