@@ -7,7 +7,7 @@
 
 <ion-content>
  <div *ngIf="selectedItem" class="selection">
-    <h2>{{selectedItem.title.rendered}}</h2>
-    <p>{{selectedItem.content.rendered}}</p>
+    <h2 [innerHTML]="selectedItem.title.rendered"></h2>
+    <div [innerHTML]="selectedItem.content.rendered"></div>
   </div>
 </ion-content>

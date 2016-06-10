@@ -40,7 +40,7 @@ var MyApp = (function () {
         this.menuService.load().then(function (pages) {
             // Loads menu from WordPress API
             _this.pages = pages;
-            _this.pages.unshift({ 'title': 'Local Home', 'url': '', 'component': hello_ionic_1.HelloIonicPage });
+            _this.pages.unshift({ 'title': 'Set Cookie', 'url': 'http://reactordev.com/apv2?appp=2', 'component': iframe_1.default });
             // Add pages manually here, can use different components like this...
             var a = { 'title': 'Tabs', 'url': '', 'component': tabs_1.TabsPage };
             var b = { 'title': 'WP Posts', 'url': '', 'component': post_list_1.PostList };
@@ -82,7 +82,7 @@ var MyApp = (function () {
                 return;
             var data = JSON.parse(e.data);
             if (data.url) {
-                var page = { title: data.title, component: iframe_1.default, url: data.url };
+                var page = { title: data.title, component: iframe_1.default, url: data.url, classes: null };
                 _this.nav.push(iframe_1.default, page);
             }
             else if (data.msg) {
@@ -474,11 +474,11 @@ require('rxjs/add/operator/map');
   for more info on providers and Angular 2 DI.
 */
 var Menus = (function () {
-    // 'http://reactordev.com/apv2/wp-json/wp-api-menus/v2/menus/9'
+    // 'http://www.wp4.dev/wp-json/wp-api-menus/v2/menus/215'
     function Menus(http) {
         this.http = http;
         this.data = null;
-        this.url = 'http://www.wp4.dev/wp-json/wp-api-menus/v2/menus/215';
+        this.url = 'http://reactordev.com/apv2/wp-json/wp-api-menus/v2/menus/9';
     }
     Menus.prototype.load = function () {
         var _this = this;

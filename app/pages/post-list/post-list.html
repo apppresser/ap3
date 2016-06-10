@@ -7,8 +7,7 @@
 
 <ion-content>
   <ion-list>
-    <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">
-      {{item.title.rendered}}
+    <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)" [innerHTML]="item.title.rendered">
     </button>
   </ion-list>
   <div *ngIf="selectedItem" padding>

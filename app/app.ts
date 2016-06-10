@@ -41,7 +41,7 @@ class MyApp {
       // Loads menu from WordPress API
       this.pages = pages;
 
-      this.pages.unshift({ 'title': 'Local Home', 'url': '', 'component': HelloIonicPage });
+      this.pages.unshift({ 'title': 'Set Cookie', 'url': 'http://reactordev.com/apv2?appp=2', 'component': Iframe });
 
       // Add pages manually here, can use different components like this...
       let a = { 'title': 'Tabs', 'url': '', 'component': TabsPage };
@@ -103,7 +103,7 @@ class MyApp {
       var data = JSON.parse(e.data);
 
       if ( data.url ) {
-        let page = { title: data.title, component: Iframe, url: data.url };
+        let page = { title: data.title, component: Iframe, url: data.url, classes: null };
         this.nav.push(Iframe, page);
       } else if( data.msg ) {
         window.plugins.socialsharing.share(data.msg, null, null, data.link);
