@@ -21,6 +21,7 @@ var iframe_1 = require('./pages/iframe');
 var menus_1 = require('./providers/menus/menus');
 var posts_1 = require('./providers/posts/posts');
 var tabs_1 = require('./pages/tabs/tabs');
+var ionic_native_2 = require('ionic-native');
 // import {Push} from 'ionic-native';
 /** Make sure to put any providers into the brackets in ionicBootstrap below or they won't work **/
 var MyApp = (function () {
@@ -60,35 +61,46 @@ var MyApp = (function () {
             //   // Log out your device token (Save this!)
             //   console.log("Got Token:", token.token);
             // });
-            _this.presentToast();
+            // this.presentToast();
+            _this.attachListeners();
         });
+    };
+    MyApp.prototype.attachListeners = function () {
+        var _this = this;
         // When WP site loads, attach our click events
         window.addEventListener('message', function (e) {
             console.log('postMessage', e.data);
-            if (e.data === 'site_loaded') {
-                var iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
-                // TODO: can't find elements this way, not sure why
-                var shareBtns = iframedoc.getElementsByClassName("appshare");
-                console.warn(shareBtns);
-                // Add click events to all appshare buttons
-                for (var i = 0; i < shareBtns.length; i++) {
-                    shareBtns[i].addEventListener('click', function () {
-                        alert('click');
-                    }, false);
-                }
-            }
             // if it's not our json object, return
             if (e.data.indexOf('{') != 0)
                 return;
             var data = JSON.parse(e.data);
             if (data.url) {
+                // push a new page
                 var page = { title: data.title, component: iframe_1.default, url: data.url, classes: null };
                 _this.nav.push(iframe_1.default, page);
             }
             else if (data.msg) {
+                // social sharing was clicked, show that
                 window.plugins.socialsharing.share(data.msg, null, null, data.link);
             }
-        }, false);
+            else if (data.camera) {
+                var options = {
+                    quality: 30,
+                    destinationType: ionic_native_2.Camera.DestinationType.FILE_URI,
+                    correctOrientation: true,
+                    targetWidth: 1204,
+                    targetHeight: 1204
+                };
+                ionic_native_2.Camera.getPicture(options).then(function (imageData) {
+                    // imageData is either a base64 encoded string or a file URI
+                    // If it's base64:
+                    // let base64Image = "data:image/jpeg;base64," + imageData;
+                    alert('success');
+                }, function (err) {
+                    alert(err);
+                });
+            }
+        }, false); // end eventListener
     };
     MyApp.prototype.presentToast = function () {
         var toast = ionic_angular_1.Toast.create({
@@ -364,6 +376,24 @@ var PostDetailsPage = (function () {
         // If we navigated to this page, we will have an item available as a nav param
         this.selectedItem = navParams.get('item');
     }
+    PostDetailsPage.prototype.onPageDidEnter = function () {
+        // Social button stuff. Should go in a provider or somewhere global
+        window.addEventListener('message', function (e) {
+            console.log('postMessage', e.data);
+            if (e.data === 'site_loaded') {
+                var iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
+                var shareBtns = iframedoc.getElementsByClassName("appshare");
+                console.warn(shareBtns);
+                // Add click events to all appshare buttons
+                for (var i = 0; i < shareBtns.length; i++) {
+                    shareBtns[i].addEventListener('click', function (e) {
+                        console.warn('social', e);
+                        window.plugins.socialsharing.share('share', null, null, 'http://apppresser.com');
+                    }, false);
+                }
+            } // endif
+        }); // event listener
+    }; // onPageDidEnter
     PostDetailsPage = __decorate([
         core_1.Component({
             templateUrl: 'build/pages/post-details/post-details.html'

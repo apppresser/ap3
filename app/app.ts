@@ -10,6 +10,7 @@ import Iframe from './pages/iframe';
 import {Menus} from './providers/menus/menus';
 import {Posts} from './providers/posts/posts';
 import {TabsPage} from './pages/tabs/tabs';
+import {Camera} from 'ionic-native';
 // import {Push} from 'ionic-native';
 
 /** Make sure to put any providers into the brackets in ionicBootstrap below or they won't work **/
@@ -69,32 +70,20 @@ class MyApp {
       // });
 
       
-      this.presentToast();
+      // this.presentToast();
+      this.attachListeners();
 
 
     });
+
+  }
+
+  attachListeners() {
 
     // When WP site loads, attach our click events
     window.addEventListener('message', (e) => {
 
       console.log('postMessage', e.data);
-
-      if( e.data === 'site_loaded' ) {
-
-        var iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
-
-        // TODO: can't find elements this way, not sure why
-        var shareBtns = iframedoc.getElementsByClassName("appshare");
-
-        console.warn(shareBtns);
-
-        // Add click events to all appshare buttons
-        for (var i = 0; i < shareBtns.length; i++) {
-          shareBtns[i].addEventListener('click', () => {
-            alert('click');
-          }, false);
-        }
-      }
 
       // if it's not our json object, return
       if (e.data.indexOf('{') != 0)
@@ -102,13 +91,35 @@ class MyApp {
 
       var data = JSON.parse(e.data);
 
-      if ( data.url ) {
+      if (data.url) {
+        // push a new page
         let page = { title: data.title, component: Iframe, url: data.url, classes: null };
         this.nav.push(Iframe, page);
-      } else if( data.msg ) {
+      } else if (data.msg) {
+        // social sharing was clicked, show that
         window.plugins.socialsharing.share(data.msg, null, null, data.link);
+      } else if (data.camera) {
+
+        let options = {
+           quality: 30,
+           destinationType: Camera.DestinationType.FILE_URI,
+           correctOrientation: true,
+           targetWidth: 1204,
+           targetHeight: 1204
+        };
+
+        Camera.getPicture(options).then((imageData) => {
+          // imageData is either a base64 encoded string or a file URI
+          // If it's base64:
+          // let base64Image = "data:image/jpeg;base64," + imageData;
+          alert('success');
+        }, (err) => {
+          alert(err);
+        });
+        
       }
-    }, false);
+
+    }, false); // end eventListener
 
   }
 
