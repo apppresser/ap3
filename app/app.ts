@@ -11,6 +11,7 @@ import {Menus} from './providers/menus/menus';
 import {Posts} from './providers/posts/posts';
 import {TabsPage} from './pages/tabs/tabs';
 import {Camera} from 'ionic-native';
+import {Transfer} from 'ionic-native';
 // import {Push} from 'ionic-native';
 
 /** Make sure to put any providers into the brackets in ionicBootstrap below or they won't work **/
@@ -66,7 +67,7 @@ class MyApp {
 
       // push.register(function(token) {
       //   // Log out your device token (Save this!)
-      //   console.log("Got Token:", token.token);
+      //   // console.log("Got Token:", token.token);
       // });
 
       
@@ -83,7 +84,7 @@ class MyApp {
     // When WP site loads, attach our click events
     window.addEventListener('message', (e) => {
 
-      console.log('postMessage', e.data);
+      // console.log('postMessage', e.data);
 
       // if it's not our json object, return
       if (e.data.indexOf('{') != 0)
@@ -103,6 +104,7 @@ class MyApp {
         let options = {
            quality: 30,
            destinationType: Camera.DestinationType.FILE_URI,
+           sourceType: window.navigator.camera.PictureSourceType.PHOTOLIBRARY,
            correctOrientation: true,
            targetWidth: 1204,
            targetHeight: 1204
@@ -112,14 +114,69 @@ class MyApp {
           // imageData is either a base64 encoded string or a file URI
           // If it's base64:
           // let base64Image = "data:image/jpeg;base64," + imageData;
-          alert('success');
+          this.uploadPhoto(imageData);
         }, (err) => {
           alert(err);
         });
-        
+
       }
 
     }, false); // end eventListener
+
+  }
+
+  uploadPhoto(imageURI) {
+
+    let fileTransfer = new Transfer();
+
+    let iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
+    let iframewin = document.getElementById('ap3-iframe').contentWindow.window;
+
+    // console.log('imageURI', imageURI);
+
+    let image = imageURI.substr(imageURI.lastIndexOf('/') + 1);
+
+    let name = image.split("?")[0];
+    let anumber = image.split("?")[1];
+    let ajaxurl = iframewin.apppCore.ajaxurl;
+
+    if ('Android' === device.platform ) {
+      image = anumber + '.jpg';
+    }
+
+    // console.log(image);
+
+    let options = new FileUploadOptions();
+    options.fileKey = 'appp_cam_file';
+    options.fileName = imageURI ? image : '';
+    options.mimeType = 'image/jpeg';
+
+    let params = {};
+    let form_fields = [];
+    let form_values = [];
+    let iterator;
+    let form_elements = iframedoc.getElementById('appp_camera_form').elements;
+
+    // console.log(form_elements);
+
+    for (iterator = 0; iterator < form_elements.length; iterator++) {
+      form_fields[iterator] = form_elements[iterator].name;
+      form_values[iterator] = form_elements[iterator].value;
+      // console.log(form_elements[iterator].name, form_elements[iterator].value);
+    }
+
+    params.form_fields = JSON.stringify(form_fields);
+    params.form_values = JSON.stringify(form_values);
+    params.appp_action = 'attach';
+
+    iframedoc.getElementById('appp_cam_post_title').value = '';
+    options.params = params;
+
+    fileTransfer.upload(imageURI, ajaxurl, options, true).then( ()=> {
+      alert('success'); 
+    }).catch( (e)=> {
+      console.warn(e);
+    });
 
   }
 
@@ -130,7 +187,7 @@ class MyApp {
       });
 
       toast.onDismiss(() => {
-      console.log('Dismissed toast');
+      // console.log('Dismissed toast');
       });
 
       this.nav.present(toast);

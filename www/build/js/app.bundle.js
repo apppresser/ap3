@@ -22,6 +22,7 @@ var menus_1 = require('./providers/menus/menus');
 var posts_1 = require('./providers/posts/posts');
 var tabs_1 = require('./pages/tabs/tabs');
 var ionic_native_2 = require('ionic-native');
+var ionic_native_3 = require('ionic-native');
 // import {Push} from 'ionic-native';
 /** Make sure to put any providers into the brackets in ionicBootstrap below or they won't work **/
 var MyApp = (function () {
@@ -59,7 +60,7 @@ var MyApp = (function () {
             // var push = new Ionic.Push({});
             // push.register(function(token) {
             //   // Log out your device token (Save this!)
-            //   console.log("Got Token:", token.token);
+            //   // console.log("Got Token:", token.token);
             // });
             // this.presentToast();
             _this.attachListeners();
@@ -69,7 +70,7 @@ var MyApp = (function () {
         var _this = this;
         // When WP site loads, attach our click events
         window.addEventListener('message', function (e) {
-            console.log('postMessage', e.data);
+            // console.log('postMessage', e.data);
             // if it's not our json object, return
             if (e.data.indexOf('{') != 0)
                 return;
@@ -87,6 +88,7 @@ var MyApp = (function () {
                 var options = {
                     quality: 30,
                     destinationType: ionic_native_2.Camera.DestinationType.FILE_URI,
+                    sourceType: window.navigator.camera.PictureSourceType.PHOTOLIBRARY,
                     correctOrientation: true,
                     targetWidth: 1204,
                     targetHeight: 1204
@@ -95,12 +97,51 @@ var MyApp = (function () {
                     // imageData is either a base64 encoded string or a file URI
                     // If it's base64:
                     // let base64Image = "data:image/jpeg;base64," + imageData;
-                    alert('success');
+                    _this.uploadPhoto(imageData);
                 }, function (err) {
                     alert(err);
                 });
             }
         }, false); // end eventListener
+    };
+    MyApp.prototype.uploadPhoto = function (imageURI) {
+        var fileTransfer = new ionic_native_3.Transfer();
+        var iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
+        var iframewin = document.getElementById('ap3-iframe').contentWindow.window;
+        console.log('imageURI', imageURI);
+        var image = imageURI.substr(imageURI.lastIndexOf('/') + 1);
+        var name = image.split("?")[0];
+        var anumber = image.split("?")[1];
+        var ajaxurl = iframewin.apppCore.ajaxurl;
+        if ('Android' === device.platform) {
+            image = anumber + '.jpg';
+        }
+        console.log(image);
+        var options = new FileUploadOptions();
+        options.fileKey = 'appp_cam_file';
+        options.fileName = imageURI ? image : '';
+        options.mimeType = 'image/jpeg';
+        var params = {};
+        var form_fields = [];
+        var form_values = [];
+        var iterator;
+        var form_elements = iframedoc.getElementById('appp_camera_form').elements;
+        console.log(form_elements);
+        for (iterator = 0; iterator < form_elements.length; iterator++) {
+            form_fields[iterator] = form_elements[iterator].name;
+            form_values[iterator] = form_elements[iterator].value;
+            console.log(form_elements[iterator].name, form_elements[iterator].value);
+        }
+        params.form_fields = JSON.stringify(form_fields);
+        params.form_values = JSON.stringify(form_values);
+        params.appp_action = 'attach';
+        iframedoc.getElementById('appp_cam_post_title').value = '';
+        options.params = params;
+        fileTransfer.upload(imageURI, ajaxurl, options, true).then(function () {
+            alert('success');
+        }).catch(function (e) {
+            console.warn(e);
+        });
     };
     MyApp.prototype.presentToast = function () {
         var toast = ionic_angular_1.Toast.create({
@@ -108,7 +149,7 @@ var MyApp = (function () {
             duration: 3000
         });
         toast.onDismiss(function () {
-            console.log('Dismissed toast');
+            // console.log('Dismissed toast');
         });
         this.nav.present(toast);
     };
@@ -377,23 +418,8 @@ var PostDetailsPage = (function () {
         this.selectedItem = navParams.get('item');
     }
     PostDetailsPage.prototype.onPageDidEnter = function () {
-        // Social button stuff. Should go in a provider or somewhere global
-        window.addEventListener('message', function (e) {
-            console.log('postMessage', e.data);
-            if (e.data === 'site_loaded') {
-                var iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
-                var shareBtns = iframedoc.getElementsByClassName("appshare");
-                console.warn(shareBtns);
-                // Add click events to all appshare buttons
-                for (var i = 0; i < shareBtns.length; i++) {
-                    shareBtns[i].addEventListener('click', function (e) {
-                        console.warn('social', e);
-                        window.plugins.socialsharing.share('share', null, null, 'http://apppresser.com');
-                    }, false);
-                }
-            } // endif
-        }); // event listener
-    }; // onPageDidEnter
+        // Anything that needs to run everytime the view is entered will go here
+    };
     PostDetailsPage = __decorate([
         core_1.Component({
             templateUrl: 'build/pages/post-details/post-details.html'
