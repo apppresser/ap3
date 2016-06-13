@@ -79,6 +79,10 @@ class MyApp {
 
   }
 
+  /* 
+  * We are listening for postMessage events from the iframe pages. When something needs to happen, a message is sent from the iframe as a JSON object, such as { iablink: 'http://apppresser.com', target: '_blank', options: '' }. We parse that object here, and do the phonegap stuff like window.open(data.iablink)
+  */
+
   attachListeners() {
 
     // When WP site loads, attach our click events
@@ -93,12 +97,21 @@ class MyApp {
       var data = JSON.parse(e.data);
 
       if (data.url) {
+
         // push a new page
         let page = { title: data.title, component: Iframe, url: data.url, classes: null };
         this.nav.push(Iframe, page);
+
       } else if (data.msg) {
+
         // social sharing was clicked, show that
         window.plugins.socialsharing.share(data.msg, null, null, data.link);
+
+      } else if (data.iablink) {
+
+        // in app browser links
+        window.open(data.iablink, data.target, data.options);
+
       } else if (data.camera) {
 
         let options = {

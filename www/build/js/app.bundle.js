@@ -84,6 +84,10 @@ var MyApp = (function () {
                 // social sharing was clicked, show that
                 window.plugins.socialsharing.share(data.msg, null, null, data.link);
             }
+            else if (data.iablink) {
+                // in app browser links
+                window.open(data.iablink, data.target, data.options);
+            }
             else if (data.camera) {
                 var options = {
                     quality: 30,
@@ -108,7 +112,7 @@ var MyApp = (function () {
         var fileTransfer = new ionic_native_3.Transfer();
         var iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
         var iframewin = document.getElementById('ap3-iframe').contentWindow.window;
-        console.log('imageURI', imageURI);
+        // console.log('imageURI', imageURI);
         var image = imageURI.substr(imageURI.lastIndexOf('/') + 1);
         var name = image.split("?")[0];
         var anumber = image.split("?")[1];
@@ -116,7 +120,7 @@ var MyApp = (function () {
         if ('Android' === device.platform) {
             image = anumber + '.jpg';
         }
-        console.log(image);
+        // console.log(image);
         var options = new FileUploadOptions();
         options.fileKey = 'appp_cam_file';
         options.fileName = imageURI ? image : '';
@@ -126,11 +130,10 @@ var MyApp = (function () {
         var form_values = [];
         var iterator;
         var form_elements = iframedoc.getElementById('appp_camera_form').elements;
-        console.log(form_elements);
+        // console.log(form_elements);
         for (iterator = 0; iterator < form_elements.length; iterator++) {
             form_fields[iterator] = form_elements[iterator].name;
             form_values[iterator] = form_elements[iterator].value;
-            console.log(form_elements[iterator].name, form_elements[iterator].value);
         }
         params.form_fields = JSON.stringify(form_fields);
         params.form_values = JSON.stringify(form_values);
