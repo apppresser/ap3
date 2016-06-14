@@ -9368,8 +9368,8 @@ body {
 div.selection {
   font-size: 22px;
   display: block;
-  text-align: center;
-  padding-top: 5%; }
+  text-align: left;
+  padding: 20px; }
 
 iframe {
   height: 100%;

@@ -8,10 +8,9 @@ import {ListPage} from './pages/list/list';
 import {PostList} from './pages/post-list/post-list';
 import Iframe from './pages/iframe';
 import {Menus} from './providers/menus/menus';
+import {AppCamera} from './providers/camera/app-camera';
 import {Posts} from './providers/posts/posts';
 import {TabsPage} from './pages/tabs/tabs';
-import {Camera} from 'ionic-native';
-import {Transfer} from 'ionic-native';
 // import {Push} from 'ionic-native';
 
 /** Make sure to put any providers into the brackets in ionicBootstrap below or they won't work **/
@@ -30,6 +29,7 @@ class MyApp {
   constructor(
     private platform: Platform,
     public menuService: Menus,
+    public appCamera: AppCamera,
     private menu: MenuController
   ) {
     this.initializeApp();
@@ -114,96 +114,12 @@ class MyApp {
 
       } else if (data.camera) {
 
-        let options = {
-           quality: 30,
-           destinationType: Camera.DestinationType.FILE_URI,
-           sourceType: window.navigator.camera.PictureSourceType.PHOTOLIBRARY,
-           correctOrientation: true,
-           targetWidth: 1204,
-           targetHeight: 1204
-        };
-
-        Camera.getPicture(options).then((imageData) => {
-          // imageData is either a base64 encoded string or a file URI
-          // If it's base64:
-          // let base64Image = "data:image/jpeg;base64," + imageData;
-          this.uploadPhoto(imageData);
-        }, (err) => {
-          alert(err);
-        });
+        this.appCamera.photoLibrary();
 
       }
 
     }, false); // end eventListener
 
-  }
-
-  uploadPhoto(imageURI) {
-
-    let fileTransfer = new Transfer();
-
-    let iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
-    let iframewin = document.getElementById('ap3-iframe').contentWindow.window;
-
-    // console.log('imageURI', imageURI);
-
-    let image = imageURI.substr(imageURI.lastIndexOf('/') + 1);
-
-    let name = image.split("?")[0];
-    let anumber = image.split("?")[1];
-    let ajaxurl = iframewin.apppCore.ajaxurl;
-
-    if ('Android' === device.platform ) {
-      image = anumber + '.jpg';
-    }
-
-    // console.log(image);
-
-    let options = new FileUploadOptions();
-    options.fileKey = 'appp_cam_file';
-    options.fileName = imageURI ? image : '';
-    options.mimeType = 'image/jpeg';
-
-    let params = {};
-    let form_fields = [];
-    let form_values = [];
-    let iterator;
-    let form_elements = iframedoc.getElementById('appp_camera_form').elements;
-
-    // console.log(form_elements);
-
-    for (iterator = 0; iterator < form_elements.length; iterator++) {
-      form_fields[iterator] = form_elements[iterator].name;
-      form_values[iterator] = form_elements[iterator].value;
-      // console.log(form_elements[iterator].name, form_elements[iterator].value);
-    }
-
-    params.form_fields = JSON.stringify(form_fields);
-    params.form_values = JSON.stringify(form_values);
-    params.appp_action = 'attach';
-
-    iframedoc.getElementById('appp_cam_post_title').value = '';
-    options.params = params;
-
-    fileTransfer.upload(imageURI, ajaxurl, options, true).then( ()=> {
-      alert('success'); 
-    }).catch( (e)=> {
-      console.warn(e);
-    });
-
-  }
-
-  presentToast() {
-      let toast = Toast.create({
-      message: 'This is a toast message',
-      duration: 3000
-      });
-
-      toast.onDismiss(() => {
-      // console.log('Dismissed toast');
-      });
-
-      this.nav.present(toast);
   }
 
   openPage(page) {
@@ -217,6 +133,19 @@ class MyApp {
     }
   }
 
+  presentToast(msg: string) {
+      let toast = Toast.create({
+      message: msg,
+      duration: 3000
+      });
+
+      toast.onDismiss(() => {
+      // console.log('Dismissed toast');
+      });
+
+      this.nav.present(toast);
+  }
+
 }
 
 // Pass the main app component as the first argument
@@ -224,7 +153,7 @@ class MyApp {
 // Set any config for your app as the third argument:
 // http://ionicframework.com/docs/v2/api/config/Config/
 
-ionicBootstrap(MyApp, [Menus, Posts], {
+ionicBootstrap(MyApp, [Menus, Posts, AppCamera], {
   tabbarPlacement: 'bottom',
   // http://ionicframework.com/docs/v2/api/config/Config/
 })
