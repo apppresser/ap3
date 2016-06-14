@@ -10,7 +10,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
-var core_2 = require('@angular/core');
 var ionic_angular_1 = require('ionic-angular');
 var ionic_native_1 = require('ionic-native');
 var hello_ionic_1 = require('./pages/hello-ionic/hello-ionic');
@@ -22,7 +21,6 @@ var menus_1 = require('./providers/menus/menus');
 var app_camera_1 = require('./providers/camera/app-camera');
 var posts_1 = require('./providers/posts/posts');
 var tabs_1 = require('./pages/tabs/tabs');
-// import {Push} from 'ionic-native';
 /** Make sure to put any providers into the brackets in ionicBootstrap below or they won't work **/
 var MyApp = (function () {
     function MyApp(platform, menuService, appCamera, menu) {
@@ -85,14 +83,17 @@ var MyApp = (function () {
             }
             else if (data.msg) {
                 // social sharing was clicked, show that
-                window.plugins.socialsharing.share(data.msg, null, null, data.link);
+                ionic_native_1.SocialSharing.share(data.msg, null, null, data.link);
             }
             else if (data.iablink) {
                 // in app browser links
                 window.open(data.iablink, data.target, data.options);
             }
-            else if (data.camera) {
+            else if (data.camera && data.camera === 'library') {
                 _this.appCamera.photoLibrary();
+            }
+            else if (data.camera && data.camera === 'photo') {
+                _this.appCamera.takePicture();
             }
         }, false); // end eventListener
     };
@@ -122,7 +123,7 @@ var MyApp = (function () {
         __metadata('design:type', ionic_angular_1.Nav)
     ], MyApp.prototype, "nav", void 0);
     MyApp = __decorate([
-        core_2.Component({
+        core_1.Component({
             templateUrl: 'build/app.html',
         }), 
         __metadata('design:paramtypes', [ionic_angular_1.Platform, menus_1.Menus, app_camera_1.AppCamera, ionic_angular_1.MenuController])
@@ -485,19 +486,24 @@ var ionic_native_3 = require('ionic-native');
 */
 var AppCamera = (function () {
     function AppCamera() {
-    }
-    AppCamera.prototype.takePicture = function () { };
-    AppCamera.prototype.photoLibrary = function () {
-        var _this = this;
-        var options = {
+        this.options = {
             quality: 30,
             destinationType: ionic_native_1.Camera.DestinationType.FILE_URI,
-            sourceType: ionic_native_1.Camera.PictureSourceType.PHOTOLIBRARY,
             correctOrientation: true,
             targetWidth: 1204,
             targetHeight: 1204
         };
-        ionic_native_1.Camera.getPicture(options).then(function (imageData) {
+    }
+    AppCamera.prototype.takePicture = function () {
+        this.doCamera();
+    };
+    AppCamera.prototype.photoLibrary = function () {
+        this.options.sourceType = ionic_native_1.Camera.PictureSourceType.PHOTOLIBRARY;
+        this.doCamera();
+    };
+    AppCamera.prototype.doCamera = function () {
+        var _this = this;
+        ionic_native_1.Camera.getPicture(this.options).then(function (imageData) {
             // imageData is either a base64 encoded string or a file URI
             // If it's base64:
             // let base64Image = "data:image/jpeg;base64," + imageData;

@@ -1,7 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Camera} from 'ionic-native';
-import {Transfer} from 'ionic-native';
-import {Device} from 'ionic-native';
+import {Camera, Transfer, Device} from 'ionic-native';
 
 /*
   Generated class for the Menus provider.
@@ -12,22 +10,33 @@ import {Device} from 'ionic-native';
 @Injectable()
 export class AppCamera {
 
+  options: any = {
+    quality: 30,
+    destinationType: Camera.DestinationType.FILE_URI,
+    correctOrientation: true,
+    targetWidth: 1204,
+    targetHeight: 1204
+  };
+
   constructor() { }
 
-  takePicture() {}
+  takePicture() {
+
+    this.doCamera();
+
+  }
 
   photoLibrary() {
 
-    let options = {
-      quality: 30,
-      destinationType: Camera.DestinationType.FILE_URI,
-      sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
-      correctOrientation: true,
-      targetWidth: 1204,
-      targetHeight: 1204
-    };
+    this.options.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
 
-    Camera.getPicture(options).then((imageData) => {
+    this.doCamera();
+
+  }
+
+  doCamera() {
+
+    Camera.getPicture(this.options).then((imageData) => {
       // imageData is either a base64 encoded string or a file URI
       // If it's base64:
       // let base64Image = "data:image/jpeg;base64," + imageData;
@@ -35,6 +44,7 @@ export class AppCamera {
     }, (err) => {
       alert(err);
     });
+
   }
 
   uploadPhoto(imageURI) {

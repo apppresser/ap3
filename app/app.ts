@@ -1,7 +1,6 @@
-import {ViewChild} from '@angular/core';
-import {Component} from '@angular/core';
+import {ViewChild, Component} from '@angular/core';
 import {ionicBootstrap, Platform, MenuController, Nav, Toast, ActionSheet} from 'ionic-angular';
-import {StatusBar} from 'ionic-native';
+import {StatusBar, SocialSharing} from 'ionic-native';
 import {HelloIonicPage} from './pages/hello-ionic/hello-ionic';
 import {NewPage} from './pages/new-page/new-page';
 import {ListPage} from './pages/list/list';
@@ -11,7 +10,6 @@ import {Menus} from './providers/menus/menus';
 import {AppCamera} from './providers/camera/app-camera';
 import {Posts} from './providers/posts/posts';
 import {TabsPage} from './pages/tabs/tabs';
-// import {Push} from 'ionic-native';
 
 /** Make sure to put any providers into the brackets in ionicBootstrap below or they won't work **/
 
@@ -105,16 +103,20 @@ class MyApp {
       } else if (data.msg) {
 
         // social sharing was clicked, show that
-        window.plugins.socialsharing.share(data.msg, null, null, data.link);
+        SocialSharing.share(data.msg, null, null, data.link);
 
       } else if (data.iablink) {
 
         // in app browser links
         window.open(data.iablink, data.target, data.options);
 
-      } else if (data.camera) {
+      } else if (data.camera && data.camera === 'library' ) {
 
         this.appCamera.photoLibrary();
+
+      } else if (data.camera && data.camera === 'photo') {
+
+        this.appCamera.takePicture();
 
       }
 
