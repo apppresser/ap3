@@ -9,19 +9,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+/* Framework */
 var core_1 = require('@angular/core');
 var ionic_angular_1 = require('ionic-angular');
-var ionic_native_1 = require('ionic-native');
+/* Pages */
 var hello_ionic_1 = require('./pages/hello-ionic/hello-ionic');
 var new_page_1 = require('./pages/new-page/new-page');
 var list_1 = require('./pages/list/list');
 var post_list_1 = require('./pages/post-list/post-list');
 var iframe_1 = require('./pages/iframe');
+var tabs_1 = require('./pages/tabs/tabs');
+/* Providers (make sure to add to ionicBootstrap below) */
 var menus_1 = require('./providers/menus/menus');
 var app_camera_1 = require('./providers/camera/app-camera');
 var posts_1 = require('./providers/posts/posts');
-var tabs_1 = require('./pages/tabs/tabs');
-/** Make sure to put any providers into the brackets in ionicBootstrap below or they won't work **/
+/* Native */
+var ionic_native_1 = require('ionic-native');
 var MyApp = (function () {
     function MyApp(platform, menuService, appCamera, menu) {
         this.platform = platform;
@@ -40,7 +43,6 @@ var MyApp = (function () {
         this.menuService.load().then(function (pages) {
             // Loads menu from WordPress API
             _this.pages = pages;
-            _this.pages.unshift({ 'title': 'Set Cookie', 'url': 'http://reactordev.com/apv2?appp=2', 'component': iframe_1.default });
             // Add pages manually here, can use different components like this...
             var a = { 'title': 'Tabs', 'url': '', 'component': tabs_1.TabsPage };
             var b = { 'title': 'WP Posts', 'url': '', 'component': post_list_1.PostList };
@@ -60,7 +62,6 @@ var MyApp = (function () {
             //   // Log out your device token (Save this!)
             //   // console.log("Got Token:", token.token);
             // });
-            // this.presentToast();
             _this.attachListeners();
         });
     };
@@ -203,7 +204,13 @@ var default_1 = (function () {
     function default_1(navParams) {
         this.navParams = navParams;
         this.title = navParams.data.title;
-        this.url = navParams.data.url;
+        if (navParams.data.url.indexOf('?') >= 0) {
+            this.param = '&appp=2';
+        }
+        else {
+            this.param = '?appp=2';
+        }
+        this.url = navParams.data.url + this.param;
         console.log('navParams.data', navParams.data);
     }
     default_1.prototype.iframeLoaded = function (e) {
@@ -476,8 +483,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require('@angular/core');
 var ionic_native_1 = require('ionic-native');
-var ionic_native_2 = require('ionic-native');
-var ionic_native_3 = require('ionic-native');
 /*
   Generated class for the Menus provider.
 
@@ -513,7 +518,7 @@ var AppCamera = (function () {
         });
     };
     AppCamera.prototype.uploadPhoto = function (imageURI) {
-        var fileTransfer = new ionic_native_2.Transfer();
+        var fileTransfer = new ionic_native_1.Transfer();
         var iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
         var iframewin = document.getElementById('ap3-iframe').contentWindow.window;
         // console.log('imageURI', imageURI);
@@ -521,7 +526,7 @@ var AppCamera = (function () {
         var name = image.split("?")[0];
         var anumber = image.split("?")[1];
         var ajaxurl = iframewin.apppCore.ajaxurl;
-        if ('Android' === ionic_native_3.Device.device.platform) {
+        if ('Android' === ionic_native_1.Device.device.platform) {
             image = anumber + '.jpg';
         }
         // console.log(image);

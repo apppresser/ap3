@@ -46,8 +46,6 @@ class MyApp {
       // Loads menu from WordPress API
       this.pages = pages;
 
-      this.pages.unshift({ 'title': 'Set Cookie', 'url': 'http://reactordev.com/apv2?appp=2', 'component': Iframe });
-
       // Add pages manually here, can use different components like this...
       let a = { 'title': 'Tabs', 'url': '', 'component': TabsPage };
       let b = { 'title': 'WP Posts', 'url': '', 'component': PostList };

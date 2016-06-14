@@ -10,10 +10,18 @@ export default class {
     title: string;
     url: string;
     iframe: any;
+    param: string;
     constructor(private navParams: NavParams) {
         this.title = navParams.data.title;
-        this.url = navParams.data.url;
-        console.log('navParams.data', navParams.data)
+
+        if ( navParams.data.url.indexOf('?') >= 0 ) {
+            this.param = '&appp=2';
+        } else {
+            this.param = '?appp=2';
+        }
+
+        this.url = navParams.data.url + this.param;
+        console.log('navParams.data', navParams.data);
     }
     iframeLoaded(e) {
         console.log('iframeLoaded', e)
