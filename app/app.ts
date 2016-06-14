@@ -1,17 +1,22 @@
+/* Framework */
 import {ViewChild, Component} from '@angular/core';
 import {ionicBootstrap, Platform, MenuController, Nav, Toast, ActionSheet} from 'ionic-angular';
-import {StatusBar, SocialSharing} from 'ionic-native';
+
+/* Pages */
 import {HelloIonicPage} from './pages/hello-ionic/hello-ionic';
 import {NewPage} from './pages/new-page/new-page';
 import {ListPage} from './pages/list/list';
 import {PostList} from './pages/post-list/post-list';
 import Iframe from './pages/iframe';
+import {TabsPage} from './pages/tabs/tabs';
+
+/* Providers (make sure to add to ionicBootstrap below) */
 import {Menus} from './providers/menus/menus';
 import {AppCamera} from './providers/camera/app-camera';
 import {Posts} from './providers/posts/posts';
-import {TabsPage} from './pages/tabs/tabs';
 
-/** Make sure to put any providers into the brackets in ionicBootstrap below or they won't work **/
+/* Native */
+import {StatusBar, SocialSharing} from 'ionic-native';
 
 @Component({
   templateUrl: 'build/app.html',
@@ -68,10 +73,7 @@ class MyApp {
       //   // console.log("Got Token:", token.token);
       // });
 
-      
-      // this.presentToast();
       this.attachListeners();
-
 
     });
 
