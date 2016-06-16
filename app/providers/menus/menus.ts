@@ -11,8 +11,8 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class Menus {
   data: any = null;
-  url: string = 'http://reactordev.com/apv2/wp-json/wp-api-menus/v2/menus/9';
-  // 'http://www.wp4.dev/wp-json/wp-api-menus/v2/menus/215'
+  // url: string = 'http://reactordev.com/apv2/wp-json/wp-api-menus/v2/menus/9';
+  url: string = 'http://www.wp4.dev/wp-json/wp-api-menus/v2/menus/215';
 
   constructor(public http: Http) {}
 

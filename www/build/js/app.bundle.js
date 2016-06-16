@@ -199,6 +199,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var ionic_angular_1 = require('ionic-angular');
 var core_1 = require('@angular/core');
+var ionic_native_1 = require('ionic-native');
 // import customIframe from '../../components/iframe/index';
 var default_1 = (function () {
     function default_1(navParams) {
@@ -220,6 +221,20 @@ var default_1 = (function () {
         this.iframe = document.getElementById('ap3-iframe').contentWindow;
         this.iframe.postMessage('activity', '*');
     };
+    default_1.prototype.checkinModal = function () {
+        var _this = this;
+        this.iframe = document.getElementById('ap3-iframe').contentWindow;
+        // first message is to show modal, then we send through location
+        this.iframe.postMessage('checkin', '*');
+        // Do this when checkin button clicked
+        ionic_native_1.Geolocation.getCurrentPosition().then(function (position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+            console.log('position', position);
+            // need to postmessage this
+            _this.iframe.postMessage({ lat: latitude, long: longitude }, '*');
+        });
+    };
     default_1 = __decorate([
         core_1.Component({
             templateUrl: 'build/pages/iframe/index.html'
@@ -231,7 +246,7 @@ var default_1 = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = default_1;
 
-},{"@angular/core":145,"ionic-angular":396}],4:[function(require,module,exports){
+},{"@angular/core":145,"ionic-angular":396,"ionic-native":419}],4:[function(require,module,exports){
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -584,11 +599,11 @@ require('rxjs/add/operator/map');
   for more info on providers and Angular 2 DI.
 */
 var Menus = (function () {
-    // 'http://www.wp4.dev/wp-json/wp-api-menus/v2/menus/215'
     function Menus(http) {
         this.http = http;
         this.data = null;
-        this.url = 'http://reactordev.com/apv2/wp-json/wp-api-menus/v2/menus/9';
+        // url: string = 'http://reactordev.com/apv2/wp-json/wp-api-menus/v2/menus/9';
+        this.url = 'http://www.wp4.dev/wp-json/wp-api-menus/v2/menus/215';
     }
     Menus.prototype.load = function () {
         var _this = this;
