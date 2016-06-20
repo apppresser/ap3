@@ -19,16 +19,29 @@ export class AppCamera {
   };
 
   iframedoc: any;
+  appbuddy: boolean = false;
 
   constructor() { }
 
-  takePicture() {
+  takePicture(appbuddy) {
+
+    if(appbuddy) {
+      this.appbuddy = true;
+    }
+
+    console.log('appbuddy app-camera.ts', this.appbuddy);
 
     this.doCamera();
 
   }
 
-  photoLibrary() {
+  photoLibrary(appbuddy) {
+
+    if (appbuddy) {
+      this.appbuddy = true;
+    }
+
+    console.log('appbuddy app-camera.ts', this.appbuddy);
 
     this.options.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
 
@@ -56,7 +69,7 @@ export class AppCamera {
     this.iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
     let iframewin = document.getElementById('ap3-iframe').contentWindow.window;
 
-    // console.log('imageURI', imageURI);
+    console.log('imageURI', imageURI);
 
     let image = imageURI.substr(imageURI.lastIndexOf('/') + 1);
 
@@ -68,7 +81,7 @@ export class AppCamera {
       image = anumber + '.jpg';
     }
 
-    // console.log(image);
+    console.log(image);
 
     let options = new FileUploadOptions();
     options.fileKey = 'appp_cam_file';
@@ -81,12 +94,12 @@ export class AppCamera {
     let iterator;
     let form_elements = this.iframedoc.getElementById('appp_camera_form').elements;
 
-    // console.log(form_elements);
+    console.log(form_elements);
 
     for (iterator = 0; iterator < form_elements.length; iterator++) {
       form_fields[iterator] = form_elements[iterator].name;
       form_values[iterator] = form_elements[iterator].value;
-      // console.log(form_elements[iterator].name, form_elements[iterator].value);
+      console.log(form_elements[iterator].name, form_elements[iterator].value);
     }
 
     params.form_fields = JSON.stringify(form_fields);
@@ -95,7 +108,9 @@ export class AppCamera {
 
     // Maybe do appbuddy attach stuff. Difference is the action, nonce, and transfer success function.
 
-    if ( this.iframedoc.getElementById('appp_action').value === 'appbuddy') {
+    if ( this.appbuddy === true ) {
+
+      console.log('appbuddy upload');
 
       params.action = 'upload_image';
 
@@ -111,9 +126,12 @@ export class AppCamera {
         this.attachWin(msg);
       }).catch((e) => {
         console.warn(e);
+        this.appbuddy = false;
       });
 
     } else {
+
+      console.log('start regular upload');
 
       // Not appbuddy, do normal photo upload
       this.iframedoc.getElementById('appp_cam_post_title').value = '';
@@ -150,6 +168,8 @@ export class AppCamera {
     // hide action sheet
     this.iframedoc.getElementById('attach-image-sheet').className =
       this.iframedoc.getElementById('attach-image-sheet').className.replace(/\bactive\b/, 'hide');
+
+    this.appbuddy = false;
 
   }
 

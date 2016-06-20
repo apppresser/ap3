@@ -112,11 +112,23 @@ class MyApp {
 
       } else if (data.camera && data.camera === 'library' ) {
 
-        this.appCamera.photoLibrary();
+        console.log('appbuddy app.ts', data.appbuddy);
+
+        if(data.appbuddy === true ) {
+          this.appCamera.photoLibrary(true);
+        } else {
+          this.appCamera.photoLibrary(false);
+        }
 
       } else if (data.camera && data.camera === 'photo') {
 
-        this.appCamera.takePicture();
+        console.log('appbuddy app.ts', data.appbuddy);
+        
+        if (data.appbuddy === true) {
+          this.appCamera.takePicture(true);
+        } else {
+          this.appCamera.takePicture(false);
+        }
 
       }
 

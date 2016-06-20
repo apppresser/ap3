@@ -91,10 +91,22 @@ var MyApp = (function () {
                 window.open(data.iablink, data.target, data.options);
             }
             else if (data.camera && data.camera === 'library') {
-                _this.appCamera.photoLibrary();
+                console.log('appbuddy app.ts', data.appbuddy);
+                if (data.appbuddy === true) {
+                    _this.appCamera.photoLibrary(true);
+                }
+                else {
+                    _this.appCamera.photoLibrary(false);
+                }
             }
             else if (data.camera && data.camera === 'photo') {
-                _this.appCamera.takePicture();
+                console.log('appbuddy app.ts', data.appbuddy);
+                if (data.appbuddy === true) {
+                    _this.appCamera.takePicture(true);
+                }
+                else {
+                    _this.appCamera.takePicture(false);
+                }
             }
         }, false); // end eventListener
     };
@@ -108,16 +120,6 @@ var MyApp = (function () {
         else {
             this.nav.setRoot(page.component);
         }
-    };
-    MyApp.prototype.presentToast = function (msg) {
-        var toast = ionic_angular_1.Toast.create({
-            message: msg,
-            duration: 3000
-        });
-        toast.onDismiss(function () {
-            // console.log('Dismissed toast');
-        });
-        this.nav.present(toast);
     };
     __decorate([
         core_1.ViewChild(ionic_angular_1.Nav), 
@@ -539,11 +541,20 @@ var AppCamera = (function () {
             targetWidth: 1204,
             targetHeight: 1204
         };
+        this.appbuddy = false;
     }
-    AppCamera.prototype.takePicture = function () {
+    AppCamera.prototype.takePicture = function (appbuddy) {
+        if (appbuddy) {
+            this.appbuddy = true;
+        }
+        console.log('appbuddy app-camera.ts', this.appbuddy);
         this.doCamera();
     };
-    AppCamera.prototype.photoLibrary = function () {
+    AppCamera.prototype.photoLibrary = function (appbuddy) {
+        if (appbuddy) {
+            this.appbuddy = true;
+        }
+        console.log('appbuddy app-camera.ts', this.appbuddy);
         this.options.sourceType = ionic_native_1.Camera.PictureSourceType.PHOTOLIBRARY;
         this.doCamera();
     };
@@ -563,7 +574,7 @@ var AppCamera = (function () {
         var fileTransfer = new ionic_native_1.Transfer();
         this.iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
         var iframewin = document.getElementById('ap3-iframe').contentWindow.window;
-        // console.log('imageURI', imageURI);
+        console.log('imageURI', imageURI);
         var image = imageURI.substr(imageURI.lastIndexOf('/') + 1);
         var name = image.split("?")[0];
         var anumber = image.split("?")[1];
@@ -571,7 +582,7 @@ var AppCamera = (function () {
         if ('Android' === ionic_native_1.Device.device.platform) {
             image = anumber + '.jpg';
         }
-        // console.log(image);
+        console.log(image);
         var options = new FileUploadOptions();
         options.fileKey = 'appp_cam_file';
         options.fileName = imageURI ? image : '';
@@ -581,17 +592,18 @@ var AppCamera = (function () {
         var form_values = [];
         var iterator;
         var form_elements = this.iframedoc.getElementById('appp_camera_form').elements;
-        // console.log(form_elements);
+        console.log(form_elements);
         for (iterator = 0; iterator < form_elements.length; iterator++) {
             form_fields[iterator] = form_elements[iterator].name;
             form_values[iterator] = form_elements[iterator].value;
+            console.log(form_elements[iterator].name, form_elements[iterator].value);
         }
         params.form_fields = JSON.stringify(form_fields);
         params.form_values = JSON.stringify(form_values);
         params.appp_action = 'attach';
-        // Maybe do appbuddy attach stuff
-        if (this.iframedoc.getElementById('appp_action').value === 'appbuddy') {
-            console.log('doing appbuddy');
+        // Maybe do appbuddy attach stuff. Difference is the action, nonce, and transfer success function.
+        if (this.appbuddy === true) {
+            console.log('appbuddy upload');
             params.action = 'upload_image';
             if (this.iframedoc.getElementById('apppcamera-upload-image')) {
                 params.nonce = this.iframedoc.getElementById('apppcamera-upload-image').value;
@@ -604,9 +616,11 @@ var AppCamera = (function () {
                 _this.attachWin(msg);
             }).catch(function (e) {
                 console.warn(e);
+                _this.appbuddy = false;
             });
         }
         else {
+            console.log('start regular upload');
             // Not appbuddy, do normal photo upload
             this.iframedoc.getElementById('appp_cam_post_title').value = '';
             options.params = params;
@@ -632,6 +646,7 @@ var AppCamera = (function () {
         // hide action sheet
         this.iframedoc.getElementById('attach-image-sheet').className =
             this.iframedoc.getElementById('attach-image-sheet').className.replace(/\bactive\b/, 'hide');
+        this.appbuddy = false;
     };
     // parse and fetch the image url we need
     AppCamera.prototype.camUtil = function (response) {
@@ -649,7 +664,6 @@ var AppCamera = (function () {
                 return JSON.parse(matches[0]);
             }
         }
-        console.log('returning nothing');
         return '';
     };
     AppCamera = __decorate([
@@ -685,7 +699,7 @@ var Menus = (function () {
         this.http = http;
         this.data = null;
         //url: string = 'http://reactordev.com/apv2/wp-json/wp-api-menus/v2/menus/9';
-        this.url = 'http://www.wp4.dev/wp-json/wp-api-menus/v2/menus/215';
+        this.url = 'http://10.0.1.12/wp-json/wp-api-menus/v2/menus/215';
     }
     Menus.prototype.load = function () {
         var _this = this;
