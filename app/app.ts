@@ -1,6 +1,6 @@
 /* Framework */
 import {ViewChild, Component} from '@angular/core';
-import {ionicBootstrap, Platform, MenuController, Nav, Toast, ActionSheet} from 'ionic-angular';
+import {ionicBootstrap, Platform, MenuController, Nav} from 'ionic-angular';
 
 /* Pages */
 import {HelloIonicPage} from './pages/hello-ionic/hello-ionic';
@@ -133,19 +133,6 @@ class MyApp {
     } else {
       this.nav.setRoot(page.component);
     }
-  }
-
-  presentToast(msg: string) {
-      let toast = Toast.create({
-      message: msg,
-      duration: 3000
-      });
-
-      toast.onDismiss(() => {
-      // console.log('Dismissed toast');
-      });
-
-      this.nav.present(toast);
   }
 
 }
