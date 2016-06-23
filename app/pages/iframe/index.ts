@@ -1,4 +1,4 @@
-import {NavParams} from 'ionic-angular';
+import {NavParams, Nav, Loading} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {Geolocation} from 'ionic-native';
 // import customIframe from '../../components/iframe/index';
@@ -8,11 +8,12 @@ import {Geolocation} from 'ionic-native';
     templateUrl: 'build/pages/iframe/index.html'
 })
 export default class {
+
     title: string;
     url: string;
     iframe: any;
     param: string;
-    constructor(private navParams: NavParams) {
+    constructor(private navParams: NavParams, private nav: Nav) {
         this.title = navParams.data.title;
 
         if ( navParams.data.url.indexOf('?') >= 0 ) {
@@ -24,9 +25,28 @@ export default class {
         this.url = navParams.data.url + this.param;
         
         console.log('navParams.data', navParams.data);
+
+        this.iframeLoading();
     }
-    iframeLoaded(e) {
-        console.log('iframeLoaded', e)
+    iframeLoading() {
+
+        let loading = Loading.create({
+            showBackdrop: false
+        });
+
+        this.nav.present(loading);
+
+        // When WP site loads, attach our click events
+        window.addEventListener('message', (e) => {
+
+            if(e.data === 'site_loaded') {
+                loading.dismiss();
+            }
+        });
+
+        setTimeout(() => {
+            loading.dismiss();
+        }, 9000);
     }
     activityModal() {
         this.iframe = document.getElementById('ap3-iframe').contentWindow;

@@ -21,6 +21,6 @@ export class AppModal {
 	}
 
 	camera() {
-		this.appCamera.photoLibrary();
+		this.appCamera.photoLibrary(false);
 	}
 }
