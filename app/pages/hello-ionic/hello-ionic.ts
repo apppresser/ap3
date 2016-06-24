@@ -6,7 +6,7 @@ import {AppModal} from '../app-modal/app-modal';
   templateUrl: 'build/pages/hello-ionic/hello-ionic.html'
 })
 export class HelloIonicPage {
-  constructor(nav: NavController) {
+  constructor(private nav: NavController) {
    this.nav = nav;
  }
 

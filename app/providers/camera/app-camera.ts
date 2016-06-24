@@ -19,6 +19,7 @@ export class AppCamera {
   };
 
   iframedoc: any;
+  iframewin: any;
   appbuddy: boolean = false;
 
   constructor() { }
@@ -29,7 +30,7 @@ export class AppCamera {
       this.appbuddy = true;
     }
 
-    console.log('appbuddy app-camera.ts', this.appbuddy);
+    // console.log('appbuddy app-camera.ts', this.appbuddy);
 
     this.doCamera();
 
@@ -41,7 +42,7 @@ export class AppCamera {
       this.appbuddy = true;
     }
 
-    console.log('appbuddy app-camera.ts', this.appbuddy);
+    // console.log('appbuddy app-camera.ts', this.appbuddy);
 
     this.options.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
 
@@ -67,39 +68,46 @@ export class AppCamera {
     let fileTransfer = new Transfer();
 
     this.iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
-    let iframewin = document.getElementById('ap3-iframe').contentWindow.window;
+    this.iframewin = document.getElementById('ap3-iframe').contentWindow.window;
 
-    console.log('imageURI', imageURI);
+    // console.log('imageURI', imageURI);
 
     let image = imageURI.substr(imageURI.lastIndexOf('/') + 1);
 
     let name = image.split("?")[0];
     let anumber = image.split("?")[1];
-    let ajaxurl = iframewin.apppCore.ajaxurl;
+    let ajaxurl = this.iframewin.apppCore.ajaxurl;
 
     if ('Android' === Device.device.platform) {
       image = anumber + '.jpg';
     }
 
-    console.log(image);
+    // console.log(image);
 
     let options = new FileUploadOptions();
     options.fileKey = 'appp_cam_file';
     options.fileName = imageURI ? image : '';
     options.mimeType = 'image/jpeg';
 
-    let params = {};
+    let params = {
+      form_fields: null,
+      form_values: null,
+      appp_action: null,
+      action: <string> null,
+      nonce: null,
+    };
+
     let form_fields = [];
     let form_values = [];
     let iterator;
     let form_elements = this.iframedoc.getElementById('appp_camera_form').elements;
 
-    console.log(form_elements);
+    // console.log(form_elements);
 
     for (iterator = 0; iterator < form_elements.length; iterator++) {
       form_fields[iterator] = form_elements[iterator].name;
       form_values[iterator] = form_elements[iterator].value;
-      console.log(form_elements[iterator].name, form_elements[iterator].value);
+      // console.log(form_elements[iterator].name, form_elements[iterator].value);
     }
 
     params.form_fields = JSON.stringify(form_fields);
@@ -110,8 +118,9 @@ export class AppCamera {
 
     if ( this.appbuddy === true ) {
 
-      console.log('appbuddy upload');
+      // console.log('appbuddy upload');
 
+      // see appcamera/inc/AppPresser_Camera_Ajax.php
       params.action = 'upload_image';
 
       if (this.iframedoc.getElementById('apppcamera-upload-image')) { // from appcamera shortcode
@@ -129,6 +138,17 @@ export class AppCamera {
         this.appbuddy = false;
       });
 
+      fileTransfer.onProgress( (e) => {
+
+        if (e.lengthComputable) {
+          /*appTop.camera.statusProgress().innerHTML = '<progress id="progress" value="1" max="100"></progress>';*/
+          this.iframedoc.getElementById('cam-progress').style.visibility = 'visible';
+          let perc = Math.floor(e.loaded / e.total * 100);
+          this.iframedoc.getElementById('progress').value = perc;
+        }
+
+      });
+
     } else {
 
       console.log('start regular upload');
@@ -137,10 +157,17 @@ export class AppCamera {
       this.iframedoc.getElementById('appp_cam_post_title').value = '';
       options.params = params;
 
-      fileTransfer.upload(imageURI, ajaxurl, options, true).then((msg) => {
-        alert('Image upload success.');
-      }).catch((e) => {
-        console.warn(e);
+      fileTransfer.upload(imageURI, ajaxurl, options, true).then(this.uploadWin).catch( this.uploadErr );
+
+      fileTransfer.onProgress((e) => {
+
+        if (e.lengthComputable) {
+          /*appTop.camera.statusProgress().innerHTML = '<progress id="progress" value="1" max="100"></progress>';*/
+          this.iframedoc.getElementById('cam-progress').style.visibility = 'visible';
+          let perc = Math.floor(e.loaded / e.total * 100);
+          this.iframedoc.getElementById('progress').value = perc;
+        }
+
       });
 
     }
@@ -167,10 +194,32 @@ export class AppCamera {
 
     // hide action sheet
     this.iframedoc.getElementById('attach-image-sheet').className =
-      this.iframedoc.getElementById('attach-image-sheet').className.replace(/\bactive\b/, 'hide');
+    this.iframedoc.getElementById('attach-image-sheet').className.replace(/\bactive\b/, 'hide');
 
     this.appbuddy = false;
 
+  }
+
+  uploadWin() {
+
+    // not sure why, but can't access this.iframedoc
+    let framedoc = document.getElementById('ap3-iframe').contentWindow.document;
+    let appcamera = document.getElementById('ap3-iframe').contentWindow.window.appcamera;
+    let msg = appcamera.msg.moderation;
+
+    console.log('uploadWin', msg );
+
+    if (!appcamera.moderation_on) {
+
+      msg = appcamera.msg.success;
+    }
+
+    framedoc.getElementById('cam-status').innerHTML = '<p>' + msg + '</p>';
+    framedoc.getElementById('cam-progress').style.visibility = 'hidden';
+  }
+
+  uploadErr(e) {
+    console.warn(e);
   }
 
   // parse and fetch the image url we need
