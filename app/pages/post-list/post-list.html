@@ -10,7 +10,9 @@
     <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)" [innerHTML]="item.title.rendered">
     </button>
   </ion-list>
-  <div *ngIf="selectedItem" padding>
-    You navigated here from <b>{{selectedItem.title}}</b>
-  </div>
+
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+   <ion-infinite-scroll-content></ion-infinite-scroll-content>
+ </ion-infinite-scroll>
+
 </ion-content>

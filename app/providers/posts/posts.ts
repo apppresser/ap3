@@ -11,15 +11,23 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class Posts {
   data: any = null;
+  url: string = 'http://reactordev.com/apv2/wp-json/wp/v2/posts';
 
   constructor(public http: Http) {}
 
-  load() {
-      
-    if (this.data) {
-      // already loaded data
-      return Promise.resolve(this.data);
+  load(page) {
+
+    // set pagination
+    if( !page ) {
+      let page = '1';
     }
+
+    console.log( page );
+      
+    // if (this.data) {
+    //   // already loaded data
+    //   return Promise.resolve(this.data);
+    // }
 
     // don't have the data yet
     return new Promise(resolve => {
@@ -27,7 +35,7 @@ export class Posts {
       // then on the response it'll map the JSON data to a parsed JS object.
       // Next we process the data and resolve the promise with the new data.
 
-    this.http.get('http://reactordev.com/apv2/wp-json/wp/v2/posts')
+    this.http.get( this.url + '?page=' + page)
         .map(res => res.json())
         .subscribe(data => {
           // we've got back the raw data, now generate the core schedule data
@@ -38,5 +46,6 @@ export class Posts {
         });
     });
   }
+
 }
 
