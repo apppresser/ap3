@@ -31,7 +31,8 @@ export default class {
     iframeLoading() {
 
         let loading = Loading.create({
-            showBackdrop: false
+            showBackdrop: false,
+            dismissOnPageChange: true
         });
 
         this.nav.present(loading);

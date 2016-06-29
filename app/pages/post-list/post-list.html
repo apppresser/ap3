@@ -6,6 +6,10 @@
 </ion-navbar>
 
 <ion-content>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  
   <ion-list>
     <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)" [innerHTML]="item.title.rendered">
     </button>

@@ -34,6 +34,12 @@ export class PostList {
     });
   }
 
+  doRefresh(refresh) {
+    this.loadPosts();
+    // refresh.complete should happen when posts are loaded, not timeout
+    setTimeout( ()=> refresh.complete(), 500);
+  }
+
   loadMore(infiniteScroll) {
 
     this.page++;
