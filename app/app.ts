@@ -14,6 +14,7 @@ import {TabsPage} from './pages/tabs/tabs';
 import {Menus} from './providers/menus/menus';
 import {AppCamera} from './providers/camera/app-camera';
 import {Posts} from './providers/posts/posts';
+import {Styles} from './providers/styles/styles';
 
 /* Native */
 import {StatusBar, SocialSharing} from 'ionic-native';
@@ -28,13 +29,16 @@ class MyApp {
   // make HelloIonicPage the root (or first) page
   rootPage: any = HelloIonicPage;
   pages: Array<{title: string, url: string, component: any, classes: any}>;
+  styles: string;
 
   constructor(
     private platform: Platform,
     public menuService: Menus,
+    public styleService: Styles,
     public appCamera: AppCamera,
     private menu: MenuController
   ) {
+
     this.initializeApp();
     // set our app's pages
     this.loadMenu();
@@ -73,8 +77,23 @@ class MyApp {
 
       this.attachListeners();
 
+      this.loadStyles();
+
     });
 
+  }
+
+  loadStyles() {
+
+    this.styleService.load().then( styles => {
+
+      // kinda hacky, but it works
+      this.styles = "<style>";
+      this.styles += ".toolbar-background { background: " + styles.top_bar_bg_color + " }";
+      this.styles += "</style>";
+
+    } );
+    
   }
 
   /* 
@@ -154,7 +173,7 @@ class MyApp {
 // Set any config for your app as the third argument:
 // http://ionicframework.com/docs/v2/api/config/Config/
 
-ionicBootstrap(MyApp, [Menus, Posts, AppCamera], {
+ionicBootstrap(MyApp, [Menus, Posts, AppCamera, Styles], {
   tabbarPlacement: 'bottom',
   // http://ionicframework.com/docs/v2/api/config/Config/
 })
