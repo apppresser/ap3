@@ -2,7 +2,7 @@ import {NavController, NavParams} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
 import {PostDetailsPage} from '../post-details/post-details';
-
+import {GlobalVars} from '../../providers/globalvars/globalvars';
 
 @Component({
   templateUrl: 'build/pages/post-list/post-list.html'
@@ -12,16 +12,19 @@ export class PostList {
   icons: string[];
   items: any;
   page: number = 1;
+  siteurl: string;
 
-  constructor(private nav: NavController, navParams: NavParams, public postService: Posts ) {
-    // If we navigated to this page, we will have an item available as a nav param
+  constructor(private nav: NavController, navParams: NavParams, public postService: Posts, private globalvars: GlobalVars ) {
+
+    this.siteurl = globalvars.getUrl();
     this.loadPosts();
+    
   }
 
   loadPosts() {
     this.page = 1;
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
-    this.postService.load( this.page ).then(items => {
+    this.postService.load( this.siteurl + 'wp-json/wp/v2/posts', this.page ).then(items => {
       // Loads posts from WordPress API
       this.items = items;
     });
@@ -45,7 +48,7 @@ export class PostList {
     this.page++;
     console.log(this.page);
 
-    this.postService.load( this.page ).then(items => {
+    this.postService.load( this.siteurl + 'wp-json/wp/v2/posts', this.page ).then(items => {
       // Loads posts from WordPress API
       let length = items.length;
 

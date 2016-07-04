@@ -11,11 +11,10 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class Styles {
   data: any = null;
-  url: string = 'http://10.0.1.12/wp-json/ap3/v1/colors';
 
   constructor(public http: Http) {}
 
-  load() {
+  load( url: string ) {
 
     // don't have the data yet
     return new Promise(resolve => {
@@ -24,7 +23,7 @@ export class Styles {
       // Next we process the data and resolve the promise with the new data.
 
       // need appp=2 because colors come from theme
-    this.http.get( this.url + '?appp=2' )
+    this.http.get( url + '?appp=2' )
         .map(res => res.json())
         .subscribe(data => {
           // we've got back the raw data, now generate the core schedule data

@@ -11,12 +11,10 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class Menus {
   data: any = null;
-  // url: string = 'http://reactordev.com/apv2/wp-json/wp-api-menus/v2/menus/9';
-  url: string = 'http://www.wp4.dev/wp-json/wp-api-menus/v2/menus/215';
 
   constructor(public http: Http) {}
 
-  load() {
+  load( url: string ) {
       
     if (this.data) {
       // already loaded data
@@ -29,7 +27,7 @@ export class Menus {
       // then on the response it'll map the JSON data to a parsed JS object.
       // Next we process the data and resolve the promise with the new data.
 
-    this.http.get(this.url)
+    this.http.get( url )
         .map(res => res.json())
         .subscribe(data => {
           // we've got back the raw data, now generate the core schedule data

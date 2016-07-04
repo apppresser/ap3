@@ -11,11 +11,10 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class Posts {
   data: any = null;
-  url: string = 'http://reactordev.com/apv2/wp-json/wp/v2/posts';
 
   constructor(public http: Http) {}
 
-  load(page) {
+  load(url:string, page) {
 
     // set pagination
     if( !page ) {
@@ -35,7 +34,7 @@ export class Posts {
       // then on the response it'll map the JSON data to a parsed JS object.
       // Next we process the data and resolve the promise with the new data.
 
-    this.http.get( this.url + '?page=' + page)
+    this.http.get( url + '?page=' + page)
         .map(res => res.json())
         .subscribe(data => {
           // we've got back the raw data, now generate the core schedule data

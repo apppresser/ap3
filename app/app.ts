@@ -15,6 +15,7 @@ import {Menus} from './providers/menus/menus';
 import {AppCamera} from './providers/camera/app-camera';
 import {Posts} from './providers/posts/posts';
 import {Styles} from './providers/styles/styles';
+import {GlobalVars} from './providers/globalvars/globalvars';
 
 /* Native */
 import {StatusBar, SocialSharing} from 'ionic-native';
@@ -30,14 +31,18 @@ class MyApp {
   rootPage: any = HelloIonicPage;
   pages: Array<{title: string, url: string, component: any, classes: any}>;
   styles: string;
+  siteurl: string;
 
   constructor(
     private platform: Platform,
     public menuService: Menus,
     public styleService: Styles,
     public appCamera: AppCamera,
-    private menu: MenuController
+    private menu: MenuController,
+    private globalvars: GlobalVars
   ) {
+
+    this.siteurl = globalvars.getUrl();
 
     this.initializeApp();
     // set our app's pages
@@ -46,7 +51,8 @@ class MyApp {
 
   loadMenu() {
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
-    this.menuService.load().then( pages => {
+
+    this.menuService.load( this.siteurl + 'wp-json/wp-api-menus/v2/menus/215' ).then( pages => {
       // Loads menu from WordPress API
       this.pages = pages;
 
@@ -85,7 +91,7 @@ class MyApp {
 
   loadStyles() {
 
-    this.styleService.load().then( styles => {
+    this.styleService.load( this.siteurl + 'wp-json/ap3/v1/colors' ).then( styles => {
 
       // kinda hacky, but it works
       this.styles = "<style>";
@@ -173,7 +179,7 @@ class MyApp {
 // Set any config for your app as the third argument:
 // http://ionicframework.com/docs/v2/api/config/Config/
 
-ionicBootstrap(MyApp, [Menus, Posts, AppCamera, Styles], {
+ionicBootstrap(MyApp, [Menus, Posts, AppCamera, Styles, GlobalVars], {
   tabbarPlacement: 'bottom',
   // http://ionicframework.com/docs/v2/api/config/Config/
 })
