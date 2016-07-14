@@ -33,6 +33,7 @@ class MyApp {
   pages: Array<{title: string, url: string, component: any, classes: any}>;
   styles: string;
   siteurl: string;
+  apppSettings: any;
 
   constructor(
     private platform: Platform,
@@ -45,6 +46,15 @@ class MyApp {
   ) {
 
     this.siteurl = globalvars.getUrl();
+
+    this.globalvars.getSettings().then( result => {
+      // TODO: save these to localStorage so we only have to get them once
+      this.apppSettings = result;
+
+      // need settings for ads, so wait to do them
+      this.maybeDoAds();
+
+    });
 
     this.loadStyles();
 
@@ -86,8 +96,6 @@ class MyApp {
       // });
 
       this.attachListeners();
-
-      this.maybeDoAds();
 
     });
 
@@ -178,10 +186,13 @@ class MyApp {
 
   maybeDoAds() {
 
-    let ad_units = this.globalvars.getAds();
+    let ad_units = {};
+    ad_units.ios  = { banner: this.apppSettings.admob_ios_banner,
+      interstitial: this.apppSettings.admob_ios_interstitial };
+    ad_units.android = { banner: this.apppSettings.admob_android_banner,
+      interstitial: this.apppSettings.admob_android_interstitial };
 
     console.log( ad_units.ios.banner );
-    console.log( Device.device.platform );
 
     // If we have a banner id, show on the proper platform
     if( Device.device.platform === 'iOS' && ad_units.ios.banner != '' ) {
