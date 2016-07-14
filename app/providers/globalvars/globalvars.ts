@@ -11,10 +11,26 @@ export class GlobalVars {
 
   url: string = 'http://10.0.1.12/';
 
+  // could get this through an API to allow more control in WP
+  ad_units: Object = {
+    ios: {
+      banner: 'ca-app-pub-8368235833602204/7696307576',
+      interstitial: 'ca-app-pub-8368235833602204/4143751976'
+    },
+    android: {
+      banner: '',
+      interstitial: ''
+    }
+  }
+
   constructor() {}
 
   getUrl() {
     return this.url;
+  }
+
+  getAds() {
+    return this.ad_units;
   }
 
 }

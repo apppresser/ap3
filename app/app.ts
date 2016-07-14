@@ -16,9 +16,10 @@ import {AppCamera} from './providers/camera/app-camera';
 import {Posts} from './providers/posts/posts';
 import {Styles} from './providers/styles/styles';
 import {GlobalVars} from './providers/globalvars/globalvars';
+import {AppAds} from './providers/appads/appads';
 
 /* Native */
-import {StatusBar, SocialSharing} from 'ionic-native';
+import {StatusBar, SocialSharing, Device} from 'ionic-native';
 
 @Component({
   templateUrl: 'build/app.html',
@@ -39,10 +40,13 @@ class MyApp {
     public styleService: Styles,
     public appCamera: AppCamera,
     private menu: MenuController,
-    private globalvars: GlobalVars
+    private globalvars: GlobalVars,
+    private appads: AppAds
   ) {
 
     this.siteurl = globalvars.getUrl();
+
+    this.loadStyles();
 
     this.initializeApp();
     // set our app's pages
@@ -83,7 +87,7 @@ class MyApp {
 
       this.attachListeners();
 
-      this.loadStyles();
+      this.maybeDoAds();
 
     });
 
@@ -172,6 +176,25 @@ class MyApp {
     }
   }
 
+  maybeDoAds() {
+
+    let ad_units = this.globalvars.getAds();
+
+    console.log( ad_units.ios.banner );
+    console.log( Device.device.platform );
+
+    // If we have a banner id, show on the proper platform
+    if( Device.device.platform === 'iOS' && ad_units.ios.banner != '' ) {
+      this.appads.createBanner( ad_units.ios.banner );
+    } else if( Device.device.platform === 'Android' && ad_units.android.banner != '' ) {
+      this.appads.createBanner( ad_units.android.banner );
+    }
+
+    // show interstitial like this
+    // this.appads.interstitial( ad_units.ios.interstitial );
+
+  }
+
 }
 
 // Pass the main app component as the first argument
@@ -179,7 +202,7 @@ class MyApp {
 // Set any config for your app as the third argument:
 // http://ionicframework.com/docs/v2/api/config/Config/
 
-ionicBootstrap(MyApp, [Menus, Posts, AppCamera, Styles, GlobalVars], {
+ionicBootstrap(MyApp, [Menus, Posts, AppCamera, Styles, GlobalVars, AppAds], {
   tabbarPlacement: 'bottom',
   // http://ionicframework.com/docs/v2/api/config/Config/
 })

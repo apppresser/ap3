@@ -1,4 +1,4 @@
-import {NavController, NavParams} from 'ionic-angular';
+import {NavController, NavParams, Loading} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
 import {PostDetailsPage} from '../post-details/post-details';
@@ -22,11 +22,21 @@ export class PostList {
   }
 
   loadPosts() {
+
+    let loading = Loading.create({
+        showBackdrop: false,
+        dismissOnPageChange: true
+    });
+
+    this.nav.present(loading);
+
     this.page = 1;
+    
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
     this.postService.load( this.siteurl + 'wp-json/wp/v2/posts', this.page ).then(items => {
       // Loads posts from WordPress API
       this.items = items;
+      loading.dismiss();
     });
 
   }
