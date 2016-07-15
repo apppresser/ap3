@@ -192,7 +192,13 @@ class MyApp {
     ad_units.android = { banner: this.apppSettings.admob_android_banner,
       interstitial: this.apppSettings.admob_android_interstitial };
 
-    console.log( ad_units.ios.banner );
+    // If we don't have any ads set, stop
+    if( ad_units.ios.banner + ad_units.ios.interstitial + ad_units.android.banner +ad_units.android.interstitial === '' ) {
+      console.log('no ads, bail');
+      return;
+    }
+
+    this.appads.setOptions( this.apppSettings );
 
     // If we have a banner id, show on the proper platform
     if( Device.device.platform === 'iOS' && ad_units.ios.banner != '' ) {

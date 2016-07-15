@@ -13,6 +13,22 @@ export class AppAds {
   constructor() {
   }
 
+  setOptions(options) {
+
+  	if( !AdMob )
+  		return;
+
+  	let isTesting = ( options.admob_isTesting === 'on' );
+  	// set position to top (2) or bottom (8) https://github.com/floatinghotpot/cordova-admob-pro/wiki/1.2-Method:-AdMob.setOptions()
+  	let pos = ( options.admob_bannerAtTop === 'on' ) ? 2 : 8;
+
+  	AdMob.setOptions( {
+      position: pos,
+      offsetTopBar: true, // set to true to avoid ios7 status bar overlap 
+      isTesting: isTesting // receiving test ad
+    });
+  }
+
   createBanner( id ) {
 
   	if( !AdMob )
@@ -20,7 +36,6 @@ export class AppAds {
 
   	AdMob.createBanner({
 	  adId: id,
-	  position: 8, // 8 = bottom center, 2 = top center https://github.com/floatinghotpot/cordova-admob-pro/wiki/1.2-Method:-AdMob.setOptions()
 	  autoShow: true
 	});
 
@@ -34,7 +49,6 @@ export class AppAds {
   	AdMob.prepareInterstitial({
   		adId: id, 
   		autoShow: true,
-  		isTesting: true,
   		adSize: 'SMART_BANNER'
   	});
 
