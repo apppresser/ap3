@@ -12,7 +12,9 @@ import 'rxjs/add/operator/map';
 export class GlobalVars {
 
   data: any = null;
-  url: string = 'http://10.0.1.12/';
+  url: string = 'http://www.wp4.dev/';
+  endpoint: string = 'wp-json/ap3/v1/';
+  api: string = this.url + this.endpoint;
 
   constructor( public http: Http ) {}
 
@@ -20,10 +22,15 @@ export class GlobalVars {
     return this.url;
   }
 
+  getApi() {
+    return this.api;
+  }
+
   // Get AppPresser settings from API
   getSettings() {
 
-    let settingsUrl = this.url + 'wp-json/ap3/v1/settings';
+    // need appp=2 to retrieve app theme menu
+    let settingsUrl = this.api + 'settings?appp=2';
 
     return new Promise(resolve => {
       // We're using Angular Http provider to request the data,

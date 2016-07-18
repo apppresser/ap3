@@ -42,6 +42,7 @@ class MyApp {
   pages: Array<{title: string, url: string, component: any, classes: any}>;
   styles: any;
   siteurl: string;
+  apiurl: string;
   apppSettings: any;
 
   constructor(
@@ -56,6 +57,7 @@ class MyApp {
   ) {
 
     this.siteurl = globalvars.getUrl();
+    this.apiurl = globalvars.getApi();
 
     this.globalvars.getSettings().then( result => {
       // TODO: save these to localStorage so we only have to get them once
@@ -64,19 +66,21 @@ class MyApp {
       // need settings for ads, so wait to do them
       this.maybeDoAds();
 
+      // set our app's pages
+      this.loadMenu();
+
     });
 
     this.loadStyles();
 
     this.initializeApp();
-    // set our app's pages
-    this.loadMenu();
+
   }
 
   loadMenu() {
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
 
-    this.menuService.load( this.siteurl + 'wp-json/wp-api-menus/v2/menus/215' ).then( pages => {
+    this.menuService.load( this.apiurl + 'menus/' + this.apppSettings.primary_menu ).then( pages => {
       // Loads menu from WordPress API
       this.pages = pages;
 
@@ -112,7 +116,7 @@ class MyApp {
 
   loadStyles() {
 
-    this.styleService.load( this.siteurl + 'wp-json/ap3/v1/colors' ).then( styles => {
+    this.styleService.load( this.apiurl + 'colors' ).then( styles => {
 
       // kinda hacky, but it works
       this.styles = "<style>";
