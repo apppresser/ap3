@@ -12,3 +12,15 @@
 @import "../pages/item-details/item-details";
 
 @import "../pages/iframe/index";
+
+.item.activated {
+	background-color: rgba(135,135,135,.2);
+}
+
+.toolbar button.activated, .tab-button {
+	opacity: .8;
+}
+
+.tab-button[aria-selected=true] {
+	opacity: 1;
+}

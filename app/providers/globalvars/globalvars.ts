@@ -12,7 +12,7 @@ import 'rxjs/add/operator/map';
 export class GlobalVars {
 
   data: any = null;
-  url: string = 'http://www.wp4.dev/';
+  url: string = 'http://10.0.1.12/';
 
   constructor( public http: Http ) {}
 
