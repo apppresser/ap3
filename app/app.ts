@@ -17,18 +17,10 @@ import {Posts} from './providers/posts/posts';
 import {Styles} from './providers/styles/styles';
 import {GlobalVars} from './providers/globalvars/globalvars';
 import {AppAds} from './providers/appads/appads';
+import {FacebookService} from 'ng2-facebook-sdk/dist';
 
 /* Native */
 import {StatusBar, SocialSharing, Device} from 'ionic-native';
-
-/* Beta ionic.io support for v2 */
-import {Push, CloudSettings, provideCloud} from '@ionic/cloud-angular';
-
-const cloudSettings: CloudSettings = {
-  'core': {
-    'app_id': '3192a6c7'
-  }
-};
 
 @Component({
   templateUrl: 'build/app.html',
@@ -52,8 +44,7 @@ class MyApp {
     public appCamera: AppCamera,
     private menu: MenuController,
     private globalvars: GlobalVars,
-    private appads: AppAds,
-    public push: Push
+    private appads: AppAds
   ) {
 
     this.siteurl = globalvars.getUrl();
@@ -251,7 +242,7 @@ class MyApp {
 // Set any config for your app as the third argument:
 // http://ionicframework.com/docs/v2/api/config/Config/
 
-ionicBootstrap(MyApp, [Menus, Posts, AppCamera, Styles, GlobalVars, AppAds, provideCloud(cloudSettings)], {
+ionicBootstrap(MyApp, [Menus, Posts, AppCamera, Styles, GlobalVars, AppAds, FacebookService], {
   tabbarPlacement: 'bottom',
   // http://ionicframework.com/docs/v2/api/config/Config/
 })

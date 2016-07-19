@@ -24,3 +24,8 @@
 .tab-button[aria-selected=true] {
 	opacity: 1;
 }
+
+// prevents card text from disappearing if body text is white
+ion-content ion-card-content {
+	color: #000;
+}
