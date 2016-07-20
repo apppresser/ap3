@@ -50,12 +50,12 @@ export default class {
         }, 9000);
     }
     activityModal() {
-        this.iframe = document.getElementById('ap3-iframe').contentWindow;
+        this.iframe = (<any>document.getElementById('ap3-iframe')).contentWindow;
         this.iframe.postMessage('activity', '*');
     }
     checkinModal() {
 
-        this.iframe = document.getElementById('ap3-iframe').contentWindow;
+        this.iframe = (<any>document.getElementById('ap3-iframe')).contentWindow;
 
         // first message is to show modal, then we send through location
         this.iframe.postMessage('checkin', '*');

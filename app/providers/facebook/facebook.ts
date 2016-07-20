@@ -14,6 +14,8 @@ import {FacebookService, FacebookLoginOptions, FacebookInitParams, FacebookApiMe
 @Injectable()
 export class FbConnect {
   fbconnectvars: any;
+  iframewin: any;
+  iframedoc: any;
 
   constructor(public http: Http, private FB: FacebookService) {
 
@@ -30,40 +32,37 @@ export class FbConnect {
       }
     }
 
-    this.init(false);
-
   }
 
-  init(debug) {
+  init() {
 
-    this.fbconnectvars.debug = debug;
+    let debug = this.fbconnectvars.debug;
 
-    let iframewin = document.getElementById('ap3-iframe').contentWindow.window;
+    // (<any>) syntax is to avoid typescript errors
+    this.iframedoc = (<any>document.getElementById('ap3-iframe')).contentWindow.document;
+    this.iframewin = (<any>document.getElementById('ap3-iframe')).contentWindow.window;
       
-    if( typeof iframewin.apppfb == 'undefined' ) {
+    if( typeof this.iframewin.apppfb == 'undefined' ) {
       return;
     }
 
-    iframewin.jQuery('.appfbconnectlogin').on('click', event => { 
-      event.preventDefault(); 
-      this.login(); 
-    })
-
-    if( typeof iframewin.apppfb.l10n !== 'undefined' ) {
-      this.fbconnectvars.l10n = iframewin.apppfb.l10n
+    if( typeof this.iframewin.apppfb.l10n !== 'undefined' ) {
+      this.fbconnectvars.l10n = this.iframewin.apppfb.l10n
     }
 
     let fbParams: FacebookInitParams = {
-      appId: iframewin.apppfb.app_id,
+      appId: this.iframewin.apppfb.app_id,
       xfbml: true,
       version: 'v2.6'
-    };
+    }
 
     this.FB.init( fbParams );
 
   }
 
   login() {
+
+    this.init();
 
     let loginOptions: FacebookLoginOptions = {
       scope: this.fbconnectvars.login_scope
@@ -78,8 +77,6 @@ export class FbConnect {
   // This is called with the results from from FB.getLoginStatus().
   statusChangeCallback(response) {
 
-    let iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
-
     console.log('statusChangeCallback', response);
 
     // The response object is returned with a status field that lets the
@@ -91,11 +88,11 @@ export class FbConnect {
       this.fbMe();
     } else if (response.status === 'not_authorized') {
       // The person is logged into Facebook, but not your app.
-      iframedoc.getElementById('status').innerHTML = this.fbconnectvars.l10n.not_authorized;
+      this.iframedoc.getElementById('status').innerHTML = this.fbconnectvars.l10n.not_authorized;
     } else {
       // The person is not logged into Facebook, so we're not sure if
       // they are logged into this app or not.
-      iframedoc.getElementById('status').innerHTML = this.fbconnectvars.l10n.fb_not_logged_in;
+      this.iframedoc.getElementById('status').innerHTML = this.fbconnectvars.l10n.fb_not_logged_in;
     }
   }
 
@@ -109,17 +106,15 @@ export class FbConnect {
        *  error:   callback function when operation fails - Optional
      */
 
-    let iframewin = document.getElementById('ap3-iframe').contentWindow.window;
+    // let loginOptions: FacebookApiMethod = { post: 1 };
 
-    let loginOptions: FacebookApiMethod = { 'post' : 1 };
-
-    this.FB.api( 
-      "/me",
-      loginOptions,
-      {fields:iframewin.apppfb.me_fields}
-    ).then( response => {
-      this.fetchUser_Callback(response);
-    });
+    // this.FB.api( 
+    //   "/me",
+    //   loginOptions,
+    //   {fields:this.iframewin.apppfb.me_fields}
+    // ).then( response => {
+    //   this.fetchUser_Callback(response);
+    // });
   }
 
   // This function is called after a callback
@@ -127,37 +122,34 @@ export class FbConnect {
   fetchUser_Callback(response) {
 
     console.log('fetchUser_Callback', response);
-
-    let iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
-    let iframewin = document.getElementById('ap3-iframe').contentWindow.window;
     
-    if( iframedoc.getElementById('status') ) {
-      iframedoc.getElementById('status').innerHTML = this.fbconnectvars.l10n.login_msg.replace('{{USERNAME}}', response.name);
+    if( this.iframedoc.getElementById('status') ) {
+      this.iframedoc.getElementById('status').innerHTML = this.fbconnectvars.l10n.login_msg.replace('{{USERNAME}}', response.name);
     }
     // Send user info to WordPress login function
     if( typeof response.name != 'undefined' && typeof response.email != 'undefined') {
       this.wplogin( response.name, response.email ).then( data => {
 
         // successfully logged in
-        let context = iframewin.location.pathname.substring(0, iframewin.location.pathname.lastIndexOf("/"));
-        let baseURL = iframewin.location.protocol + '//' + iframewin.location.hostname + (iframewin.location.port ? ':' + iframewin.location.port : '') + context;
-        let app_ver = ( iframewin.apppCore.ver ) ? iframewin.apppCore.ver : '2';
+        let context = this.iframewin.location.pathname.substring(0, this.iframewin.location.pathname.lastIndexOf("/"));
+        let baseURL = this.iframewin.location.protocol + '//' + this.iframewin.location.hostname + (this.iframewin.location.port ? ':' + this.iframewin.location.port : '') + context;
+        let app_ver = ( this.iframewin.apppCore.ver ) ? this.iframewin.apppCore.ver : '2';
 
         if(data && data.redirect_url) {
           let redirect_url = data.redirect_url;
           if( redirect_url.indexOf('?') === -1 && redirect_url.indexOf('appp=') === -1 ) {
-            iframewin.location.href = redirect_url+ "?appp=" + app_ver;
+            this.iframewin.location.href = redirect_url+ "?appp=" + app_ver;
             return;
           } else if( redirect_url.indexOf('appp=') === -1 ) {
-            iframewin.location.href = redirect_url+ "&appp=" + app_ver;
+            this.iframewin.location.href = redirect_url+ "&appp=" + app_ver;
             return;
           } else {
-            iframewin.location.href = data.redirect_url;
+            this.iframewin.location.href = data.redirect_url;
             return;
           }
         }
 
-        iframewin.location.href = baseURL + "?appp=" + app_ver;
+        this.iframewin.location.href = baseURL + "?appp=" + app_ver;
       });
     } else {
       console.log( response );
@@ -168,10 +160,8 @@ export class FbConnect {
   // from retreiving the user's email and fb_id
   fetchUser_CallbackError(response) {
 
-    let iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
-
     console.log( response );
-    iframedoc.getElementById('status').innerHTML = this.fbconnectvars.l10n.fetch_user_fail;
+    this.iframedoc.getElementById('status').innerHTML = this.fbconnectvars.l10n.fetch_user_fail;
   }
 
   // This function is called when someone finishes with the Login
@@ -188,19 +178,16 @@ export class FbConnect {
    */
   wplogin( name, email ) {
 
-    let iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
-    let iframewin = document.getElementById('ap3-iframe').contentWindow.window;
-
     let options = {
       'action':'appp_wp_fblogin',
       'user_email': email,
-      'security' : iframewin.apppfb.security,
+      'security' : this.iframewin.apppfb.security,
       'full_name': name,
      }
 
     return new Promise(resolve => {
 
-      this.http.get( iframewin.apppCore.ajaxurl, options )
+      this.http.get( this.iframewin.apppCore.ajaxurl, options )
         .map(res => res.json())
         .subscribe(
           data => {

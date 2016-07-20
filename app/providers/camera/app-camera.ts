@@ -67,8 +67,8 @@ export class AppCamera {
 
     let fileTransfer = new Transfer();
 
-    this.iframedoc = document.getElementById('ap3-iframe').contentWindow.document;
-    this.iframewin = document.getElementById('ap3-iframe').contentWindow.window;
+    this.iframedoc = (<any>document.getElementById('ap3-iframe')).contentWindow.document;
+    this.iframewin = (<any>document.getElementById('ap3-iframe')).contentWindow.window;
 
     // console.log('imageURI', imageURI);
 
@@ -203,8 +203,8 @@ export class AppCamera {
   uploadWin() {
 
     // not sure why, but can't access this.iframedoc
-    let framedoc = document.getElementById('ap3-iframe').contentWindow.document;
-    let appcamera = document.getElementById('ap3-iframe').contentWindow.window.appcamera;
+    let framedoc = (<any>document.getElementById('ap3-iframe')).contentWindow.document;
+    let appcamera = (<any>document.getElementById('ap3-iframe')).contentWindow.window.appcamera;
     let msg = appcamera.msg.moderation;
 
     console.log('uploadWin', msg );

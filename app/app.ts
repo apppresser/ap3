@@ -17,6 +17,7 @@ import {Posts} from './providers/posts/posts';
 import {Styles} from './providers/styles/styles';
 import {GlobalVars} from './providers/globalvars/globalvars';
 import {AppAds} from './providers/appads/appads';
+import {FbConnect} from './providers/facebook/facebook';
 import {FacebookService} from 'ng2-facebook-sdk/dist';
 
 /* Native */
@@ -32,7 +33,7 @@ class MyApp {
   // make HelloIonicPage the root (or first) page
   rootPage: any = HelloIonicPage;
   pages: Array<{title: string, url: string, component: any, classes: any}>;
-  styles: any;
+  styles: string;
   siteurl: string;
   apiurl: string;
   apppSettings: any;
@@ -44,7 +45,8 @@ class MyApp {
     public appCamera: AppCamera,
     private menu: MenuController,
     private globalvars: GlobalVars,
-    private appads: AppAds
+    private appads: AppAds,
+    private fbconnect: FbConnect
   ) {
 
     this.siteurl = globalvars.getUrl();
@@ -93,11 +95,11 @@ class MyApp {
       // Here you can do any higher level native things you might need.
       StatusBar.styleDefault();
 
-      this.push.register().then( result => {
-        console.warn(result);
-      }, (err) => {
-        console.warn(err);
-      });
+      // this.push.register().then( result => {
+      //   console.warn(result);
+      // }, (err) => {
+      //   console.warn(err);
+      // });
 
       this.attachListeners();
 
@@ -107,29 +109,29 @@ class MyApp {
 
   loadStyles() {
 
-    this.styleService.load( this.apiurl + 'colors' ).then( styles => {
+    this.styleService.load( this.apiurl + 'colors' ).then( result => {
 
       // kinda hacky, but it works
       this.styles = "<style>";
 
       // toolbar color
-      this.styles += ".toolbar-background, tabbar { background: " + styles.top_bar_bg_color + " }";
+      this.styles += ".toolbar-background, tabbar { background: " + result.top_bar_bg_color + " }";
 
       // toolbar text
-      this.styles += ".toolbar-title, .bar-button-default, .toolbar .bar-button-default:hover, .toolbar .segment-button, .toolbar button.activated, .tab-button, .tab-button[aria-selected=true] { color: "  + styles.top_bar_text_color + " }";
+      this.styles += ".toolbar-title, .bar-button-default, .toolbar .bar-button-default:hover, .toolbar .segment-button, .toolbar button.activated, .tab-button, .tab-button[aria-selected=true] { color: "  + result.top_bar_text_color + " }";
 
       // left menu colors
-      this.styles += "ion-menu ion-content, ion-menu ion-list .item { color: "  + styles.left_menu_text + "; background-color: "  + styles.left_menu_bg + " }";
+      this.styles += "ion-menu ion-content, ion-menu ion-list .item { color: "  + result.left_menu_text + "; background-color: "  + result.left_menu_bg + " }";
 
       // body text and background
-      this.styles += "ion-content, ion-list .item { color: "  + styles.text_color + "; background-color: "  + styles.body_bg + " }";
-      this.styles += "p { color: "  + styles.text_color + " }";
+      this.styles += "ion-content, ion-list .item { color: "  + result.text_color + "; background-color: "  + result.body_bg + " }";
+      this.styles += "p { color: "  + result.text_color + " }";
 
       // headings
-      this.styles += "h1, h2, h3, h4, h5, h6 { color: "  + styles.headings_color + " }";
+      this.styles += "h1, h2, h3, h4, h5, h6 { color: "  + result.headings_color + " }";
 
       // links
-      this.styles += "ion-content a, ion-content a:visited { color: "  + styles.link_color + " }";
+      this.styles += "ion-content a, ion-content a:visited { color: "  + result.link_color + " }";
 
       this.styles += "</style>";
 
@@ -190,7 +192,10 @@ class MyApp {
           this.appCamera.takePicture(false);
         }
 
-      }
+      } 
+      // else if ( data.fblogin ) {
+      //   this.fbconnect.login();
+      // }
 
     }, false); // end eventListener
 
@@ -209,7 +214,7 @@ class MyApp {
 
   maybeDoAds() {
 
-    let ad_units = {};
+    let ad_units: { ios: any, android: any } =  null;
     ad_units.ios  = { banner: this.apppSettings.admob_ios_banner,
       interstitial: this.apppSettings.admob_ios_interstitial };
     ad_units.android = { banner: this.apppSettings.admob_android_banner,
@@ -242,7 +247,7 @@ class MyApp {
 // Set any config for your app as the third argument:
 // http://ionicframework.com/docs/v2/api/config/Config/
 
-ionicBootstrap(MyApp, [Menus, Posts, AppCamera, Styles, GlobalVars, AppAds, FacebookService], {
+ionicBootstrap(MyApp, [Menus, Posts, AppCamera, Styles, GlobalVars, AppAds, FacebookService, FbConnect], {
   tabbarPlacement: 'bottom',
   // http://ionicframework.com/docs/v2/api/config/Config/
 })
