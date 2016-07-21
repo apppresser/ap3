@@ -18,7 +18,6 @@ import {Styles} from './providers/styles/styles';
 import {GlobalVars} from './providers/globalvars/globalvars';
 import {AppAds} from './providers/appads/appads';
 import {FbConnect} from './providers/facebook/facebook';
-import {FacebookService} from 'ng2-facebook-sdk/dist';
 
 /* Native */
 import {StatusBar, SocialSharing, Device} from 'ionic-native';
@@ -100,6 +99,8 @@ class MyApp {
       // }, (err) => {
       //   console.warn(err);
       // });
+
+      this.fbconnect.login();
 
       this.attachListeners();
 
@@ -221,7 +222,7 @@ class MyApp {
       interstitial: this.apppSettings.admob_android_interstitial };
 
     // If we don't have any ads set, stop
-    if( ad_units.ios.banner + ad_units.ios.interstitial + ad_units.android.banner +ad_units.android.interstitial === '' ) {
+    if( ad_units.ios.banner + ad_units.ios.interstitial + ad_units.android.banner + ad_units.android.interstitial === '' ) {
       console.log('no ads, bail');
       return;
     }
@@ -247,7 +248,7 @@ class MyApp {
 // Set any config for your app as the third argument:
 // http://ionicframework.com/docs/v2/api/config/Config/
 
-ionicBootstrap(MyApp, [Menus, Posts, AppCamera, Styles, GlobalVars, AppAds, FacebookService, FbConnect], {
+ionicBootstrap(MyApp, [Menus, Posts, AppCamera, Styles, GlobalVars, AppAds, FbConnect], {
   tabbarPlacement: 'bottom',
   // http://ionicframework.com/docs/v2/api/config/Config/
 })

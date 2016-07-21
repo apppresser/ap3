@@ -2,8 +2,7 @@ import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import 'rxjs/add/operator/map';
 
-// https://www.npmjs.com/package/ng2-facebook-sdk
-import {FacebookService, FacebookLoginOptions, FacebookInitParams, FacebookApiMethod} from 'ng2-facebook-sdk/dist';
+import {Facebook} from 'ionic-native';
 
 /*
   Facebook Connect
@@ -17,11 +16,11 @@ export class FbConnect {
   iframewin: any;
   iframedoc: any;
 
-  constructor(public http: Http, private FB: FacebookService) {
+  constructor(public http: Http) {
 
     this.fbconnectvars = {
       debug: false,
-      login_scope: 'email,public_profile,user_friends',
+      login_scope: [ 'email','public_profile','user_friends'],
       l10n:{
         login_msg:'Thanks for logging in, {{USERNAME}}!',
         fetch_user_fail:'Sorry, login failed',
@@ -34,44 +33,40 @@ export class FbConnect {
 
   }
 
-  init() {
+  // init() {
 
-    let debug = this.fbconnectvars.debug;
+  //   let debug = this.fbconnectvars.debug;
 
-    // (<any>) syntax is to avoid typescript errors
-    this.iframedoc = (<any>document.getElementById('ap3-iframe')).contentWindow.document;
-    this.iframewin = (<any>document.getElementById('ap3-iframe')).contentWindow.window;
+  //   // (<any>) syntax is to avoid typescript errors
+  //   this.iframedoc = (<any>document.getElementById('ap3-iframe')).contentWindow.document;
+  //   this.iframewin = (<any>document.getElementById('ap3-iframe')).contentWindow.window;
       
-    if( typeof this.iframewin.apppfb == 'undefined' ) {
-      return;
-    }
+  //   if( typeof this.iframewin.apppfb == 'undefined' ) {
+  //     return;
+  //   }
 
-    if( typeof this.iframewin.apppfb.l10n !== 'undefined' ) {
-      this.fbconnectvars.l10n = this.iframewin.apppfb.l10n
-    }
+  //   if( typeof this.iframewin.apppfb.l10n !== 'undefined' ) {
+  //     this.fbconnectvars.l10n = this.iframewin.apppfb.l10n
+  //   }
 
-    let fbParams: FacebookInitParams = {
-      appId: this.iframewin.apppfb.app_id,
-      xfbml: true,
-      version: 'v2.6'
-    }
+  //   let fbParams: FacebookInitParams = {
+  //     appId: this.iframewin.apppfb.app_id,
+  //     xfbml: true,
+  //     version: 'v2.6'
+  //   }
 
-    this.FB.init( fbParams );
+  //   this.FB.init( fbParams );
 
-  }
+  // }
 
   login() {
 
-    this.init();
-
-    let loginOptions: FacebookLoginOptions = {
-      scope: this.fbconnectvars.login_scope
-    }
-    this.FB.login( loginOptions ).then( result => {
-      console.log('login result', result);
+    Facebook.login( this.fbconnectvars.login_scope ).then( result => {
+      // we get back an auth response here, should save it or something
+      console.log(result);
     });
 
-    return false; // so not to submit the form
+    // return false; // so not to submit the form
   }
 
   // This is called with the results from from FB.getLoginStatus().
@@ -168,7 +163,7 @@ export class FbConnect {
   // Button.  See the onlogin handler attached to it in the sample
   // code below.
   checkLoginState() {
-    this.FB.getLoginStatus().then( result => {
+    Facebook.getLoginStatus().then( result => {
       this.statusChangeCallback(result);
     })
   }
