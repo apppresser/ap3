@@ -36,6 +36,8 @@ export class PostList {
     this.postService.load( this.siteurl + 'wp-json/wp/v2/posts', this.page ).then(items => {
       // Loads posts from WordPress API
       this.items = items;
+      // load more right away
+      this.loadMore(null);
       loading.dismiss();
     });
 
@@ -56,13 +58,11 @@ export class PostList {
   loadMore(infiniteScroll) {
 
     this.page++;
-    console.log(this.page);
 
     this.postService.load( this.siteurl + 'wp-json/wp/v2/posts', this.page ).then(items => {
       // Loads posts from WordPress API
       let length = items.length;
 
-      console.log( length );
       if( length === 0 ) {
         infiniteScroll.complete();
         return;

@@ -100,7 +100,7 @@ class MyApp {
       //   console.warn(err);
       // });
 
-      this.fbconnect.login();
+      // this.fbconnect.login();
 
       this.attachListeners();
 
@@ -214,6 +214,8 @@ class MyApp {
   }
 
   maybeDoAds() {
+
+    if(!Device.device.platform ) return;
 
     let ad_units: { ios: any, android: any } =  null;
     ad_units.ios  = { banner: this.apppSettings.admob_ios_banner,

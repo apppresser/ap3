@@ -11,7 +11,13 @@
   </ion-refresher>
   
   <ion-list>
-    <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)" [innerHTML]="item.title.rendered">
+    <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">
+    <ion-avatar item-left>
+      <img *ngIf="item.featured_image_urls.thumbnail" src="{{item.featured_image_urls.thumbnail}}">
+      <img *ngIf="!item.featured_image_urls.thumbnail" src="img/appicon.png">
+    </ion-avatar>
+    <h2 [innerHTML]="item.title.rendered"></h2>
+    <p [innerHTML]="item.excerpt.rendered"></p>
     </button>
   </ion-list>
 

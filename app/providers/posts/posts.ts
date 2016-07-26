@@ -20,8 +20,6 @@ export class Posts {
     if( !page ) {
       let page = '1';
     }
-
-    console.log( page );
       
     // if (this.data) {
     //   // already loaded data
@@ -40,7 +38,7 @@ export class Posts {
           // we've got back the raw data, now generate the core schedule data
           // and save the data for later reference
           this.data = data;
-          console.warn(data);
+          // console.warn(data);
           resolve(this.data);
         });
     });
