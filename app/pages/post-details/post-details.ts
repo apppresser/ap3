@@ -14,6 +14,6 @@ export class PostDetailsPage {
 
   onPageDidEnter() {
 	  // Anything that needs to run everytime the view is entered will go here
-
+	  console.log( this.selectedItem );
   }
 }

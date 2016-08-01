@@ -33,3 +33,15 @@ ion-content ion-card-content {
 .item h2 {
 	white-space: normal;
 }
+
+.post-featured-wrap {
+	width: auto;
+    max-height: 250px;
+    overflow: hidden;
+    margin: -20px -20px 20px -20px;
+
+	img.post-featured {
+		width: 100%;
+		height: auto;
+	}
+}

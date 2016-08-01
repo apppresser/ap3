@@ -7,6 +7,9 @@
 
 <ion-content>
  <div *ngIf="selectedItem" class="selection">
+ 	<div *ngIf="selectedItem.featured_image_urls.large" class="post-featured-wrap">
+ 		<img src="{{selectedItem.featured_image_urls.large}}" class="post-featured">
+ 	</div>
     <h2 [innerHTML]="selectedItem.title.rendered"></h2>
     <div [innerHTML]="selectedItem.content.rendered"></div>
   </div>
