@@ -56,7 +56,8 @@ class MyApp {
       this.apppSettings = result;
 
       // need settings for ads, so wait to do them
-      this.maybeDoAds();
+      // TODO: uncomment line below based on build form if ads are checked
+      // this.maybeDoAds();
 
       // set our app's pages
       this.loadMenu();
@@ -99,8 +100,6 @@ class MyApp {
       // }, (err) => {
       //   console.warn(err);
       // });
-
-      // this.fbconnect.login();
 
       this.attachListeners();
 
@@ -149,7 +148,7 @@ class MyApp {
     // When WP site loads, attach our click events
     window.addEventListener('message', (e) => {
 
-      // console.log('postMessage', e.data);
+      console.log('postMessage', e.data);
 
       // if it's not our json object, return
       if (e.data.indexOf('{') != 0)
@@ -175,8 +174,6 @@ class MyApp {
 
       } else if (data.camera && data.camera === 'library' ) {
 
-        console.log('appbuddy app.ts', data.appbuddy);
-
         if(data.appbuddy === true ) {
           this.appCamera.photoLibrary(true);
         } else {
@@ -184,8 +181,6 @@ class MyApp {
         }
 
       } else if (data.camera && data.camera === 'photo') {
-
-        console.log('appbuddy app.ts', data.appbuddy);
         
         if (data.appbuddy === true) {
           this.appCamera.takePicture(true);
@@ -193,10 +188,11 @@ class MyApp {
           this.appCamera.takePicture(false);
         }
 
-      } 
-      // else if ( data.fblogin ) {
-      //   this.fbconnect.login();
-      // }
+      } else if ( data.fblogin ) {
+
+        this.fbconnect.login();
+
+      }
 
     }, false); // end eventListener
 
@@ -217,7 +213,7 @@ class MyApp {
 
     if(!Device.device.platform ) return;
 
-    let ad_units: { ios: any, android: any } =  null;
+    let ad_units: { ios: any, android: any } = null;
     ad_units.ios  = { banner: this.apppSettings.admob_ios_banner,
       interstitial: this.apppSettings.admob_ios_interstitial };
     ad_units.android = { banner: this.apppSettings.admob_android_banner,
