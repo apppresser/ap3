@@ -28,6 +28,7 @@ export default class {
 
         this.iframeLoading();
     }
+
     iframeLoading() {
 
         let loading = Loading.create({
@@ -49,13 +50,45 @@ export default class {
             loading.dismiss();
         }, 9000);
     }
+
+    findIframe() {
+
+        /* 
+         Ionic stacks cached views on top of each other, which causes duplicate ids on the page. We need to find the active page in the stack, and send our post messages there. Otherwise message is sent to the wrong page.
+        */
+
+        let pages = document.getElementsByTagName('ion-page');
+        let lengths = pages.length;
+
+        if( lengths > 1 ) {
+            console.log('finding in stack...');
+            // find the active page, last one on page
+            let index = lengths - 1;
+            let lastpage = pages[index];
+
+            console.log( lastpage );
+
+            this.iframe = lastpage.getElementsByClassName('ap3-iframe')[0].contentWindow;
+
+            console.log( this.iframe );
+
+        } else {
+            console.log('only one view');
+            // we don't have any cached views, so don't have to run this
+            this.iframe = (<any>document.getElementById('ap3-iframe')).contentWindow;
+        }
+
+    }
+
     activityModal() {
-        this.iframe = (<any>document.getElementById('ap3-iframe')).contentWindow;
+
+        this.findIframe();
+
         this.iframe.postMessage('activity', '*');
     }
     checkinModal() {
 
-        this.iframe = (<any>document.getElementById('ap3-iframe')).contentWindow;
+        this.findIframe();
 
         // first message is to show modal, then we send through location
         this.iframe.postMessage('checkin', '*');
