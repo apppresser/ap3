@@ -18,6 +18,7 @@ export class AppCamera {
     targetHeight: 1204
   };
 
+  iframe: any;
   iframedoc: any;
   iframewin: any;
   appbuddy: boolean = false;
@@ -63,12 +64,43 @@ export class AppCamera {
 
   }
 
+  findIframe() {
+
+      /* 
+       Ionic stacks cached views on top of each other, which causes duplicate ids on the page. We need to find the active page in the stack, and send our post messages there. Otherwise message is sent to the wrong page.
+      */
+
+      let pages = document.getElementsByTagName('ion-page');
+      let lengths = pages.length;
+
+      if( lengths > 1 ) {
+          console.log('finding in stack...');
+          // find the active page, last one on page
+          let index = lengths - 1;
+          let lastpage = pages[index];
+
+          console.log( lastpage );
+
+          this.iframe = lastpage.getElementsByClassName('ap3-iframe')[0];
+
+          console.log( this.iframe );
+
+      } else {
+          console.log('only one view');
+          // we don't have any cached views, so don't have to run this
+          this.iframe = (<any>document.getElementById('ap3-iframe'));
+      }
+
+  }
+
   uploadPhoto(imageURI) {
 
     let fileTransfer = new Transfer();
 
-    this.iframedoc = (<any>document.getElementById('ap3-iframe')).contentWindow.document;
-    this.iframewin = (<any>document.getElementById('ap3-iframe')).contentWindow.window;
+    this.findIframe();
+
+    this.iframedoc = this.iframe.contentWindow.document;
+    this.iframewin = this.iframe.contentWindow.window;
 
     // console.log('imageURI', imageURI);
 
@@ -157,7 +189,15 @@ export class AppCamera {
       this.iframedoc.getElementById('appp_cam_post_title').value = '';
       options.params = params;
 
-      fileTransfer.upload(imageURI, ajaxurl, options, true).then(this.uploadWin).catch( this.uploadErr );
+      fileTransfer.upload(imageURI, ajaxurl, options, true).then( r => {
+
+        this.uploadWin(r);
+
+      }).catch( e => {
+
+        this.uploadErr(e);
+
+      });
 
       fileTransfer.onProgress((e) => {
 
@@ -177,9 +217,11 @@ export class AppCamera {
   // handles displaying image in appbuddy activity modal after uploaded
   attachWin(r) {
 
-    // console.log('Code = ' + r.responseCode);
-    // console.log('Response = ' + r.response);
-    // console.log('Sent = ' + r.bytesSent);
+    console.log('attach win', r);
+
+    this.findIframe();
+
+    this.iframedoc = this.iframe.contentWindow.document;
 
     let action = this.iframedoc.getElementById('appp_action').value;
 
@@ -200,22 +242,31 @@ export class AppCamera {
 
   }
 
-  uploadWin() {
+  uploadWin(r) {
 
-    // not sure why, but can't access this.iframedoc
-    let framedoc = (<any>document.getElementById('ap3-iframe')).contentWindow.document;
-    let appcamera = (<any>document.getElementById('ap3-iframe')).contentWindow.window.appcamera;
+    console.log('upload win', r);
+
+    this.findIframe();
+
+    this.iframedoc = this.iframe.contentWindow.document;
+
+    let appcamera = this.iframe.contentWindow.window.appcamera;
     let msg = appcamera.msg.moderation;
-
-    console.log('uploadWin', msg );
+    let status = this.iframedoc.getElementById('cam-status');
 
     if (!appcamera.moderation_on) {
 
       msg = appcamera.msg.success;
     }
 
-    framedoc.getElementById('cam-status').innerHTML = '<p>' + msg + '</p>';
-    framedoc.getElementById('cam-progress').style.visibility = 'hidden';
+    status.innerHTML = '<p>' + msg + '</p>';
+    this.iframedoc.getElementById('cam-progress').style.visibility = 'hidden';
+
+    // clear message after 5 sec
+    setTimeout( () => {
+      status.innerHTML = '';
+    }, 5000 );
+
   }
 
   uploadErr(e) {
@@ -247,6 +298,5 @@ export class AppCamera {
       return '';
 
   }
-
   
 }
