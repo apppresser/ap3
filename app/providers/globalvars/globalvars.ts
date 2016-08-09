@@ -12,7 +12,9 @@ import 'rxjs/add/operator/map';
 export class GlobalVars {
 
   data: any = null;
-  url: string = 'http://www.wp4.dev/';
+  // url should be WP site with AP installed, dynamically changes based on build form
+  // url: string = 'http://10.0.1.12/';
+  url: string = 'http://reactordev.com/apv3/';
   endpoint: string = 'wp-json/ap3/v1/';
   api: string = this.url + this.endpoint;
 
@@ -40,8 +42,7 @@ export class GlobalVars {
       this.http.get( settingsUrl )
         .map(res => res.json())
         .subscribe(data => {
-          // we've got back the raw data, now generate the core schedule data
-          // and save the data for later reference
+          // we've got back the data
           this.data = data;
           console.warn(data);
           resolve(this.data);

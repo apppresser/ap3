@@ -1,4 +1,4 @@
-import {NavController, NavParams, Loading} from 'ionic-angular';
+import {NavController, NavParams, LoadingController} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
 import {PostDetailsPage} from '../post-details/post-details';
@@ -14,7 +14,7 @@ export class PostList {
   page: number = 1;
   siteurl: string;
 
-  constructor(private nav: NavController, navParams: NavParams, public postService: Posts, private globalvars: GlobalVars ) {
+  constructor(private nav: NavController, navParams: NavParams, public postService: Posts, private globalvars: GlobalVars, private loadingController: LoadingController ) {
 
     this.siteurl = globalvars.getUrl();
     this.loadPosts();
@@ -23,12 +23,12 @@ export class PostList {
 
   loadPosts() {
 
-    let loading = Loading.create({
+    let loading = this.loadingController.create({
         showBackdrop: false,
         dismissOnPageChange: true
     });
 
-    this.nav.present(loading);
+    loading.present(loading);
 
     this.page = 1;
     

@@ -1,4 +1,4 @@
-import {NavParams, Nav, Loading} from 'ionic-angular';
+import {NavParams, Nav, LoadingController} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {Geolocation} from 'ionic-native';
 // import customIframe from '../../components/iframe/index';
@@ -13,7 +13,7 @@ export default class {
     url: string;
     iframe: any;
     param: string;
-    constructor(private navParams: NavParams, private nav: Nav) {
+    constructor(private navParams: NavParams, private loadingController: LoadingController) {
         this.title = navParams.data.title;
 
         if ( navParams.data.url.indexOf('?') >= 0 ) {
@@ -31,18 +31,23 @@ export default class {
 
     iframeLoading() {
 
-        let loading = Loading.create({
+        let loading = this.loadingController.create({
             showBackdrop: false,
             dismissOnPageChange: true
         });
 
-        this.nav.present(loading);
+        loading.present(loading);
 
         // When WP site loads, attach our click events
         window.addEventListener('message', (e) => {
 
             if(e.data === 'site_loaded') {
                 loading.dismiss();
+            } else if( e.data === 'reload_frame' ) {
+                // need to reload frame on login
+                this.findIframe();
+                let src = this.iframe.src;
+                this.iframe.src = src;
             }
         });
 

@@ -12,6 +12,9 @@
   <allow-intent href="mailto:*"/>
   <allow-intent href="geo:*"/>
   <allow-navigation href="*"/>
+
+  <!-- <hook type="after_prepare" src="package-hooks/ios9_allow_http.sh" /> -->
+  
   <platform name="android">
     <allow-intent href="market:*"/>
     <icon src="resources/android/icon/drawable-ldpi-icon.png" density="ldpi"/>

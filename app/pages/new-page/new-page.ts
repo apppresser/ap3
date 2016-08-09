@@ -1,16 +1,16 @@
 import {Component} from '@angular/core';
-import {ActionSheet, Nav} from 'ionic-angular';
+import {ActionSheetController} from 'ionic-angular';
 
 @Component({
   templateUrl: 'build/pages/new-page/new-page.html'
 })
 export class NewPage {
-  constructor( public nav: Nav ) {
+  constructor( private actionSheetController: ActionSheetController ) {
   	console.log('NewPage loaded');
   }
 
   presentActionSheet() {
-	  let actionSheet = ActionSheet.create({
+	  let actionSheet = actionSheetController.create({
 		  title: 'Modify your album',
 		  buttons: [
 			  {
@@ -33,6 +33,6 @@ export class NewPage {
 			  }
 		  ]
 	  });
-	  this.nav.present(actionSheet);
+	  actionSheet.present(actionSheet);
   }
 }
