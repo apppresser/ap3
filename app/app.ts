@@ -30,12 +30,13 @@ class MyApp {
   @ViewChild(Nav) nav: Nav;
 
   // make HelloIonicPage the root (or first) page
-  rootPage: any = HelloIonicPage;
+  rootPage: any = NewPage;
   pages: Array<{title: string, url: string, component: any, classes: any}>;
   styles: string;
   siteurl: string;
   apiurl: string;
   apppSettings: any;
+  login: boolean;
 
   constructor(
     private platform: Platform,
@@ -72,6 +73,8 @@ class MyApp {
 
   loadMenu() {
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
+
+    this.login = true;
 
     this.menuService.load( this.apiurl + 'menus/' + this.apppSettings.primary_menu ).then( pages => {
       // Loads menu from WordPress API

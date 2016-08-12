@@ -10,7 +10,7 @@ export class NewPage {
   }
 
   presentActionSheet() {
-	  let actionSheet = actionSheetController.create({
+	  let actionSheet = this.actionSheetController.create({
 		  title: 'Modify your album',
 		  buttons: [
 			  {

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ViewController, Modal} from 'ionic-angular';
+import {ViewController} from 'ionic-angular';
 import {AppCamera} from '../../providers/camera/app-camera';
 
 /*

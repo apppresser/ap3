@@ -13,7 +13,7 @@ export class GlobalVars {
 
   data: any = null;
   // url should be WP site with AP installed, dynamically changes based on build form
-  // url: string = 'http://10.0.1.12/';
+  //url: string = 'http://www.wp4.dev/';
   url: string = 'http://reactordev.com/apv3/';
   endpoint: string = 'wp-json/ap3/v1/';
   api: string = this.url + this.endpoint;

@@ -1,20 +1,22 @@
-<ion-navbar *navbar>
+<ion-header>
+	<ion-navbar>
 
-	<button menuToggle>
-		<ion-icon name="menu"></ion-icon>
-	</button>
+		<button menuToggle>
+			<ion-icon name="menu"></ion-icon>
+		</button>
 
-    <ion-title>{{title}}</ion-title>
+	    <ion-title>{{title}}</ion-title>
 
-    <ion-buttons end>
-    <button (click)="activityModal()">
-		<ion-icon name="ios-create-outline"></ion-icon>
-	</button>
-	<button (click)="checkinModal()">
-		<ion-icon name="ios-navigate-outline"></ion-icon>
-	</button>
-	</ion-buttons>
-</ion-navbar>
+	    <ion-buttons end>
+	    <button (click)="activityModal()">
+			<ion-icon name="ios-create-outline"></ion-icon>
+		</button>
+		<button (click)="checkinModal()">
+			<ion-icon name="ios-navigate-outline"></ion-icon>
+		</button>
+		</ion-buttons>
+	</ion-navbar>
+</ion-header>
 
 <ion-content>
     <iframe [src]="url" id="ap3-iframe" class="ap3-iframe"></iframe>

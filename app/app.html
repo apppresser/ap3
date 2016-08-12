@@ -1,10 +1,12 @@
 <div [innerHTML]="styles"></div>
 
-<ion-menu [content]="content">
+<ion-menu [content]="content" swipeEnabled="false">
 
-  <ion-toolbar>
-    <ion-title>Pages</ion-title>
-  </ion-toolbar>
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Pages</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
   <ion-content>
     <ion-list>
@@ -13,8 +15,9 @@
         {{p.title}}
       </button>
     </ion-list>
+
   </ion-content>
 
 </ion-menu>
 
-<ion-nav id="nav" [root]="rootPage" #content swipe-back-enabled="false"></ion-nav>
+<ion-nav id="nav" [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>
