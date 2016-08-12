@@ -1,6 +1,7 @@
 /* Framework */
 import {ViewChild, Component} from '@angular/core';
 import {ionicBootstrap, Platform, MenuController, Nav} from 'ionic-angular';
+import {DomSanitizationService} from '@angular/platform-browser';
 
 /* Pages */
 import {HelloIonicPage} from './pages/hello-ionic/hello-ionic';
@@ -46,7 +47,8 @@ class MyApp {
     private menu: MenuController,
     private globalvars: GlobalVars,
     private appads: AppAds,
-    private fbconnect: FbConnect
+    private fbconnect: FbConnect,
+    private sanitizer: DomSanitizationService
   ) {
 
     this.siteurl = globalvars.getUrl();
@@ -115,28 +117,30 @@ class MyApp {
     this.styleService.load( this.apiurl + 'colors' ).then( result => {
 
       // kinda hacky, but it works
-      this.styles = "<style>";
+      let styles = "<style>";
 
       // toolbar color
-      this.styles += ".toolbar-background, tabbar { background: " + result.top_bar_bg_color + " }";
+      styles += ".toolbar-background, tabbar { background: " + result.top_bar_bg_color + " }";
 
       // toolbar text
-      this.styles += ".toolbar-title, .bar-button-default, .toolbar .bar-button-default:hover, .toolbar .segment-button, .toolbar button.activated, .tab-button, .tab-button[aria-selected=true] { color: "  + result.top_bar_text_color + " }";
+      styles += ".toolbar-title, .bar-button-default, .toolbar .bar-button-default:hover, .toolbar .segment-button, .toolbar button.activated, .tab-button, .tab-button[aria-selected=true] { color: "  + result.top_bar_text_color + " }";
 
       // left menu colors
-      this.styles += "ion-menu ion-content, ion-menu ion-list .item { color: "  + result.left_menu_text + "; background-color: "  + result.left_menu_bg + " }";
+      styles += "ion-menu ion-content, ion-menu ion-list .item { color: "  + result.left_menu_text + "; background-color: "  + result.left_menu_bg + " }";
 
       // body text and background
-      this.styles += "ion-content, ion-list .item { color: "  + result.text_color + "; background-color: "  + result.body_bg + " }";
-      this.styles += "p { color: "  + result.text_color + " }";
+      styles += "ion-content, ion-list .item { color: "  + result.text_color + "; background-color: "  + result.body_bg + " }";
+      styles += "p { color: "  + result.text_color + " }";
 
       // headings
-      this.styles += "h1, h2, h3, h4, h5, h6 { color: "  + result.headings_color + " }";
+      styles += "h1, h2, h3, h4, h5, h6 { color: "  + result.headings_color + " }";
 
       // links
-      this.styles += "ion-content a, ion-content a:visited { color: "  + result.link_color + " }";
+      styles += "ion-content a, ion-content a:visited { color: "  + result.link_color + " }";
 
-      this.styles += "</style>";
+      styles += "</style>";
+
+      this.styles = this.sanitizer.bypassSecurityTrustHtml( styles );
 
     } );
     
