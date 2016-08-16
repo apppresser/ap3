@@ -33,7 +33,7 @@ export class PostList {
     this.page = 1;
     
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
-    this.postService.load( this.siteurl + 'wp-json/wp/v2/posts', this.page ).then(items => {
+    this.postService.load( this.siteurl + '/wp-json/wp/v2/posts', this.page ).then(items => {
       // Loads posts from WordPress API
       this.items = items;
       // load more right away
@@ -59,7 +59,7 @@ export class PostList {
 
     this.page++;
 
-    this.postService.load( this.siteurl + 'wp-json/wp/v2/posts', this.page ).then(items => {
+    this.postService.load( this.siteurl + '/wp-json/wp/v2/posts', this.page ).then(items => {
       // Loads posts from WordPress API
       let length = items.length;
 
