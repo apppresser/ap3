@@ -15,14 +15,15 @@ export class GlobalVars {
   // url should be WP site with AP installed, dynamically changes based on build form
   // url: string = 'http://www.wp4.dev/';
   // url: string = 'http://reactordev.com/apv3/';
-  url: string = '[[appp_site_url]]';
-  endpoint: string = 'wp-json/ap3/v1/';
-  api: string = this.url + this.endpoint;
+  wpurl: string = '[[appp_site_url]]';
+  apiurl: string = 'http://www.myapppresser.dev[[appp_site_slug]]'
+  endpoint: string = 'wp-json/ap3/v1/app/[[appp_app_id]]';
+  api: string = this.apiurl + this.endpoint;
 
   constructor( public http: Http ) {}
 
   getUrl() {
-    return this.url;
+    return this.wpurl;
   }
 
   getApi() {

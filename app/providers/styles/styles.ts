@@ -18,8 +18,7 @@ export class Styles {
 
     return new Promise(resolve => {
 
-      // need appp=2 because colors come from theme
-    this.http.get( url + '?appp=2' )
+    this.http.get( url )
         .map(res => res.json())
         .subscribe(data => {
           this.data = data;

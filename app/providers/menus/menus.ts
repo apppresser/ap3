@@ -32,7 +32,7 @@ export class Menus {
         .subscribe(data => {
           // we've got back the raw data, now generate the core schedule data
           // and save the data for later reference
-          this.data = data.items;
+          this.data = data;
           resolve(this.data);
         });
     });

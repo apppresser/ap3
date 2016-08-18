@@ -54,18 +54,20 @@ class MyApp {
     this.siteurl = globalvars.getUrl();
     this.apiurl = globalvars.getApi();
 
-    this.globalvars.getSettings().then( result => {
-      // TODO: save these to localStorage so we only have to get them once
-      this.apppSettings = result;
+    // this.globalvars.getSettings().then( result => {
+    //   // TODO: save these to localStorage so we only have to get them once
+    //   this.apppSettings = result;
 
-      // need settings for ads, so wait to do them
-      // TODO: uncomment line below based on build form if ads are checked
-      // this.maybeDoAds();
+    //   // need settings for ads, so wait to do them
+    //   // TODO: uncomment line below based on build form if ads are checked
+    //   // this.maybeDoAds();
 
-      // set our app's pages
-      this.loadMenu();
+    //   // set our app's pages
+    //   this.loadMenu();
 
-    });
+    // });
+
+    this.loadMenu();
 
     this.loadStyles();
 
@@ -78,9 +80,9 @@ class MyApp {
 
     this.login = true;
 
-    this.menuService.load( this.apiurl + 'menus/' + this.apppSettings.primary_menu ).then( pages => {
+    this.menuService.load( this.apiurl ).then( pages => {
       // Loads menu from WordPress API
-      this.pages = pages;
+      this.pages = pages.menus.items;
 
       // Add pages manually here, can use different components like this...
       let a = { 'title': 'Tabs', 'url': '', 'component': TabsPage };
@@ -114,23 +116,26 @@ class MyApp {
 
   loadStyles() {
 
-    this.styleService.load( this.apiurl + 'colors' ).then( result => {
+    this.styleService.load( this.apiurl ).then( result => {
 
       // kinda hacky, but it works
       let styles = "<style>";
 
       // toolbar color
-      styles += ".toolbar-background, tabbar { background: " + result.top_bar_bg_color + " }";
+      styles += ".toolbar-background, tabbar { background: " + result.meta.design.toolbar_background + " }";
 
       // toolbar text
-      styles += ".toolbar-title, .bar-button-default, .toolbar .bar-button-default:hover, .toolbar .segment-button, .toolbar button.activated, .tab-button, .tab-button[aria-selected=true] { color: "  + result.top_bar_text_color + " }";
+      styles += ".toolbar-title, .bar-button-default, .toolbar .bar-button-default:hover, .toolbar .segment-button, .toolbar button.activated, .tab-button, .tab-button[aria-selected=true] { color: "  + result.meta.design.toolbar_color + " }";
 
       // left menu colors
       styles += "ion-menu ion-content, ion-menu ion-list .item { color: "  + result.left_menu_text + "; background-color: "  + result.left_menu_bg + " }";
 
       // body text and background
-      styles += "ion-content, ion-list .item { color: "  + result.text_color + "; background-color: "  + result.body_bg + " }";
-      styles += "p { color: "  + result.text_color + " }";
+      styles += "ion-content, ion-list .item { color: "  + result.meta.design.text_color + "; background-color: "  + result.meta.design.body_bg + " }";
+      styles += "p { color: "  + result.meta.design.text_color + " }";
+
+      // buttons
+      styles += ".button-primary { background: " + result.meta.design.button_background + "; color: "  + result.meta.design.button_text_color + " }";
 
       // headings
       styles += "h1, h2, h3, h4, h5, h6 { color: "  + result.headings_color + " }";
