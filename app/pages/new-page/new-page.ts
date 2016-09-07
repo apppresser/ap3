@@ -9,6 +9,26 @@ export class NewPage {
   	console.log('NewPage loaded');
   }
 
+  ionViewDidEnter() {
+  	this.externalLinks();
+  }
+
+  externalLinks() {
+    
+    let links = document.querySelectorAll("a");
+
+    for( let i = 0; i < links.length; i++ ){
+      let res = links[i].href;
+      res = res.substring(0, 4);
+      if( res === 'http' ) {
+        links[i].addEventListener('click', e => {
+          e.preventDefault();
+          window.open( e.target.href, '_blank' );
+        }, false);
+      }
+    }
+  }
+
   presentActionSheet() {
 	  let actionSheet = this.actionSheetController.create({
 		  title: 'Modify your album',

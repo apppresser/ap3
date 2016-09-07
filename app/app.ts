@@ -19,9 +19,11 @@ import {Styles} from './providers/styles/styles';
 import {GlobalVars} from './providers/globalvars/globalvars';
 import {AppAds} from './providers/appads/appads';
 import {FbConnect} from './providers/facebook/facebook';
+import {PushService} from './providers/push/push';
+import {AppWoo} from './providers/appwoo/appwoo';
 
 /* Native */
-import {StatusBar, SocialSharing, Device} from 'ionic-native';
+import {StatusBar, SocialSharing, Device, InAppBrowser} from 'ionic-native';
 
 @Component({
   templateUrl: 'build/app.html',
@@ -48,7 +50,9 @@ class MyApp {
     private globalvars: GlobalVars,
     private appads: AppAds,
     private fbconnect: FbConnect,
-    private sanitizer: DomSanitizationService
+    private sanitizer: DomSanitizationService,
+    private pushService: PushService,
+    private appwoo: AppWoo
   ) {
 
     this.siteurl = globalvars.getUrl();
@@ -102,13 +106,10 @@ class MyApp {
       // Here you can do any higher level native things you might need.
       StatusBar.styleDefault();
 
-      // this.push.register().then( result => {
-      //   console.warn(result);
-      // }, (err) => {
-      //   console.warn(err);
-      // });
-
       this.attachListeners();
+
+      if( Device.device.platform === 'iOS' || Device.device.platform === 'Android' )
+        this.pushService.register();
 
     });
 
@@ -117,6 +118,8 @@ class MyApp {
   loadStyles() {
 
     this.styleService.load( this.apiurl ).then( result => {
+
+      console.log( result );
 
       // kinda hacky, but it works
       let styles = "<style>";
@@ -128,20 +131,20 @@ class MyApp {
       styles += ".toolbar-title, .bar-button-default, .toolbar .bar-button-default:hover, .toolbar .segment-button, .toolbar button.activated, .tab-button, .tab-button[aria-selected=true] { color: "  + result.meta.design.toolbar_color + " }";
 
       // left menu colors
-      styles += "ion-menu ion-content, ion-menu ion-list .item { color: "  + result.left_menu_text + "; background-color: "  + result.left_menu_bg + " }";
+      styles += "ion-menu ion-content, ion-menu ion-list .item { color: "  + result.meta.design.left_menu_text + "; background-color: "  + result.meta.design.left_menu_bg + " }";
 
       // body text and background
       styles += "ion-content, ion-list .item { color: "  + result.meta.design.text_color + "; background-color: "  + result.meta.design.body_bg + " }";
       styles += "p { color: "  + result.meta.design.text_color + " }";
 
       // buttons
-      styles += ".button-primary { background: " + result.meta.design.button_background + "; color: "  + result.meta.design.button_text_color + " }";
+      styles += ".button-primary { background: " + result.meta.design.button_background + "!important; color: "  + result.meta.design.button_text_color + " }";
 
       // headings
-      styles += "h1, h2, h3, h4, h5, h6 { color: "  + result.headings_color + " }";
+      styles += "h1, h2, h3, h4, h5, h6 { color: "  + result.meta.design.headings_color + " }";
 
       // links
-      styles += "ion-content a, ion-content a:visited { color: "  + result.link_color + " }";
+      styles += "ion-content a, ion-content a:visited { color: "  + result.meta.design.link_color + " }";
 
       styles += "</style>";
 
@@ -182,7 +185,7 @@ class MyApp {
       } else if (data.iablink) {
 
         // in app browser links
-        window.open(data.iablink, data.target, data.options);
+        this.openIab(data.iablink, data.target, data.options);
 
       } else if (data.camera && data.camera === 'library' ) {
 
@@ -204,10 +207,18 @@ class MyApp {
 
         this.fbconnect.login();
 
+      } else if ( data.paypal_url ) {
+
+        this.appwoo.paypal( data.paypal_url, data.redirect );
+
       }
 
     }, false); // end eventListener
 
+  }
+
+  openIab( link, target, options = null ) {
+    InAppBrowser.open(link, target, options );
   }
 
   openPage(page) {
@@ -258,7 +269,7 @@ class MyApp {
 // Set any config for your app as the third argument:
 // http://ionicframework.com/docs/v2/api/config/Config/
 
-ionicBootstrap(MyApp, [Menus, Posts, AppCamera, Styles, GlobalVars, AppAds, FbConnect], {
+ionicBootstrap(MyApp, [Menus, Posts, AppCamera, Styles, GlobalVars, AppAds, FbConnect, PushService, AppWoo], {
   tabbarPlacement: 'bottom',
   // http://ionicframework.com/docs/v2/api/config/Config/
 })

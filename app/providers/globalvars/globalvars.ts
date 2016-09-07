@@ -16,7 +16,7 @@ export class GlobalVars {
   // url: string = 'http://www.wp4.dev/';
   // url: string = 'http://reactordev.com/apv3/';
   wpurl: string = '[[appp_site_url]]';
-  apiurl: string = 'http://www.myapppresser.dev[[appp_site_slug]]'
+  apiurl: string = '[[myappp_url]][[appp_site_slug]]'
   endpoint: string = 'wp-json/ap3/v1/app/[[appp_app_id]]';
   api: string = this.apiurl + this.endpoint;
 
