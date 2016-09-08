@@ -58,19 +58,6 @@ class MyApp {
     this.siteurl = globalvars.getUrl();
     this.apiurl = globalvars.getApi();
 
-    // this.globalvars.getSettings().then( result => {
-    //   // TODO: save these to localStorage so we only have to get them once
-    //   this.apppSettings = result;
-
-    //   // need settings for ads, so wait to do them
-    //   // TODO: uncomment line below based on build form if ads are checked
-    //   // this.maybeDoAds();
-
-    //   // set our app's pages
-    //   this.loadMenu();
-
-    // });
-
     this.loadMenu();
 
     this.loadStyles();
@@ -84,20 +71,52 @@ class MyApp {
 
     this.login = true;
 
-    this.menuService.load( this.apiurl ).then( pages => {
+    this.menuService.load( this.apiurl ).then( data => {
       // Loads menu from WordPress API
-      this.pages = pages.menus.items;
+
+      this.pages = data.menus.items;
+
+      // this is how we will use different components
+      /* for( let item of data.menus.items ) {
+        if( item.tabs ) {
+          this.pages.push = { 'title': item.title, 'url': '', 'component': TabsPage, 'navparams': item.tabs, 'icon': item.classes };
+        } else if( item.url ) {
+          this.pages.push = { 'title': item.title, 'url': item.url, 'component': Iframe, 'icon': item.classes };
+        } else if( item.map ) {
+          this.pages.push = { 'title': item.title, 'url': item.url, 'component': Map, 'icon': item.classes };
+         }
+      }
+      } */
 
       // Add pages manually here, can use different components like this...
-      let a = { 'title': 'Tabs', 'url': '', 'component': TabsPage };
+      let a = { 'title': 'Tabs', 'url': '', 'component': TabsPage, 'navparams': [
+        { title: "Schedule", root: ListPage, icon: "calendar" },
+        { title: "Speakers", root: PostList, icon: "contacts" },
+        { title: "Map", root: NewPage, icon: "map" },
+        { title: "About", root: NewPage, icon: "information-circle" },
+      ] };
       let b = { 'title': 'WP Posts', 'url': '', 'component': PostList };
       let c = { 'title': 'Local Posts', 'url': '', 'component': ListPage };
-      let d = { 'title': 'New Page', 'url': '', 'component': NewPage, 'classes': 'home' };
+      let d = { 'title': 'New Page', 'url': '', 'component': NewPage, 'icon': 'home' };
 
-      this.pages.push(a, b, c, d);
+      this.pages.push( a, b, c, d );
 
     });
 
+  }
+
+  openPage(page) {
+    // close the menu when clicking a link from the menu
+    this.menu.close();
+
+    if (page.url) {
+      this.nav.setRoot(Iframe, page);
+    } else {
+      this.nav.setRoot(page.component, page.navparams);
+    }
+
+    // when dynamic components are enabled, delete above code and use this instead
+    // this.nav.setRoot(page.component, page.navparams );
   }
 
   initializeApp() {
@@ -125,7 +144,7 @@ class MyApp {
       let styles = "<style>";
 
       // toolbar color
-      styles += ".toolbar-background, tabbar { background: " + result.meta.design.toolbar_background + " }";
+      styles += ".toolbar-background, ion-tabbar { background: " + result.meta.design.toolbar_background + " }";
 
       // toolbar text
       styles += ".toolbar-title, .bar-button-default, .toolbar .bar-button-default:hover, .toolbar .segment-button, .toolbar button.activated, .tab-button, .tab-button[aria-selected=true] { color: "  + result.meta.design.toolbar_color + " }";
@@ -219,17 +238,6 @@ class MyApp {
 
   openIab( link, target, options = null ) {
     InAppBrowser.open(link, target, options );
-  }
-
-  openPage(page) {
-    // close the menu when clicking a link from the menu
-    this.menu.close();
-    // navigate to the new page if it is not the current page
-    if (page.url) {
-      this.nav.setRoot(Iframe, page);
-    } else {
-      this.nav.setRoot(page.component);
-    }
   }
 
   maybeDoAds() {
