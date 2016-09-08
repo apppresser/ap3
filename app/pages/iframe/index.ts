@@ -34,7 +34,7 @@ export default class {
 
         let loading = this.loadingController.create({
             showBackdrop: false,
-            dismissOnPageChange: true
+            dismissOnPageChange: false
         });
 
         loading.present(loading);
@@ -109,6 +109,6 @@ export default class {
             // need to postmessage this
             this.iframe.postMessage({ lat: latitude, long: longitude }, '*');
 
-        })
+        });
     }
 }
