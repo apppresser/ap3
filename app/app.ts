@@ -6,10 +6,12 @@ import {DomSanitizationService} from '@angular/platform-browser';
 /* Pages */
 import {HelloIonicPage} from './pages/hello-ionic/hello-ionic';
 import {NewPage} from './pages/new-page/new-page';
+import {SlidePage} from './pages/slides/slides';
 import {ListPage} from './pages/list/list';
 import {PostList} from './pages/post-list/post-list';
 import Iframe from './pages/iframe';
 import {TabsPage} from './pages/tabs/tabs';
+import {MapPage} from './pages/google-map/google-map';
 
 /* Providers (make sure to add to ionicBootstrap below) */
 import {Menus} from './providers/menus/menus';
@@ -33,13 +35,14 @@ class MyApp {
   @ViewChild(Nav) nav: Nav;
 
   // make HelloIonicPage the root (or first) page
-  rootPage: any = NewPage;
+  rootPage: any = SlidePage;
   pages: Array<{title: string, url: string, component: any, classes: any}>;
   styles: string;
   siteurl: string;
   apiurl: string;
   apppSettings: any;
   login: boolean;
+  slides: any;
 
   constructor(
     private platform: Platform,
@@ -84,6 +87,8 @@ class MyApp {
           this.pages.push = { 'title': item.title, 'url': item.url, 'component': Iframe, 'icon': item.classes };
         } else if( item.map ) {
           this.pages.push = { 'title': item.title, 'url': item.url, 'component': Map, 'icon': item.classes };
+         } else if(item.slides ) {
+          Slides.doSlides( item.slides );
          }
       }
       } */
@@ -92,12 +97,13 @@ class MyApp {
       let a = { 'title': 'Tabs', 'url': '', 'component': TabsPage, 'navparams': [
         { title: "Schedule", root: ListPage, icon: "calendar" },
         { title: "Speakers", root: PostList, icon: "contacts" },
-        { title: "Map", root: NewPage, icon: "map" },
+        { title: "Map", root: MapPage, icon: "map" },
         { title: "About", root: NewPage, icon: "information-circle" },
       ] };
       let b = { 'title': 'WP Posts', 'url': '', 'component': PostList };
       let c = { 'title': 'Local Posts', 'url': '', 'component': ListPage };
-      let d = { 'title': 'New Page', 'url': '', 'component': NewPage, 'icon': 'home' };
+      let d = { 'title': 'Map', 'url': '', 'component': MapPage };
+      
 
       this.pages.push( a, b, c, d );
 

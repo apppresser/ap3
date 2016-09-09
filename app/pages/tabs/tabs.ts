@@ -1,8 +1,5 @@
 import {Component} from '@angular/core';
 import {Page, NavParams} from 'ionic-angular';
-import {NewPage} from '../new-page/new-page';
-import {ListPage} from '../list/list';
-import {PostList} from '../post-list/post-list';
 
 @Component({
   templateUrl: 'build/pages/tabs/tabs.html'
