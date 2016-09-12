@@ -13,6 +13,7 @@ export default class {
     url: any;
     iframe: any;
     param: string;
+    loaded: boolean = false;
     constructor(private navParams: NavParams, private loadingController: LoadingController, private sanitizer: DomSanitizationService) {
         this.title = navParams.data.title;
 
@@ -28,11 +29,15 @@ export default class {
 
     }
 
-    ionViewDidLoad() {
+    ionViewDidEnter() {
         this.iframeLoading();
     }
 
     iframeLoading() {
+
+        // set this.loaded so cached pages don't show loading spinner
+        if( this.loaded )
+            return;
 
         let loading = this.loadingController.create({
             showBackdrop: false,
@@ -59,6 +64,8 @@ export default class {
         setTimeout(() => {
             loading.dismiss();
         }, 9000);
+
+        this.loaded = true;
     }
 
     findIframe() {
@@ -78,7 +85,7 @@ export default class {
 
             console.log( lastpage );
 
-            this.iframe = lastpage.getElementsByClassName('ap3-iframe')[0].contentWindow;
+            this.iframe = lastpage.getElementsByClassName('ap3-iframe')[0];
 
             console.log( this.iframe );
 
@@ -94,14 +101,14 @@ export default class {
 
         this.findIframe();
 
-        this.iframe.postMessage('activity', '*');
+        this.iframe.contentWindow.postMessage('activity', '*');
     }
     checkinModal() {
 
         this.findIframe();
 
         // first message is to show modal, then we send through location
-        this.iframe.postMessage('checkin', '*');
+        this.iframe.contentWindow.postMessage('checkin', '*');
 
         // Do this when checkin button clicked
         Geolocation.getCurrentPosition().then((position) => {
@@ -111,7 +118,7 @@ export default class {
 
             console.log('position', position);
             // need to postmessage this
-            this.iframe.postMessage({ lat: latitude, long: longitude }, '*');
+            this.iframe.contentWindow.postMessage({ lat: latitude, long: longitude }, '*');
 
         });
     }
