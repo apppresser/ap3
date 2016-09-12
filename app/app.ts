@@ -28,21 +28,21 @@ import {AppWoo} from './providers/appwoo/appwoo';
 import {StatusBar, SocialSharing, Device, InAppBrowser} from 'ionic-native';
 
 @Component({
-  templateUrl: 'build/app.html',
+  templateUrl: 'build/app.html'
 })
 
 class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  // make HelloIonicPage the root (or first) page
-  rootPage: any = SlidePage;
-  pages: Array<{title: string, url: string, component: any, classes: any}>;
+  pages: any;
   styles: string;
   siteurl: string;
   apiurl: string;
   apppSettings: any;
   login: boolean;
   slides: any;
+  navparams: any = [];
+  tabs: any;
 
   constructor(
     private platform: Platform,
@@ -77,35 +77,60 @@ class MyApp {
     this.menuService.load( this.apiurl ).then( data => {
       // Loads menu from WordPress API
 
-      this.pages = data.menus.items;
+      if( data.tab_menu.items ) {
 
-      // this is how we will use different components
-      /* for( let item of data.menus.items ) {
-        if( item.tabs ) {
-          this.pages.push = { 'title': item.title, 'url': '', 'component': TabsPage, 'navparams': item.tabs, 'icon': item.classes };
-        } else if( item.url ) {
-          this.pages.push = { 'title': item.title, 'url': item.url, 'component': Iframe, 'icon': item.classes };
-        } else if( item.map ) {
-          this.pages.push = { 'title': item.title, 'url': item.url, 'component': Map, 'icon': item.classes };
-         } else if(item.slides ) {
-          Slides.doSlides( item.slides );
-         }
+        for( let item of data.tab_menu.items ) {
+          console.log( item );
+          this.navparams.push( { 'title': item.title, 'url': item.url, 'root': Iframe, 'icon': item.class } );
+        }
+
+        this.tabs = this.navparams;
+
+        this.nav.setRoot(TabsPage, this.tabs);
+
       }
-      } */
 
-      // Add pages manually here, can use different components like this...
-      let a = { 'title': 'Tabs', 'url': '', 'component': TabsPage, 'navparams': [
-        { title: "Schedule", root: ListPage, icon: "calendar" },
-        { title: "Speakers", root: PostList, icon: "contacts" },
-        { title: "Map", root: MapPage, icon: "map" },
-        { title: "About", root: NewPage, icon: "information-circle" },
-      ] };
-      let b = { 'title': 'WP Posts', 'url': '', 'component': PostList };
-      let c = { 'title': 'Local Posts', 'url': '', 'component': ListPage };
-      let d = { 'title': 'Map', 'url': '', 'component': MapPage };
-      
+      if( data.menus.items ) {
 
-      this.pages.push( a, b, c, d );
+        this.pages = data.menus.items;
+
+        // this is how we will use different components
+        /* for( let item of data.menus.items ) {
+          if( item.tabs ) {
+            this.pages.push = ( { 'title': item.title, 'url': '', 'component': TabsPage, 'navparams': item.tabs, 'icon': item.classes } );
+          } else if( item.url ) {
+            this.pages.push = ( { 'title': item.title, 'url': item.url, 'component': Iframe, 'icon': item.classes } );
+          } else if( item.map ) {
+            this.pages.push = ( { 'title': item.title, 'url': item.url, 'component': Map, 'icon': item.classes } );
+           } else if(item.slides ) {
+            Slides.doSlides( item.slides );
+           }
+        }
+        } */
+
+        // Add pages manually here, can use different components like this...
+        // let a = { 'title': 'Tabs', 'url': '', 'component': TabsPage, 'navparams': [
+        //   { title: "Schedule", root: ListPage, icon: "calendar" },
+        //   { title: "Speakers", root: PostList, icon: "contacts" },
+        //   { title: "Map", root: MapPage, icon: "map" },
+        //   { title: "New Page", root: NewPage, icon: "information-circle" },
+        // ] };
+        let b = { 'title': 'WP Posts', 'url': '', 'component': PostList };
+        let c = { 'title': 'Local Posts', 'url': '', 'component': ListPage };
+        let d = { 'title': 'Map', 'url': '', 'component': MapPage };
+        let e = { 'title': "New Page", 'component': NewPage, 'class': "information-circle" };
+        
+
+        this.pages.push( b, c, d, e );
+
+        if( !this.tabs ) {
+          this.nav.setRoot( Iframe, data.menus.items[0] );
+        } else {
+          // if tabs exist, need to add to menu
+          this.pages.unshift( { 'title': data.tab_menu.name, 'url': '', 'component': TabsPage, 'navparams': this.navparams, 'class': 'home' } )
+        }
+
+      }
 
     });
 

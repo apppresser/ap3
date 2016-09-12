@@ -1,16 +1,25 @@
-import {Component} from '@angular/core';
-import {ActionSheetController} from 'ionic-angular';
+import {Component, ViewChild} from '@angular/core';
+import {NavParams} from 'ionic-angular';
 
 @Component({
   templateUrl: 'build/pages/new-page/new-page.html'
 })
 export class NewPage {
-  constructor( private actionSheetController: ActionSheetController ) {
+
+  pages: any;
+  constructor( private navParams: NavParams ) {
   	console.log('NewPage loaded');
   }
 
   ionViewDidEnter() {
-  	this.externalLinks();
+  	// this.externalLinks();
+  	let storage = JSON.parse( window.localStorage.getItem('appp-pages') );
+  	if( storage ) {
+  		this.pages = storage;
+  	}
+  }
+
+  openPage(p) {
   }
 
   externalLinks() {
@@ -27,32 +36,5 @@ export class NewPage {
         }, false);
       }
     }
-  }
-
-  presentActionSheet() {
-	  let actionSheet = this.actionSheetController.create({
-		  title: 'Modify your album',
-		  buttons: [
-			  {
-				  text: 'Destructive',
-				  role: 'destructive',
-				  handler: () => {
-					  console.log('Destructive clicked');
-				  }
-			  }, {
-				  text: 'Archive',
-				  handler: () => {
-					  console.log('Archive clicked');
-				  }
-			  }, {
-				  text: 'Cancel',
-				  role: 'cancel',
-				  handler: () => {
-					  console.log('Cancel clicked');
-				  }
-			  }
-		  ]
-	  });
-	  actionSheet.present(actionSheet);
   }
 }

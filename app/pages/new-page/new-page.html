@@ -7,29 +7,18 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding class="getting-started">
+<ion-content padding class="new-page">
 
-  <h3>New Page</h3>
-
-  <p>
-    This <a href="#">starter project</a> is our way of helping you get a functional app running in record time.
-  </p>
-  <p>
-    Follow along on the tutorial section of the Ionic docs!
-  </p>
-  <p>
-    <button primary (click)="presentActionSheet()">Action Sheet</button>
-  </p>
-
-  <ion-item>
-  <ion-label>Start Time</ion-label>
-  <ion-datetime displayFormat="h:mm A" pickerFormat="h mm A"></ion-datetime>
-</ion-item>
+<ion-grid>
+  <ion-row wrap>
+	<ion-col width-50 *ngFor="let p of pages">
+		<ion-card (click)="openPage(p)">
+		  <img src="img/card-saopaolo.png"/>
+		  <div class="card-title">{{p.title}}</div>
+		  <div class="card-subtitle">Subtitle</div>
+		</ion-card>
+	</ion-col>
+  </ion-row>
+</ion-grid>
 
 </ion-content>
-
-<ion-footer>
-  <ion-toolbar position="bottom">
-    <ion-title>Footer</ion-title>
-  </ion-toolbar>
-</ion-footer>

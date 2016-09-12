@@ -27,6 +27,9 @@ export default class {
         
         console.log('navParams.data', navParams.data);
 
+    }
+
+    ionViewDidEnter() {
         this.iframeLoading();
     }
 
@@ -41,6 +44,8 @@ export default class {
 
         // When WP site loads, attach our click events
         window.addEventListener('message', (e) => {
+
+            console.log('iframe listener');
 
             if(e.data === 'site_loaded') {
                 loading.dismiss();

@@ -1,6 +1,6 @@
 <div [innerHTML]="styles"></div>
 
-<ion-menu [content]="content" swipeEnabled="false">
+<ion-menu *ngIf="pages" [content]="content" swipeEnabled="false">
 
   <ion-header>
     <ion-toolbar>
@@ -20,4 +20,4 @@
 
 </ion-menu>
 
-<ion-nav id="nav" [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>
+<ion-nav id="nav" #content swipeBackEnabled="false"></ion-nav>
