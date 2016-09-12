@@ -80,7 +80,6 @@ class MyApp {
       if( data.tab_menu.items ) {
 
         for( let item of data.tab_menu.items ) {
-          console.log( item );
           this.navparams.push( { 'title': item.title, 'url': item.url, 'root': Iframe, 'icon': item.class } );
         }
 
@@ -195,6 +194,11 @@ class MyApp {
 
       // links
       styles += "ion-content a, ion-content a:visited { color: "  + result.meta.design.link_color + " }";
+
+      // hide menu toggle if no left menu
+      if( !this.pages ) {
+        styles += 'ion-navbar .bar-button-menutoggle { display: none !important; }';
+      }
 
       styles += "</style>";
 

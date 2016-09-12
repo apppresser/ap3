@@ -2,7 +2,6 @@ import {NavParams, Nav, LoadingController} from 'ionic-angular';
 import {Component} from '@angular/core';
 import { DomSanitizationService } from '@angular/platform-browser';
 import {Geolocation} from 'ionic-native';
-// import customIframe from '../../components/iframe/index';
 
 
 @Component({
@@ -29,7 +28,7 @@ export default class {
 
     }
 
-    ionViewDidEnter() {
+    ionViewDidLoad() {
         this.iframeLoading();
     }
 
