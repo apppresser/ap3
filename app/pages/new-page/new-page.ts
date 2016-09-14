@@ -13,10 +13,6 @@ export class NewPage {
 
   ionViewDidEnter() {
   	// this.externalLinks();
-  	let storage = JSON.parse( window.localStorage.getItem('appp-pages') );
-  	if( storage ) {
-  		this.pages = storage;
-  	}
   }
 
   openPage(p) {

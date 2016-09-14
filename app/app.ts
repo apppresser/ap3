@@ -12,6 +12,7 @@ import {PostList} from './pages/post-list/post-list';
 import Iframe from './pages/iframe';
 import {TabsPage} from './pages/tabs/tabs';
 import {MapPage} from './pages/google-map/google-map';
+import {CustomPage} from './pages/custom-pages/custom-page';
 
 /* Providers (make sure to add to ionicBootstrap below) */
 import {Menus} from './providers/menus/menus';
@@ -117,7 +118,7 @@ class MyApp {
         let b = { 'title': 'WP Posts', 'url': '', 'component': PostList };
         let c = { 'title': 'Local Posts', 'url': '', 'component': ListPage };
         let d = { 'title': 'Map', 'url': '', 'component': MapPage };
-        let e = { 'title': "New Page", 'component': NewPage, 'class': "information-circle" };
+        let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': { 'template': 'custom' } };
         
 
         this.pages.push( b, c, d, e );
@@ -136,11 +137,14 @@ class MyApp {
   }
 
   openPage(page) {
+
     // close the menu when clicking a link from the menu
     this.menu.close();
 
     if (page.url) {
       this.nav.setRoot(Iframe, page);
+    } if(page.type === 'apppages' ) {
+      this.nav.setRoot( CustomPage, page.slug );
     } else {
       this.nav.setRoot(page.component, page.navparams);
     }
@@ -196,9 +200,9 @@ class MyApp {
       styles += "ion-content a, ion-content a:visited { color: "  + result.meta.design.link_color + " }";
 
       // hide menu toggle if no left menu
-      if( !this.pages ) {
-        styles += 'ion-navbar .bar-button-menutoggle { display: none !important; }';
-      }
+      // if( !this.pages ) {
+      //   styles += 'ion-navbar .bar-button-menutoggle { display: none !important; }';
+      // }
 
       styles += "</style>";
 
