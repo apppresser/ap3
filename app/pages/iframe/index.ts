@@ -92,7 +92,7 @@ export default class {
         } else {
             console.log('only one view');
             // we don't have any cached views, so don't have to run this
-            this.iframe = (<any>document.getElementById('ap3-iframe')).contentWindow;
+            this.iframe = (<any>document.getElementById('ap3-iframe'));
         }
 
     }

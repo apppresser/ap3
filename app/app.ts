@@ -118,7 +118,7 @@ class MyApp {
         let b = { 'title': 'WP Posts', 'url': '', 'component': PostList };
         let c = { 'title': 'Local Posts', 'url': '', 'component': ListPage };
         let d = { 'title': 'Map', 'url': '', 'component': MapPage };
-        let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': { 'template': 'custom' } };
+        let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': 'custom' };
         
 
         this.pages.push( b, c, d, e );
