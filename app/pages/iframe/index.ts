@@ -29,11 +29,13 @@ export default class {
 
     }
 
-    ionViewDidEnter() {
+    ionViewWillEnter() {
         this.iframeLoading();
     }
 
     iframeLoading() {
+
+        console.log('loaded' + this.loaded);
 
         // set this.loaded so cached pages don't show loading spinner
         if( this.loaded )
