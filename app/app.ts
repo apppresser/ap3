@@ -15,15 +15,14 @@ import {MapPage} from './pages/google-map/google-map';
 import {CustomPage} from './pages/custom-pages/custom-page';
 
 /* Providers (make sure to add to ionicBootstrap below) */
-import {Menus} from './providers/menus/menus';
 import {AppCamera} from './providers/camera/app-camera';
 import {Posts} from './providers/posts/posts';
-import {Styles} from './providers/styles/styles';
 import {GlobalVars} from './providers/globalvars/globalvars';
 import {AppAds} from './providers/appads/appads';
 import {FbConnect} from './providers/facebook/facebook';
 import {PushService} from './providers/push/push';
 import {AppWoo} from './providers/appwoo/appwoo';
+import {AppData} from './providers/appdata/appdata';
 
 /* Native */
 import {StatusBar, SocialSharing, Device, InAppBrowser} from 'ionic-native';
@@ -47,8 +46,6 @@ class MyApp {
 
   constructor(
     private platform: Platform,
-    public menuService: Menus,
-    public styleService: Styles,
     public appCamera: AppCamera,
     private menu: MenuController,
     private globalvars: GlobalVars,
@@ -56,94 +53,105 @@ class MyApp {
     private fbconnect: FbConnect,
     private sanitizer: DomSanitizationService,
     private pushService: PushService,
-    private appwoo: AppWoo
+    private appwoo: AppWoo,
+    private appdata: AppData
   ) {
 
     this.siteurl = globalvars.getUrl();
     this.apiurl = globalvars.getApi();
 
-    this.loadMenu();
-
-    this.loadStyles();
-
     this.initializeApp();
 
-  }
+    // get our app data, then use it. will return either local data, or get from api
+    this.appdata.load(this.apiurl).then( (data) => {
 
-  loadMenu() {
-    // any menu imported from WP has to use same component. Other pages can be added manually with different components
+      this.loadMenu(data);
+      this.loadStyles(data);
 
-    this.login = true;
+    }).catch( e => {
 
-    this.menuService.load( this.apiurl ).then( data => {
-      // Loads menu from WordPress API
+      // if there's a problem, default to app-data.json
+      console.log( 'problem getting appdata', e );
 
-      if( data.tab_menu.items ) {
-
-        for( let item of data.tab_menu.items ) {
-          this.navparams.push( { 'title': item.title, 'url': item.url, 'root': Iframe, 'icon': item.class } );
-        }
-
-        this.tabs = this.navparams;
-
-        this.nav.setRoot(TabsPage, this.tabs);
-
-      }
-
-      if( data.menus.items ) {
-
-        this.pages = data.menus.items;
-
-        // this is how we will use different components
-        /* for( let item of data.menus.items ) {
-          if( item.tabs ) {
-            this.pages.push = ( { 'title': item.title, 'url': '', 'component': TabsPage, 'navparams': item.tabs, 'icon': item.classes } );
-          } else if( item.url ) {
-            this.pages.push = ( { 'title': item.title, 'url': item.url, 'component': Iframe, 'icon': item.classes } );
-          } else if( item.map ) {
-            this.pages.push = ( { 'title': item.title, 'url': item.url, 'component': Map, 'icon': item.classes } );
-           } else if(item.slides ) {
-            Slides.doSlides( item.slides );
-           }
-        }
-        } */
-
-        // Add pages manually here, can use different components like this...
-        // let a = { 'title': 'Tabs', 'url': '', 'component': TabsPage, 'navparams': [
-        //   { title: "Schedule", root: ListPage, icon: "calendar" },
-        //   { title: "Speakers", root: PostList, icon: "contacts" },
-        //   { title: "Map", root: MapPage, icon: "map" },
-        //   { title: "New Page", root: NewPage, icon: "information-circle" },
-        // ] };
-        let b = { 'title': 'WP Posts', 'url': '', 'component': PostList };
-        let c = { 'title': 'Local Posts', 'url': '', 'component': ListPage };
-        let d = { 'title': 'Map', 'url': '', 'component': MapPage };
-        let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': 'custom' };
-        
-
-        this.pages.push( b, c, d, e );
-
-        if( !this.tabs ) {
-          this.nav.setRoot( Iframe, data.menus.items[0] );
-        } else {
-          // if tabs exist, need to add to menu
-          this.pages.unshift( { 'title': data.tab_menu.name, 'url': '', 'component': TabsPage, 'navparams': this.navparams, 'class': 'home' } )
-        }
-
-      }
+      this.appdata.getData( 'app-data.json' ).then( data => {
+        console.log('Got local data file.');
+      });
 
     });
 
   }
 
+  loadMenu(data) {
+    // any menu imported from WP has to use same component. Other pages can be added manually with different components
+
+    // this.login = true;
+
+    if( data.tab_menu.items ) {
+
+      for( let item of data.tab_menu.items ) {
+        this.navparams.push( { 'title': item.title, 'url': item.url, 'root': Iframe, 'icon': item.class } );
+      }
+
+      this.tabs = this.navparams;
+
+      this.nav.setRoot(TabsPage, this.tabs);
+
+    }
+
+    if( data.menus.items ) {
+
+      this.pages = data.menus.items;
+
+      // this is how we will use different components
+      /* for( let item of data.menus.items ) {
+        if( item.tabs ) {
+          this.pages.push = ( { 'title': item.title, 'url': '', 'component': TabsPage, 'navparams': item.tabs, 'icon': item.classes } );
+        } else if( item.url ) {
+          this.pages.push = ( { 'title': item.title, 'url': item.url, 'component': Iframe, 'icon': item.classes } );
+        } else if( item.map ) {
+          this.pages.push = ( { 'title': item.title, 'url': item.url, 'component': Map, 'icon': item.classes } );
+         } else if(item.slides ) {
+          Slides.doSlides( item.slides );
+         }
+      }
+      } */
+
+      // Add pages manually here, can use different components like this...
+      // let a = { 'title': 'Tabs', 'url': '', 'component': TabsPage, 'navparams': [
+      //   { title: "Schedule", root: ListPage, icon: "calendar" },
+      //   { title: "Speakers", root: PostList, icon: "contacts" },
+      //   { title: "Map", root: MapPage, icon: "map" },
+      //   { title: "New Page", root: NewPage, icon: "information-circle" },
+      // ] };
+      let b = { 'title': 'WP Posts', 'url': '', 'component': PostList };
+      let c = { 'title': 'Local Posts', 'url': '', 'component': ListPage };
+      let d = { 'title': 'Map', 'url': '', 'component': MapPage };
+      let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': 'custom' };
+      
+
+      this.pages.push( b, c, d, e );
+
+      if( !this.tabs ) {
+        this.nav.setRoot( Iframe, data.menus.items[0] );
+      } else {
+        // if tabs exist, need to add to menu
+        this.pages.unshift( { 'title': data.tab_menu.name, 'url': '', 'component': TabsPage, 'navparams': this.navparams, 'class': 'home' } )
+      }
+
+    }
+
+  }
+
   openPage(page) {
+
+    console.log(page);
 
     // close the menu when clicking a link from the menu
     this.menu.close();
 
     if (page.url) {
       this.nav.setRoot(Iframe, page);
-    } if(page.type === 'apppages' ) {
+    } else if( page.type === 'apppages' ) {
       this.nav.setRoot( CustomPage, page.slug );
     } else {
       this.nav.setRoot(page.component, page.navparams);
@@ -164,51 +172,53 @@ class MyApp {
       if( Device.device.platform === 'iOS' || Device.device.platform === 'Android' )
         this.pushService.register();
 
+      setTimeout( () => {
+        // run this in the background, then we can update the data on next app load if needed
+        this.appdata.checkForUpdates( this.apiurl );
+      }, 9000 );
+      
+
     });
 
   }
 
-  loadStyles() {
+  loadStyles( data ) {
 
-    this.styleService.load( this.apiurl ).then( result => {
+    console.log( data );
 
-      console.log( result );
+    // kinda hacky, but it works
+    let styles = "<style>";
 
-      // kinda hacky, but it works
-      let styles = "<style>";
+    // toolbar color
+    styles += ".toolbar-background, ion-tabbar { background: " + data.meta.design.toolbar_background + " }";
 
-      // toolbar color
-      styles += ".toolbar-background, ion-tabbar { background: " + result.meta.design.toolbar_background + " }";
+    // toolbar text
+    styles += ".toolbar-title, .bar-button-default, .toolbar .bar-button-default:hover, .toolbar .segment-button, .toolbar button.activated, .tab-button, .tab-button[aria-selected=true] { color: "  + data.meta.design.toolbar_color + " }";
 
-      // toolbar text
-      styles += ".toolbar-title, .bar-button-default, .toolbar .bar-button-default:hover, .toolbar .segment-button, .toolbar button.activated, .tab-button, .tab-button[aria-selected=true] { color: "  + result.meta.design.toolbar_color + " }";
+    // left menu colors
+    styles += "ion-menu ion-content, ion-menu ion-list .item { color: "  + data.meta.design.left_menu_text + "; background-color: "  + data.meta.design.left_menu_bg + " }";
 
-      // left menu colors
-      styles += "ion-menu ion-content, ion-menu ion-list .item { color: "  + result.meta.design.left_menu_text + "; background-color: "  + result.meta.design.left_menu_bg + " }";
+    // body text and background
+    styles += "ion-content, ion-list .item { color: "  + data.meta.design.text_color + "; background-color: "  + data.meta.design.body_bg + " }";
+    styles += "p { color: "  + data.meta.design.text_color + " }";
 
-      // body text and background
-      styles += "ion-content, ion-list .item { color: "  + result.meta.design.text_color + "; background-color: "  + result.meta.design.body_bg + " }";
-      styles += "p { color: "  + result.meta.design.text_color + " }";
+    // buttons
+    styles += ".button-primary { background: " + data.meta.design.button_background + "!important; color: "  + data.meta.design.button_text_color + " }";
 
-      // buttons
-      styles += ".button-primary { background: " + result.meta.design.button_background + "!important; color: "  + result.meta.design.button_text_color + " }";
+    // headings
+    styles += "h1, h2, h3, h4, h5, h6 { color: "  + data.meta.design.headings_color + " }";
 
-      // headings
-      styles += "h1, h2, h3, h4, h5, h6 { color: "  + result.meta.design.headings_color + " }";
+    // links
+    styles += "ion-content a, ion-content a:visited { color: "  + data.meta.design.link_color + " }";
 
-      // links
-      styles += "ion-content a, ion-content a:visited { color: "  + result.meta.design.link_color + " }";
+    // hide menu toggle if no left menu
+    // if( !this.pages ) {
+    //   styles += 'ion-navbar .bar-button-menutoggle { display: none !important; }';
+    // }
 
-      // hide menu toggle if no left menu
-      // if( !this.pages ) {
-      //   styles += 'ion-navbar .bar-button-menutoggle { display: none !important; }';
-      // }
+    styles += "</style>";
 
-      styles += "</style>";
-
-      this.styles = this.sanitizer.bypassSecurityTrustHtml( styles );
-
-    } );
+    this.styles = this.sanitizer.bypassSecurityTrustHtml( styles );
     
   }
 
@@ -316,7 +326,7 @@ class MyApp {
 // Set any config for your app as the third argument:
 // http://ionicframework.com/docs/v2/api/config/Config/
 
-ionicBootstrap(MyApp, [Menus, Posts, AppCamera, Styles, GlobalVars, AppAds, FbConnect, PushService, AppWoo], {
+ionicBootstrap(MyApp, [Posts, AppCamera, GlobalVars, AppAds, FbConnect, PushService, AppWoo, AppData], {
   tabbarPlacement: 'bottom',
   // http://ionicframework.com/docs/v2/api/config/Config/
 })
