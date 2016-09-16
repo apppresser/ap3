@@ -13,12 +13,12 @@ export class GlobalVars {
 
   data: any = null;
   // url should be WP site with AP installed, dynamically changes based on build form
-  // wpurl: string = 'http://reactordev.com/apv3';
-  // apiurl: string = 'http://www.myapppresser.dev/test/'
-  // endpoint: string = 'wp-json/ap3/v1/app/114';
-  wpurl: string = '[[appp_site_url]]';
-  apiurl: string = '[[myappp_url]]'
-  endpoint: string = 'wp-json/ap3/v1/app/[[appp_app_id]]';
+  wpurl: string = 'http://reactordev.com/apv3';
+  apiurl: string = 'http://www.myapppresser.dev/test/'
+  endpoint: string = 'wp-json/ap3/v1/app/114';
+  // wpurl: string = '[[appp_site_url]]';
+  // apiurl: string = '[[myappp_url]]'
+  // endpoint: string = 'wp-json/ap3/v1/app/[[appp_app_id]]';
   api: string = this.apiurl + this.endpoint;
 
   constructor( public http: Http ) {}
@@ -31,7 +31,7 @@ export class GlobalVars {
     return this.api;
   }
 
-  // Get AppPresser settings from API
+  // not used
   getSettings() {
 
     // need appp=2 to retrieve app theme menu

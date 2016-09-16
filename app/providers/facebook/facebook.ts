@@ -108,8 +108,8 @@ export class FbConnect {
         let baseURL = this.iframewin.location.protocol + '//' + this.iframewin.location.hostname + (this.iframewin.location.port ? ':' + this.iframewin.location.port : '') + context;
         let app_ver = ( this.iframewin.apppCore.ver ) ? this.iframewin.apppCore.ver : '2';
 
-        if(data && data.redirect_url) {
-          let redirect_url = data.redirect_url;
+        if( data && data["redirect_url"] ) {
+          let redirect_url = data["redirect_url"];
           if( redirect_url.indexOf('?') === -1 && redirect_url.indexOf('appp=') === -1 ) {
             this.iframewin.location.href = redirect_url+ "?appp=" + app_ver;
             return;
@@ -117,7 +117,7 @@ export class FbConnect {
             this.iframewin.location.href = redirect_url+ "&appp=" + app_ver;
             return;
           } else {
-            this.iframewin.location.href = data.redirect_url;
+            this.iframewin.location.href = data["redirect_url"];
             return;
           }
         }

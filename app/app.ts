@@ -4,8 +4,6 @@ import {ionicBootstrap, Platform, MenuController, Nav} from 'ionic-angular';
 import {DomSanitizationService} from '@angular/platform-browser';
 
 /* Pages */
-import {HelloIonicPage} from './pages/hello-ionic/hello-ionic';
-import {NewPage} from './pages/new-page/new-page';
 import {SlidePage} from './pages/slides/slides';
 import {ListPage} from './pages/list/list';
 import {PostList} from './pages/post-list/post-list';
@@ -15,6 +13,7 @@ import {MapPage} from './pages/google-map/google-map';
 import {CustomPage} from './pages/custom-pages/custom-page';
 
 /* Providers (make sure to add to ionicBootstrap below) */
+// import {MenuProvider} from './providers/menu/menu';
 import {AppCamera} from './providers/camera/app-camera';
 import {Posts} from './providers/posts/posts';
 import {GlobalVars} from './providers/globalvars/globalvars';
@@ -31,11 +30,11 @@ import {StatusBar, SocialSharing, Device, InAppBrowser} from 'ionic-native';
   templateUrl: 'build/app.html'
 })
 
-class MyApp {
+export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
   pages: any;
-  styles: string;
+  styles: any;
   siteurl: string;
   apiurl: string;
   apppSettings: any;

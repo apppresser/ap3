@@ -61,7 +61,7 @@ export class PostList {
 
     this.postService.load( this.siteurl + '/wp-json/wp/v2/posts', this.page ).then(items => {
       // Loads posts from WordPress API
-      let length = items.length;
+      let length = items["length"];
 
       if( length === 0 ) {
         infiniteScroll.complete();

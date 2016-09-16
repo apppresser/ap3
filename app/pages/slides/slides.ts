@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {NavController} from 'ionic-angular';
-import {NewPage} from '../new-page/new-page';
+import {ListPage} from '../../pages/list/list';
 
 @Component({
   templateUrl: 'build/pages/slides/slides.html'
@@ -38,7 +38,7 @@ export class SlidePage {
   }
 
   nextPage() {
-  	this.nav.setRoot(NewPage);
+  	this.nav.setRoot(ListPage);
   }
 
 }

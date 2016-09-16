@@ -51,7 +51,7 @@ export class InnerContent {
       dynComponent
     ).then(factory => {
       let component = factory.create(
-        this.injector, null, this.elementRef._element.nativeElement
+        this.injector, null, this.elementRef.element.nativeElement
       );
 
       (<any>this.app)._loadComponent(component);
