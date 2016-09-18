@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Camera, Transfer, Device} from 'ionic-native';
+import {Camera, Transfer, Device, ActionSheet} from 'ionic-native';
 
 /*
   Generated class for the Menus provider.
@@ -24,6 +24,23 @@ export class AppCamera {
   appbuddy: boolean = false;
 
   constructor() { }
+
+  openSheet( appbuddy ) {
+
+    let buttonLabels = ['Take Photo', 'Photo Library'];
+    ActionSheet.show({
+      'title': 'Choose an image',
+      'buttonLabels': buttonLabels,
+      'addCancelButtonWithLabel': 'Cancel'
+    }).then((buttonIndex: number) => {
+      if( buttonIndex === 1 ) {
+        this.takePicture(appbuddy);
+      } else if( buttonIndex === 2 ) {
+        this.photoLibrary(appbuddy);
+      }
+    });
+
+  }
 
   takePicture(appbuddy) {
 

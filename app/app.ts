@@ -24,7 +24,7 @@ import {AppWoo} from './providers/appwoo/appwoo';
 import {AppData} from './providers/appdata/appdata';
 
 /* Native */
-import {StatusBar, SocialSharing, Device, InAppBrowser} from 'ionic-native';
+import {StatusBar, SocialSharing, Device, InAppBrowser, Splashscreen} from 'ionic-native';
 
 @Component({
   templateUrl: 'build/app.html'
@@ -143,6 +143,8 @@ export class MyApp {
 
   openPage(page) {
 
+    // this.menuProvider.openPage( page );
+
     console.log(page);
 
     // close the menu when clicking a link from the menu
@@ -165,6 +167,8 @@ export class MyApp {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       StatusBar.styleDefault();
+
+      Splashscreen.hide();
 
       this.attachListeners();
 
@@ -192,20 +196,20 @@ export class MyApp {
     styles += ".toolbar-background, ion-tabbar { background: " + data.meta.design.toolbar_background + " }";
 
     // toolbar text
-    styles += ".toolbar-title, .bar-button-default, .toolbar .bar-button-default:hover, .toolbar .segment-button, .toolbar button.activated, .tab-button, .tab-button[aria-selected=true] { color: "  + data.meta.design.toolbar_color + " }";
+    styles += ".toolbar-title, .bar-button-default, .toolbar .bar-button-default:hover, .toolbar .segment-button, .toolbar button.activated, .tab-button, .tab-button[aria-selected=true], ion-toolbar .button { color: "  + data.meta.design.toolbar_color + " }";
 
     // left menu colors
     styles += "ion-menu ion-content, ion-menu ion-list .item { color: "  + data.meta.design.left_menu_text + "; background-color: "  + data.meta.design.left_menu_bg + " }";
 
     // body text and background
     styles += "ion-content, ion-list .item { color: "  + data.meta.design.text_color + "; background-color: "  + data.meta.design.body_bg + " }";
-    styles += "p { color: "  + data.meta.design.text_color + " }";
+    styles += "p, .item p { color: "  + data.meta.design.text_color + " }";
 
     // buttons
     styles += ".button-primary { background: " + data.meta.design.button_background + "!important; color: "  + data.meta.design.button_text_color + " }";
 
     // headings
-    styles += "h1, h2, h3, h4, h5, h6 { color: "  + data.meta.design.headings_color + " }";
+    styles += "h1, h2, h3, h4, h5, h6, ion-list .item h2, ion-list .item h3, ion-list .item h4 { color: "  + data.meta.design.headings_color + " }";
 
     // links
     styles += "ion-content a, ion-content a:visited { color: "  + data.meta.design.link_color + " }";
@@ -265,7 +269,7 @@ export class MyApp {
       } else if (data.camera && data.camera === 'photo') {
         
         if (data.appbuddy === true) {
-          this.appCamera.takePicture(true);
+          this.appCamera.openSheet(true);
         } else {
           this.appCamera.takePicture(false);
         }

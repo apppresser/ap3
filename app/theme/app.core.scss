@@ -47,3 +47,7 @@ ion-content ion-card-content {
 		height: auto;
 	}
 }
+
+.menu-inner ion-list > .item:first-child, .menu-inner ion-list > .item-wrapper:first-child .item {
+	border-top: none;
+}
