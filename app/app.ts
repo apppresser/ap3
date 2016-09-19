@@ -150,10 +150,10 @@ export class MyApp {
     // close the menu when clicking a link from the menu
     this.menu.close();
 
-    if (page.url) {
-      this.nav.setRoot(Iframe, page);
-    } else if( page.type === 'apppages' ) {
+    if( page.type === 'apppages' ) {
       this.nav.setRoot( CustomPage, page.slug );
+    } else if (page.url) {
+      this.nav.setRoot(Iframe, page);
     } else {
       this.nav.setRoot(page.component, page.navparams);
     }
