@@ -42,6 +42,8 @@ export class MyApp {
   slides: any;
   navparams: any = [];
   tabs: any;
+  loggedin: boolean = false;
+  loggedin_msg: string;
 
   constructor(
     private platform: Platform,
@@ -82,8 +84,6 @@ export class MyApp {
 
   loadMenu(data) {
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
-
-    // this.login = true;
 
     if( data.tab_menu.items ) {
 
@@ -169,6 +169,8 @@ export class MyApp {
       StatusBar.styleDefault();
 
       Splashscreen.hide();
+
+      this.loggedin_msg = window.localStorage.getItem( 'logged_in_msg' );
 
       this.attachListeners();
 
@@ -281,6 +283,18 @@ export class MyApp {
       } else if ( data.paypal_url ) {
 
         this.appwoo.paypal( data.paypal_url, data.redirect );
+
+      } else if( data.loggedin ) {
+
+        console.log('loggedin msg', data);
+
+        this.loggedin = ( data.loggedin === "1" ) ? true : false;
+
+        if( data.message ) {
+          let res = data.message.split(",");
+          window.localStorage.setItem( 'logged_in_msg', res[0] );
+          this.loggedin_msg = res[0];
+        }
 
       }
 

@@ -51,3 +51,7 @@ ion-content ion-card-content {
 .menu-inner ion-list > .item:first-child, .menu-inner ion-list > .item-wrapper:first-child .item {
 	border-top: none;
 }
+
+ion-list-header, ion-item-divider {
+	background-color: rgba(0,0,0,.05);
+}
