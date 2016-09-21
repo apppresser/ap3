@@ -216,6 +216,8 @@ export class MyApp {
     // links
     styles += "ion-content a, ion-content a:visited { color: "  + data.meta.design.link_color + " }";
 
+    styles += data.meta.design.custom_css;
+
     // hide menu toggle if no left menu
     // if( !this.pages ) {
     //   styles += 'ion-navbar .bar-button-menutoggle { display: none !important; }';
