@@ -130,7 +130,10 @@ export class MyApp {
 
       this.pages.push( b, c, d, e );
 
-      if( !this.tabs ) {
+      if( !this.tabs && data.menus.items[0].type === 'apppages' ) {
+        // console.log( 'home', data.menus.items[0] );
+        this.nav.setRoot( CustomPage, data.menus.items[0] );
+      } else if( !this.tabs ) {
         this.nav.setRoot( Iframe, data.menus.items[0] );
       } else {
         // if tabs exist, need to add to menu
@@ -151,7 +154,7 @@ export class MyApp {
     this.menu.close();
 
     if( page.type === 'apppages' ) {
-      this.nav.setRoot( CustomPage, page.slug );
+      this.nav.setRoot( CustomPage, page );
     } else if (page.url) {
       this.nav.setRoot(Iframe, page);
     } else {

@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {NavParams} from 'ionic-angular';
+import {NavParams, Slides} from 'ionic-angular';
 import {InnerContent} from '../../directives/inner-content/inner-content';
 
 @Component({
@@ -13,7 +13,7 @@ export class CustomPage {
 
   constructor(public navParams: NavParams ) {
     console.log(navParams);
-    let template = navParams.data;
+    let template = navParams.data.slug;
     this.pageHTML = ['build/pages/custom-pages/' + template + '.html', [InnerContent] ];
   }
 
