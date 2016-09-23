@@ -122,13 +122,13 @@ export class MyApp {
       //   { title: "Map", root: MapPage, icon: "map" },
       //   { title: "New Page", root: NewPage, icon: "information-circle" },
       // ] };
-      let b = { 'title': 'WP Posts', 'url': '', 'component': PostList };
-      let c = { 'title': 'Local Posts', 'url': '', 'component': ListPage };
-      let d = { 'title': 'Map', 'url': '', 'component': MapPage };
-      let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': 'custom' };
+      // let b = { 'title': 'WP Posts', 'url': '', 'component': PostList };
+      // let c = { 'title': 'Local Posts', 'url': '', 'component': ListPage };
+      // let d = { 'title': 'Map', 'url': '', 'component': MapPage };
+      // let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': 'custom' };
       
 
-      this.pages.push( b, c, d, e );
+      // this.pages.push( b, c, d, e );
 
       if( !this.tabs && data.menus.items[0].type === 'apppages' ) {
         // console.log( 'home', data.menus.items[0] );
@@ -207,7 +207,7 @@ export class MyApp {
     styles += "ion-menu ion-content, ion-menu ion-list .item { color: "  + data.meta.design.left_menu_text + "; background-color: "  + data.meta.design.left_menu_bg + " }";
 
     // body text and background
-    styles += "ion-content, ion-list .item { color: "  + data.meta.design.text_color + "; background-color: "  + data.meta.design.body_bg + " }";
+    styles += "ion-page ion-content, ion-page ion-list .item { color: "  + data.meta.design.text_color + "; background-color: "  + data.meta.design.body_bg + " }";
     styles += "p, .item p { color: "  + data.meta.design.text_color + " }";
 
     // buttons
