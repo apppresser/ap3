@@ -100,7 +100,7 @@ export class PushService {
 
     if (Device.device.platform == 'android' || Device.device.platform == 'Android') {
 
-        let params = {
+        var params = {
             // GCM platform Arn here
           PlatformApplicationArn: this.gcmAppArn, /* required */
           Token: token, /* required */
@@ -108,7 +108,7 @@ export class PushService {
 
     } else {
 
-        let params = {
+        var params = {
             // iOS platform Arn here
           PlatformApplicationArn: this.ApnsAppArn, /* required */
           Token: token, /* required */
