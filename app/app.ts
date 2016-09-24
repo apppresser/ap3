@@ -183,7 +183,7 @@ export class MyApp {
       setTimeout( () => {
         // run this in the background, then we can update the data on next app load if needed
         this.appdata.checkForUpdates( this.apiurl );
-      }, 9000 );
+      }, 5000 );
       
 
     });
@@ -192,7 +192,7 @@ export class MyApp {
 
   loadStyles( data ) {
 
-    console.log( data );
+    // console.log( data );
 
     // kinda hacky, but it works
     let styles = "<style>";
@@ -201,7 +201,7 @@ export class MyApp {
     styles += ".toolbar-background, ion-tabbar { background: " + data.meta.design.toolbar_background + " }";
 
     // toolbar text
-    styles += ".toolbar-title, .bar-button-default, .toolbar .bar-button-default:hover, .toolbar .segment-button, .toolbar button.activated, .tab-button, .tab-button[aria-selected=true], ion-toolbar .button { color: "  + data.meta.design.toolbar_color + " }";
+    styles += "ion.toolbar-title, .bar-button-default, .toolbar .bar-button-default:hover, .toolbar .segment-button, .toolbar button.activated, .tab-button, .tab-button[aria-selected=true], ion-toolbar .button { color: "  + data.meta.design.toolbar_color + " }";
 
     // left menu colors
     styles += "ion-menu ion-content, ion-menu ion-list .item { color: "  + data.meta.design.left_menu_text + "; background-color: "  + data.meta.design.left_menu_bg + " }";
@@ -214,10 +214,10 @@ export class MyApp {
     styles += ".button-primary { background: " + data.meta.design.button_background + "!important; color: "  + data.meta.design.button_text_color + " }";
 
     // headings
-    styles += "h1, h2, h3, h4, h5, h6, ion-list .item h2, ion-list .item h3, ion-list .item h4 { color: "  + data.meta.design.headings_color + " }";
+    styles += "ion-page h1, ion-page h2, ion-page h3, ion-page h4, ion-page h5, ion-page h6, ion-page ion-list .item h2, ion-page ion-list .item h3, ion-page ion-list .item h4 { color: "  + data.meta.design.headings_color + " }";
 
     // links
-    styles += "ion-content a, ion-content a:visited { color: "  + data.meta.design.link_color + " }";
+    styles += "ion-page ion-content a, ion-page ion-content a:visited { color: "  + data.meta.design.link_color + " }";
 
     styles += data.meta.design.custom_css;
 

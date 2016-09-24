@@ -8,6 +8,7 @@ import {
   ApplicationRef
 } from "@angular/core";
 import Iframe from '../../pages/iframe';
+import {CustomPage} from '../../pages/custom-pages/custom-page';
 import {Nav} from 'ionic-angular';
 
 /**
@@ -69,15 +70,31 @@ private toComponent(templateUrl, directives = []) {
     directives: directives
   })
   class DynComponent {
-    dynamic: any;
+    pages: any;
     constructor(private nav:Nav){
-      this.dynamic = "dynamic string";
+      this.loadPages();
     }
-    openPage(url) {
-      // close the menu when clicking a link from the menu
+    loadPages() {
 
-      if (url) {
-        this.nav.setRoot(Iframe, { title: '', url: url } );
+      // get all pages from local storage so we can use them in template, to link to other pages
+      let data = JSON.parse( window.localStorage.getItem( 'myappp' ) );
+
+      if( data.menus.items ) {
+        this.pages = data.menus.items;
+      }
+
+    }
+
+    openPage( page ) {
+
+      // linking to another page in the template looks like this: openPage(pages[1])
+
+      if( page.type === 'apppages' ) {
+        this.nav.push( CustomPage, page );
+      } else if (page.url) {
+        this.nav.push(Iframe, page);
+      } else {
+        this.nav.push(page.component, page.navparams);
       }
     }
   }
