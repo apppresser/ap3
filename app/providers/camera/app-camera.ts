@@ -91,19 +91,13 @@ export class AppCamera {
       let lengths = pages.length;
 
       if( lengths > 1 ) {
-          console.log('finding in stack...');
           // find the active page, last one on page
           let index = lengths - 1;
           let lastpage = pages[index];
 
-          console.log( lastpage );
-
           this.iframe = lastpage.getElementsByClassName('ap3-iframe')[0];
 
-          console.log( this.iframe );
-
       } else {
-          console.log('only one view');
           // we don't have any cached views, so don't have to run this
           this.iframe = (<any>document.getElementById('ap3-iframe'));
       }
@@ -189,18 +183,17 @@ export class AppCamera {
 
       fileTransfer.onProgress( (e) => {
 
+        let progress = this.iframedoc.getElementById('cam-progress');
+
         if (e.lengthComputable) {
-          /*appTop.camera.statusProgress().innerHTML = '<progress id="progress" value="1" max="100"></progress>';*/
-          this.iframedoc.getElementById('cam-progress').style.visibility = 'visible';
+          progress.style.visibility = 'visible';
           let perc = Math.floor(e.loaded / e.total * 100);
-          this.iframedoc.getElementById('progress').value = perc;
+          progress.value = perc;
         }
 
       });
 
     } else {
-
-      console.log('start regular upload');
 
       // Not appbuddy, do normal photo upload
       this.iframedoc.getElementById('appp_cam_post_title').value = '';
