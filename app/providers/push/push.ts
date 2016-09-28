@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
+import {Http, Headers, RequestOptions} from '@angular/http';
 import 'rxjs/add/operator/map';
+
+import {GlobalVars} from '../globalvars/globalvars';
 
 import {Push, Device, Dialogs} from 'ionic-native';
 
@@ -15,8 +17,9 @@ export class PushService {
   gcmAppArn: string;
   ApnsAppArn: string;
   snsTopicArn: string;
+  apiurl: string;
 
-  constructor() {
+  constructor( public http: Http, private globalvars: GlobalVars ) {
 
     this.gcmAppArn = '[[gcmAppArn]]';
     this.snsTopicArn = '[[snsTopicArn]]';
@@ -127,5 +130,17 @@ export class PushService {
     });
 
   }
+
+  // sendError(err) {
+
+  //   this.apiurl = this.globalvars.getApppUrl();
+  //   let body = JSON.stringify( err );
+  //   let headers = new Headers({ 'Content-Type': 'application/json' });
+  //   let options = new RequestOptions({ headers: headers });
+
+  //   this.http.post(this.apiurl, body, options)
+  //     .map( res => res.json() );
+
+  // }
 
 }

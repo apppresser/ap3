@@ -27,40 +27,38 @@ export class MapPage {
 
   doMap() {
 
-  	console.log('doMap');
   	if( plugin.google ) {
-  		console.log('doMap inside if');
-		let mapDiv = document.getElementById("google-map");
 
-		// Do this when checkin button clicked
-        Geolocation.getCurrentPosition().then((position) => {
+  		let mapDiv = document.getElementById("google-map");
 
-            let latitude = position.coords.latitude;
-            let longitude = position.coords.longitude;
+  		// Do this when checkin button clicked
+      Geolocation.getCurrentPosition().then((position) => {
 
-            let pos = new plugin.google.maps.LatLng(latitude,longitude);
+          let latitude = position.coords.latitude;
+          let longitude = position.coords.longitude;
 
-            // Initialize the map plugin
-			let map = plugin.google.maps.Map.getMap(mapDiv, {
-			    'camera': {
-			      'latLng': pos,
-			      'zoom': 10
-			    }
-			  });
+          let pos = new plugin.google.maps.LatLng(latitude,longitude);
 
-			map.addMarker({
-		      'position': pos,
-		      'title': "You are here"
-		    }, function(marker) {
+          // Initialize the map plugin
+        	let map = plugin.google.maps.Map.getMap(mapDiv, {
+        	      'camera': {
+        	      'latLng': pos,
+        	      'zoom': 10
+        	    }
+      	  });
 
-		      marker.showInfoWindow();
+  			  map.addMarker({
+    		      'position': pos,
+    		      'title': "You are here"
+    		    }, function(marker) {
 
-		    });
+    		      marker.showInfoWindow();
 
-        });
+    		  });
 
-	}
+      }); // end Geolocation.getCurrentPosition
+
+	  } // end if plugin.google
   }
-
   
 }

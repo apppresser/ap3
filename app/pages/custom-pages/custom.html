@@ -1,16 +1,6 @@
 <!-- test page, simulates a static page generated through app build -->
 
-<ion-list>
-<ion-item>
-  <ion-label> Sam</ion-label>
-  <ion-toggle checked="false"></ion-toggle>
-</ion-item>
-  <ion-item>Angola</ion-item>
-  <ion-item>Argentina</ion-item>
-
-</ion-list>
-
-<ion-slides pager>
+<ion-slides [options]='{pager:true}'>
 <ion-slide>
   <img src="img/ica-slidebox-img-1.png" class="slide-image"/>
   <h2 class="slide-title">Slide Title</h2>
@@ -30,3 +20,13 @@
   </button>
 </ion-slide>
 </ion-slides>
+
+<!-- <ion-row wrap>
+  <ion-col width-50 *ngFor="let p of pages">
+  <ion-card (click)="openPage(p)">
+    
+    <div class="card-title"><ion-icon *ngIf="p.class" name="{{p.class}}"></ion-icon></div>
+    <div class="card-subtitle">{{p.title}}</div>
+  </ion-card>
+  </ion-col>
+</ion-row> -->

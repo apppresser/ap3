@@ -12,7 +12,6 @@ export class CustomPage {
   dynamic: string;
 
   constructor(public navParams: NavParams ) {
-    console.log(navParams);
     let template = navParams.data.slug;
     this.pageHTML = ['build/pages/custom-pages/' + template + '.html', [InnerContent] ];
   }

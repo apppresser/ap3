@@ -124,11 +124,11 @@ export class MyApp {
       // ] };
       // let b = { 'title': 'WP Posts', 'url': '', 'component': PostList };
       // let c = { 'title': 'Local Posts', 'url': '', 'component': ListPage };
-      // let d = { 'title': 'Map', 'url': '', 'component': MapPage };
-      // let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': 'custom' };
+      let d = { 'title': 'Map', 'url': '', 'component': MapPage };
+      let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': { slug: 'custom' } };
       
 
-      // this.pages.push( b, c, d, e );
+      this.pages.push( d, e );
 
       if( !this.tabs && data.menus.items[0].type === 'apppages' ) {
         // console.log( 'home', data.menus.items[0] );
@@ -153,7 +153,9 @@ export class MyApp {
     // close the menu when clicking a link from the menu
     this.menu.close();
 
-    if( page.type === 'apppages' ) {
+    if( page.type === 'apppages' && page.page_type === 'list' ) {
+      this.nav.setRoot( PostList, page );
+    } else if( page.type === 'apppages' ) {
       this.nav.setRoot( CustomPage, page );
     } else if (page.url) {
       this.nav.setRoot(Iframe, page);

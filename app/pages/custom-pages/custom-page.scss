@@ -1,25 +1,43 @@
 .custom-page {
 
+  ion-slides {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    background-color: #fff;
+  }
+
   ion-card {
     position: relative;
     text-align: center;
+    min-height: 100px;
+    min-height: 30vw;
+    background-color: #fff;
+  }
+
+  ion-col {
+    padding: 0;
   }
 
   .card-title {
     position: absolute;
-    top: 36%;
-    font-size: 2.0em;
+    top: 20%;
+    font-size: 3em;
+    font-size: 10vw;
     width: 100%;
     font-weight: bold;
-    color: #fff;
+    opacity: .7;
   }
 
   .card-subtitle {
-    font-size: 1.0em;
+    font-size: 1em;
+    font-size: 3vw;
     position: absolute;
-    top: 52%;
+    top: 70%;
     width: 100%;
-    color: #fff;
+  }
+
+  .swiper-container-horizontal > .swiper-pagination {
+    bottom: 0;
   }
 
 }

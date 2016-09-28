@@ -12,7 +12,7 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
   
-  <ion-list>
+  <ion-list #routing route="/wp-json/wp/v2/product">
     <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">
     <ion-avatar item-left>
       <img *ngIf="item.featured_image_urls && item.featured_image_urls.thumbnail" src="{{item.featured_image_urls.thumbnail}}">
