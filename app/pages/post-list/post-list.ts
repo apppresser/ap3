@@ -14,6 +14,7 @@ export class PostList {
   page: number = 1;
   siteurl: string;
   route: string;
+  title: string;
 
   constructor(private nav: NavController, navParams: NavParams, public postService: Posts, private globalvars: GlobalVars, private loadingController: LoadingController ) { 
 
@@ -21,7 +22,7 @@ export class PostList {
 
     this.route = this.siteurl + '/wp-json/' + navParams.data.list_route;
 
-    console.log( this.route);
+    this.title = navParams.data.title;
     
     this.loadPosts( this.route );
 

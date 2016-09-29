@@ -1,8 +1,12 @@
 import {NavController, NavParams} from 'ionic-angular';
 import {Component} from '@angular/core';
 
+/* Pipes */
+import {SanitizeHtml} from '../../pipes/sanitize-html';
+
 @Component({
-  templateUrl: 'build/pages/post-details/post-details.html'
+  templateUrl: 'build/pages/post-details/post-details.html',
+  pipes: [SanitizeHtml]
 })
 export class PostDetailsPage {
   selectedItem: any;
