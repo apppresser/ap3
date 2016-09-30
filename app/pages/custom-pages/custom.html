@@ -1,6 +1,6 @@
 <!-- test page, simulates a static page generated through app build -->
 
-<ion-slides [options]='{pager:true}'>
+<!-- <ion-slides [options]='{pager:true}'>
 <ion-slide>
   <img src="img/ica-slidebox-img-1.png" class="slide-image"/>
   <h2 class="slide-title">Slide Title</h2>
@@ -19,11 +19,23 @@
     <ion-icon name="arrow-forward"></ion-icon>
   </button>
 </ion-slide>
-</ion-slides>
+</ion-slides> -->
+
+<ion-row wrap>
+  <ion-col width-50 *ngFor="let p of tab_menu_items">
+  
+  <ion-card (click)="pushPage(p)">
+    
+    <div class="card-title"><ion-icon *ngIf="p.class" name="{{p.class}}"></ion-icon></div>
+    <div class="card-subtitle">{{p.title}}</div>
+  </ion-card>
+  </ion-col>
+</ion-row>
 
 <!-- <ion-row wrap>
   <ion-col width-50 *ngFor="let p of pages">
-  <ion-card (click)="openPage(p)">
+  
+  <ion-card (click)="setRoot(p)">
     
     <div class="card-title"><ion-icon *ngIf="p.class" name="{{p.class}}"></ion-icon></div>
     <div class="card-subtitle">{{p.title}}</div>

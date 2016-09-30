@@ -44,6 +44,7 @@ export class MyApp {
   tabs: any;
   loggedin: boolean = false;
   loggedin_msg: string;
+  showmenu: boolean = false;
 
   constructor(
     private platform: Platform,
@@ -85,10 +86,25 @@ export class MyApp {
   loadMenu(data) {
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
 
+    // If we have a tab menu, set that up
     if( data.tab_menu.items ) {
 
+      // let e = { 'title': "Custom Page", 'type': 'apppages', 'class': "information-circle", slug: 'custom' };
+
+      // data.tab_menu.items.push( e );
+
       for( let item of data.tab_menu.items ) {
-        this.navparams.push( { 'title': item.title, 'url': item.url, 'root': Iframe, 'icon': item.class } );
+
+        // set component, default is Iframe
+        var root:Object = Iframe;
+
+        if( item.type === 'apppages' && item.page_type === 'list' ) {
+          root = PostList;
+        } else if( item.type === 'apppages' ) {
+          root = CustomPage;
+        }
+
+        this.navparams.push( { 'title': item.title, 'url': item.url, 'root': root, 'icon': item.class, 'slug': item.slug } );
       }
 
       this.tabs = this.navparams;
@@ -101,42 +117,32 @@ export class MyApp {
 
       this.pages = data.menus.items;
 
-      // this is how we will use different components
-      /* for( let item of data.menus.items ) {
-        if( item.tabs ) {
-          this.pages.push = ( { 'title': item.title, 'url': '', 'component': TabsPage, 'navparams': item.tabs, 'icon': item.classes } );
-        } else if( item.url ) {
-          this.pages.push = ( { 'title': item.title, 'url': item.url, 'component': Iframe, 'icon': item.classes } );
-        } else if( item.map ) {
-          this.pages.push = ( { 'title': item.title, 'url': item.url, 'component': Map, 'icon': item.classes } );
-         } else if(item.slides ) {
-          Slides.doSlides( item.slides );
-         }
-      }
-      } */
+      this.showmenu = true;
 
       // Add pages manually here, can use different components like this...
-      // let a = { 'title': 'Tabs', 'url': '', 'component': TabsPage, 'navparams': [
-      //   { title: "Schedule", root: ListPage, icon: "calendar" },
-      //   { title: "Speakers", root: PostList, icon: "contacts" },
-      //   { title: "Map", root: MapPage, icon: "map" },
-      //   { title: "New Page", root: NewPage, icon: "information-circle" },
-      // ] };
-      // let b = { 'title': 'WP Posts', 'url': '', 'component': PostList };
-      // let c = { 'title': 'Local Posts', 'url': '', 'component': ListPage };
       let d = { 'title': 'Map', 'url': '', 'component': MapPage };
       let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': { slug: 'custom' } };
       
 
       this.pages.push( d, e );
 
+      // set the home page to the proper component
       if( !this.tabs && data.menus.items[0].type === 'apppages' ) {
-        // console.log( 'home', data.menus.items[0] );
+        
+        // if it's a list page, use PostList component
+        if( data.menus.items[0].page_type === 'list' )
+          this.nav.setRoot( PostList, data.menus.items[0] );
+
+        // otherwise use CustomPage
         this.nav.setRoot( CustomPage, data.menus.items[0] );
+
       } else if( !this.tabs ) {
+
+        // anything else uses Iframe component
         this.nav.setRoot( Iframe, data.menus.items[0] );
+
       } else {
-        // if tabs exist, need to add to menu
+        // if tabs and left menu exist, need to add to menu
         this.pages.unshift( { 'title': data.tab_menu.name, 'url': '', 'component': TabsPage, 'navparams': this.navparams, 'class': 'home' } )
       }
 
@@ -224,9 +230,9 @@ export class MyApp {
     styles += data.meta.design.custom_css;
 
     // hide menu toggle if no left menu
-    // if( !this.pages ) {
-    //   styles += 'ion-navbar .bar-button-menutoggle { display: none !important; }';
-    // }
+    if( this.showmenu === false ) {
+      styles += 'ion-navbar .bar-button-menutoggle { display: none !important; }';
+    }
 
     styles += "</style>";
 
