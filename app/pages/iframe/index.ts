@@ -35,8 +35,6 @@ export default class {
 
     iframeLoading() {
 
-        console.log('loaded' + this.loaded);
-
         // set this.loaded so cached pages don't show loading spinner
         if( this.loaded )
             return;
@@ -50,8 +48,6 @@ export default class {
 
         // When WP site loads, attach our click events
         window.addEventListener('message', (e) => {
-
-            console.log('iframe listener');
 
             if(e.data === 'site_loaded') {
                 loading.dismiss();
@@ -76,23 +72,31 @@ export default class {
          Ionic stacks cached views on top of each other, which causes duplicate ids on the page. We need to find the active page in the stack, and send our post messages there. Otherwise message is sent to the wrong page.
         */
 
-        let pages = document.getElementsByTagName('ion-page');
+        // If we have tabs views stack differently
+        if( document.querySelectorAll('ion-tab.show-tab').length ) {
+
+            // tabs exist, define iframe relative to active tab
+            let page = document.querySelectorAll( 'ion-tab.show-tab ion-page' );
+            this.iframe = page[0].getElementsByClassName('ap3-iframe')[0];
+            return;
+
+        }
+
+        console.warn('no tabs');
+        var pages = document.getElementsByTagName('ion-page');
+        
         let lengths = pages.length;
 
         if( lengths > 1 ) {
-            console.log('finding in stack...');
+
             // find the active page, last one on page
             let index = lengths - 1;
             let lastpage = pages[index];
 
-            console.log( lastpage );
-
             this.iframe = lastpage.getElementsByClassName('ap3-iframe')[0];
 
-            console.log( this.iframe );
-
         } else {
-            console.log('only one view');
+
             // we don't have any cached views, so don't have to run this
             this.iframe = (<any>document.getElementById('ap3-iframe'));
         }
