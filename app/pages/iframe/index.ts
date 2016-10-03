@@ -82,9 +82,7 @@ export default class {
 
         }
 
-        console.warn('no tabs');
-        var pages = document.getElementsByTagName('ion-page');
-        
+        let pages = document.getElementsByTagName('ion-page');
         let lengths = pages.length;
 
         if( lengths > 1 ) {

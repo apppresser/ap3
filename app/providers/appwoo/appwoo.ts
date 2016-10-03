@@ -61,6 +61,16 @@ export class AppWoo {
      Ionic stacks cached views on top of each other, which causes duplicate ids on the page. We need to find the active page in the stack, and send our post messages there. Otherwise message is sent to the wrong page.
     */
 
+    // If we have tabs views stack differently
+    if( document.querySelectorAll('ion-tab.show-tab').length ) {
+
+        // tabs exist, define iframe relative to active tab
+        let page = document.querySelectorAll( 'ion-tab.show-tab ion-page' );
+        this.iframe = page[0].getElementsByClassName('ap3-iframe')[0];
+        return;
+
+    }
+
     let pages = document.getElementsByTagName('ion-page');
     let lengths = pages.length;
 

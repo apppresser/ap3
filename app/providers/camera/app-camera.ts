@@ -87,6 +87,16 @@ export class AppCamera {
        Ionic stacks cached views on top of each other, which causes duplicate ids on the page. We need to find the active page in the stack, and send our post messages there. Otherwise message is sent to the wrong page.
       */
 
+      // If we have tabs views stack differently
+      if( document.querySelectorAll('ion-tab.show-tab').length ) {
+
+          // tabs exist, define iframe relative to active tab
+          let page = document.querySelectorAll( 'ion-tab.show-tab ion-page' );
+          this.iframe = page[0].getElementsByClassName('ap3-iframe')[0];
+          return;
+
+      }
+
       let pages = document.getElementsByTagName('ion-page');
       let lengths = pages.length;
 
@@ -113,7 +123,7 @@ export class AppCamera {
     this.iframedoc = this.iframe.contentWindow.document;
     this.iframewin = this.iframe.contentWindow.window;
 
-    // console.log('imageURI', imageURI);
+    console.log('imageURI', imageURI);
 
     let image = imageURI.substr(imageURI.lastIndexOf('/') + 1);
 
@@ -125,7 +135,9 @@ export class AppCamera {
       image = anumber + '.jpg';
     }
 
-    // console.log(image);
+    // console.log('image ' + image);
+
+    // console.log('name ' + name);
 
     let options = new FileUploadOptions();
     options.fileKey = 'appp_cam_file';
@@ -143,9 +155,10 @@ export class AppCamera {
     let form_fields = [];
     let form_values = [];
     let iterator;
-    let form_elements = this.iframedoc.getElementById('appp_camera_form').elements;
+    let form = this.iframedoc.getElementById('appp_camera_form');
+    let form_elements = form.elements;
 
-    // console.log(form_elements);
+    // console.log('elements', form_elements);
 
     for (iterator = 0; iterator < form_elements.length; iterator++) {
       form_fields[iterator] = form_elements[iterator].name;
@@ -227,7 +240,7 @@ export class AppCamera {
   // handles displaying image in appbuddy activity modal after uploaded
   attachWin(r) {
 
-    console.log('attach win', r);
+    // console.log('attach win', r);
 
     this.findIframe();
 
@@ -254,7 +267,7 @@ export class AppCamera {
 
   uploadWin(r) {
 
-    console.log('upload win', r);
+    // console.log('upload win', r);
 
     this.findIframe();
 
@@ -295,9 +308,9 @@ export class AppCamera {
 
         if (debug && matches && matches.length) {
           if (response != matches[0]) {
-            console.log('attach img raw response', response, matches);
+            // console.log('attach img raw response', response, matches);
           }
-          console.log('attach img', matches);
+          // console.log('attach img', matches);
         }
 
         if (matches[0]) {
