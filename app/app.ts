@@ -122,12 +122,13 @@ export class MyApp {
       // Add pages manually here, can use different components like this...
       let d = { 'title': 'Map', 'url': '', 'component': MapPage };
       let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': { slug: 'custom' } };
-      
 
       this.pages.push( d, e );
 
       // set the home page to the proper component
-      if( !this.tabs && data.menus.items[0].type === 'apppages' ) {
+      if( this.tabs ) {
+        this.pages.unshift( { 'title': data.tab_menu.name, 'url': '', 'component': TabsPage, 'navparams': this.navparams, 'class': 'home' } );
+      } else if( !this.tabs && data.menus.items[0].type === 'apppages' ) {
         
         // if it's a list page, use PostList component
         if( data.menus.items[0].page_type === 'list' )
@@ -136,14 +137,11 @@ export class MyApp {
         // otherwise use CustomPage
         this.nav.setRoot( CustomPage, data.menus.items[0] );
 
-      } else if( !this.tabs ) {
+      } else {
 
         // anything else uses Iframe component
         this.nav.setRoot( Iframe, data.menus.items[0] );
 
-      } else {
-        // if tabs and left menu exist, need to add to menu
-        this.pages.unshift( { 'title': data.tab_menu.name, 'url': '', 'component': TabsPage, 'navparams': this.navparams, 'class': 'home' } )
       }
 
     }
