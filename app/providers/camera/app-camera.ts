@@ -135,13 +135,14 @@ export class AppCamera {
       image = anumber + '.jpg';
     }
 
-    // console.log('image ' + image);
-
-    // console.log('name ' + name);
+    // this creates a random string based on the date
+    let d = new Date().toTimeString();
+    let random = d.replace(/[\W_]+/g, "").substr(0,6);
 
     let options = new FileUploadOptions();
     options.fileKey = 'appp_cam_file';
-    options.fileName = imageURI ? image : '';
+    // prepend image name with random string to avoid duplicate upload errors
+    options.fileName = imageURI ? random + image : random;
     options.mimeType = 'image/jpeg';
 
     let params = {
