@@ -33,10 +33,14 @@ export class AppData {
 
       if( this.local && !this.updateNeeded ) {
 
+        console.log('using localStorage data');
+
         // send back localstorage item
         resolve(this.local);
 
       } else if( !this.local && !this.updateNeeded ) {
+
+        console.log('using app-data.json');
 
         // get local app-data file
         this.getData( 'app-data.json' ).then( data => {
@@ -57,7 +61,9 @@ export class AppData {
 
   getData( url: string ) {
 
-    console.log('getData: ' + url );
+    console.log('getting data from api ' + url );
+
+    window.localStorage.removeItem( 'myappp' );
 
     return new Promise(resolve => {
 

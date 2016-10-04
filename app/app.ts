@@ -316,7 +316,7 @@ export class MyApp {
   }
 
   openIab( link, target, options = null ) {
-    InAppBrowser.open(link, target, options );
+    window.open(link, target, options );
   }
 
   maybeDoAds() {
