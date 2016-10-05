@@ -7,13 +7,13 @@
 // By default each design mode includes these shared imports.
 // App Shared Sass variables belong in app.variables.scss.
 
-@import "../pages/item-details/item-details";
-
 @import "../pages/google-map/google-map";
 
 @import "../pages/custom-pages/custom-page";
 
 @import "../pages/iframe/index";
+
+$border-color: rgba(0,0,0,.1);
 
 .item.activated {
 	background-color: rgba(135,135,135,.2);
@@ -52,6 +52,38 @@ ion-content ion-card-content {
 	border-top: none;
 }
 
-ion-list-header, ion-item-divider {
-	background-color: rgba(0,0,0,.05);
+ion-menu {
+
+	ion-content, ion-list .item, p {
+	    color: #eee;
+	    background-color: #444;
+	}
+
+	ion-list .item .item-inner, ion-list-header, ion-item-divider {
+		border: none;
+	}
+
+	ion-list {
+		.item, &> .item:last-child, &> .item-wrapper:last-child .item {
+			border-bottom: 1px solid $border-color;
+		}
+
+		ion-icon {
+			color: #999;
+		}
+	}
+
+	ion-list-header {
+		text-align: center;
+		padding-left: 0;
+		border-bottom: 1px solid $border-color;
+
+		ion-avatar img {
+			margin: 0 auto;
+			max-width: 6rem;
+		    max-height: 6rem;
+		    border-radius: 6rem;
+		}
+	}
+
 }

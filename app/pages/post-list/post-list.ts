@@ -42,7 +42,7 @@ export class PostList {
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
     this.postService.load( route, this.page ).then(items => {
 
-      // console.log(items);
+      console.log('loadPosts: ', items);
       // Loads posts from WordPress API
       this.items = items;
       // load more right away

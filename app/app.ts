@@ -4,7 +4,6 @@ import {ionicBootstrap, Platform, MenuController, Nav} from 'ionic-angular';
 import {DomSanitizationService} from '@angular/platform-browser';
 
 /* Pages */
-import {SlidePage} from './pages/slides/slides';
 import {ListPage} from './pages/list/list';
 import {PostList} from './pages/post-list/post-list';
 import Iframe from './pages/iframe';
@@ -212,6 +211,9 @@ export class MyApp {
     // left menu colors
     styles += "ion-menu ion-content, ion-menu ion-list .item { color: "  + data.meta.design.left_menu_text + "; background-color: "  + data.meta.design.left_menu_bg + " }";
 
+    // left menu icon color
+    styles += "ion-menu ion-list .item ion-icon { color: "  + data.meta.design.left_menu_icons + " }";
+
     // body text and background
     styles += "ion-page ion-content, ion-page ion-list .item { color: "  + data.meta.design.text_color + "; background-color: "  + data.meta.design.body_bg + " }";
     styles += "p, .item p { color: "  + data.meta.design.text_color + " }";
@@ -300,6 +302,8 @@ export class MyApp {
         console.log('loggedin msg', data);
 
         this.loggedin = ( data.loggedin === "1" ) ? true : false;
+
+        console.log( 'loggedin? ' + this.loggedin );
 
         if( data.message ) {
           let res = data.message.split(",");

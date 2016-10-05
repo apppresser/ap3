@@ -20,15 +20,15 @@
       <img *ngIf="!item.featured_image_urls || !item.featured_image_urls.thumbnail" src="img/appicon.png">
     </ion-avatar>
 
-    <div *ngIf="item.appp.post_list && item.appp.post_list.above_title" [innerHTML]="item.appp.post_list.above_title"></div>
+    <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_title" [innerHTML]="item.appp.post_list.above_title"></div>
 
     <h2 [innerHTML]="item.title.rendered"></h2>
 
-    <div *ngIf="item.appp.post_list && item.appp.post_list.below_title" [innerHTML]="item.appp.post_list.below_title"></div>
+    <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_title" [innerHTML]="item.appp.post_list.below_title"></div>
 
     <p *ngIf="item.excerpt.rendered" [innerHTML]="item.excerpt.rendered"></p>
 
-    <div *ngIf="item.appp.post_list && item.appp.post_list.below_content" [innerHTML]="item.appp.post_list.below_content"></div>
+    <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_content" [innerHTML]="item.appp.post_list.below_content"></div>
 
     </button>
   </ion-list>
