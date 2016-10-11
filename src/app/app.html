@@ -1,0 +1,29 @@
+<div [innerHTML]="styles"></div>
+
+<ion-menu *ngIf="pages" [content]="content" swipeEnabled="false">
+
+  <ion-header>
+    <ion-toolbar>
+      <ion-title></ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <ion-list>
+      <ion-list-header text-wrap>
+        <ion-avatar>
+          <img src="img/icon-user-default.png">
+        </ion-avatar>
+        <p><b>{{loggedin_msg}}</b></p>
+      </ion-list-header>
+      <button ion-item *ngFor="let p of pages" (click)="openPage(p)">
+        <ion-icon *ngIf="p.class" name="{{p.class}}" item-left></ion-icon>
+        {{p.title}}
+      </button>
+    </ion-list>
+
+  </ion-content>
+
+</ion-menu>
+
+<ion-nav id="nav" #content swipeBackEnabled="false"></ion-nav>

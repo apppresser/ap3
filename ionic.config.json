@@ -1,6 +1,6 @@
 {
-  "name": "MyIonic2Project",
-  "app_id": "3192a6c7",
+  "name": "myApp",
+  "app_id": "",
   "v2": true,
   "typescript": true
 }

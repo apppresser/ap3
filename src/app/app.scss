@@ -1,0 +1,110 @@
+// http://ionicframework.com/docs/v2/theming/
+
+
+// App Global Sass
+// --------------------------------------------------
+// Put style rules here that you want to apply globally. These
+// styles are for the entire app and not just one component.
+// Additionally, this file can be also used as an entry point
+// to import other Sass files to be included in the output CSS.
+//
+// Shared Sass variables, which can be used to adjust Ionic's
+// default Sass variables, belong in "theme/variables.scss".
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+
+// Custom
+// --------------------------------------------------
+
+@import "../pages/google-map/google-map";
+
+@import "../pages/custom-pages/custom-page";
+
+@import "../pages/iframe/iframe";
+
+$border-color: rgba(0,0,0,.1);
+
+.toolbar button.activated, .tab-button {
+	opacity: .8;
+}
+
+.bar-button ion-icon {
+	font-size: 2.4rem;
+}
+
+.tab-button[aria-selected=true] {
+	opacity: 1;
+}
+
+// prevents card text from disappearing if body text is white
+ion-content ion-card-content {
+	color: #000;
+}
+
+.item h2 {
+	white-space: normal;
+}
+
+.post-featured-wrap {
+	width: auto;
+    max-height: 250px;
+    overflow: hidden;
+    margin: -20px -20px 20px -20px;
+
+	img.post-featured {
+		width: 100%;
+		height: auto;
+	}
+}
+
+.menu-inner ion-list > .item:first-child, .menu-inner ion-list > .item-wrapper:first-child .item {
+	border-top: none;
+}
+
+ion-menu {
+
+	.item-md.activated, .item-ios.activated {
+		background-color: rgba(135,135,135,.2);
+	}
+
+	.content-md, .content-ios, .item-md, .item-ios {
+		background-color: #444;
+	}
+
+	.list-md, .list-ios {
+
+		 .item-md, .item-ios, p {
+		    color: #eee;
+		}
+
+		.item-block .item-inner, ion-list-header, ion-item-divider {
+			border: none;
+		}
+
+		.item, &> .item:last-child, &> .item-wrapper:last-child .item {
+			border-bottom: 1px solid $border-color;
+		}
+
+		ion-icon {
+			color: #999;
+		}
+	
+
+		ion-list-header {
+			text-align: center;
+			padding-left: 0;
+			border-bottom: 1px solid $border-color;
+
+			ion-avatar img {
+				margin: 0 auto;
+				max-width: 6rem;
+			    max-height: 6rem;
+			    border-radius: 6rem;
+			}
+		}
+
+	}
+
+}

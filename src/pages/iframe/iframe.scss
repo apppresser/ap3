@@ -1,0 +1,12 @@
+ion-content{
+    iframe, custom-iframe{
+        height: 100%;
+        width: 100%;
+        border: none;
+    }
+}
+
+.loading-md .loading-wrapper, .loading-ios .loading-wrapper {
+	box-shadow: none;
+	background: transparent;
+}

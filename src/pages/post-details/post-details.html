@@ -1,0 +1,29 @@
+<ion-header>
+	<ion-navbar>
+	  <button ion-button menuToggle *ngIf="!selectedItem">
+	    <ion-icon name="menu"></ion-icon>
+	  </button>
+	  <ion-title [innerHTML]="selectedItem.title.rendered"></ion-title>
+	</ion-navbar>
+</ion-header>
+
+<ion-content>
+ <div *ngIf="selectedItem" class="selection">
+
+ 	<div *ngIf="selectedItem.appp && selectedItem.appp.post_detail && selectedItem.appp.post_detail.above_image" [innerHTML]="selectedItem.appp.post_detail.above_image"></div>
+
+ 	<div *ngIf="selectedItem.featured_image_urls && selectedItem.featured_image_urls.large" class="post-featured-wrap">
+ 		<img src="{{selectedItem.featured_image_urls.large}}" class="post-featured">
+ 	</div>
+
+ 	<div *ngIf="selectedItem.appp && selectedItem.appp.post_detail && selectedItem.appp.post_detail.above_title" [innerHTML]="selectedItem.appp.post_detail.above_title"></div>
+
+    <h2 [innerHTML]="selectedItem.title.rendered"></h2>
+
+    <div *ngIf="selectedItem.appp && selectedItem.appp.post_detail && selectedItem.appp.post_detail.below_title" [innerHTML]="selectedItem.appp.post_detail.below_title"></div>
+
+    <div *ngIf="selectedItem.content.rendered" [innerHTML]="selectedItem.content.rendered"></div>
+
+    <div *ngIf="selectedItem.appp && selectedItem.appp.post_detail && selectedItem.appp.post_detail.below_content" [innerHTML]="selectedItem.appp.post_detail.below_content | sanitizeHtml"></div>
+ </div>
+</ion-content>
