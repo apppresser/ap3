@@ -24,7 +24,7 @@ import {AppData} from '../providers/appdata/appdata';
 
 /* Other */
 import {SanitizeHtml} from '../pipes/sanitize-html';
-//import {InnerContent} from '../directives/inner-content/inner-content';
+import {DynamicComponentModule} from 'angular2-dynamic-component/index';
 
 @NgModule({
   declarations: [ // pages, custom components, pipes, etc
@@ -38,10 +38,10 @@ import {SanitizeHtml} from '../pipes/sanitize-html';
     SanitizeHtml,
     PostDetailsPage,
     ItemDetailsPage
-    //InnerContent
   ],
   imports: [
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    DynamicComponentModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [ // pages go here

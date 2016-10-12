@@ -9,6 +9,9 @@
 
 <ion-content class="custom-page">
 
-<template [ngTemplateOutlet]="template"></template>
+<DynamicComponent 
+    [componentTemplateUrl]="templateUrl" 
+    [componentModules]="extraModules"
+    [componentInputData]="inputData"></DynamicComponent>
 
 </ion-content>
