@@ -75,8 +75,12 @@ export class MyApp {
       // if there's a problem, default to app-data.json
       console.log( 'problem getting appdata', e );
 
-      this.appdata.getData( 'app-data.json' ).then( data => {
+      this.appdata.getData( 'build/app-data.json' ).then( data => {
         console.log('Got local data file.');
+
+        this.loadMenu(data);
+        this.loadStyles(data);
+        
       });
 
     });
