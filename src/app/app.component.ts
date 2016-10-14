@@ -65,6 +65,8 @@ export class MyApp {
     // get our app data, then use it. will return either local data, or get from api
     this.appdata.load(this.apiurl).then( (data) => {
 
+      console.log('Got data', data);
+
       this.loadMenu(data);
       this.loadStyles(data);
 
@@ -121,7 +123,7 @@ export class MyApp {
       let d = { 'title': 'Map', 'url': '', 'component': MapPage };
       let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': { slug: 'custom' } };
 
-      this.pages.push( d, e );
+      this.pages.push( d );
 
       // set the home page to the proper component
       if( this.tabs ) {
@@ -150,7 +152,7 @@ export class MyApp {
 
     // this.menuProvider.openPage( page );
 
-    console.log(page);
+    console.log( page.type + page.page_type);
 
     // close the menu when clicking a link from the menu
     this.menu.close();
@@ -368,15 +370,18 @@ export class MyApp {
     });
 
     push.on('registration', (data) => {
-      console.log(data.registrationId);
+      alert('starting: ' + data.registrationId);
+
       // kick off aws stuff
-      this.pushService.createEndpoint(data.registrationId);
+      this.pushService.subscribeDevice(data.registrationId).then( result => {
+        alert(result);
+      });
+
     });
 
     push.on('notification', (data) => {
 
       if( data.additionalData && (<any>data).additionalData.page ) {
-        alert( (<any>data).additionalData.page );
         // TODO: check if external link. If so, use IAB
         this.openPage( (<any>data).additionalData.page );
         return;

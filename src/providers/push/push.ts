@@ -15,85 +15,39 @@ declare var AWS:any;
 */
 @Injectable()
 export class PushService {
-  sns: any;
-  gcmAppArn: string;
-  ApnsAppArn: string;
-  snsTopicArn: string;
-  apiurl: string;
+
+  api: string;
+  platform: string;
+  appid: string;
 
   constructor( public http: Http, public globalvars: GlobalVars ) {
-
-    this.gcmAppArn = '[[gcmAppArn]]';
-    this.snsTopicArn = '[[snsTopicArn]]';
-    this.ApnsAppArn = '[[ApnsAppArn]]';
-
   }
 
-  snsSetup() {
+  subscribeDevice(token) {
 
-    let userAccessKey = '[[userAccessKey]]';
-    let userSecretKey = '[[userSecretKey]]';
+    this.platform = Device.device.platform;
+    let apiRoot = this.globalvars.getApiRoot();
+    this.api = apiRoot + 'wp-json/ap3/v1/subscribe/';
+    this.appid = this.globalvars.getAppId();
 
-    // AWS setup.  Should hard code users credentials
-    AWS.config.update({accessKeyId: userAccessKey, secretAccessKey: userSecretKey });
+    let params = '?token=' + token + '&platform=' + this.platform + '&id=' + this.appid;
 
-    AWS.config.region = 'us-west-2';
+    // let headers = new Headers({ 'Content-Type': 'application/json' });
+    // let options = new RequestOptions({ headers: headers });
 
-    this.sns = new AWS.SNS();
-    
-  }
+    alert('sending: ' + this.api + params);
 
-  subscribeToTopic(endpointArn) {
+    return new Promise(resolve => {
 
-    console.log('subscribe to topic: ' + endpointArn );
-      // auto-subscribe devices to our topic, so we can push to ios/android at the same time
-      let params = {
-        Protocol: 'application', /* required */
-        // TopicArn should be hard coded from app creation
-        TopicArn: this.snsTopicArn, /* required */
-        // Get Endpoint from createPlatformEndpoint() above
-        Endpoint: endpointArn
-      };
-      this.sns.subscribe(params, (err, data) => {
-        if (err) console.log( 'Error: ' + err, err.stack); // an error occurred
-        else     console.log( 'Subscribe success: ' + data);           // successful response
-      });
-  }
-
-  createEndpoint( token ) {
-
-    this.snsSetup();
-
-    console.log( 'createEndpoint ' + token );
-
-    if (Device.device.platform == 'android' || Device.device.platform == 'Android') {
-
-        var params = {
-            // GCM platform Arn here
-          PlatformApplicationArn: this.gcmAppArn, /* required */
-          Token: token, /* required */
-        };
-
-    } else {
-
-        var params = {
-            // iOS platform Arn here
-          PlatformApplicationArn: this.ApnsAppArn, /* required */
-          Token: token, /* required */
-        };
-
-    }
-
-    this.sns.createPlatformEndpoint( params, (err, data) => {
-      if (err) {
-        console.log('sns.createPlatformEndpoint error' + err);
-      } else { 
-        console.log('Endpoint Arn: ' + data.EndpointArn);
-        // if the endpoint is created successfully, subscribe it to our topic
-        this.subscribeToTopic(data.EndpointArn);
-      }
+      this.http.post( this.api + params, null, null )
+        .map(res => res.json())
+        .subscribe(
+          data => {
+          resolve(data);
+          },
+          error => alert('subscribeDevice error' + error) 
+        );
     });
-
   }
 
 }
