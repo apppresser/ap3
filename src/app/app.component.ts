@@ -73,14 +73,14 @@ export class MyApp {
     }).catch( e => {
 
       // if there's a problem, default to app-data.json
-      console.log( 'problem getting appdata', e );
+      console.log( 'problem getting appdata, getting local json file', e );
 
-      this.appdata.getData( 'build/app-data.json' ).then( data => {
+      this.appdata.getData( 'app-data.json' ).then( data => {
         console.log('Got local data file.');
 
         this.loadMenu(data);
         this.loadStyles(data);
-        
+
       });
 
     });
@@ -108,6 +108,8 @@ export class MyApp {
           root = CustomPage;
         }
 
+        console.debug('tab_menu slug: ' + item.slug);
+
         this.navparams.push( { 'title': item.title, 'url': item.url, 'root': root, 'icon': item.class, 'slug': item.slug } );
       }
 
@@ -124,10 +126,10 @@ export class MyApp {
       this.showmenu = true;
 
       // Add pages manually here, can use different components like this...
-      let d = { 'title': 'Map', 'url': '', 'component': MapPage };
-      let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': { slug: 'custom' } };
+      // let d = { 'title': 'Map', 'url': '', 'component': MapPage };
+      // let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': { slug: 'custom' } };
 
-      this.pages.push( d );
+      // this.pages.push( d );
 
       // set the home page to the proper component
       if( this.tabs ) {
@@ -137,6 +139,8 @@ export class MyApp {
         // if it's a list page, use PostList component
         if( data.menus.items[0].page_type === 'list' )
           this.nav.setRoot( PostList, data.menus.items[0] );
+
+        console.debug('CustomPage data: ' + data.menus.items[0] );
 
         // otherwise use CustomPage
         this.nav.setRoot( CustomPage, data.menus.items[0] );
@@ -374,11 +378,10 @@ export class MyApp {
     });
 
     push.on('registration', (data) => {
-      alert('starting: ' + data.registrationId);
 
       // kick off aws stuff
       this.pushService.subscribeDevice(data.registrationId).then( result => {
-        alert(result);
+        console.log(result);
       });
 
     });

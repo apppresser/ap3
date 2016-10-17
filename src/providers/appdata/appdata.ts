@@ -51,7 +51,7 @@ export class AppData {
         console.log('using app-data.json');
 
         // get local app-data file
-        this.getData( 'build/app-data.json' ).then( data => {
+        this.getData( 'app-data.json' ).then( data => {
           resolve(data);
         });
 
