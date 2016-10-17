@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@ionic/storage": "^1.0.3",
-    "angular2-dynamic-component": "0.0.50",
+    "angular2-dynamic-component": "0.0.51",
     "core-js": "^2.4.1",
     "ionic-angular": "^2.0.0-rc.0",
     "ionic-native": "^2.0.3",
@@ -22,7 +22,7 @@
     "ts-metadata-helper": "0.0.4"
   },
   "devDependencies": {
-    "@ionic/app-scripts": "latest",
+    "@ionic/app-scripts": "0.0.36",
     "typescript": "^2.0.3"
   },
   "cordovaPlugins": [
