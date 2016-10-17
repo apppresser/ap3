@@ -24,6 +24,10 @@ export class PostList {
 
     this.title = navParams.data.title;
     
+  }
+
+  ngOnInit() {
+
     this.loadPosts( this.route );
 
   }

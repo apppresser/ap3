@@ -35,8 +35,6 @@ export class PushService {
     // let headers = new Headers({ 'Content-Type': 'application/json' });
     // let options = new RequestOptions({ headers: headers });
 
-    alert('sending: ' + this.api + params);
-
     return new Promise(resolve => {
 
       this.http.post( this.api + params, null, null )
@@ -45,7 +43,7 @@ export class PushService {
           data => {
           resolve(data);
           },
-          error => alert('subscribeDevice error' + error) 
+          error => console.warn('subscribeDevice error' + error) 
         );
     });
   }

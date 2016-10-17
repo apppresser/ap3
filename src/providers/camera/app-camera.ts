@@ -90,7 +90,7 @@ export class AppCamera {
       */
 
       // If we have tabs views stack differently
-      if( document.querySelectorAll('ion-tab.show-tab').length ) {
+      if( document.querySelectorAll('ion-tabs .show-tabbar').length ) {
 
           // tabs exist, define iframe relative to active tab
           let page = document.querySelectorAll( 'ion-tab.show-tab ion-page' );
