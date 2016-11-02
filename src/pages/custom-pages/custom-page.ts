@@ -29,8 +29,13 @@ class DynamicContext {
 })
 export class CustomPage {
 
+	constructor( public navParams: NavParams ) {
+	}
+
+	nav: any = Nav;
+	// navParams: any = NavParams;
 	templateUrl: string;
-	private extraModules = [IonicModule];
+	extraModules = [IonicModule];
 	inputData: IComponentInputData = {
 		// anything that the template needs access to goes here
 		pages: JSON.parse( window.localStorage.getItem( 'myappp' ) ),
@@ -61,11 +66,11 @@ export class CustomPage {
 		}
 	};
 
-	constructor( public nav: Nav, public navParams: NavParams) {
+	ngOnInit() {
+		console.log(this.navParams);
 		// set our custom template url
 		let slug = this.navParams.data.slug;
 		this.templateUrl = 'build/' + slug + '.html';
-
 	}
 
 }

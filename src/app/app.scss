@@ -18,8 +18,6 @@
 // Custom
 // --------------------------------------------------
 
-@import "../pages/google-map/google-map";
-
 @import "../pages/custom-pages/custom-page";
 
 @import "../pages/iframe/iframe";
@@ -63,24 +61,24 @@ ion-content ion-card-content {
 	border-top: none;
 }
 
-ion-menu {
+.menu-inner {
 
 	.item-md.activated, .item-ios.activated {
 		background-color: rgba(135,135,135,.2);
 	}
 
-	.content-md, .content-ios, .item-md, .item-ios {
+	.content-md, .content-ios, ion-list .item {
 		background-color: #444;
 	}
 
-	.list-md, .list-ios {
+	ion-list {
 
 		 .item-md, .item-ios, p {
 		    color: #eee;
 		}
 
-		.item-block .item-inner, ion-list-header, ion-item-divider {
-			border: none;
+		.item-block .item-inner, .item-block, ion-list-header, ion-item-divider {
+			border: none !important;
 		}
 
 		.item, &> .item:last-child, &> .item-wrapper:last-child .item {
@@ -107,4 +105,9 @@ ion-menu {
 
 	}
 
+}
+
+.selection p {
+	font-size: 16px;
+	line-height: 1.3;
 }

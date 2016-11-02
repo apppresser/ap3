@@ -8,7 +8,7 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {PostList} from '../pages/post-list/post-list';
 import {Iframe} from '../pages/iframe/iframe';
 import {TabsPage} from '../pages/tabs/tabs';
-import {MapPage} from '../pages/google-map/google-map';
+// import {MapPage} from '../pages/google-map/google-map';
 import {CustomPage} from '../pages/custom-pages/custom-page';
 
 /* Providers (make sure to add to ionicBootstrap below) */
@@ -34,7 +34,6 @@ export class MyApp {
 
   pages: any;
   styles: any;
-  siteurl: string;
   apiurl: string;
   apppSettings: any;
   login: boolean;
@@ -57,7 +56,6 @@ export class MyApp {
     private appdata: AppData
   ) {
 
-    this.siteurl = globalvars.getUrl();
     this.apiurl = globalvars.getApi();
 
     this.initializeApp();
@@ -218,7 +216,7 @@ export class MyApp {
     styles += ".toolbar-content, .toolbar-title, .bar-button-default, .toolbar .bar-button-default:hover, .toolbar .segment-button, .toolbar button.activated, .tabs-md .tab-button[aria-selected=true], .tabs-ios .tab-button[aria-selected=true], ion-toolbar .button { color: "  + data.meta.design.toolbar_color + " }";
 
     // left menu colors
-    styles += "ion-menu ion-content, ion-menu ion-list .item { color: "  + data.meta.design.left_menu_text + "; background-color: "  + data.meta.design.left_menu_bg + " }";
+    styles += ".menu-inner .content-md, .menu-inner .content-ios, .menu-inner ion-list .item { color: "  + data.meta.design.left_menu_text + "; background-color: "  + data.meta.design.left_menu_bg + " }";
 
     // left menu icon color
     styles += "ion-menu .list-md ion-icon, ion-menu .list-ios ion-icon { color: "  + data.meta.design.left_menu_icons + " }";

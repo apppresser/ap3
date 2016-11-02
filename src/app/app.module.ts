@@ -9,7 +9,7 @@ import {PostList} from '../pages/post-list/post-list';
 import {PostDetailsPage} from '../pages/post-details/post-details';
 import {Iframe} from '../pages/iframe/iframe';
 import {TabsPage} from '../pages/tabs/tabs';
-import {MapPage} from '../pages/google-map/google-map';
+// import {MapPage} from '../pages/google-map/google-map';
 import {CustomPage} from '../pages/custom-pages/custom-page';
 
 /* Providers */
@@ -33,7 +33,6 @@ import {DynamicComponentModule} from 'angular2-dynamic-component/index';
     PostList,
     Iframe,
     TabsPage,
-    MapPage,
     CustomPage,
     SanitizeHtml,
     PostDetailsPage,
@@ -50,7 +49,6 @@ import {DynamicComponentModule} from 'angular2-dynamic-component/index';
     PostList,
     Iframe,
     TabsPage,
-    MapPage,
     CustomPage,
     PostDetailsPage,
     ItemDetailsPage

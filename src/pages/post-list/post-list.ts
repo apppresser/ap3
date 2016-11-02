@@ -16,11 +16,11 @@ export class PostList {
   route: string;
   title: string;
 
-  constructor(public nav: NavController, navParams: NavParams, public postService: Posts, public globalvars: GlobalVars, public loadingController: LoadingController ) { 
+  constructor(public nav: NavController, navParams: NavParams, public postService: Posts, public globalvars: GlobalVars, public loadingController: LoadingController ) {
 
-    this.siteurl = this.globalvars.getUrl();
+    this.route = navParams.data.list_route;
 
-    this.route = this.siteurl + '/wp-json/' + navParams.data.list_route;
+    console.log('route: ' + this.route );
 
     this.title = navParams.data.title;
     
