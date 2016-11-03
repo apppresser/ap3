@@ -25,6 +25,7 @@ import {AppData} from '../providers/appdata/appdata';
 /* Other */
 import {SanitizeHtml} from '../pipes/sanitize-html';
 import {DynamicComponentModule} from 'angular2-dynamic-component/index';
+import {Storage} from '@ionic/storage';
 
 @NgModule({
   declarations: [ // pages, custom components, pipes, etc
@@ -61,7 +62,8 @@ import {DynamicComponentModule} from 'angular2-dynamic-component/index';
     FbConnect,
     PushService,
     AppWoo,
-    AppData
+    AppData,
+    Storage
   ]
 })
 export class AppModule {}

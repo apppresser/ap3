@@ -29,10 +29,9 @@ class DynamicContext {
 })
 export class CustomPage {
 
-	constructor( public navParams: NavParams ) {
+	constructor( public navParams: NavParams, public nav: Nav ) {
 	}
 
-	nav: any = Nav;
 	// navParams: any = NavParams;
 	templateUrl: string;
 	extraModules = [IonicModule];

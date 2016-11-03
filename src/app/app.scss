@@ -78,7 +78,7 @@ ion-content ion-card-content {
 		}
 
 		.item-block .item-inner, .item-block, ion-list-header, ion-item-divider {
-			border: none !important;
+			border: none;
 		}
 
 		.item, &> .item:last-child, &> .item-wrapper:last-child .item {
@@ -110,4 +110,17 @@ ion-content ion-card-content {
 .selection p {
 	font-size: 16px;
 	line-height: 1.3;
+}
+
+.toolbar .segment-button {
+	color: #fff;
+}
+
+ion-header .toolbar-content {
+	display: flex;
+}
+
+ion-header .toolbar-content .button-clear {
+	flex: 1;
+	color: #fff;
 }

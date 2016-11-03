@@ -1,8 +1,9 @@
-import {NavController, NavParams, LoadingController} from 'ionic-angular';
+import {NavController, NavParams, LoadingController, ToastController, ItemSliding} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
 import {PostDetailsPage} from '../post-details/post-details';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
+import {Storage} from '@ionic/storage';
 
 @Component({
   templateUrl: 'post-list.html'
@@ -15,8 +16,10 @@ export class PostList {
   siteurl: string;
   route: string;
   title: string;
+  favorites: any = [];
+  doFavorites: boolean = true;
 
-  constructor(public nav: NavController, navParams: NavParams, public postService: Posts, public globalvars: GlobalVars, public loadingController: LoadingController ) {
+  constructor(public nav: NavController, navParams: NavParams, public postService: Posts, public globalvars: GlobalVars, public loadingController: LoadingController, public storage: Storage, public toastCtrl: ToastController ) {
 
     this.route = navParams.data.list_route;
 
@@ -49,6 +52,9 @@ export class PostList {
       console.log('loadPosts: ', items);
       // Loads posts from WordPress API
       this.items = items;
+
+      this.storage.set('items', items);
+
       // load more right away
       this.loadMore(null);
       loading.dismiss();
@@ -77,7 +83,8 @@ export class PostList {
       let length = items["length"];
 
       if( length === 0 ) {
-        infiniteScroll.complete();
+        if(infiniteScroll)
+          infiniteScroll.complete();
         return;
       }
 
@@ -85,7 +92,61 @@ export class PostList {
         this.items.push( items[i] );
       }
 
-      infiniteScroll.complete();
+      this.storage.set('items', items);
+
+      if(infiniteScroll)
+        infiniteScroll.complete();
+    });
+  }
+
+  addFav(slidingItem: ItemSliding, item) {
+
+    console.log("adding fav", item);
+
+    let inArray = this.favorites.indexOf(item);
+
+    // Don't add duplicate favs
+    if( inArray < 0 ) {
+
+      this.favorites.push(item);
+
+      this.storage.set('favorites', this.favorites);
+
+      this.presentToast('Favorite Added');
+
+    }
+
+    slidingItem.close();
+
+  }
+
+  presentToast(msg) {
+    let toast = this.toastCtrl.create({
+      message: msg,
+      duration: 3000,
+      position: 'bottom'
+    });
+
+    toast.onDidDismiss(() => {
+      console.log('Dismissed toast');
+    });
+
+    toast.present();
+
+  }
+
+  showFavorites() {
+
+    if(this.favorites.length) {
+      this.items = this.favorites;
+    } else {
+      this.presentToast('No Favorites to show');
+    }
+  }
+
+  showAll() {
+    this.storage.get('items').then((items) => {
+      this.items = items;
     });
   }
 }
