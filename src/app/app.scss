@@ -116,11 +116,23 @@ ion-content ion-card-content {
 	color: #fff;
 }
 
-ion-header .toolbar-content {
+#favorites-toolbar {
+    padding: 0;
+    max-height: 40px;
+    min-height: 0;
+}
+
+#favorites-toolbar .toolbar-content {
 	display: flex;
 }
 
-ion-header .toolbar-content .button-clear {
+#favorites-toolbar .toolbar-content .button-clear {
 	flex: 1;
 	color: #fff;
+	margin: 0;
+	font-size: 1.2rem;
+}
+
+#favorites-toolbar .toolbar-background {
+	background-color: #444;
 }

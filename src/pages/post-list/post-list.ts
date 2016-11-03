@@ -114,6 +114,12 @@ export class PostList {
 
       this.presentToast('Favorite Added');
 
+    } else {
+
+      this.favorites.splice(item, 1);
+
+      this.presentToast('Favorite Removed');
+
     }
 
     slidingItem.close();

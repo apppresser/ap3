@@ -4,9 +4,11 @@
       <ion-icon name="menu"></ion-icon>
     </button>
 
+    <ion-title>{{title}}</ion-title>
+
     </ion-navbar>
 
-    <ion-toolbar *ngIf="doFavorites">
+    <ion-toolbar *ngIf="doFavorites" id="favorites-toolbar">
 
       <button ion-button clear (click)="showAll()">
         All
