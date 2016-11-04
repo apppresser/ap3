@@ -112,7 +112,7 @@ ion-content ion-card-content {
 	line-height: 1.3;
 }
 
-.toolbar .segment-button {
+.toolbar .segment-button, .tabbar .tab-button, .tabbar .tab-button[aria-selected=true] {
 	color: #fff;
 }
 

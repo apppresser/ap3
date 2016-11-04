@@ -29,10 +29,12 @@ class DynamicContext {
 })
 export class CustomPage {
 
+	pagetitle: string;
+
 	constructor( public navParams: NavParams, public nav: Nav ) {
+		this.pagetitle = navParams.data.title;
 	}
 
-	// navParams: any = NavParams;
 	templateUrl: string;
 	extraModules = [IonicModule];
 	inputData: IComponentInputData = {

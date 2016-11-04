@@ -42,6 +42,7 @@ export class MyApp {
   loggedin: boolean = false;
   loggedin_msg: string;
   showmenu: boolean = false;
+  apptitle: string;
 
   constructor(
     private platform: Platform,
@@ -61,23 +62,27 @@ export class MyApp {
     this.initializeApp();
 
     // get our app data, then use it. will return either local data, or get from api
-    this.appdata.load(this.apiurl).then( (data) => {
+    this.appdata.load(this.apiurl).then( (data: any) => {
 
       console.log('Got data', data);
 
       this.loadMenu(data);
       this.loadStyles(data);
 
+      this.apptitle = data.title;
+
     }).catch( e => {
 
       // if there's a problem, default to app-data.json
       console.log( 'problem getting appdata, getting local json file', e );
 
-      this.appdata.getData( 'app-data.json' ).then( data => {
+      this.appdata.getData( 'app-data.json' ).then( (data:any) => {
         console.log('Got local data file.');
 
         this.loadMenu(data);
         this.loadStyles(data);
+
+        this.apptitle = data.title;
 
       });
 
@@ -86,6 +91,8 @@ export class MyApp {
   }
 
   loadMenu(data) {
+
+    console.log('loadmenu', data);
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
 
     // If we have a tab menu, set that up
@@ -108,7 +115,7 @@ export class MyApp {
 
         console.debug('tab_menu slug: ' + item.slug);
 
-        this.navparams.push( { 'title': item.title, 'url': item.url, 'root': root, 'icon': item.class, 'slug': item.slug } );
+        this.navparams.push( { 'title': item.title, 'url': item.url, 'root': root, 'icon': item.class, 'slug': item.slug, 'list_route': item.list_route } );
       }
 
       this.tabs = this.navparams;
