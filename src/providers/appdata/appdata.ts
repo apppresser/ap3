@@ -35,6 +35,11 @@ export class AppData {
     if( Device.device.platform != 'iOS' && Device.device.platform != 'Android' ) {
       // if we are not on a device, don't cache data. helps preview update faster
       this.updateNeeded = true;
+
+      // add random query arg to break cache
+      // let d = new Date().toTimeString();
+      // let random = d.replace(/[\W_]+/g, "").substr(0,6);
+      // apiurl = apiurl + '?' + random;
     }
 
     return new Promise( (resolve, reject) => {

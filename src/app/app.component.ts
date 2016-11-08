@@ -184,6 +184,27 @@ export class MyApp {
     // this.nav.setRoot(page.component, page.navparams );
   }
 
+  pushPage(page) {
+
+    // this.menuProvider.openPage( page );
+
+    console.log( page.type + page.page_type);
+
+    // close the menu when clicking a link from the menu
+    this.menu.close();
+
+    if( page.type === 'apppages' && page.page_type === 'list' ) {
+      this.nav.push( PostList, page );
+    } else if( page.type === 'apppages' ) {
+      this.nav.push( CustomPage, page );
+    } else if (page.url) {
+      this.nav.push(Iframe, page);
+    } else {
+      this.nav.push(page.component, page.navparams);
+    }
+
+  }
+
   initializeApp() {
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
@@ -395,7 +416,7 @@ export class MyApp {
 
       if( data.additionalData && (<any>data).additionalData.page ) {
         // TODO: check if external link. If so, use IAB
-        this.openPage( (<any>data).additionalData.page );
+        this.pushPage( (<any>data).additionalData.page );
         return;
       }
 

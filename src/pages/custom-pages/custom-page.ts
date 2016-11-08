@@ -52,7 +52,7 @@ export class CustomPage {
 				this.nav.push(page.component, page.navparams);
 			}
 		},
-		setRoot: ( page ) => {
+		openPage: ( page ) => {
 
 		  if( page.type === 'apppages' && page.page_type === 'list' ) {
 		    this.nav.setRoot( PostList, page );

@@ -3,7 +3,7 @@
 <ion-row wrap>
   <ion-col width-50 *ngFor="let p of pages.menus.items">
   
-  <ion-card (click)="setRoot(p)">
+  <ion-card (click)="pushPage(p)">
     
     <div class="card-title"><ion-icon *ngIf="p.class" name="{{p.class}}"></ion-icon></div>
     <div class="card-subtitle">{{p.title}}</div>
@@ -25,7 +25,7 @@
 <ion-slide>
   <img src="img/ica-slidebox-img-4.png" class="slide-image"/>
   <h2 class="slide-title">Ready to Go?</h2>
-  <button ion-button large clear (click)="setRoot(pages.menus.items[1])">
+  <button ion-button large (click)="openPage(pages.menus.items[1])">
   <!-- use pages.tab_menu-items and pushPage on tabs page -->
     Continue
     <ion-icon name="arrow-forward"></ion-icon>
@@ -47,7 +47,7 @@
 <!-- <ion-row wrap>
   <ion-col width-50 *ngFor="let p of pages">
   
-  <ion-card (click)="setRoot(p)">
+  <ion-card (click)="openPage(p)">
     
     <div class="card-title"><ion-icon *ngIf="p.class" name="{{p.class}}"></ion-icon></div>
     <div class="card-subtitle">{{p.title}}</div>
