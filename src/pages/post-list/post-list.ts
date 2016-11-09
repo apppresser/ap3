@@ -17,15 +17,19 @@ export class PostList {
   route: string;
   title: string;
   favorites: any = [];
-  doFavorites: boolean = true;
+  doFavorites: boolean = false;
 
   constructor(public nav: NavController, navParams: NavParams, public postService: Posts, public globalvars: GlobalVars, public loadingController: LoadingController, public storage: Storage, public toastCtrl: ToastController ) {
 
     this.route = navParams.data.list_route;
 
-    console.log('route: ' + this.route );
-
     this.title = navParams.data.title;
+
+    if( navParams.data.favorites && navParams.data.favorites === "true" ) {
+      this.doFavorites = true;
+    }
+
+    console.log( 'favorites' + navParams.data.favorites );
     
   }
 
