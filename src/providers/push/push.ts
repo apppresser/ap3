@@ -19,10 +19,12 @@ export class PushService {
   api: string;
   platform: string;
   appid: string;
+  iframe: any;
 
   constructor( public http: Http, public globalvars: GlobalVars ) {
   }
 
+  // Subscribe for push through our API service
   subscribeDevice(token) {
 
     this.platform = Device.device.platform;
@@ -46,6 +48,28 @@ export class PushService {
           error => console.warn('subscribeDevice error' + error) 
         );
     });
+  }
+
+  // sends device id to WordPress to save as user meta, which we use later to send pushes to specific devices.
+  sendDeviceToWp( id, ajaxurl ) {
+
+    let params = '?action=ap3_add_device_id&endpoint=' + id;
+
+    console.log('sending device id to wp: ' + ajaxurl + params );
+
+    return new Promise(resolve => {
+
+      this.http.post( ajaxurl + params, null, null )
+        .map(res => res.json())
+        .subscribe(
+          data => {
+          resolve(data);
+          },
+          error => alert('sendDeviceToWp error' + error) 
+        );
+    });
+
+
   }
 
 }

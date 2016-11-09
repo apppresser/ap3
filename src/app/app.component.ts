@@ -115,7 +115,7 @@ export class MyApp {
 
         console.debug('tab_menu slug: ' + item.slug);
 
-        this.navparams.push( { 'title': item.title, 'url': item.url, 'root': root, 'icon': item.class, 'slug': item.slug, 'list_route': item.list_route } );
+        this.navparams.push( { 'title': item.title, 'url': item.url, 'root': root, 'icon': item.class, 'slug': item.slug, 'list_route': item.list_route, 'favorites': item.favorites } );
       }
 
       this.tabs = this.navparams;
@@ -328,6 +328,8 @@ export class MyApp {
 
         this.fbconnect.login();
 
+        this.maybeSendPushId( data.ajaxurl );
+
       } else if ( data.paypal_url ) {
 
         this.appwoo.paypal( data.paypal_url, data.redirect );
@@ -345,6 +347,8 @@ export class MyApp {
           window.localStorage.setItem( 'logged_in_msg', res[0] );
           this.loggedin_msg = res[0];
         }
+
+        this.maybeSendPushId( data.ajaxurl );
 
       }
 
@@ -406,8 +410,12 @@ export class MyApp {
     push.on('registration', (data) => {
 
       // kick off aws stuff
-      this.pushService.subscribeDevice(data.registrationId).then( result => {
+      this.pushService.subscribeDevice(data.registrationId).then( (result:string) => {
         console.log(result);
+        var newresult = JSON.parse( result );
+
+        window.localStorage.setItem('endpointArn', newresult.endpointArn );
+
       });
 
     });
@@ -431,6 +439,19 @@ export class MyApp {
     push.on('error', (e) => {
       console.log(e.message);
     });
+
+  }
+
+  maybeSendPushId( ajaxurl ) {
+
+    let id = window.localStorage.getItem('endpointArn' );
+
+    if( id ) {
+      // ajax call to save this to user meta
+      this.pushService.sendDeviceToWp(id, ajaxurl).then( result => {
+        console.log(result);
+      });
+    }
 
   }
 
