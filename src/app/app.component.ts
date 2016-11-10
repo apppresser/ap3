@@ -43,6 +43,7 @@ export class MyApp {
   loggedin_msg: string;
   showmenu: boolean = false;
   apptitle: string;
+  introshown: any;
 
   constructor(
     private platform: Platform,
@@ -131,10 +132,9 @@ export class MyApp {
       this.showmenu = true;
 
       // Add pages manually here, can use different components like this...
-      // let d = { 'title': 'Map', 'url': '', 'component': MapPage };
       // let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': { slug: 'custom' } };
 
-      // this.pages.push( d );
+      // this.pages.push( e );
 
       // set the home page to the proper component
       if( this.tabs ) {
@@ -159,6 +159,23 @@ export class MyApp {
 
     }
 
+    this.maybeShowIntro();
+
+  }
+
+  // If there is a page called "Intro", show it the first time the app is used
+  maybeShowIntro() {
+
+    this.introshown = window.localStorage.getItem('app-intro-shown');
+
+    if( this.introshown === "true" ) 
+      return;
+
+    let intro = { 'title': "Introduction", 'component': CustomPage, 'class': "", 'navparams': { 'slug': 'intro' } };
+
+    this.nav.setRoot( CustomPage, intro.navparams );
+
+    window.localStorage.setItem('app-intro-shown', "true" );
   }
 
   openPage(page) {
@@ -223,6 +240,7 @@ export class MyApp {
       setTimeout( () => {
         // run this in the background, then we can update the data on next app load if needed
         this.appdata.checkForUpdates( this.apiurl );
+
       }, 5000 );
       
 
