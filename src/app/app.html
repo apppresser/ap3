@@ -16,7 +16,7 @@
         </ion-avatar>
         <p><b>{{loggedin_msg}}</b></p>
       </ion-list-header>
-      <button [ngClass]="p.hidden" ion-item *ngFor="let p of pages" (click)="openPage(p)">
+      <button [ngClass]="p.extra_classes" ion-item *ngFor="let p of pages" (click)="openPage(p)">
         <ion-icon *ngIf="p.class" name="{{p.class}}" item-left></ion-icon>
         {{p.title}}
       </button>

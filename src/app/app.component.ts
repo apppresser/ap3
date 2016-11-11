@@ -159,7 +159,11 @@ export class MyApp {
 
     }
 
-    this.maybeShowIntro();
+    let menustring = JSON.stringify( data.menus.items ) + JSON.stringify( data.tab_menu.items );
+
+    // Only show the intro if it's a menu item
+    if( menustring.indexOf("Intro") >= 0 )
+      this.maybeShowIntro();
 
   }
 
@@ -186,6 +190,11 @@ export class MyApp {
 
     // close the menu when clicking a link from the menu
     this.menu.close();
+
+    if( page.target === '_blank' ) {
+      this.openIab( page.url, page.target, null );
+      return;
+    }
 
     if( page.type === 'apppages' && page.page_type === 'list' ) {
       this.nav.setRoot( PostList, page );
@@ -375,6 +384,7 @@ export class MyApp {
   }
 
   openIab( link, target, options = null ) {
+    console.log( 'doing iab ' + link);
     window.open(link, target, options );
   }
 
@@ -441,7 +451,18 @@ export class MyApp {
     push.on('notification', (data) => {
 
       if( data.additionalData && (<any>data).additionalData.page ) {
-        // TODO: check if external link. If so, use IAB
+
+        let page = (<any>data).additionalData.page;
+
+        console.log(page);
+
+        // if page is external, fire the in app browser
+        if( page.target === '_blank' ) {
+          this.openIab( page.url, page.target );
+          return;
+        }
+
+        // if they included an app page, load the page
         this.pushPage( (<any>data).additionalData.page );
         return;
       }
