@@ -1,6 +1,6 @@
 /* Framework */
 import {ViewChild, Component} from '@angular/core';
-import {Platform, MenuController, Nav} from 'ionic-angular';
+import {Platform, MenuController, Nav, ToastController} from 'ionic-angular';
 import {DomSanitizer} from '@angular/platform-browser';
 
 /* Pages */
@@ -11,7 +11,7 @@ import {TabsPage} from '../pages/tabs/tabs';
 // import {MapPage} from '../pages/google-map/google-map';
 import {CustomPage} from '../pages/custom-pages/custom-page';
 
-/* Providers (make sure to add to ionicBootstrap below) */
+/* Providers (make sure to add to app.module.ts providers too) */
 // import {MenuProvider} from '../providers/menu/menu';
 import {AppCamera} from '../providers/camera/app-camera';
 // import {Posts} from '../providers/posts/posts';
@@ -21,9 +21,10 @@ import {FbConnect} from '../providers/facebook/facebook';
 import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
+// import {AudioPlayer} from '../providers/audioplayer/audioplayer';
 
 /* Native */
-import {StatusBar, SocialSharing, Device, InAppBrowser, Splashscreen, Push, Dialogs} from 'ionic-native';
+import {StatusBar, SocialSharing, Device, InAppBrowser, Splashscreen, Push, Dialogs, Network} from 'ionic-native';
 
 @Component({
   templateUrl: 'app.html'
@@ -44,6 +45,7 @@ export class MyApp {
   showmenu: boolean = false;
   apptitle: string;
   introshown: any;
+  networkState: any;
 
   constructor(
     private platform: Platform,
@@ -55,7 +57,8 @@ export class MyApp {
     private sanitizer: DomSanitizer,
     private pushService: PushService,
     private appwoo: AppWoo,
-    private appdata: AppData
+    private appdata: AppData,
+    public toastCtrl: ToastController
   ) {
 
     this.apiurl = globalvars.getApi();
@@ -142,13 +145,12 @@ export class MyApp {
       } else if( !this.tabs && data.menus.items[0].type === 'apppages' ) {
         
         // if it's a list page, use PostList component
-        if( data.menus.items[0].page_type === 'list' )
+        if( data.menus.items[0].page_type === 'list' ) {
           this.nav.setRoot( PostList, data.menus.items[0] );
-
-        console.debug('CustomPage data: ' + data.menus.items[0] );
-
-        // otherwise use CustomPage
-        this.nav.setRoot( CustomPage, data.menus.items[0] );
+        } else {
+          // otherwise use CustomPage
+          this.nav.setRoot( CustomPage, data.menus.items[0] );
+        }
 
       } else {
 
@@ -184,10 +186,6 @@ export class MyApp {
 
   openPage(page) {
 
-    // this.menuProvider.openPage( page );
-
-    console.log( page.type + page.page_type);
-
     // close the menu when clicking a link from the menu
     this.menu.close();
 
@@ -206,15 +204,9 @@ export class MyApp {
       this.nav.setRoot(page.component, page.navparams);
     }
 
-    // when dynamic components are enabled, delete above code and use this instead
-    // this.nav.setRoot(page.component, page.navparams );
   }
 
   pushPage(page) {
-
-    // this.menuProvider.openPage( page );
-
-    console.log( page.type + page.page_type);
 
     // close the menu when clicking a link from the menu
     this.menu.close();
@@ -239,6 +231,8 @@ export class MyApp {
 
       Splashscreen.hide();
 
+      this.doConnectionEvents();
+
       this.loggedin_msg = window.localStorage.getItem( 'logged_in_msg' );
 
       this.attachListeners();
@@ -251,8 +245,23 @@ export class MyApp {
         this.appdata.checkForUpdates( this.apiurl );
 
       }, 5000 );
-      
 
+    });
+
+  }
+
+  doConnectionEvents() {
+
+    this.networkState = Network.connection;
+
+    console.log('Network state: ' + this.networkState );
+
+    if( this.networkState === 'none' || this.networkState === 'unknown' ) {
+      this.presentToast('You appear to be offline, app functionality may be limited.');
+    }
+
+    let disconnectSubscription = Network.onDisconnect().subscribe(() => {
+      this.presentToast('Having trouble connecting, app functionality may be limited.');
     });
 
   }
@@ -363,11 +372,7 @@ export class MyApp {
 
       } else if( data.loggedin ) {
 
-        console.log('loggedin msg', data);
-
         this.loggedin = ( data.loggedin === "1" ) ? true : false;
-
-        console.log( 'loggedin? ' + this.loggedin );
 
         if( data.message ) {
           let res = data.message.split(",");
@@ -384,8 +389,9 @@ export class MyApp {
   }
 
   openIab( link, target, options = null ) {
-    console.log( 'doing iab ' + link);
+
     window.open(link, target, options );
+
   }
 
   maybeDoAds() {
@@ -454,8 +460,6 @@ export class MyApp {
 
         let page = (<any>data).additionalData.page;
 
-        console.log(page);
-
         // if page is external, fire the in app browser
         if( page.target === '_blank' ) {
           this.openIab( page.url, page.target );
@@ -491,6 +495,22 @@ export class MyApp {
         console.log(result);
       });
     }
+
+  }
+
+  presentToast(msg) {
+
+    let toast = this.toastCtrl.create({
+      message: msg,
+      duration: 5000,
+      position: 'bottom'
+    });
+
+    // toast.onDidDismiss(() => {
+    //   console.log('Dismissed toast');
+    // });
+
+    toast.present();
 
   }
 

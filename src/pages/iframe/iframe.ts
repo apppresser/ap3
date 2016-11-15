@@ -17,9 +17,9 @@ export class Iframe {
         this.title = navParams.data.title;
 
         if ( navParams.data.url.indexOf('?') >= 0 ) {
-            this.param = '&appp=2';
+            this.param = '&appp=3';
         } else {
-            this.param = '?appp=2';
+            this.param = '?appp=3';
         }
 
         this.url = this.sanitizer.bypassSecurityTrustResourceUrl( navParams.data.url + this.param );

@@ -13,9 +13,9 @@ export class GlobalVars {
 
   data: any = null;
   // url should be WP site with AP installed, dynamically changes based on build form
-  // appid: string = '203';
-  // apiurl: string = 'https://staging.myapppresser.com/team/'
-  // endpoint: string = 'wp-json/ap3/v1/app/203';
+  // appid: string = '442';
+  // apiurl: string = 'http://www.myapppresser.dev/test/'
+  // endpoint: string = 'wp-json/ap3/v1/app/442';
   appid: string = '[[appp_app_id]]';
   apiurl: string = '[[myappp_url]]'
   endpoint: string = 'wp-json/ap3/v1/app/[[appp_app_id]]';
@@ -33,29 +33,6 @@ export class GlobalVars {
 
   getAppId() {
     return this.appid;
-  }
-
-  // not used
-  getSettings() {
-
-    // need appp=2 to retrieve app theme menu
-    let settingsUrl = this.api + 'settings?appp=2';
-
-    return new Promise(resolve => {
-      // We're using Angular Http provider to request the data,
-      // then on the response it'll map the JSON data to a parsed JS object.
-      // Next we process the data and resolve the promise with the new data.
-
-      this.http.get( settingsUrl )
-        .map(res => res.json())
-        .subscribe(data => {
-          // we've got back the data
-          this.data = data;
-          console.warn(data);
-          resolve(this.data);
-        });
-    });
-
   }
 
 }

@@ -4,13 +4,8 @@
   "homepage": "https://apppresser.com/",
   "private": true,
   "scripts": {
-    "build": "ionic-app-scripts build --dev",
-    "watch": "ionic-app-scripts watch",
-    "serve:before": "watch",
-    "emulate:before": "build",
-    "deploy:before": "build",
-    "build:before": "build",
-    "run:before": "build"
+    "ionic:build": "ionic-app-scripts build --dev",
+    "ionic:serve": "ionic-app-scripts serve"
   },
   "dependencies": {
     "@angular/common": "2.1.1",
@@ -33,7 +28,7 @@
     "zone.js": "0.6.21"
   },
   "devDependencies": {
-    "@ionic/app-scripts": "0.0.36",
+    "@ionic/app-scripts": "0.0.43",
     "typescript": "^2.0.3"
   },
   "cordovaPlugins": [
