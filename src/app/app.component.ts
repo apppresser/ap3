@@ -36,7 +36,6 @@ export class MyApp {
   pages: any;
   styles: any;
   apiurl: string;
-  apppSettings: any;
   login: boolean;
   navparams: any = [];
   tabs: any;
@@ -72,6 +71,7 @@ export class MyApp {
 
       this.loadMenu(data);
       this.loadStyles(data);
+      this.maybeDoAds(data);
 
       this.apptitle = data.title;
 
@@ -85,6 +85,7 @@ export class MyApp {
 
         this.loadMenu(data);
         this.loadStyles(data);
+        this.maybeDoAds(data);
 
         this.apptitle = data.title;
 
@@ -228,8 +229,10 @@ export class MyApp {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       StatusBar.styleDefault();
-
-      Splashscreen.hide();
+      
+      setTimeout(function() {
+        Splashscreen.hide();
+      }, 1000);
 
       this.doConnectionEvents();
 
@@ -382,6 +385,10 @@ export class MyApp {
 
         this.maybeSendPushId( data.ajaxurl );
 
+      } else if( e.data === 'checkin_success' ) {
+
+        this.presentToast('Check in successful!');
+        
       }
 
     }, false); // end eventListener
@@ -394,39 +401,37 @@ export class MyApp {
 
   }
 
-  maybeDoAds() {
+  maybeDoAds(data) {
 
-    if(!Device.device.platform ) return;
-
-    let ad_units: { ios: any, android: any } = null;
-    ad_units.ios  = { banner: this.apppSettings.admob_ios_banner,
-      interstitial: this.apppSettings.admob_ios_interstitial };
-    ad_units.android = { banner: this.apppSettings.admob_android_banner,
-      interstitial: this.apppSettings.admob_android_interstitial };
+    // only show ads on a device
+    if( !Device.device.platform ) 
+      return;
 
     // If we don't have any ads set, stop
-    if( ad_units.ios.banner + ad_units.ios.interstitial + ad_units.android.banner + ad_units.android.interstitial === '' ) {
-      console.log('no ads, bail');
+    if( data.ads.ios === '' && data.ads.android === '' ) {
+      console.log('No ads');
       return;
     }
 
-    this.appads.setOptions( this.apppSettings );
+    this.appads.setOptions();
 
-    // If we have a banner id, show on the proper platform
-    if( Device.device.platform === 'iOS' && ad_units.ios.banner != '' ) {
-      this.appads.createBanner( ad_units.ios.banner );
-    } else if( Device.device.platform === 'Android' && ad_units.android.banner != '' ) {
-      this.appads.createBanner( ad_units.android.banner );
+    if( Device.device.platform === 'iOS' && data.ads.ios.banner != '' ) {
+      this.appads.createBanner( data.ads.ios.banner );
+    }
+     
+    if( Device.device.platform === 'Android' && data.ads.android.banner != '' ) {
+      this.appads.createBanner( data.ads.android.banner );
     }
 
     // show interstitial like this
-    // this.appads.interstitial( ad_units.ios.interstitial );
+    // this.appads.interstitial( data.ads.ios.interstitial );
 
   }
 
   maybeDoPush() {
 
-    // TODO: check for something here, like if(!navigator.push) return;
+    if( !Push )
+      return;
 
     let push = Push.init({
       android: {

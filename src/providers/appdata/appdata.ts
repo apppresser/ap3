@@ -15,31 +15,28 @@ export class AppData {
   updateNeeded: boolean = false;
 
   constructor(public http: Http) {
-    let item = window.localStorage.getItem( 'myappp' );
-    this.local = JSON.parse( item );
   }
 
   /*
    * Get data in this priority:
-   * 1. API data
-   * 2. localStorage
+   * 1. localStorage
+   * 2. API
    * 3. app-data.json file
    * If anything fails, we go to the next one
    *
    * App is built with app-data.json file, which is never updated. Only API data and localStorage are updated, so falling back to app-data.json might break stuff, so it's a last resort.
+   * If we are not on a device, always get data from the API. This makes sure the preview shows latest changes.
    */
   load( apiurl ) {
+
+    let item = window.localStorage.getItem( 'myappp' );
+    this.local = JSON.parse( item );
 
     this.updateNeeded = ( window.localStorage.getItem( 'myappp_update' ) == 'true' ) ? true : false;
 
     if( Device.device.platform != 'iOS' && Device.device.platform != 'Android' ) {
       // if we are not on a device, don't cache data. helps preview update faster
       this.updateNeeded = true;
-
-      // add random query arg to break cache
-      // let d = new Date().toTimeString();
-      // let random = d.replace(/[\W_]+/g, "").substr(0,6);
-      // apiurl = apiurl + '?' + random;
     }
 
     return new Promise( (resolve, reject) => {
@@ -61,6 +58,8 @@ export class AppData {
         });
 
       } else {
+
+        console.log('get data from API');
 
         // get data from api
         this.getData( apiurl ).then( data => {

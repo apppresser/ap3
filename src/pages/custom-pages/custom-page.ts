@@ -42,6 +42,11 @@ export class CustomPage {
 		pages: JSON.parse( window.localStorage.getItem( 'myappp' ) ),
 		pushPage: (page) => {
 
+			if( page.target === '_blank' ) {
+		      window.open( page.url, page.target, null );
+		      return;
+		    }
+
 			if( page.type === 'apppages' && page.page_type === 'list' ) {
 				this.nav.push( PostList, page );
 			} else if( page.type === 'apppages' ) {
@@ -54,15 +59,20 @@ export class CustomPage {
 		},
 		openPage: ( page ) => {
 
-		  if( page.type === 'apppages' && page.page_type === 'list' ) {
-		    this.nav.setRoot( PostList, page );
-		  } else if( page.type === 'apppages' ) {
-		    this.nav.setRoot( CustomPage, page );
-		  } else if (page.url) {
-		    this.nav.setRoot(Iframe, page);
-		  } else {
-		    this.nav.setRoot(page.component, page.navparams);
-		  }
+			if( page.target === '_blank' ) {
+			  window.open( page.url, page.target, null );
+			  return;
+			}
+
+			if( page.type === 'apppages' && page.page_type === 'list' ) {
+				this.nav.setRoot( PostList, page );
+			} else if( page.type === 'apppages' ) {
+				this.nav.setRoot( CustomPage, page );
+			} else if (page.url) {
+				this.nav.setRoot(Iframe, page);
+			} else {
+				this.nav.setRoot(page.component, page.navparams);
+			}
 
 		}
 	};

@@ -13,31 +13,33 @@ export class AppAds {
   constructor() {
   }
 
-  setOptions(options) {
+  setOptions() {
 
   	if( !AdMob )
   		return;
 
-  	let isTesting = ( options.admob_isTesting === 'on' );
+  	let isTesting = false;
   	// set position to top (2) or bottom (8) https://github.com/floatinghotpot/cordova-admob-pro/wiki/1.2-Method:-AdMob.setOptions()
-  	let pos = ( options.admob_bannerAtTop === 'on' ) ? 2 : 8;
+  	let pos = 8;
 
   	AdMob.setOptions( {
       position: pos,
-      offsetTopBar: true, // set to true to avoid ios7 status bar overlap 
+      offsetTopBar: false, // set to true to avoid ios7 status bar overlap 
       isTesting: isTesting // receiving test ad
     });
   }
 
   createBanner( id ) {
 
+    console.log('create banner ' + id);
+
   	if( !AdMob )
       return;
 
   	AdMob.createBanner({
-	  adId: id,
-	  autoShow: true
-	});
+  	  adId: id,
+  	  autoShow: true
+  	});
 
   }
 
