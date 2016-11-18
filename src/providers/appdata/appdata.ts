@@ -41,14 +41,14 @@ export class AppData {
 
     return new Promise( (resolve, reject) => {
 
-      if( this.local && !this.updateNeeded ) {
+      if( this.local && this.updateNeeded != true ) {
 
         console.log('using localStorage data');
 
         // send back localstorage item
         resolve(this.local);
 
-      } else if( !this.local && !this.updateNeeded ) {
+      } else if( !this.local && this.updateNeeded != true ) {
 
         console.log('using app-data.json');
 

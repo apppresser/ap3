@@ -60,20 +60,47 @@ export class MyApp {
     public toastCtrl: ToastController
   ) {
 
-    this.apiurl = globalvars.getApi();
-
     this.initializeApp();
 
+  }
+
+  initializeApp() {
+    this.platform.ready().then(() => {
+      // Okay, so the platform is ready and our plugins are available.
+      // Here you can do any higher level native things you might need.
+      StatusBar.styleDefault();
+
+      this.apiurl = this.globalvars.getApi();
+      
+      this.fetchData();
+
+      this.doConnectionEvents();
+
+      this.loggedin_msg = window.localStorage.getItem( 'logged_in_msg' );
+
+      this.attachListeners();
+
+      
+      this.maybeDoPush();
+      
+
+      setTimeout( () => {
+        // run this in the background, then we can update the data on next app load if needed
+        this.appdata.checkForUpdates( this.apiurl );
+
+      }, 5000 );
+
+    });
+
+  }
+
+  fetchData() {
     // get our app data, then use it. will return either local data, or get from api
     this.appdata.load(this.apiurl).then( (data: any) => {
 
       console.log('Got data', data);
 
-      this.loadMenu(data);
-      this.loadStyles(data);
-      this.maybeDoAds(data);
-
-      this.apptitle = data.title;
+      this.afterData(data);
 
     }).catch( e => {
 
@@ -83,15 +110,21 @@ export class MyApp {
       this.appdata.getData( 'app-data.json' ).then( (data:any) => {
         console.log('Got local data file.');
 
-        this.loadMenu(data);
-        this.loadStyles(data);
-        this.maybeDoAds(data);
-
-        this.apptitle = data.title;
+        this.afterData(data);
 
       });
 
     });
+  }
+
+  afterData(data) {
+
+    Splashscreen.hide();
+    this.loadMenu(data);
+    this.loadStyles(data);
+    this.maybeDoAds(data);
+
+    this.apptitle = data.title;
 
   }
 
@@ -221,35 +254,6 @@ export class MyApp {
     } else {
       this.nav.push(page.component, page.navparams);
     }
-
-  }
-
-  initializeApp() {
-    this.platform.ready().then(() => {
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
-      StatusBar.styleDefault();
-      
-      setTimeout(function() {
-        Splashscreen.hide();
-      }, 1000);
-
-      this.doConnectionEvents();
-
-      this.loggedin_msg = window.localStorage.getItem( 'logged_in_msg' );
-
-      this.attachListeners();
-
-      if( Device.device.platform === 'iOS' || Device.device.platform === 'Android' )
-        this.maybeDoPush();
-
-      setTimeout( () => {
-        // run this in the background, then we can update the data on next app load if needed
-        this.appdata.checkForUpdates( this.apiurl );
-
-      }, 5000 );
-
-    });
 
   }
 
@@ -388,7 +392,7 @@ export class MyApp {
       } else if( e.data === 'checkin_success' ) {
 
         this.presentToast('Check in successful!');
-        
+
       }
 
     }, false); // end eventListener
@@ -430,21 +434,32 @@ export class MyApp {
 
   maybeDoPush() {
 
-    if( !Push )
-      return;
+    let push = null;
 
-    let push = Push.init({
-      android: {
-          senderID: "[[gcm_sender]]"
-      },
-      ios: {
-          alert: "true",
-          badge: true,
-          clearBadge: true,
-          sound: 'false'
-      },
-      windows: {}
-    });
+    try {
+
+      push = Push.init({
+        android: {
+            senderID: "[[gcm_sender]]"
+        },
+        ios: {
+            alert: "true",
+            badge: true,
+            clearBadge: true,
+            sound: 'false'
+        },
+        windows: {}
+      });
+
+    } catch(err) {
+      console.log(err);
+      return;
+    }
+
+    console.log(push);
+
+    if( push.error )
+      return;
 
     push.on('registration', (data) => {
 
