@@ -131,4 +131,3 @@ export class AppData {
     console.warn(err);
   }
 }
-

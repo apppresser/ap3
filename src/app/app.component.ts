@@ -293,7 +293,7 @@ export class MyApp {
     styles += "ion-menu .list-md ion-icon, ion-menu .list-ios ion-icon { color: "  + data.meta.design.left_menu_icons + " }";
 
     // body text and background
-    styles += "ion-page ion-content, ion-page ion-list .item { color: "  + data.meta.design.text_color + "; background-color: "  + data.meta.design.body_bg + " }";
+    styles += ".ion-page ion-content, .ion-page ion-list .item { color: "  + data.meta.design.text_color + "; background-color: "  + data.meta.design.body_bg + " }";
     styles += "p, .item p { color: "  + data.meta.design.text_color + " }";
 
     // buttons

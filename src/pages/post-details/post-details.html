@@ -16,7 +16,7 @@
 
     <div *ngIf="selectedItem.appp && selectedItem.appp.post_detail && selectedItem.appp.post_detail.below_title" [innerHTML]="selectedItem.appp.post_detail.below_title"></div>
 
-    <div *ngIf="selectedItem.content.rendered" [innerHTML]="selectedItem.content.rendered"></div>
+    <div *ngIf="content" [innerHTML]="content"></div>
 
     <div *ngIf="selectedItem.appp && selectedItem.appp.post_detail && selectedItem.appp.post_detail.below_content" [innerHTML]="selectedItem.appp.post_detail.below_content | sanitizeHtml"></div>
  </div>
