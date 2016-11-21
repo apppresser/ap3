@@ -1,7 +1,9 @@
-import {NavParams, Nav, LoadingController} from 'ionic-angular';
+import {NavParams, Nav, LoadingController, ModalController} from 'ionic-angular';
 import {Component} from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import {Geolocation} from 'ionic-native';
+
+import {MediaPlayer} from '../media-player/media-player';
 
 @Component({
     templateUrl: 'iframe.html'
@@ -13,7 +15,12 @@ export class Iframe {
     iframe: any;
     param: string;
     loaded: boolean = false;
-    constructor(public navParams: NavParams, public loadingController: LoadingController, public sanitizer: DomSanitizer) {
+    constructor(
+        public navParams: NavParams, 
+        public loadingController: LoadingController, 
+        public sanitizer: DomSanitizer,
+        public modalCtrl: ModalController
+        ) {
         this.title = navParams.data.title;
 
         if ( navParams.data.url.indexOf('?') >= 0 ) {
@@ -48,6 +55,8 @@ export class Iframe {
         // When WP site loads, attach our click events
         window.addEventListener('message', (e) => {
 
+            var parsed = JSON.parse( e.data );
+
             if(e.data === 'site_loaded') {
                 loading.dismiss();
             } else if( e.data === 'reload_frame' ) {
@@ -55,6 +64,8 @@ export class Iframe {
                 this.findIframe();
                 let src = this.iframe.src;
                 this.iframe.src = src;
+            } else if( parsed.media ) {
+                this.mediaModal( parsed.media, parsed.img );
             }
         });
 
@@ -124,5 +135,12 @@ export class Iframe {
             this.iframe.contentWindow.postMessage({ lat: latitude, long: longitude }, '*');
 
         });
+    }
+
+    mediaModal( src, img = null ) {
+
+        let modal = this.modalCtrl.create(MediaPlayer, {source: src, image: img});
+        modal.present();
+
     }
 }

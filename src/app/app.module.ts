@@ -11,6 +11,7 @@ import {Iframe} from '../pages/iframe/iframe';
 import {TabsPage} from '../pages/tabs/tabs';
 // import {MapPage} from '../pages/google-map/google-map';
 import {CustomPage} from '../pages/custom-pages/custom-page';
+import {MediaPlayer} from '../pages/media-player/media-player';
 
 /* Providers */
 import {AppCamera} from '../providers/camera/app-camera';
@@ -27,6 +28,13 @@ import {SanitizeHtml} from '../pipes/sanitize-html';
 import {DynamicComponentModule} from 'angular2-dynamic-component/index';
 import {Storage} from '@ionic/storage';
 
+/* Videogular */
+import {BrowserModule} from '@angular/platform-browser';
+import {VgCore} from 'videogular2/core';
+import {VgControlsModule} from 'videogular2/controls';
+import {VgOverlayPlayModule} from 'videogular2/overlay-play';
+import {VgBufferingModule} from 'videogular2/buffering';
+
 @NgModule({
   declarations: [ // pages, custom components, pipes, etc
     MyApp,
@@ -37,11 +45,17 @@ import {Storage} from '@ionic/storage';
     CustomPage,
     SanitizeHtml,
     PostDetailsPage,
-    ItemDetailsPage
+    ItemDetailsPage,
+    MediaPlayer
   ],
   imports: [
     IonicModule.forRoot(MyApp),
-    DynamicComponentModule
+    DynamicComponentModule,
+    BrowserModule,
+    VgCore,
+    VgControlsModule,
+    VgOverlayPlayModule,
+    VgBufferingModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [ // pages go here
@@ -52,7 +66,8 @@ import {Storage} from '@ionic/storage';
     TabsPage,
     CustomPage,
     PostDetailsPage,
-    ItemDetailsPage
+    ItemDetailsPage,
+    MediaPlayer
   ],
   providers: [
     AppCamera,

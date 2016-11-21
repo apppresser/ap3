@@ -21,7 +21,6 @@ import {FbConnect} from '../providers/facebook/facebook';
 import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
-// import {AudioPlayer} from '../providers/audioplayer/audioplayer';
 
 /* Native */
 import {StatusBar, SocialSharing, Device, InAppBrowser, Splashscreen, Push, Dialogs, Network} from 'ionic-native';
@@ -153,7 +152,7 @@ export class MyApp {
 
         console.debug('tab_menu slug: ' + item.slug);
 
-        this.navparams.push( { 'title': item.title, 'url': item.url, 'root': root, 'icon': item.class, 'slug': item.slug, 'list_route': item.list_route, 'favorites': item.favorites } );
+        this.navparams.push( { 'title': item.title, 'url': item.url, 'root': root, 'icon': item.class, 'slug': item.slug, 'list_route': item.list_route, 'favorites': item.favorites, 'extra_classes': item.extra_classes } );
       }
 
       this.tabs = this.navparams;

@@ -1,6 +1,8 @@
-import {NavController, NavParams} from 'ionic-angular';
+import {NavController, NavParams, ModalController} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
+
+import {MediaPlayer} from '../media-player/media-player';
 
 @Component({
   templateUrl: 'post-details.html'
@@ -12,7 +14,8 @@ export class PostDetailsPage {
   constructor(
     public nav: NavController, 
     navParams: NavParams, 
-    public sanitizer: DomSanitizer
+    public sanitizer: DomSanitizer,
+    public modalCtrl: ModalController
     ) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = navParams.get('item');
@@ -20,9 +23,15 @@ export class PostDetailsPage {
     this.content = sanitizer.bypassSecurityTrustHtml( this.selectedItem.content.rendered );
   }
 
-  onPageDidEnter() {
-	  // Anything that needs to run everytime the view is entered will go here
-	  console.log( this.selectedItem );
+  ionViewDidLoad() {
+
+  }
+
+  mediaModal( src, img = null ) {
+
+    let modal = this.modalCtrl.create(MediaPlayer, {source: src, image: img});
+    modal.present();
+
   }
 
 }

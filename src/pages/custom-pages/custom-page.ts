@@ -1,11 +1,13 @@
 import {Component} from '@angular/core';
 import {Iframe} from '../../pages/iframe/iframe';
 import {PostList} from '../../pages/post-list/post-list';
-import {Nav, NavParams} from 'ionic-angular';
+import {Nav, NavParams, ModalController} from 'ionic-angular';
 
 import {IonicModule} from 'ionic-angular';
 
 import {IComponentInputData} from 'angular2-dynamic-component/index';
+
+import {MediaPlayer} from '../media-player/media-player';
 
 class DynamicContext {
   value: string;
@@ -31,7 +33,10 @@ export class CustomPage {
 
 	pagetitle: string;
 
-	constructor( public navParams: NavParams, public nav: Nav ) {
+	constructor( 
+		public navParams: NavParams, 
+		public nav: Nav,
+		public modalCtrl: ModalController ) {
 		this.pagetitle = navParams.data.title;
 	}
 
@@ -73,6 +78,12 @@ export class CustomPage {
 			} else {
 				this.nav.setRoot(page.component, page.navparams);
 			}
+
+		},
+		mediaModal: ( src, img = null ) => {
+
+			let modal = this.modalCtrl.create(MediaPlayer, {source: src, image: img});
+			modal.present();
 
 		}
 	};
