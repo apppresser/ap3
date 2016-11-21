@@ -11,9 +11,9 @@
   <ion-content>
     <ion-list>
       <ion-list-header text-wrap>
-        <ion-avatar>
+        <!-- <ion-avatar>
           <img src="img/icon-user-default.png">
-        </ion-avatar>
+        </ion-avatar> -->
         <p><b>{{loggedin_msg}}</b></p>
       </ion-list-header>
       <button [ngClass]="p.extra_classes" ion-item *ngFor="let p of pages" (click)="openPage(p)">

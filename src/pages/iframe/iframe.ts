@@ -55,7 +55,7 @@ export class Iframe {
         // When WP site loads, attach our click events
         window.addEventListener('message', (e) => {
 
-            var parsed = JSON.parse( e.data );
+            
 
             if(e.data === 'site_loaded') {
                 loading.dismiss();
@@ -64,9 +64,17 @@ export class Iframe {
                 this.findIframe();
                 let src = this.iframe.src;
                 this.iframe.src = src;
-            } else if( parsed.media ) {
-                this.mediaModal( parsed.media, parsed.img );
+            } else if( e.data.indexOf('{') === 0 ) {
+
+                // if it's a json object, parse it
+                var parsed = JSON.parse( e.data );
+
+                if( parsed.media ) {
+                    this.mediaModal( parsed.media, parsed.img );
+                }
+
             }
+            
         });
 
         setTimeout(() => {

@@ -50,7 +50,7 @@ export class AppCamera {
       this.appbuddy = true;
     }
 
-    // console.log('appbuddy app-camera.ts', this.appbuddy);
+    this.options.sourceType = Camera.PictureSourceType.CAMERA;
 
     this.doCamera();
 

@@ -81,12 +81,14 @@ export class MyApp {
 
       
       this.maybeDoPush();
-      
+
+      // check for API updates on resume and on initial load
+      document.addEventListener('resume', () => {
+          this.appdata.checkForUpdates( this.apiurl );
+      });
 
       setTimeout( () => {
-        // run this in the background, then we can update the data on next app load if needed
         this.appdata.checkForUpdates( this.apiurl );
-
       }, 5000 );
 
     });
@@ -212,7 +214,7 @@ export class MyApp {
 
     let intro = { 'title': "Introduction", 'component': CustomPage, 'class': "", 'navparams': { 'slug': 'intro' } };
 
-    this.nav.setRoot( CustomPage, intro.navparams );
+    this.nav.push( CustomPage, intro.navparams );
 
     window.localStorage.setItem('app-intro-shown', "true" );
   }
