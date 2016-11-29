@@ -78,7 +78,6 @@ export class MyApp {
       this.loggedin_msg = window.localStorage.getItem( 'logged_in_msg' );
 
       this.attachListeners();
-
       
       this.maybeDoPush();
 
@@ -152,9 +151,7 @@ export class MyApp {
           root = CustomPage;
         }
 
-        console.debug('tab_menu slug: ' + item.slug);
-
-        this.navparams.push( { 'title': item.title, 'url': item.url, 'root': root, 'icon': item.class, 'slug': item.slug, 'list_route': item.list_route, 'favorites': item.favorites, 'extra_classes': item.extra_classes } );
+        this.navparams.push( { 'title': item.title, 'url': item.url, 'root': root, 'icon': item.class, 'slug': item.slug, 'list_route': item.list_route, 'list_display': item.list_display, 'favorites': item.favorites, 'extra_classes': item.extra_classes } );
       }
 
       this.tabs = this.navparams;

@@ -154,3 +154,13 @@ ion-content ion-card-content {
 	position: relative;
 	top: 10px;
 }
+
+/*** Lists ***/
+
+.card-featured-wrap {
+	max-height:250px;
+	overflow: hidden;
+}
+.card-md h2, .card-ios h2 {
+	font-weight: 500;
+}

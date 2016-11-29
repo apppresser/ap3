@@ -16,6 +16,8 @@ export class PostList {
   siteurl: string;
   route: string;
   title: string;
+  defaultlist: boolean = false
+  cardlist: boolean = false;
   favorites: any = [];
   doFavorites: boolean = false;
 
@@ -23,13 +25,19 @@ export class PostList {
 
     this.route = navParams.data.list_route;
 
+    console.warn( navParams.data );
+
+    if( navParams.data.list_display === 'card' ) {
+      this.cardlist = true;
+    } else {
+      this.defaultlist = true;
+    }
+
     this.title = navParams.data.title;
 
     if( navParams.data.favorites && navParams.data.favorites === "true" ) {
       this.doFavorites = true;
     }
-
-    console.log( 'favorites' + navParams.data.favorites );
     
   }
 
@@ -62,6 +70,10 @@ export class PostList {
       // load more right away
       this.loadMore(null);
       loading.dismiss();
+    }).catch((err) => {
+      loading.dismiss();
+      console.error('Error getting posts', err);
+      this.presentToast('Error getting posts.');
     });
 
   }

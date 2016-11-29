@@ -55,8 +55,6 @@ export class Iframe {
         // When WP site loads, attach our click events
         window.addEventListener('message', (e) => {
 
-            
-
             if(e.data === 'site_loaded') {
                 loading.dismiss();
             } else if( e.data === 'reload_frame' ) {
@@ -79,7 +77,7 @@ export class Iframe {
 
         setTimeout(() => {
             loading.dismiss();
-        }, 9000);
+        }, 8000);
 
         this.loaded = true;
     }
