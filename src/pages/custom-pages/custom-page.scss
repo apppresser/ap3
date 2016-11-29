@@ -52,7 +52,8 @@
   .dark-content {
     background-color: #444;
     color: #fff;
-    height: 100%;
+    height: auto;
+    min-height: 100%;
     width: 100%;
 
     ion-card.card-md, ion-card.card-ios {
