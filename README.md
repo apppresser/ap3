@@ -15,7 +15,7 @@ First, make sure you have node and npm installed.
 
 `sudo npm install -g ionic`
 
-2. Change providers/globalvars/globalvars.ts to your myapppresser.com account information. For example:
+2. Change src/providers/globalvars/globalvars.ts to your myapppresser.com account information. For example:
 
 ```
 appid: string = '12';
