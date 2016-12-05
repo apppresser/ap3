@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
-import { IonicApp, IonicModule } from 'ionic-angular';
+import { NgModule, ErrorHandler } from '@angular/core';
+import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 
 /* Pages */
@@ -70,6 +70,7 @@ import {VgBufferingModule} from 'videogular2/buffering';
     MediaPlayer
   ],
   providers: [
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
     AppCamera,
     Posts,
     GlobalVars,

@@ -20,13 +20,13 @@
     "@ionic/storage": "^1.1.6",
     "angular2-dynamic-component": "0.1.2",
     "core-js": "^2.4.1",
-    "ionic-angular": "^2.0.0-rc.1",
+    "ionic-angular": "^2.0.0-rc.3",
     "ionic-native": "^2.2.5",
     "ionicons": "^3.0.0",
     "rxjs": "5.0.0-beta.12",
     "ts-metadata-helper": "0.0.4",
     "videogular2": "^1.2.0",
-    "zone.js": "0.6.21"
+    "zone.js": "0.6.26"
   },
   "devDependencies": {
     "@ionic/app-scripts": "0.0.46",
