@@ -76,6 +76,10 @@ export class PostList {
       this.presentToast('Error getting posts.');
     });
 
+    setTimeout(() => {
+        loading.dismiss();
+    }, 8000);
+
   }
 
   itemTapped(event, item) {
