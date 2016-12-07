@@ -15,6 +15,9 @@ export class Iframe {
     iframe: any;
     param: string;
     loaded: boolean = false;
+    activityModal: boolean = false;
+    checkinModal: boolean = false;
+
     constructor(
         public navParams: NavParams, 
         public loadingController: LoadingController, 
@@ -55,13 +58,22 @@ export class Iframe {
         // When WP site loads, attach our click events
         window.addEventListener('message', (e) => {
 
-            if(e.data === 'site_loaded') {
+            // get current window so we can find active iframe
+            let w = e.target;
+
+            if( e.data === 'site_loaded' ) {
                 loading.dismiss();
             } else if( e.data === 'reload_frame' ) {
+
                 // need to reload frame on login
-                this.findIframe();
+                this.iframe = (<any>w).document.getElementsByClassName('ap3-iframe')[0];
                 let src = this.iframe.src;
                 this.iframe.src = src;
+
+            } else if( e.data === 'activity_modal' ) {
+                this.activityModal = true;
+            } else if( e.data === 'checkin_modal' ) {
+                this.checkinModal = true;
             } else if( e.data.indexOf('{') === 0 ) {
 
                 // if it's a json object, parse it
@@ -82,50 +94,35 @@ export class Iframe {
         this.loaded = true;
     }
 
-    findIframe() {
+    // find the first ancestor with the given class name
+    findAncestor(el, cls) {
+        while ((el = el.parentElement) && !el.classList.contains(cls));
+        return el;
+    }
+
+    findIframe( el ) {
 
         /* 
          Ionic stacks cached views on top of each other, which causes duplicate ids on the page. We need to find the active page in the stack, and send our post messages there. Otherwise message is sent to the wrong page.
         */
 
-        // If we have tabs views stack differently
-        if( document.querySelectorAll('ion-tabs .show-tabbar').length ) {
+        let page = this.findAncestor( el, 'ion-page' );
 
-            // tabs exist, define iframe relative to active tab
-            let page = document.querySelectorAll( 'ion-tab.show-tab .ion-page' );
-            this.iframe = page[0].getElementsByClassName('ap3-iframe')[0];
-            return;
-
-        }
-
-        let pages = document.getElementsByClassName('ion-page');
-        let lengths = pages.length;
-
-        if( lengths > 1 ) {
-
-            // find the active page, last one on page
-            let index = lengths - 1;
-            let lastpage = pages[index];
-
-            this.iframe = lastpage.getElementsByClassName('ap3-iframe')[0];
-
-        } else {
-
-            // we don't have any cached views, so don't have to run this
-            this.iframe = (<any>document.getElementById('ap3-iframe'));
-        }
+        this.iframe = page.getElementsByClassName('ap3-iframe')[0];
 
     }
 
-    activityModal() {
+    doActivityModal( event ) {
 
-        this.findIframe();
+        this.findIframe( event.target );
 
         this.iframe.contentWindow.postMessage('activity', '*');
-    }
-    checkinModal() {
 
-        this.findIframe();
+    }
+
+    doCheckinModal( event ) {
+
+        this.findIframe( event.target );
 
         // first message is to show modal, then we send through location
         this.iframe.contentWindow.postMessage('checkin', '*');
@@ -141,6 +138,7 @@ export class Iframe {
             this.iframe.contentWindow.postMessage({ lat: latitude, long: longitude }, '*');
 
         });
+
     }
 
     mediaModal( src, img = null ) {

@@ -19,7 +19,7 @@ export class AppWoo {
     this.browser = InAppBrowser.open( paypal_url, '_blank' );
 
     this.browser.addEventListener( 'exit', () => {
-      this.browserClose( redirect ) 
+      this.browserClose( redirect );
     });
 
     this.browser.addEventListener( 'loadstop', (event) => {
@@ -61,29 +61,30 @@ export class AppWoo {
      Ionic stacks cached views on top of each other, which causes duplicate ids on the page. We need to find the active page in the stack, and send our post messages there. Otherwise message is sent to the wrong page.
     */
 
-    // If we have tabs views stack differently
-    if( document.querySelectorAll('ion-tabs .show-tabbar').length ) {
+    // only look in active stack
+      let components = document.querySelectorAll('#nav > ng-component');
 
-        // tabs exist, define iframe relative to active tab
-        let page = document.querySelectorAll( 'ion-tab.show-tab ion-page' );
-        this.iframe = page[0].getElementsByClassName('ap3-iframe')[0];
-        return;
+      for (let i = components.length - 1; i >= 0; i--) {
 
-    }
+        if( !components[i].hasAttribute('hidden') ) {
+          // this is the shown ng-component element
+          var active = components[i];
+        }
+      }
 
-    let pages = document.getElementsByClassName('ion-page');
-    let lengths = pages.length;
+      // If we have tabs views stack differently
+      if( active.querySelectorAll('ion-tabs .show-tabbar').length ) {
 
-    if( lengths > 1 ) {
-        // find the active page, last one on page
-        let index = lengths - 1;
-        let lastpage = pages[index];
+          // tabs exist, define iframe relative to active tab
+          let page = active.querySelectorAll( 'ion-tab[aria-hidden=false] .show-page' );
+          this.iframe = page[0].getElementsByClassName('ap3-iframe')[0];
 
-        this.iframe = lastpage.getElementsByClassName('ap3-iframe')[0];
-    } else {
-        // we don't have any cached views, so don't have to run this
-        this.iframe = (<any>document.getElementById('ap3-iframe'));
-    }
+          return;
+
+      }
+
+      // if no tabs
+      this.iframe = active.querySelector('#ap3-iframe');
 
   }
 

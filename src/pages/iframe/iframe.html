@@ -8,10 +8,10 @@
 	    <ion-title>{{title}}</ion-title>
 
 	    <ion-buttons end>
-	    <button ion-button (click)="activityModal()">
+	    <button *ngIf="activityModal" ion-button (click)="doActivityModal($event)">
 			<ion-icon name="ios-create-outline"></ion-icon>
 		</button>
-		<button ion-button (click)="checkinModal()">
+		<button *ngIf="checkinModal" ion-button (click)="doCheckinModal($event)">
 			<ion-icon name="ios-navigate-outline"></ion-icon>
 		</button>
 		</ion-buttons>
