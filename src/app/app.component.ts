@@ -266,15 +266,9 @@ export class MyApp {
 
     this.networkState = Network.connection;
 
-    console.log('Network state: ' + this.networkState );
-
     if( this.networkState === 'none' || this.networkState === 'unknown' ) {
       this.presentToast('You appear to be offline, app functionality may be limited.');
     }
-
-    let disconnectSubscription = Network.onDisconnect().subscribe(() => {
-      this.presentToast('Having trouble connecting, app functionality may be limited.');
-    });
 
   }
 

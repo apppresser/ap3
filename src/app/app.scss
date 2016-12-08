@@ -26,6 +26,15 @@
 
 $border-color: rgba(0,0,0,.1);
 
+.content img {
+	height: auto;
+}
+
+.content ul li {
+	font-size: 16px;
+	margin-bottom: 5px;
+}
+
 .toolbar button.activated, .tab-button {
 	opacity: .8;
 }
@@ -96,6 +105,7 @@ ion-content ion-card-content {
 			text-align: center;
 			padding-left: 0;
 			border-bottom: 1px solid $border-color;
+			margin-bottom: 0;
 
 			ion-avatar img {
 				margin: 0 auto;
