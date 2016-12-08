@@ -25,18 +25,17 @@ export class PostList {
 
     this.route = navParams.data.list_route;
 
-    console.warn( navParams.data );
-
-    if( navParams.data.list_display === 'card' ) {
-      this.cardlist = true;
-    } else {
-      this.defaultlist = true;
-    }
-
     this.title = navParams.data.title;
 
     if( navParams.data.favorites && navParams.data.favorites === "true" ) {
       this.doFavorites = true;
+    }
+
+    if( navParams.data.list_display === 'card' ) {
+      this.cardlist = true;
+      this.doFavorites = false;
+    } else {
+      this.defaultlist = true;
     }
     
   }
@@ -61,11 +60,10 @@ export class PostList {
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
     this.postService.load( route, this.page ).then(items => {
 
-      console.log('loadPosts: ', items);
       // Loads posts from WordPress API
       this.items = items;
 
-      this.storage.set( route.substr(-10, 10) + '_posts', items);
+      // this.storage.set( route.substr(-10, 10) + '_posts', items);
 
       // load more right away
       this.loadMore(null);
@@ -111,9 +109,7 @@ export class PostList {
       for (var i = length - 1; i >= 0; i--) {
         this.items.push( items[i] );
       }
-
-      this.storage.set('items', items);
-
+      
       if(infiniteScroll)
         infiniteScroll.complete();
     });

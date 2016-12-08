@@ -32,12 +32,15 @@ export class Posts {
       // then on the response it'll map the JSON data to a parsed JS object.
       // Next we process the data and resolve the promise with the new data.
 
-    this.http.get( url + '?page=' + page)
+    this.http.get( url + '?per_page=10&appp=3&page=' + page)
         .map(res => res.json())
         .subscribe(data => {
           // we've got back the raw data, now generate the core schedule data
           // and save the data for later reference
           this.data = data;
+
+          // this.storage.set( url.substr(-10, 10) + '_posts', data);
+
           // console.warn(data);
           resolve(this.data);
         });
