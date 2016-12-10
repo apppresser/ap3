@@ -118,14 +118,14 @@ export class AppCamera {
 
   uploadPhoto(imageURI) {
 
-    let fileTransfer = new Transfer();
+    const fileTransfer = new Transfer();
 
     this.findIframe();
 
     this.iframedoc = this.iframe.contentWindow.document;
     this.iframewin = this.iframe.contentWindow.window;
 
-    console.log('imageURI', imageURI);
+    // console.log('imageURI', imageURI);
 
     let image = imageURI.substr(imageURI.lastIndexOf('/') + 1);
 
