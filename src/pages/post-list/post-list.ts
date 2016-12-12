@@ -63,7 +63,7 @@ export class PostList {
       // Loads posts from WordPress API
       this.items = items;
 
-      // this.storage.set( route.substr(-10, 10) + '_posts', items);
+      this.storage.set( route.substr(-10, 10) + '_posts', items);
 
       // load more right away
       this.loadMore(null);
@@ -109,7 +109,9 @@ export class PostList {
       for (var i = length - 1; i >= 0; i--) {
         this.items.push( items[i] );
       }
-      
+
+      this.storage.set( this.route.substr(-10, 10) + '_posts', this.items);
+
       if(infiniteScroll)
         infiniteScroll.complete();
     });
