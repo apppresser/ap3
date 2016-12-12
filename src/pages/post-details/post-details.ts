@@ -1,5 +1,5 @@
 import {NavController, NavParams, ModalController} from 'ionic-angular';
-import {Component, Renderer} from '@angular/core';
+import {Component, Renderer, ElementRef} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SocialSharing} from 'ionic-native';
 
@@ -11,23 +11,29 @@ import {MediaPlayer} from '../media-player/media-player';
 export class PostDetailsPage {
   selectedItem: any;
   content: any;
+  listenFunc: Function;
 
   constructor(
     public nav: NavController, 
     navParams: NavParams, 
     public sanitizer: DomSanitizer,
     public modalCtrl: ModalController,
-    public renderer: Renderer
+    public renderer: Renderer,
+    elementRef: ElementRef
     ) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = navParams.get('item');
 
     this.content = sanitizer.bypassSecurityTrustHtml( this.selectedItem.content.rendered );
 
-    // let listenFunc = renderer.listenGlobal( '#app-media', 'click', (event) => {
-    //   console.log(event);
-    //   alert('Element clicked');
-    // });
+    // Listen for link clicks, open in in app browser
+    this.listenFunc = renderer.listen(elementRef.nativeElement, 'click', (event) => {
+      if( event.target.href && event.target.href.indexOf('http') >= 0 ) {
+        event.preventDefault();
+        window.open( event.target.href, '_blank' );
+      }
+    });
+
   }
 
   ionViewDidLoad() {
