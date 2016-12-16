@@ -122,22 +122,46 @@ export class PostList {
 
   addFav(slidingItem: ItemSliding, item) {
 
-    console.log("adding fav", item);
+    console.log('addfav', item);
 
-    let inArray = this.favorites.indexOf(item);
+    var inArray = false;
+
+    for (let i = this.favorites.length - 1; i >= 0; i--) {
+      console.log( this.favorites[i].id, item.id );
+      if( this.favorites[i].id === item.id ) {
+        var inArray = true;
+        break;
+      }
+    }
+
+    console.log('inarray', inArray);
 
     // Don't add duplicate favs
-    if( inArray < 0 ) {
+    if( inArray === false ) {
 
       this.favorites.push(item);
 
-      this.storage.set('favorites', this.favorites);
+      this.storage.set( this.route.substr(-10, 10) + '_favorites', this.favorites);
 
       this.presentToast('Favorite Added');
 
     } else {
 
-      this.favorites.splice(item, 1);
+      for (let i = this.favorites.length - 1; i >= 0; i--) {
+        if( this.favorites[i].id === item.id ) {
+          this.favorites.splice(i, 1);
+          break;
+        }
+      }
+
+      this.storage.set( this.route.substr(-10, 10) + '_favorites', this.favorites);
+
+      // refresh the list
+      if( this.favorites.length ) {
+        this.items = this.favorites;
+      } else {
+        this.showAll();
+      }
 
       this.presentToast('Favorite Removed');
 
@@ -148,6 +172,7 @@ export class PostList {
   }
 
   presentToast(msg) {
+
     let toast = this.toastCtrl.create({
       message: msg,
       duration: 3000,
@@ -164,11 +189,18 @@ export class PostList {
 
   showFavorites() {
 
-    if(this.favorites.length) {
-      this.items = this.favorites;
-    } else {
-      this.presentToast('No Favorites to show');
-    }
+    this.storage.get( this.route.substr(-10, 10) + '_favorites' ).then( (favorites) => {
+
+      this.favorites = favorites;
+
+      if(favorites.length) {
+        this.items = favorites;
+      } else {
+        this.presentToast('No Favorites to show');
+      }
+
+    });
+
   }
 
   showAll() {
