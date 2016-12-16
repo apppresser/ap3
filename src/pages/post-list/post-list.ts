@@ -4,6 +4,7 @@ import {Posts} from '../../providers/posts/posts';
 import {PostDetailsPage} from '../post-details/post-details';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {Storage} from '@ionic/storage';
+import {Device} from 'ionic-native';
 
 @Component({
   templateUrl: 'post-list.html'
@@ -37,6 +38,8 @@ export class PostList {
     } else {
       this.defaultlist = true;
     }
+
+    this.previewAlert(this.route);
     
   }
 
@@ -172,5 +175,14 @@ export class PostList {
     this.storage.get( this.route.substr(-10, 10) + '_posts' ).then((items) => {
       this.items = items;
     });
+  }
+
+  // Show alert in preview if not using https
+  previewAlert(url) {
+
+    if( Device.device.platform != 'iOS' && Device.device.platform != 'Android' && url.indexOf('http://') >= 0 ) {
+          alert('Cannot display http pages in browser preview. Please build app for device or use https.');
+      }
+
   }
 }

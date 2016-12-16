@@ -1,7 +1,7 @@
 import {NavParams, Nav, LoadingController, ModalController} from 'ionic-angular';
 import {Component} from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import {Geolocation} from 'ionic-native';
+import {DomSanitizer} from '@angular/platform-browser';
+import {Geolocation, Device} from 'ionic-native';
 
 import {MediaPlayer} from '../media-player/media-player';
 
@@ -33,6 +33,11 @@ export class Iframe {
         }
 
         this.url = this.sanitizer.bypassSecurityTrustResourceUrl( navParams.data.url + this.param );
+
+        let dataurl = navParams.data.url;
+
+        // Show error message if in preview and not using https
+        this.previewAlert( navParams.data.url );
         
         console.log('navParams.data', navParams.data);
 
@@ -145,6 +150,17 @@ export class Iframe {
 
         let modal = this.modalCtrl.create(MediaPlayer, {source: src, image: img});
         modal.present();
+
+    }
+
+    // Show alert in preview if not using https
+    previewAlert(url) {
+
+        if( Device.device.platform != 'iOS' && Device.device.platform != 'Android' && url.indexOf('http://') >= 0 ) {
+
+          alert('Cannot display http pages in browser preview. Please build app for device or use https.');
+
+        }
 
     }
 }
