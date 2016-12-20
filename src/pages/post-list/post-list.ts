@@ -122,19 +122,15 @@ export class PostList {
 
   addFav(slidingItem: ItemSliding, item) {
 
-    console.log('addfav', item);
-
     var inArray = false;
 
     for (let i = this.favorites.length - 1; i >= 0; i--) {
-      console.log( this.favorites[i].id, item.id );
+
       if( this.favorites[i].id === item.id ) {
         var inArray = true;
         break;
       }
     }
-
-    console.log('inarray', inArray);
 
     // Don't add duplicate favs
     if( inArray === false ) {
@@ -180,7 +176,7 @@ export class PostList {
     });
 
     toast.onDidDismiss(() => {
-      console.log('Dismissed toast');
+      // console.log('Dismissed toast');
     });
 
     toast.present();

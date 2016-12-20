@@ -16,7 +16,7 @@ export class AppWoo {
 
   paypal( paypal_url, redirect ) {
 
-    this.browser = InAppBrowser.open( paypal_url, '_blank' );
+    this.browser = new InAppBrowser( paypal_url, '_blank' );
 
     this.browser.addEventListener( 'exit', () => {
       this.browserClose( redirect );

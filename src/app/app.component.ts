@@ -23,7 +23,7 @@ import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
 
 /* Native */
-import {StatusBar, SocialSharing, Device, InAppBrowser, Splashscreen, Push, Dialogs, Network} from 'ionic-native';
+import {StatusBar, SocialSharing, Device, InAppBrowser, Splashscreen, Push, Dialogs, Network, Keyboard} from 'ionic-native';
 
 @Component({
   templateUrl: 'app.html'
@@ -80,6 +80,9 @@ export class MyApp {
       this.attachListeners();
       
       this.maybeDoPush();
+
+      // prevents bug where select done button didn't display
+      Keyboard.hideKeyboardAccessoryBar(false);
 
       // check for API updates on resume and on initial load
       document.addEventListener('resume', () => {
