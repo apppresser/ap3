@@ -34,7 +34,7 @@ export class AppData {
 
     this.updateNeeded = ( window.localStorage.getItem( 'myappp_update' ) == 'true' ) ? true : false;
 
-    if( Device.device.platform != 'iOS' && Device.device.platform != 'Android' ) {
+    if( Device.platform != 'iOS' && Device.platform != 'Android' ) {
       // if we are not on a device, don't cache data. helps preview update faster
       this.updateNeeded = true;
     }

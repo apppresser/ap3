@@ -125,15 +125,13 @@ export class AppCamera {
     this.iframedoc = this.iframe.contentWindow.document;
     this.iframewin = this.iframe.contentWindow.window;
 
-    // console.log('imageURI', imageURI);
-
     let image = imageURI.substr(imageURI.lastIndexOf('/') + 1);
 
     let name = image.split("?")[0];
     let anumber = image.split("?")[1];
     let ajaxurl = this.iframewin.apppCore.ajaxurl;
 
-    if ('Android' === Device.device.platform) {
+    if ('Android' === Device.platform) {
       image = anumber + '.jpg';
     }
 
@@ -215,7 +213,7 @@ export class AppCamera {
       this.iframedoc.getElementById('appp_cam_post_title').value = '';
       options.params = params;
 
-      fileTransfer.upload(imageURI, ajaxurl, options, true).then( r => {
+      fileTransfer.upload(imageURI, encodeURI(ajaxurl), options, true).then( r => {
 
         this.uploadWin(r);
 

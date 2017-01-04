@@ -53,7 +53,7 @@ export class PostList {
 
     let loading = this.loadingController.create({
         showBackdrop: false,
-        dismissOnPageChange: true
+        //dismissOnPageChange: true
     });
 
     loading.present(loading);
@@ -208,7 +208,7 @@ export class PostList {
   // Show alert in preview if not using https
   previewAlert(url) {
 
-    if( Device.device.platform != 'iOS' && Device.device.platform != 'Android' && url.indexOf('http://') >= 0 ) {
+    if( Device.platform != 'iOS' && Device.platform != 'Android' && url.indexOf('http://') >= 0 ) {
           alert('Cannot display http pages in browser preview. Please build app for device or use https.');
       }
 

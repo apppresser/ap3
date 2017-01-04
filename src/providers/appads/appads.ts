@@ -24,7 +24,6 @@ export class AppAds {
 
   	AdMob.setOptions( {
       position: pos,
-      offsetTopBar: false, // set to true to avoid ios7 status bar overlap 
       isTesting: isTesting // receiving test ad
     });
   }

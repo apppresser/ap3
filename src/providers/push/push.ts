@@ -27,7 +27,7 @@ export class PushService {
   // Subscribe for push through our API service
   subscribeDevice(token) {
 
-    this.platform = Device.device.platform;
+    this.platform = Device.platform;
     let apiRoot = this.globalvars.getApiRoot();
     this.api = apiRoot + 'wp-json/ap3/v1/subscribe/';
     this.appid = this.globalvars.getAppId();

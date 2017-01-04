@@ -410,7 +410,7 @@ export class MyApp {
   maybeDoAds(data) {
 
     // only show ads on a device
-    if( !Device.device.platform ) 
+    if( !Device.platform ) 
       return;
 
     // If we don't have any ads set, stop
@@ -421,11 +421,11 @@ export class MyApp {
 
     this.appads.setOptions();
 
-    if( Device.device.platform === 'iOS' && data.ads.ios.banner != '' ) {
+    if( Device.platform === 'iOS' && data.ads.ios.banner != '' ) {
       this.appads.createBanner( data.ads.ios.banner );
     }
      
-    if( Device.device.platform === 'Android' && data.ads.android.banner != '' ) {
+    if( Device.platform === 'Android' && data.ads.android.banner != '' ) {
       this.appads.createBanner( data.ads.android.banner );
     }
 
