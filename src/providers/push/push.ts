@@ -55,7 +55,7 @@ export class PushService {
 
     let params = '?action=ap3_add_device_id&endpoint=' + id;
 
-    console.log('sending device id to wp: ' + ajaxurl + params );
+    // console.log('sending device id to wp: ' + ajaxurl + params );
 
     return new Promise(resolve => {
 
@@ -65,7 +65,7 @@ export class PushService {
           data => {
           resolve(data);
           },
-          error => alert('sendDeviceToWp error' + error) 
+          error => console.warn('sendDeviceToWp error', error) 
         );
     });
 
