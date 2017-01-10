@@ -22,10 +22,22 @@
 
 </ion-header>
 
-<ion-content>
+<ion-content class="post-list">
   <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
+
+  <ion-slides *ngIf="showSlider" [options]='{pager:true}'>
+
+    <ion-slide *ngFor="let slide of slides" [ngStyle]="{'background-image': 'url(' + (slide.featured_image_urls ? slide.featured_image_urls.large : null) + ')'}" (click)="itemTapped($event, slide)">
+
+      <h3 class="slide-title" [innerHTML]="slide.title.rendered"></h3>
+
+      <div *ngIf="slide.appp && slide.appp.post_list && slide.appp.post_list.slide_content" [innerHTML]="slide.appp.post_list.slide_content"></div>
+
+    </ion-slide>
+
+  </ion-slides>
   
   <ion-list *ngIf="defaultlist">
 

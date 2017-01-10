@@ -13,6 +13,7 @@ export class PostList {
   selectedItem: any;
   icons: string[];
   items: any;
+  slides: any;
   page: number = 1;
   siteurl: string;
   route: string;
@@ -21,8 +22,16 @@ export class PostList {
   cardlist: boolean = false;
   favorites: any = [];
   doFavorites: boolean = false;
+  showSlider: boolean = false;
 
-  constructor(public nav: NavController, navParams: NavParams, public postService: Posts, public globalvars: GlobalVars, public loadingController: LoadingController, public storage: Storage, public toastCtrl: ToastController ) {
+  constructor(
+    public nav: NavController, 
+    public navParams: NavParams, 
+    public postService: Posts, 
+    public globalvars: GlobalVars, 
+    public loadingController: LoadingController, 
+    public storage: Storage, 
+    public toastCtrl: ToastController ) {
 
     this.route = navParams.data.list_route;
 
@@ -30,6 +39,10 @@ export class PostList {
 
     if( navParams.data.favorites && navParams.data.favorites === "true" ) {
       this.doFavorites = true;
+    }
+
+    if( navParams.data.show_slider && navParams.data.show_slider === "true" && navParams.data.slide_route ) {
+      this.loadSlides( navParams.data.slide_route );
     }
 
     if( navParams.data.list_display === 'card' ) {
@@ -189,8 +202,12 @@ export class PostList {
 
       this.favorites = favorites;
 
-      if(favorites.length) {
+      if( favorites && favorites.length) {
+        
         this.items = favorites;
+
+        this.showSlider = false;
+
       } else {
         this.presentToast('No Favorites to show');
       }
@@ -203,6 +220,10 @@ export class PostList {
     this.storage.get( this.route.substr(-10, 10) + '_posts' ).then((items) => {
       this.items = items;
     });
+
+    if( this.navParams.data.slider && this.navParams.data.slider === "true" ) {
+      this.showSlider = true;
+    }
   }
 
   // Show alert in preview if not using https
@@ -211,6 +232,24 @@ export class PostList {
     if( Device.platform != 'iOS' && Device.platform != 'Android' && url.indexOf('http://') >= 0 ) {
           alert('Cannot display http pages in browser preview. Please build app for device or use https.');
       }
+
+  }
+
+  // get data for slides
+  loadSlides( route ) {
+
+    this.postService.load( route , '1' ).then(slides => {
+
+      // Loads posts from WordPress API
+      this.slides = slides;
+      this.showSlider = true;
+
+    }).catch((err) => {
+
+      this.showSlider = false;
+      console.error('Error getting posts', err);
+
+    });
 
   }
 }

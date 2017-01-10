@@ -35,7 +35,7 @@ export class Posts {
         var concat = '?';
       }
 
-    this.http.get( url + concat + 'per_page=10&appp=3&page=' + page)
+    this.http.get( url + concat + 'appp=3&page=' + page)
         .map(res => res.json())
         .subscribe(data => {
           // we've got back the raw data, now generate the core schedule data

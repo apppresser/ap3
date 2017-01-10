@@ -124,7 +124,7 @@ ion-content ion-card-content {
 	line-height: 1.3;
 }
 
-.toolbar .segment-button, .tabbar .tab-button, .tabbar .tab-button[aria-selected=true] {
+.toolbar .segment-button, .tabbar .tab-button, .tabbar .tab-button[aria-selected=true], .tabbar .tab-button[aria-selected=true] .tab-button-icon {
 	color: #fff;
 }
 
@@ -173,4 +173,33 @@ ion-content ion-card-content {
 }
 .card-md h2, .card-ios h2 {
 	font-weight: 500;
+}
+
+.post-list ion-slides {
+	height:200px;
+
+	ion-slide {
+		background-size: cover;
+	}
+
+	.slide-zoom {
+		padding: 0 !important;
+	}
+
+	.slide-title {
+		background: rgba(0,0,0,.5);
+	    width: 100%;
+	    color: #ccc;
+	    font-size: 14px;
+	    padding: 8px 0;
+	    position: absolute;
+	    top: 0;
+	    margin: 0;
+	}
+}
+
+@media only screen and (min-width: 768px) {
+	.post-list ion-slides {
+		height:250px;
+	}
 }
