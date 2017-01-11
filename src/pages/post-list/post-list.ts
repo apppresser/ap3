@@ -104,6 +104,7 @@ export class PostList {
 
   doRefresh(refresh) {
     this.loadPosts( this.route );
+    this.loadSlides( this.navParams.data.slide_route );
     // refresh.complete should happen when posts are loaded, not timeout
     setTimeout( ()=> refresh.complete(), 500);
   }
@@ -200,10 +201,10 @@ export class PostList {
 
     this.storage.get( this.route.substr(-10, 10) + '_favorites' ).then( (favorites) => {
 
-      this.favorites = favorites;
-
       if( favorites && favorites.length) {
-        
+
+        this.favorites = favorites;
+
         this.items = favorites;
 
         this.showSlider = false;
@@ -221,7 +222,7 @@ export class PostList {
       this.items = items;
     });
 
-    if( this.navParams.data.slider && this.navParams.data.slider === "true" ) {
+    if( this.navParams.data.show_slider && this.navParams.data.show_slider === "true" ) {
       this.showSlider = true;
     }
   }
