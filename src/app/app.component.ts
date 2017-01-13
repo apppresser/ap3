@@ -44,6 +44,7 @@ export class MyApp {
   apptitle: string;
   introshown: any;
   networkState: any;
+  bothMenus: boolean = false;
 
   constructor(
     private platform: Platform,
@@ -183,7 +184,7 @@ export class MyApp {
 
       // set the home page to the proper component
       if( this.tabs ) {
-        this.pages.unshift( { 'title': data.tab_menu.name, 'url': '', 'component': TabsPage, 'navparams': this.navparams, 'class': 'home' } );
+        this.pages.unshift( { 'title': data.tab_menu.name, 'url': '', 'component': TabsPage, 'navparams': this.navparams, 'class': 'home', 'extra_classes':'hide' } );
       } else if( !this.tabs && data.menus.items[0].type === 'apppages' ) {
         
         // if it's a list page, use PostList component
@@ -209,6 +210,11 @@ export class MyApp {
     if( menustring.indexOf("Intro") >= 0 )
       this.maybeShowIntro();
 
+    if( data.tab_menu.items && data.menus.items ) {
+      // we have both menus, use pushPage on sidemenu
+      this.bothMenus = true;
+    }
+
   }
 
   // If there is a page called "Intro", show it the first time the app is used
@@ -224,6 +230,15 @@ export class MyApp {
     this.nav.push( CustomPage, intro.navparams );
 
     window.localStorage.setItem('app-intro-shown', "true" );
+  }
+
+  // side menu link. determine which func to use
+  menuLink(p) {
+    if( this.bothMenus ) {
+      this.pushPage(p);
+    } else {
+      this.openPage(p);
+    }
   }
 
   openPage(page) {
