@@ -1,7 +1,7 @@
 import {NavParams, Nav, LoadingController, ModalController} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
-import {Geolocation, Device} from 'ionic-native';
+import {Geolocation, Device, Keyboard} from 'ionic-native';
 
 import {MediaPlayer} from '../media-player/media-player';
 
@@ -86,10 +86,25 @@ export class Iframe {
 
                 if( parsed.media ) {
                     this.mediaModal( parsed.media, parsed.img );
-                }
+                } else if ( parsed.apppkeyboardhelper ) {
 
+                    if(parsed.apppkeyboardhelper === 'close') {
+                      if( Keyboard ) {
+                        Keyboard.close();
+                      }
+                    }
+
+                }
             }
             
+        });
+
+        window.addEventListener('native.keyboardhide', (e) => {
+            this.notifyThemeKeyboardClosed(e.target);
+        });
+
+        window.addEventListener('native.keyboardshow', (e) => {
+            this.notifyThemeKeyboardOpened(e.target);
         });
 
         setTimeout(() => {
@@ -122,6 +137,22 @@ export class Iframe {
         this.findIframe( event.target );
 
         this.iframe.contentWindow.postMessage('activity', '*');
+
+    }
+
+    notifyThemeKeyboardClosed( event ) {
+
+        this.findIframe( event.target );
+
+        this.iframe.contentWindow.postMessage('appp_keyboard_closed', '*');
+
+    }
+
+    notifyThemeKeyboardOpened( event ) {
+
+        this.findIframe( event.target );
+
+        this.iframe.contentWindow.postMessage('appp_keyboard_opened', '*');
 
     }
 
