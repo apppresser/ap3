@@ -84,6 +84,8 @@ export class MyApp {
 
       // prevents bug where select done button didn't display
       Keyboard.hideKeyboardAccessoryBar(false);
+      // Disable scroll fixes webview displacement, but hides content lower on page. Can't use
+      //Keyboard.disableScroll(true);
 
       // check for API updates on resume and on initial load
       document.addEventListener('resume', () => {
