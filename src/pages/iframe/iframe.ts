@@ -100,11 +100,11 @@ export class Iframe {
         });
 
         window.addEventListener('native.keyboardhide', (e) => {
-            this.notifyThemeKeyboardClosed(e.target);
+            this.notifyThemeKeyboardClosed();
         });
 
         window.addEventListener('native.keyboardshow', (e) => {
-            this.notifyThemeKeyboardOpened(e.target);
+            this.notifyThemeKeyboardOpened();
         });
 
         setTimeout(() => {
@@ -120,45 +120,17 @@ export class Iframe {
         return el;
     }
 
-    findIframe( el ) {
-
-        /* 
-         Ionic stacks cached views on top of each other, which causes duplicate ids on the page. We need to find the active page in the stack, and send our post messages there. Otherwise message is sent to the wrong page.
-        */
-
-        let page = this.findAncestor( el, 'ion-page' );
-
-        this.iframe = page.getElementsByClassName('ap3-iframe')[0];
-
-    }
-
     doActivityModal( event ) {
 
-        this.findIframe( event.target );
+        this.findIframeBySelector( event.target );
 
         this.iframe.contentWindow.postMessage('activity', '*');
 
     }
 
-    notifyThemeKeyboardClosed( event ) {
-
-        this.findIframe( event.target );
-
-        this.iframe.contentWindow.postMessage('appp_keyboard_closed', '*');
-
-    }
-
-    notifyThemeKeyboardOpened( event ) {
-
-        this.findIframe( event.target );
-
-        this.iframe.contentWindow.postMessage('appp_keyboard_opened', '*');
-
-    }
-
     doCheckinModal( event ) {
 
-        this.findIframe( event.target );
+        this.findIframeBySelector( event.target );
 
         // first message is to show modal, then we send through location
         this.iframe.contentWindow.postMessage('checkin', '*');
@@ -177,6 +149,22 @@ export class Iframe {
 
     }
 
+    notifyThemeKeyboardClosed() {
+
+        this.findIframe();
+
+        this.iframe.contentWindow.postMessage('appp_keyboard_closed', '*');
+
+    }
+
+    notifyThemeKeyboardOpened() {
+
+        this.findIframe();
+
+        this.iframe.contentWindow.postMessage('appp_keyboard_opened', '*');
+
+    }
+
     mediaModal( src, img = null ) {
 
         let modal = this.modalCtrl.create(MediaPlayer, {source: src, image: img});
@@ -192,6 +180,53 @@ export class Iframe {
           alert('Cannot display http pages in browser preview. Please build app for device or use https.');
 
         }
+
+    }
+
+    // Must send in selector from a click event on the page
+    findIframeBySelector( el ) {
+
+        /* 
+         Ionic stacks cached views on top of each other, which causes duplicate ids on the page. We need to find the active page in the stack, and send our post messages there. Otherwise message is sent to the wrong page.
+        */
+
+        let page = this.findAncestor( el, 'ion-page' );
+
+        this.iframe = page.getElementsByClassName('ap3-iframe')[0];
+
+    }
+
+    // find the iframe without a selector
+    findIframe() {
+
+        /* 
+         Ionic stacks cached views on top of each other, which causes duplicate ids on the page. We need to find the active page in the stack, and send our post messages there. Otherwise message is sent to the wrong page.
+        */
+
+        // only look in active stack
+        let components = document.querySelectorAll('#nav > ng-component');
+
+        for (let i = components.length - 1; i >= 0; i--) {
+
+            if( !components[i].hasAttribute('hidden') ) {
+              // this is the shown ng-component element
+              var active = components[i];
+            }
+        }
+
+        // If we have tabs views stack differently
+        if( active.querySelectorAll('ion-tabs .show-tabbar').length ) {
+
+          // tabs exist, define iframe relative to active tab
+          let page = active.querySelectorAll( 'ion-tab[aria-hidden=false] .show-page' );
+          this.iframe = page[0].getElementsByClassName('ap3-iframe')[0];
+
+          return;
+
+        }
+
+        // if no tabs
+        this.iframe = active.querySelector('#ap3-iframe');
 
     }
 }
