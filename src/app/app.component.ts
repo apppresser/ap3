@@ -68,7 +68,6 @@ export class MyApp {
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
-      StatusBar.styleDefault();
 
       this.apiurl = this.globalvars.getApi();
       
@@ -129,6 +128,7 @@ export class MyApp {
     this.loadMenu(data);
     this.loadStyles(data);
     this.maybeDoAds(data);
+    this.doStatusBar(data);
 
     this.apptitle = data.title;
 
@@ -278,6 +278,21 @@ export class MyApp {
       this.nav.push(Iframe, page);
     } else {
       this.nav.push(page.component, page.navparams);
+    }
+
+  }
+
+  doStatusBar(data) {
+
+    if( !StatusBar )
+      return;
+
+    if( data.meta.light_status_bar == true ) {
+      // Light text, for dark backgrounds
+      StatusBar.styleLightContent();
+    } else {
+      // Dark text
+      StatusBar.styleDefault();
     }
 
   }
