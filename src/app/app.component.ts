@@ -348,6 +348,12 @@ export class MyApp {
 
       console.log('postMessage', e.data);
 
+      if( e.data === 'checkin_success' ) {
+
+        this.presentToast('Check in successful!');
+
+      }
+
       // if it's not our json object, return
       if (e.data.indexOf('{') != 0)
         return;
@@ -407,10 +413,6 @@ export class MyApp {
         }
 
         this.maybeSendPushId( data.ajaxurl );
-
-      } else if( e.data === 'checkin_success' ) {
-
-        this.presentToast('Check in successful!');
 
       }
 
