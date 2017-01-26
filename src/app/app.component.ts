@@ -206,11 +206,9 @@ export class MyApp {
 
     }
 
-    let menustring = JSON.stringify( data.menus.items ) + JSON.stringify( data.tab_menu.items );
-
-    // Only show the intro if it's a menu item
-    if( menustring.indexOf("Intro") >= 0 )
-      this.maybeShowIntro();
+    // Only show the intro if there's a slug
+    if( data.meta.intro_slug && data.meta.intro_slug != '' )
+      this.maybeShowIntro( data.meta.intro_slug );
 
     if( data.tab_menu.items && data.menus.items ) {
       // we have both menus, use pushPage on sidemenu
@@ -220,14 +218,14 @@ export class MyApp {
   }
 
   // If there is a page called "Intro", show it the first time the app is used
-  maybeShowIntro() {
+  maybeShowIntro(slug) {
 
     this.introshown = window.localStorage.getItem('app-intro-shown');
 
     if( this.introshown === "true" ) 
       return;
 
-    let intro = { 'title': "Introduction", 'component': CustomPage, 'class': "", 'navparams': { 'slug': 'intro' } };
+    let intro = { 'title': "Introduction", 'component': CustomPage, 'class': "", 'navparams': { 'slug': slug } };
 
     this.nav.push( CustomPage, intro.navparams );
 
@@ -562,12 +560,16 @@ export class MyApp {
       position: 'bottom'
     });
 
-    // toast.onDidDismiss(() => {
-    //   console.log('Dismissed toast');
-    // });
-
     toast.present();
 
+  }
+
+  menuOpened() {
+    this.menu.swipeEnable(true)
+  }
+
+  menuClosed() {
+    this.menu.swipeEnable(false)
   }
 
 }
