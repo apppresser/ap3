@@ -24,6 +24,7 @@ import {AppData} from '../providers/appdata/appdata';
 
 /* Native */
 import {StatusBar, SocialSharing, Device, InAppBrowser, Splashscreen, Push, Dialogs, Network, Keyboard} from 'ionic-native';
+import {Storage} from '@ionic/storage';
 
 @Component({
   templateUrl: 'app.html'
@@ -38,6 +39,7 @@ export class MyApp {
   login: boolean;
   navparams: any = [];
   tabs: any;
+  login_data: any;
   loggedin: boolean = false;
   loggedin_msg: string;
   showmenu: boolean = false;
@@ -57,7 +59,8 @@ export class MyApp {
     private pushService: PushService,
     private appwoo: AppWoo,
     private appdata: AppData,
-    public toastCtrl: ToastController
+    public toastCtrl: ToastController,
+    public storage: Storage
   ) {
 
     this.initializeApp();
@@ -75,7 +78,13 @@ export class MyApp {
 
       this.doConnectionEvents();
 
-      this.loggedin_msg = window.localStorage.getItem( 'logged_in_msg' );
+      this.storage.get('user_login').then( data => {
+        console.log('user_login', data)
+        if(data) {
+          this.login_data = data;
+          this.loggedin_msg = data.message;
+        }
+      });
 
       this.attachListeners();
       
@@ -365,6 +374,10 @@ export class MyApp {
 
         this.presentToast('Check in successful!');
 
+      } else if ( e.data === 'logout' ) {
+
+        this.storage.remove('user_login')
+
       }
 
       // if it's not our json object, return
@@ -419,11 +432,16 @@ export class MyApp {
 
         this.loggedin = ( data.loggedin === "1" ) ? true : false;
 
+        this.login_data = data;
+
+        console.log('post message loggedin', data)
+
         if( data.message ) {
           let res = data.message.split(",");
-          window.localStorage.setItem( 'logged_in_msg', res[0] );
           this.loggedin_msg = res[0];
         }
+
+        this.storage.set('user_login', this.login_data );
 
         this.maybeSendPushId( data.ajaxurl );
 

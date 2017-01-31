@@ -10,11 +10,12 @@
 
   <ion-content>
     <ion-list>
-      <ion-list-header text-wrap *ngIf="loggedin_msg">
-        <!-- <ion-avatar>
-          <img src="img/icon-user-default.png">
-        </ion-avatar> -->
-        <span class="loggedin-msg"><b>{{loggedin_msg}}</b></span>
+      <ion-list-header text-wrap *ngIf="login_data">
+        <ion-avatar *ngIf="login_data.avatar">
+          <img [src]="login_data.avatar" />
+        </ion-avatar>
+        <p class="loggedin-msg"><b>{{loggedin_msg}}</b></p>
+        <!-- <button ion-button color="light" (click)="wpLogout()">Logout</button> -->
       </ion-list-header>
 
       <button [ngClass]="p.extra_classes" ion-item *ngFor="let p of pages" (click)="menuLink(p)">
