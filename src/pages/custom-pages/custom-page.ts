@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, Renderer, ElementRef} from '@angular/core';
 import {Iframe} from '../../pages/iframe/iframe';
 import {PostList} from '../../pages/post-list/post-list';
 import {Nav, NavParams, ModalController} from 'ionic-angular';
@@ -32,11 +32,14 @@ class DynamicContext {
 export class CustomPage {
 
 	pagetitle: string;
+	listenFunc: Function;
 
 	constructor( 
 		public navParams: NavParams, 
 		public nav: Nav,
-		public modalCtrl: ModalController ) {
+		public modalCtrl: ModalController,
+		public renderer: Renderer,
+    	public elementRef: ElementRef ) {
 		this.pagetitle = navParams.data.title;
 	}
 
@@ -93,6 +96,18 @@ export class CustomPage {
 		// set our custom template url
 		let slug = this.navParams.data.slug;
 		this.templateUrl = 'build/' + slug + '.html';
+
+		this.listener()
+	}
+
+	listener() {
+		// Listen for link clicks, open in in app browser
+	    this.listenFunc = this.renderer.listen(this.elementRef.nativeElement, 'click', (event) => {
+	      if( event.target.href && event.target.href.indexOf('http') >= 0 ) {
+	        event.preventDefault();
+	        window.open( event.target.href, '_blank' );
+	      }
+	    });
 	}
 
 }
