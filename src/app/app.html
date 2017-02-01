@@ -14,14 +14,18 @@
         <ion-avatar *ngIf="login_data.avatar">
           <img [src]="login_data.avatar" />
         </ion-avatar>
-        <p class="loggedin-msg"><b>{{loggedin_msg}}</b></p>
-        <!-- <button ion-button color="light" (click)="wpLogout()">Logout</button> -->
+        <p class="loggedin-msg"><b>{{login_data.message}}</b></p>
+        
       </ion-list-header>
 
       <button [ngClass]="p.extra_classes" ion-item *ngFor="let p of pages" (click)="menuLink(p)">
         <ion-icon *ngIf="p.class" name="{{p.class}}" item-left></ion-icon>
         {{p.title}}
       </button>
+
+      <button ion-button block icon-left class="menu-login-button" (click)="openLoginModal()">
+      <ion-icon name="log-in"></ion-icon>
+      Login/out</button>
 
     </ion-list>
 

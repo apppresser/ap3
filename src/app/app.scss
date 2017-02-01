@@ -120,6 +120,17 @@ ion-content ion-card-content {
 			}
 		}
 
+		.menu-login-button {
+			margin: 15px;
+			width: 90%;
+		}
+
+	}
+
+	.loggedin-msg {
+		text-transform: none;
+		letter-spacing: normal;
+		margin-top:10px;
 	}
 
 }
@@ -206,5 +217,12 @@ ion-content ion-card-content {
 @media only screen and (min-width: 768px) {
 	.post-list ion-slides {
 		height:250px;
+	}
+}
+
+.item.loggedin {
+	display: none;
+	&.show {
+		display: flex;
 	}
 }

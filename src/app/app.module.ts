@@ -12,6 +12,7 @@ import {TabsPage} from '../pages/tabs/tabs';
 // import {MapPage} from '../pages/google-map/google-map';
 import {CustomPage} from '../pages/custom-pages/custom-page';
 import {MediaPlayer} from '../pages/media-player/media-player';
+import {LoginModal} from '../pages/login-modal/login-modal';
 
 /* Providers */
 import {AppCamera} from '../providers/camera/app-camera';
@@ -22,6 +23,7 @@ import {FbConnect} from '../providers/facebook/facebook';
 import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
+import {WPlogin} from '../providers/wplogin/wplogin';
 
 /* Other */
 import {SanitizeHtml} from '../pipes/sanitize-html';
@@ -46,7 +48,8 @@ import {VgBufferingModule} from 'videogular2/buffering';
     SanitizeHtml,
     PostDetailsPage,
     ItemDetailsPage,
-    MediaPlayer
+    MediaPlayer,
+    LoginModal
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -67,7 +70,8 @@ import {VgBufferingModule} from 'videogular2/buffering';
     CustomPage,
     PostDetailsPage,
     ItemDetailsPage,
-    MediaPlayer
+    MediaPlayer,
+    LoginModal
   ],
   providers: [
     {provide: ErrorHandler, useClass: IonicErrorHandler},
@@ -79,7 +83,8 @@ import {VgBufferingModule} from 'videogular2/buffering';
     PushService,
     AppWoo,
     AppData,
-    Storage
+    Storage,
+    WPlogin
   ]
 })
 export class AppModule {}

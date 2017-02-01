@@ -1,6 +1,6 @@
 /* Framework */
 import {ViewChild, Component} from '@angular/core';
-import {Platform, MenuController, Nav, ToastController} from 'ionic-angular';
+import {Platform, MenuController, Nav, ToastController, ModalController, Events} from 'ionic-angular';
 import {DomSanitizer} from '@angular/platform-browser';
 
 /* Pages */
@@ -10,6 +10,7 @@ import {Iframe} from '../pages/iframe/iframe';
 import {TabsPage} from '../pages/tabs/tabs';
 // import {MapPage} from '../pages/google-map/google-map';
 import {CustomPage} from '../pages/custom-pages/custom-page';
+import {LoginModal} from '../pages/login-modal/login-modal';
 
 /* Providers (make sure to add to app.module.ts providers too) */
 // import {MenuProvider} from '../providers/menu/menu';
@@ -41,12 +42,12 @@ export class MyApp {
   tabs: any;
   login_data: any;
   loggedin: boolean = false;
-  loggedin_msg: string;
   showmenu: boolean = false;
   apptitle: string;
   introshown: any;
   networkState: any;
   bothMenus: boolean = false;
+  loginModal: any;
 
   constructor(
     private platform: Platform,
@@ -60,10 +61,21 @@ export class MyApp {
     private appwoo: AppWoo,
     private appdata: AppData,
     public toastCtrl: ToastController,
-    public storage: Storage
+    public storage: Storage,
+    public modalCtrl: ModalController,
+    public events: Events
   ) {
 
     this.initializeApp();
+
+    events.subscribe('user:login', data => {
+      this.userLogin(data);
+    });
+
+    events.subscribe('user:logout', obj => {
+      console.log(obj)
+      this.userLogout();
+    });
 
   }
 
@@ -82,7 +94,6 @@ export class MyApp {
         console.log('user_login', data)
         if(data) {
           this.login_data = data;
-          this.loggedin_msg = data.message;
         }
       });
 
@@ -168,11 +179,11 @@ export class MyApp {
 
         // hide the tab if user added class of hide
         item.show = true;
-        if( item.extra_classes.indexOf('hide') >= 0 ) {
+        if( item.extra_classes.indexOf('hide') >= 0 || item.extra_classes.indexOf('loggedin') >= 0 ) {
           item.show = false;
         }
 
-        this.navparams.push( { 'title': item.title, 'url': item.url, 'root': root, 'icon': item.class, 'slug': item.slug, 'list_route': item.list_route, 'list_display': item.list_display, 'favorites': item.favorites, 'extra_classes': item.extra_classes, 'show' : item.show, 'show_slider': item.show_slider, 'slide_route': item.slide_route } );
+        this.navParamsPush(item, root);
 
       }
 
@@ -223,6 +234,13 @@ export class MyApp {
       // we have both menus, use pushPage on sidemenu
       this.bothMenus = true;
     }
+
+  }
+
+  // construct tab items
+  navParamsPush( item, root ) {
+
+    this.navparams.push( { 'title': item.title, 'url': item.url, 'root': root, 'icon': item.class, 'slug': item.slug, 'list_route': item.list_route, 'list_display': item.list_display, 'favorites': item.favorites, 'extra_classes': item.extra_classes, 'show' : item.show, 'show_slider': item.show_slider, 'slide_route': item.slide_route, 'type': item.type, 'page_type': item.page_type } );
 
   }
 
@@ -338,7 +356,7 @@ export class MyApp {
     styles += "p, .item p { color: "  + data.meta.design.text_color + " }";
 
     // buttons
-    styles += ".button-primary { background: " + data.meta.design.button_background + "!important; color: "  + data.meta.design.button_text_color + " }";
+    styles += ".button-primary, .menu-login-button { background: " + data.meta.design.button_background + "!important; color: "  + data.meta.design.button_text_color + " }";
 
     // headings
     styles += "ion-page h1, ion-page h2, ion-page h3, ion-page h4, ion-page h5, ion-page h6, ion-page ion-list .item h2, ion-page ion-list .item h3, ion-page ion-list .item h4 { color: "  + data.meta.design.headings_color + " }";
@@ -376,7 +394,7 @@ export class MyApp {
 
       } else if ( e.data === 'logout' ) {
 
-        this.storage.remove('user_login')
+        this.userLogout()
 
       }
 
@@ -432,16 +450,11 @@ export class MyApp {
 
         this.loggedin = ( data.loggedin === "1" ) ? true : false;
 
-        this.login_data = data;
-
         console.log('post message loggedin', data)
 
-        if( data.message ) {
-          let res = data.message.split(",");
-          this.loggedin_msg = res[0];
-        }
-
         this.storage.set('user_login', this.login_data );
+
+        this.userLogin(data)
 
         this.maybeSendPushId( data.ajaxurl );
 
@@ -588,6 +601,101 @@ export class MyApp {
 
   menuClosed() {
     this.menu.swipeEnable(false)
+  }
+
+  openLoginModal() {
+
+    this.loginModal = this.modalCtrl.create( LoginModal );
+    
+    this.loginModal.present();
+
+  }
+
+  userLogin(data) {
+
+    this.login_data = data
+
+    this.presentToast('Login successful')
+
+    if( this.pages )
+      this.resetSideMenu(true)
+
+    if( this.tabs )
+      this.resetTabs(true)
+  }
+
+  userLogout() {
+    // this.storage.remove('user_login').then( () => {
+    //   this.presentToast('Logged out successfully.')
+    // })
+
+    this.login_data = null;
+
+    if( this.tabs && this.pages ) {
+      this.resetTabs(false)
+      this.resetSideMenu(false)
+    } else if( this.tabs ) {
+      this.resetTabs(false)
+    } else {
+      this.resetSideMenu(false)
+      // this.openPage(this.pages[0])
+    }
+
+    this.presentToast('Logout successful')
+
+  }
+
+  // show or hide menu items on login or logout. resetSideMenu(false) for logout
+  resetSideMenu( login ) {
+    for( let item of this.pages ) {
+
+      if( login === true && item.extra_classes.indexOf('loggedin') >= 0 ) {
+        item.extra_classes += " show";
+      } else if( login === false && item.extra_classes.indexOf('loggedin') >= 0 ) {
+        item.extra_classes = item.extra_classes.replace(" show", "");
+      }
+
+    }
+  }
+
+  // show or hide tabs on login or logout. resetTabs(false) for logout
+  resetTabs( login ) {
+
+    this.navparams = []
+
+    for( let item of this.tabs ) {
+
+      // set component, default is Iframe
+      var root:Object = Iframe;
+
+      if( item.type === 'apppages' && item.page_type === 'list' ) {
+        root = PostList;
+      } else if( item.type === 'apppages' ) {
+        root = CustomPage;
+      }
+
+      // hide the tab if user added class of hide
+      item.show = true;
+      if( item.extra_classes.indexOf('hide') >= 0 ) {
+        item.show = false;
+      }
+
+      if( login === false && item.extra_classes.indexOf('loggedin') >= 0 ) {
+        item.show = false;
+      }
+
+      item.class = item.icon
+
+      this.navParamsPush( item, root )
+
+    }
+
+    this.tabs = this.navparams;
+
+    // "refresh" the view by resetting to home tab
+    if( login === false )
+        this.openPage( { 'title': this.tabs[0].title, 'url': '', 'component': TabsPage, 'navparams': this.navparams, 'class': this.tabs[0].icon } )
+
   }
 
 }
