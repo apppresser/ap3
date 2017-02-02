@@ -44,39 +44,50 @@ export class LoginModal {
 			alert('Please enter a valid login.')
 
 		this.wplogin.login( this.login ).then( response => {
-			console.log(response)
+
 			this.storage.set( 'user_login', (<any>response).data )
 			this.events.publish('user:login', (<any>response).data )
 			this.login_data = (<any>response).data
 			this.dismiss()
+
 		}, (err) => {
+
+			console.log(err)
 
 			let msg = "There was a problem, please try again. ";
 
-			if( err.data.message )
+			if( err.data && err.data.message )
 				msg += err.data.message
 
 			alert( msg )
+		}).catch( e => {
+			console.warn(e)
+			alert("There was a problem connecting to the server.")
 		})
 	}
 
 	doLogout() {
 
 		this.wplogin.logout().then( response => {
-			console.log( response )
+
 			this.storage.remove( 'user_login' )
 			this.events.publish('user:logout' )
 			this.login_data = null
 			this.dismiss()
-			// TODO: redirect away from a loggedin page?
+			
 		}, (err) => {
+
+			console.log(err)
 
 			let msg = "There was a problem, please try again. ";
 
-			if( err.data.message )
+			if( err.data && err.data.message )
 				msg += err.data.message
 
 			alert( msg )
+		}).catch( e => {
+			console.warn(e)
+			alert("There was a problem connecting to the server.")
 		})
 
 	}
