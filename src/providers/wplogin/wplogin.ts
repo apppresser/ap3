@@ -8,8 +8,13 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class WPlogin {
   data: any = null;
+  url: any;
 
   constructor(public http: Http) {
+
+    let item = window.localStorage.getItem( 'myappp' );
+    this.url = JSON.parse( item ).wordpress_url;
+
   }
 
   /* Returns promise.
@@ -19,7 +24,11 @@ export class WPlogin {
 
     return new Promise( (resolve, reject) => {
 
-      let url = 'http://10.82.111.96/wp-admin/admin-ajax.php?action=apppajaxlogin';
+      if( !this.url )
+        reject({ data: { message: "No WordPress URL set. " } })
+
+      let url = this.url + 'wp-admin/admin-ajax.php?action=apppajaxlogin';
+
       let auth = btoa( form.user + ':' + form.pass );
 
       let headers = new Headers({ 'Authorization': 'Basic ' + auth });
@@ -48,7 +57,7 @@ export class WPlogin {
 
     return new Promise( (resolve, reject) => {
 
-      let url = 'http://10.82.111.96/wp-admin/admin-ajax.php?action=apppajaxlogout';
+      let url = this.url + 'wp-admin/admin-ajax.php?action=apppajaxlogout';
 
       this.http.get( url )
         .map(res => res.json())
@@ -63,6 +72,7 @@ export class WPlogin {
           error => {
 
             reject(error);
+
           }
         );
 

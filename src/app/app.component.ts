@@ -41,13 +41,13 @@ export class MyApp {
   navparams: any = [];
   tabs: any;
   login_data: any;
-  loggedin: boolean = false;
   showmenu: boolean = false;
   apptitle: string;
   introshown: any;
   networkState: any;
   bothMenus: boolean = false;
   loginModal: any;
+  showLogin: boolean = false;
 
   constructor(
     private platform: Platform,
@@ -73,7 +73,6 @@ export class MyApp {
     });
 
     events.subscribe('user:logout', obj => {
-      console.log(obj)
       this.userLogout();
     });
 
@@ -151,6 +150,8 @@ export class MyApp {
     this.doStatusBar(data);
 
     this.apptitle = data.title;
+
+    this.showLogin = ( data.side_menu_login == "on" ) ? true : false;
 
   }
 
@@ -448,11 +449,7 @@ export class MyApp {
 
       } else if( data.loggedin ) {
 
-        this.loggedin = ( data.loggedin === "1" ) ? true : false;
-
-        console.log('post message loggedin', data)
-
-        this.storage.set('user_login', this.login_data );
+        this.storage.set('user_login', this.login_data )
 
         this.userLogin(data)
 
@@ -614,6 +611,9 @@ export class MyApp {
   userLogin(data) {
 
     this.login_data = data
+
+    // tell the modal we are logged in
+    this.events.publish('modal:logindata', data )
 
     this.presentToast('Login successful')
 

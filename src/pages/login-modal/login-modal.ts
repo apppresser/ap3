@@ -26,11 +26,18 @@ export class LoginModal {
 		public storage: Storage
 		) {
 
+		// login through postmessage sets login_data this way
+		events.subscribe('modal:logindata', data => {
+	      this.setLoginData(data);
+	    });
+
+		// get login data on first load
 		this.storage.get('user_login').then( data => {
 
 			if(data) {
 			  this.login_data = data
 			}
+
 		});
 
 	}
@@ -74,12 +81,16 @@ export class LoginModal {
 			this.events.publish('user:logout' )
 			this.login_data = null
 			this.dismiss()
-			
+
 		}, (err) => {
+
+			this.storage.remove( 'user_login' )
+			this.events.publish('user:logout' )
+			this.login_data = null
 
 			console.log(err)
 
-			let msg = "There was a problem, please try again. ";
+			let msg = "You are logged out of the app, but there was a problem on the server. ";
 
 			if( err.data && err.data.message )
 				msg += err.data.message
@@ -90,6 +101,10 @@ export class LoginModal {
 			alert("There was a problem connecting to the server.")
 		})
 
+	}
+
+	setLoginData( data ) {
+		this.login_data = data
 	}
 
 	dismiss() {

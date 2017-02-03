@@ -2,6 +2,9 @@ import {Injectable} from '@angular/core';
 import {Http, Headers, RequestOptions} from '@angular/http';
 import 'rxjs/add/operator/map';
 
+import {Storage} from '@ionic/storage';
+import {Events} from 'ionic-angular';
+
 import {Facebook} from 'ionic-native';
 
 /*
@@ -16,7 +19,11 @@ export class FbConnect {
   iframewin: any;
   iframedoc: any;
 
-  constructor(public http: Http) {
+  constructor(
+    public http: Http,
+    public storage: Storage,
+    public events: Events
+    ) {
 
     this.fbconnectvars = {
       debug: false,
@@ -159,7 +166,12 @@ export class FbConnect {
         }
 
         this.iframewin.location.href = baseURL + "?appp=" + app_ver;
-        console.log(this.iframewin.location.href);
+        
+        this.storage.set('user_login', data );
+
+        // hide/show menu items in main app component
+        this.events.publish('user:login', data )
+
       });
     } else {
       console.log( response );

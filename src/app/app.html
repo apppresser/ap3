@@ -23,7 +23,7 @@
         {{p.title}}
       </button>
 
-      <button ion-button block icon-left class="menu-login-button" (click)="openLoginModal()">
+      <button *ngIf="showLogin" ion-button block icon-left class="menu-login-button" (click)="openLoginModal()">
       <ion-icon name="log-in"></ion-icon>
       Login/out</button>
 
