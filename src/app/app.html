@@ -25,7 +25,7 @@
 
       <button *ngIf="showLogin" ion-button block icon-left class="menu-login-button" (click)="openLoginModal()">
       <ion-icon name="log-in"></ion-icon>
-      Login/out</button>
+      <span *ngIf="login_data">Logout</span><span *ngIf="!login_data">Login</span></button>
 
     </ion-list>
 

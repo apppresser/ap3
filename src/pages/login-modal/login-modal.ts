@@ -44,7 +44,7 @@ export class LoginModal {
 
 	doLogin() {
 
-		if( !Device.platform ) 
+		if( !Device || !Device.platform ) 
 			alert('Please try from a device.')
 
 		if( !this.login )
