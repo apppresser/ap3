@@ -4,7 +4,7 @@
 		<ion-buttons start>
 			<button *ngIf="rtlBack" (click)="backRtlTransition()" ion-button class="custom-back-button">
 			    <ion-icon name="arrow-back"></ion-icon>
-			    Back
+			    {{'Back' | translate }}
 			</button>
 
 			<button ion-button menuToggle *ngIf="!selectedItem">

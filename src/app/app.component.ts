@@ -2,6 +2,7 @@
 import {ViewChild, Component} from '@angular/core';
 import {Platform, MenuController, Nav, ToastController, ModalController, Events} from 'ionic-angular';
 import {DomSanitizer} from '@angular/platform-browser';
+import {TranslateService} from 'ng2-translate';
 
 /* Pages */
 // import {ListPage} from '../pages/list/list';
@@ -65,7 +66,8 @@ export class MyApp {
     public toastCtrl: ToastController,
     public storage: Storage,
     public modalCtrl: ModalController,
-    public events: Events
+    public events: Events,
+    public translate: TranslateService
   ) {
 
     this.initializeApp();
@@ -84,6 +86,8 @@ export class MyApp {
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
+
+      this.translate.setDefaultLang('en');
 
       this.apiurl = this.globalvars.getApi();
       
@@ -162,8 +166,6 @@ export class MyApp {
     this.doStatusBar(data);
 
     this.apptitle = data.title;
-
-    
 
   }
 

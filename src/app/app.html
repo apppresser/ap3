@@ -14,18 +14,18 @@
         <ion-avatar *ngIf="login_data.avatar">
           <img [src]="login_data.avatar" />
         </ion-avatar>
-        <p class="loggedin-msg"><b>{{login_data.message}}</b></p>
+        <p class="loggedin-msg"><b>{{login_data.message | translate}}</b></p>
         
       </ion-list-header>
 
       <button [ngClass]="p.extra_classes" ion-item *ngFor="let p of pages" (click)="menuLink(p)">
         <ion-icon *ngIf="p.class" name="{{p.class}}" item-left></ion-icon>
-        {{p.title}}
+        {{p.title | translate}}
       </button>
 
       <button *ngIf="showLogin" ion-button block icon-left class="menu-login-button" (click)="openLoginModal()">
       <ion-icon name="log-in"></ion-icon>
-      <span *ngIf="login_data">Logout</span><span *ngIf="!login_data">Login</span></button>
+      <span *ngIf="login_data">{{ 'Logout' | translate }}</span><span *ngIf="!login_data">{{ 'Login' | translate }}</span></button>
 
     </ion-list>
 

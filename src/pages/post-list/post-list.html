@@ -4,7 +4,7 @@
     <ion-buttons start>
       <button *ngIf="rtlBack" (click)="backRtlTransition()" ion-button class="custom-back-button">
           <ion-icon name="arrow-back"></ion-icon>
-          Back
+          {{'Back' | translate }}
       </button>
 
       <button ion-button menuToggle>
@@ -13,18 +13,18 @@
 
     </ion-buttons>
 
-    <ion-title>{{title}}</ion-title>
+    <ion-title>{{title | translate}}</ion-title>
 
     </ion-navbar>
 
     <ion-toolbar *ngIf="doFavorites" id="favorites-toolbar">
 
       <button ion-button clear (click)="showAll()">
-        All
+        {{ 'All' | translate }}
       </button>
 
       <button ion-button clear (click)="showFavorites()">
-        Favorites
+        {{ 'Favorites' | translate }}
       </button>
 
     </ion-toolbar>

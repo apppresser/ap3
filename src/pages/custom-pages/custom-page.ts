@@ -2,6 +2,7 @@ import {Component, Renderer, ElementRef} from '@angular/core';
 import {Iframe} from '../../pages/iframe/iframe';
 import {PostList} from '../../pages/post-list/post-list';
 import {Nav, NavParams, ModalController, Platform, ViewController} from 'ionic-angular';
+import {TranslateService} from 'ng2-translate';
 
 import {IonicModule} from 'ionic-angular';
 
@@ -34,6 +35,7 @@ export class CustomPage {
 	pagetitle: string;
 	listenFunc: Function;
 	rtlBack: boolean = false;
+	language: any;
 
 	constructor( 
 		public navParams: NavParams, 
@@ -42,7 +44,8 @@ export class CustomPage {
 		public renderer: Renderer,
     	public elementRef: ElementRef,
     	public viewCtrl: ViewController,
-        public platform: Platform 
+        public platform: Platform,
+        public translate: TranslateService
         ) {
 		this.pagetitle = navParams.data.title;
 	}
@@ -97,6 +100,10 @@ export class CustomPage {
 			let modal = this.modalCtrl.create(MediaPlayer, {source: src, image: img});
 			modal.present();
 
+		},
+		changeLang: ( lang: string ) => {
+			console.log(lang)
+			this.translate.use( lang )
 		}
 	};
 
