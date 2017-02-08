@@ -1,4 +1,4 @@
-import {NavController, NavParams, ModalController} from 'ionic-angular';
+import {NavController, NavParams, ModalController, Platform, ViewController} from 'ionic-angular';
 import {Component, Renderer, ElementRef} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SocialSharing} from 'ionic-native';
@@ -12,6 +12,7 @@ export class PostDetailsPage {
   selectedItem: any;
   content: any;
   listenFunc: Function;
+  rtlBack: boolean = false
 
   constructor(
     public nav: NavController, 
@@ -19,7 +20,9 @@ export class PostDetailsPage {
     public sanitizer: DomSanitizer,
     public modalCtrl: ModalController,
     public renderer: Renderer,
-    elementRef: ElementRef
+    elementRef: ElementRef,
+    public viewCtrl: ViewController,
+    public platform: Platform
     ) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = navParams.get('item');
@@ -36,8 +39,13 @@ export class PostDetailsPage {
 
   }
 
-  ionViewDidLoad() {
+  ionViewWillEnter() {
 
+    if( this.platform.isRTL() && this.viewCtrl.enableBack() ) {
+        this.viewCtrl.showBackButton(false)
+        this.rtlBack = true
+    }
+ 
   }
 
   mediaModal( src, img = null ) {
@@ -56,6 +64,16 @@ export class PostDetailsPage {
       // Sharing via email is not possible
     });
 
+  }
+
+  // changes the back button transition direction if app is RTL
+  backRtlTransition() {
+    let obj = {}
+
+    if( this.platform.is('ios') )
+      obj = {direction: 'forward'}
+    
+    this.nav.pop( obj )
   }
 
 }

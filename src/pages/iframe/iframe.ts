@@ -1,4 +1,4 @@
-import {NavParams, Nav, LoadingController, ModalController} from 'ionic-angular';
+import {NavParams, Nav, LoadingController, ModalController, Platform, ViewController} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Geolocation, Device, Keyboard} from 'ionic-native';
@@ -17,9 +17,13 @@ export class Iframe {
     loaded: boolean = false;
     activityModal: boolean = false;
     checkinModal: boolean = false;
+    rtlBack: boolean = false;
 
     constructor(
-        public navParams: NavParams, 
+        public navParams: NavParams,
+        public nav: Nav,
+        public viewCtrl: ViewController,
+        public platform: Platform,
         public loadingController: LoadingController, 
         public sanitizer: DomSanitizer,
         public modalCtrl: ModalController
@@ -38,13 +42,19 @@ export class Iframe {
 
         // Show error message if in preview and not using https
         this.previewAlert( navParams.data.url );
-        
-        console.log('navParams.data', navParams.data);
 
     }
 
     ionViewWillEnter() {
+
         this.iframeLoading();
+
+        if( this.platform.isRTL() && this.viewCtrl.enableBack() ) {
+            this.viewCtrl.showBackButton(false)
+            this.rtlBack = true
+        }
+
+        
     }
 
     iframeLoading() {
@@ -228,5 +238,15 @@ export class Iframe {
         // if no tabs
         this.iframe = active.querySelector('#ap3-iframe');
 
+    }
+
+    // changes the back button transition direction if app is RTL
+    backRtlTransition() {
+        let obj = {}
+
+        if( this.platform.is('ios') )
+          obj = {direction: 'forward'}
+
+        this.nav.pop( obj )
     }
 }

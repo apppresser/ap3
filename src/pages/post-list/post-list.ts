@@ -1,4 +1,4 @@
-import {NavController, NavParams, LoadingController, ToastController, ItemSliding} from 'ionic-angular';
+import {NavController, NavParams, LoadingController, ToastController, ItemSliding, Platform, ViewController} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
 import {PostDetailsPage} from '../post-details/post-details';
@@ -23,6 +23,7 @@ export class PostList {
   favorites: any = [];
   doFavorites: boolean = false;
   showSlider: boolean = false;
+  rtlBack: boolean = false;
 
   constructor(
     public nav: NavController, 
@@ -31,7 +32,9 @@ export class PostList {
     public globalvars: GlobalVars, 
     public loadingController: LoadingController, 
     public storage: Storage, 
-    public toastCtrl: ToastController ) {
+    public toastCtrl: ToastController,
+    public viewCtrl: ViewController,
+    public platform: Platform ) {
 
     this.route = navParams.data.list_route;
 
@@ -60,6 +63,18 @@ export class PostList {
 
     this.loadPosts( this.route );
 
+  }
+
+  ionViewWillEnter() {
+
+    console.log('will enter')
+
+    if( this.platform.isRTL() && this.viewCtrl.enableBack() ) {
+        this.viewCtrl.showBackButton(false)
+        this.rtlBack = true
+        console.log('rtl back true')
+    }
+ 
   }
 
   loadPosts( route ) {
@@ -97,9 +112,15 @@ export class PostList {
   }
 
   itemTapped(event, item) {
+
+    let opt = {};
+
+    if( this.platform.isRTL() && this.platform.is('ios') )
+      opt = { direction: 'back' }
+
     this.nav.push(PostDetailsPage, {
       item: item
-    });
+    }, opt);
   }
 
   doRefresh(refresh) {
@@ -253,4 +274,15 @@ export class PostList {
     });
 
   }
+
+  // changes the back button transition direction if app is RTL
+  backRtlTransition() {
+    let obj = {}
+
+    if( this.platform.is('ios') )
+      obj = {direction: 'forward'}
+    
+    this.nav.pop( obj )
+  }
+
 }

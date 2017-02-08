@@ -1,9 +1,19 @@
 <ion-header>
   <ion-navbar>
-    <button ion-button menuToggle>
-      <ion-icon name="menu"></ion-icon>
-    </button>
-    <ion-title>{{pagetitle}}</ion-title>
+
+	<ion-buttons start>
+		<button *ngIf="rtlBack" (click)="backRtlTransition()" ion-button class="custom-back-button">
+			<ion-icon name="arrow-back"></ion-icon>
+			Back
+		</button>
+		<button ion-button menuToggle>
+			<ion-icon name="menu"></ion-icon>
+		</button>
+
+	</ion-buttons>
+
+	<ion-title>{{pagetitle}}</ion-title>
+
   </ion-navbar>
 </ion-header>
 

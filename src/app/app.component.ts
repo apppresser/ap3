@@ -48,6 +48,8 @@ export class MyApp {
   bothMenus: boolean = false;
   loginModal: any;
   showLogin: boolean = false;
+  menu_side: string = "left";
+  rtl: boolean = false;
 
   constructor(
     private platform: Platform,
@@ -145,19 +147,29 @@ export class MyApp {
 
     Splashscreen.hide();
     this.loadMenu(data);
+
+    this.showLogin = ( data.side_menu_login == "on" ) ? true : false;
+
+    this.menu_side = ( data.meta.menu_right == true ) ? "right" : "left";
+
+    this.rtl = ( data.meta.rtl == true ) ? true : false;
+
+    if( this.rtl === true )
+      this.platform.setDir('rtl', true)
+
     this.loadStyles(data);
     this.maybeDoAds(data);
     this.doStatusBar(data);
 
     this.apptitle = data.title;
 
-    this.showLogin = ( data.side_menu_login == "on" ) ? true : false;
+    
 
   }
 
   loadMenu(data) {
 
-    console.log('loadmenu', data);
+    // console.log('loadmenu', data);
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
 
     // If we have a tab menu, set that up
@@ -296,14 +308,19 @@ export class MyApp {
     // close the menu when clicking a link from the menu
     this.menu.close();
 
+    let opt = {};
+
+    if( this.rtl === true && this.platform.is('ios') )
+      opt = { direction: 'back' }
+
     if( page.type === 'apppages' && page.page_type === 'list' ) {
-      this.nav.push( PostList, page );
+      this.nav.push( PostList, page, opt );
     } else if( page.type === 'apppages' ) {
-      this.nav.push( CustomPage, page );
+      this.nav.push( CustomPage, page, opt );
     } else if (page.url) {
-      this.nav.push(Iframe, page);
+      this.nav.push(Iframe, page, opt);
     } else {
-      this.nav.push(page.component, page.navparams);
+      this.nav.push(page.component, page.navparams, opt);
     }
 
   }
@@ -372,6 +389,11 @@ export class MyApp {
       styles += 'ion-navbar .bar-button-menutoggle { display: none !important; }';
     }
 
+    // maybe move menu item to right
+    if( this.menu_side === "right" && this.rtl === false || this.menu_side === "left" && this.rtl === true ) {
+      styles += 'ion-navbar .bar-buttons[start] { order: 7; }';
+    }
+
     styles += "</style>";
 
     this.styles = this.sanitizer.bypassSecurityTrustHtml( styles );
@@ -409,7 +431,7 @@ export class MyApp {
 
         // push a new page
         let page = { title: data.title, component: Iframe, url: data.url, classes: null };
-        this.nav.push(Iframe, page);
+        this.pushPage( page );
 
       } else if (data.msg) {
 

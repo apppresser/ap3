@@ -1,14 +1,26 @@
 <ion-header>
 	<ion-navbar>
-	  <button ion-button menuToggle *ngIf="!selectedItem">
-	    <ion-icon name="menu"></ion-icon>
-	  </button>
-	  <ion-title><span [innerHTML]="selectedItem.title.rendered"></span></ion-title>
-	  <ion-buttons end>
-	    <button ion-button (click)="share()">
-			<ion-icon name="share"></ion-icon>
-		</button>
+
+		<ion-buttons start>
+			<button *ngIf="rtlBack" (click)="backRtlTransition()" ion-button class="custom-back-button">
+			    <ion-icon name="arrow-back"></ion-icon>
+			    Back
+			</button>
+
+			<button ion-button menuToggle *ngIf="!selectedItem">
+			  <ion-icon name="menu"></ion-icon>
+			</button>
+
 		</ion-buttons>
+
+		<ion-title><span [innerHTML]="selectedItem.title.rendered"></span></ion-title>
+
+		<ion-buttons end>
+			<button ion-button (click)="share()">
+				<ion-icon name="share"></ion-icon>
+			</button>
+		</ion-buttons>
+		
 	</ion-navbar>
 </ion-header>
 

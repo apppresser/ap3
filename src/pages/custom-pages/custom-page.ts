@@ -1,7 +1,7 @@
 import {Component, Renderer, ElementRef} from '@angular/core';
 import {Iframe} from '../../pages/iframe/iframe';
 import {PostList} from '../../pages/post-list/post-list';
-import {Nav, NavParams, ModalController} from 'ionic-angular';
+import {Nav, NavParams, ModalController, Platform, ViewController} from 'ionic-angular';
 
 import {IonicModule} from 'ionic-angular';
 
@@ -33,13 +33,17 @@ export class CustomPage {
 
 	pagetitle: string;
 	listenFunc: Function;
+	rtlBack: boolean = false;
 
 	constructor( 
 		public navParams: NavParams, 
 		public nav: Nav,
 		public modalCtrl: ModalController,
 		public renderer: Renderer,
-    	public elementRef: ElementRef ) {
+    	public elementRef: ElementRef,
+    	public viewCtrl: ViewController,
+        public platform: Platform 
+        ) {
 		this.pagetitle = navParams.data.title;
 	}
 
@@ -55,14 +59,19 @@ export class CustomPage {
 		      return;
 		    }
 
+		    let opt = {};
+
+		    if( this.platform.isRTL() && this.platform.is('ios') )
+		      opt = { direction: 'back' }
+
 			if( page.type === 'apppages' && page.page_type === 'list' ) {
-				this.nav.push( PostList, page );
+				this.nav.push( PostList, page, opt );
 			} else if( page.type === 'apppages' ) {
-				this.nav.push( CustomPage, page );
+				this.nav.push( CustomPage, page, opt );
 			} else if (page.url) {
-				this.nav.push(Iframe, page);
+				this.nav.push(Iframe, page, opt);
 			} else {
-				this.nav.push(page.component, page.navparams);
+				this.nav.push(page.component, page.navparams, opt);
 			}
 		},
 		openPage: ( page ) => {
@@ -92,13 +101,23 @@ export class CustomPage {
 	};
 
 	ngOnInit() {
-		console.log(this.navParams);
+		// console.log(this.navParams);
 		// set our custom template url
 		let slug = this.navParams.data.slug;
 		this.templateUrl = 'build/' + slug + '.html';
 
 		this.listener()
 	}
+
+	ionViewWillEnter() {
+
+        if( this.platform.isRTL() && this.viewCtrl.enableBack() ) {
+            this.viewCtrl.showBackButton(false)
+            this.rtlBack = true
+        }
+
+        
+    }
 
 	listener() {
 		// Listen for link clicks, open in in app browser
@@ -108,6 +127,16 @@ export class CustomPage {
 	        window.open( event.target.href, '_blank' );
 	      }
 	    });
+	}
+
+	// changes the back button transition direction if app is RTL
+	backRtlTransition() {
+		let obj = {}
+
+		if( this.platform.is('ios') )
+		  obj = {direction: 'forward'}
+
+		this.nav.pop( obj )
 	}
 
 }
