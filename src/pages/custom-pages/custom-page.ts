@@ -37,6 +37,7 @@ export class CustomPage {
 	listenFunc: Function;
 	rtlBack: boolean = false;
 	language: any;
+	site_languages: any;
 
 	constructor( 
 		public navParams: NavParams, 
@@ -50,6 +51,13 @@ export class CustomPage {
         public storage: Storage
         ) {
 		this.pagetitle = navParams.data.title;
+
+		// Get languages, these are sent from WP site through postMessage in main component
+		this.storage.get('site_languages').then( langs => {
+			if(langs) {
+				this.site_languages = langs
+			}
+		})
 	}
 
 	templateUrl: string;

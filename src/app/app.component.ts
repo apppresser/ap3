@@ -472,6 +472,10 @@ export class MyApp {
 
         this.maybeSendPushId( data.ajaxurl );
 
+      } else if( data.default_languages ) {
+
+        this.storage.set('site_languages', data.default_languages )
+
       }
 
     }, false); // end eventListener

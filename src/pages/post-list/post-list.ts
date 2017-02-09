@@ -70,7 +70,6 @@ export class PostList {
     if( this.platform.isRTL() && this.viewCtrl.enableBack() ) {
         this.viewCtrl.showBackButton(false)
         this.rtlBack = true
-        console.log('rtl back true')
     }
  
   }
