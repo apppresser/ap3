@@ -44,8 +44,14 @@ export class LoginModal {
 
 	doLogin() {
 
-		if( !Device || !Device.platform ) 
-			alert('Please try from a device.')
+		// if in preview, Device.platform is empty object. On device it should be string like 'iOS'
+		if( typeof Device.platform != 'string' ) {
+
+			alert('Please try from a device.');
+
+			return;
+
+		}
 
 		if( !this.login )
 			alert('Please enter a valid login.')
