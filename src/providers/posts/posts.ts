@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import 'rxjs/add/operator/map';
+import {Storage} from '@ionic/storage';
 
 /*
   Generated class for the Posts provider.
@@ -12,7 +13,10 @@ import 'rxjs/add/operator/map';
 export class Posts {
   data: any = null;
 
-  constructor(public http: Http) {}
+  constructor(
+    public http: Http, 
+    public storage: Storage
+    ) {}
 
   load(url:string, page) {
 
@@ -35,19 +39,30 @@ export class Posts {
         var concat = '?';
       }
 
-    this.http.get( url + concat + 'appp=3&page=' + page)
-        .map(res => res.json())
-        .subscribe(data => {
-          // we've got back the raw data, now generate the core schedule data
-          // and save the data for later reference
-          this.data = data;
+      this.storage.get('app_language').then( lang => {
 
-          // this.storage.set( url.substr(-10, 10) + '_posts', data);
+        let language = ''
 
-          // console.warn(data);
-          resolve(this.data);
+        if(lang) {
+          language = '&lang=' + lang
+        }
+
+        this.http.get( url + concat + 'appp=3&page=' + page + language)
+            .map(res => res.json())
+            .subscribe(data => {
+              // we've got back the raw data, now generate the core schedule data
+              // and save the data for later reference
+              this.data = data;
+
+              // this.storage.set( url.substr(-10, 10) + '_posts', data);
+
+              // console.warn(data);
+              resolve(this.data);
+            });
         });
-    });
+
+
+      })
   }
 
 }

@@ -5,18 +5,14 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {TranslateService} from 'ng2-translate';
 
 /* Pages */
-// import {ListPage} from '../pages/list/list';
 import {PostList} from '../pages/post-list/post-list';
 import {Iframe} from '../pages/iframe/iframe';
 import {TabsPage} from '../pages/tabs/tabs';
-// import {MapPage} from '../pages/google-map/google-map';
 import {CustomPage} from '../pages/custom-pages/custom-page';
 import {LoginModal} from '../pages/login-modal/login-modal';
 
 /* Providers (make sure to add to app.module.ts providers too) */
-// import {MenuProvider} from '../providers/menu/menu';
 import {AppCamera} from '../providers/camera/app-camera';
-// import {Posts} from '../providers/posts/posts';
 import {GlobalVars} from '../providers/globalvars/globalvars';
 import {AppAds} from '../providers/appads/appads';
 import {FbConnect} from '../providers/facebook/facebook';
@@ -89,18 +85,15 @@ export class MyApp {
 
       this.translate.setDefaultLang('en');
 
+      this.getSetLang();
+
       this.apiurl = this.globalvars.getApi();
       
       this.fetchData();
 
       this.doConnectionEvents();
 
-      this.storage.get('user_login').then( data => {
-        console.log('user_login', data)
-        if(data) {
-          this.login_data = data;
-        }
-      });
+      this.getSetLogin();
 
       this.attachListeners();
       
@@ -719,6 +712,24 @@ export class MyApp {
     // "refresh" the view by resetting to home tab
     if( login === false )
         this.openPage( { 'title': this.tabs[0].title, 'url': '', 'component': TabsPage, 'navparams': this.navparams, 'class': this.tabs[0].icon } )
+
+  }
+
+  getSetLogin() {
+
+    this.storage.get('user_login').then( data => {
+        if(data)
+          this.login_data = data;
+    })
+
+  }
+
+  getSetLang() {
+
+    this.storage.get( 'app_language' ).then( lang => {
+      if( lang )
+        this.translate.use( lang )
+    })
 
   }
 

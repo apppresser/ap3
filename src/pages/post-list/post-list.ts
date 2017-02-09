@@ -67,8 +67,6 @@ export class PostList {
 
   ionViewWillEnter() {
 
-    console.log('will enter')
-
     if( this.platform.isRTL() && this.viewCtrl.enableBack() ) {
         this.viewCtrl.showBackButton(false)
         this.rtlBack = true

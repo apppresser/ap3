@@ -3,6 +3,7 @@ import {Iframe} from '../../pages/iframe/iframe';
 import {PostList} from '../../pages/post-list/post-list';
 import {Nav, NavParams, ModalController, Platform, ViewController} from 'ionic-angular';
 import {TranslateService} from 'ng2-translate';
+import {Storage} from '@ionic/storage';
 
 import {IonicModule} from 'ionic-angular';
 
@@ -45,7 +46,8 @@ export class CustomPage {
     	public elementRef: ElementRef,
     	public viewCtrl: ViewController,
         public platform: Platform,
-        public translate: TranslateService
+        public translate: TranslateService,
+        public storage: Storage
         ) {
 		this.pagetitle = navParams.data.title;
 	}
@@ -102,8 +104,8 @@ export class CustomPage {
 
 		},
 		changeLang: ( lang: string ) => {
-			console.log(lang)
 			this.translate.use( lang )
+			this.storage.set( 'app_language', lang )
 		}
 	};
 

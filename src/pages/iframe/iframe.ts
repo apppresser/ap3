@@ -2,6 +2,7 @@ import {NavParams, Nav, LoadingController, ModalController, Platform, ViewContro
 import {Component} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Geolocation, Device, Keyboard} from 'ionic-native';
+import {Storage} from '@ionic/storage';
 
 import {MediaPlayer} from '../media-player/media-player';
 
@@ -18,6 +19,7 @@ export class Iframe {
     activityModal: boolean = false;
     checkinModal: boolean = false;
     rtlBack: boolean = false;
+    lang: string = '';
 
     constructor(
         public navParams: NavParams,
@@ -26,22 +28,34 @@ export class Iframe {
         public platform: Platform,
         public loadingController: LoadingController, 
         public sanitizer: DomSanitizer,
-        public modalCtrl: ModalController
+        public modalCtrl: ModalController,
+        public storage: Storage
         ) {
         this.title = navParams.data.title;
 
-        if ( navParams.data.url.indexOf('?') >= 0 ) {
-            this.param = '&appp=3';
-        } else {
-            this.param = '?appp=3';
-        }
-
-        this.url = this.sanitizer.bypassSecurityTrustResourceUrl( navParams.data.url + this.param );
+        this.setupURL();
 
         let dataurl = navParams.data.url;
 
         // Show error message if in preview and not using https
         this.previewAlert( navParams.data.url );
+
+    }
+
+    setupURL() {
+
+        if ( this.navParams.data.url.indexOf('?') >= 0 ) {
+            this.param = '&appp=3';
+        } else {
+            this.param = '?appp=3';
+        }
+
+        this.storage.get('app_language').then( lang => {
+            if( lang )
+                this.lang = '&lang=' + lang
+
+            this.url = this.sanitizer.bypassSecurityTrustResourceUrl( this.navParams.data.url + this.param + this.lang );
+        })
 
     }
 

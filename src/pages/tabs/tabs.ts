@@ -9,7 +9,6 @@ export class TabsPage {
   mySelectedIndex: number;
 
   constructor(navParams: NavParams) {
-  	console.log('tabs navparams', navParams);
     this.mySelectedIndex = navParams.data.tabIndex || 0;
     this.tabs = navParams.data;
   }

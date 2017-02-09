@@ -56,7 +56,6 @@ export class PostDetailsPage {
   }
 
   share() {
-    console.log( this.selectedItem.title.rendered, this.selectedItem.link );
 
     SocialSharing.share( this.selectedItem.title.rendered, null, null, this.selectedItem.link ).then(() => {
       // Sharing via email is possible

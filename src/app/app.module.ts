@@ -5,13 +5,10 @@ import { MyApp } from './app.component';
 import { TranslateModule, TranslateStaticLoader, TranslateLoader } from 'ng2-translate/ng2-translate';
 
 /* Pages */
-import {ListPage} from '../pages/list/list';
-import {ItemDetailsPage} from '../pages/item-details/item-details';
 import {PostList} from '../pages/post-list/post-list';
 import {PostDetailsPage} from '../pages/post-details/post-details';
 import {Iframe} from '../pages/iframe/iframe';
 import {TabsPage} from '../pages/tabs/tabs';
-// import {MapPage} from '../pages/google-map/google-map';
 import {CustomPage} from '../pages/custom-pages/custom-page';
 import {MediaPlayer} from '../pages/media-player/media-player';
 import {LoginModal} from '../pages/login-modal/login-modal';
@@ -39,6 +36,7 @@ import {VgControlsModule} from 'videogular2/controls';
 import {VgOverlayPlayModule} from 'videogular2/overlay-play';
 import {VgBufferingModule} from 'videogular2/buffering';
 
+// required for ng translate, tells it to look in assets folder for trans files
 export function createTranslateLoader(http: Http) {
     return new TranslateStaticLoader(http, 'assets/i18n', '.json');
 }
@@ -46,14 +44,12 @@ export function createTranslateLoader(http: Http) {
 @NgModule({
   declarations: [ // pages, custom components, pipes, etc
     MyApp,
-    ListPage,
     PostList,
     Iframe,
     TabsPage,
     CustomPage,
     SanitizeHtml,
     PostDetailsPage,
-    ItemDetailsPage,
     MediaPlayer,
     LoginModal
   ],
@@ -74,13 +70,11 @@ export function createTranslateLoader(http: Http) {
   bootstrap: [IonicApp],
   entryComponents: [ // pages go here
     MyApp,
-    ListPage,
     PostList,
     Iframe,
     TabsPage,
     CustomPage,
     PostDetailsPage,
-    ItemDetailsPage,
     MediaPlayer,
     LoginModal
   ],
