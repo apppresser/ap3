@@ -234,3 +234,16 @@ ion-content ion-card-content {
 }
 
 .bar-buttons-md[start] { order: 0; }
+
+.selection {
+  font-size: 22px;
+  display: block;
+  text-align: left;
+  padding: 20px;
+}
+
+iframe {
+ height: 100%;
+ width: 100%;
+ border: 0;
+}
