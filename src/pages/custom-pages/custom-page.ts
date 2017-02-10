@@ -127,11 +127,10 @@ export class CustomPage {
 		// console.log(this.navParams);
 		// set our custom template url
 		let slug = this.navParams.data.slug;
-		this.templateUrl = 'custom.html';
+		this.templateUrl = 'build/' + slug + '.html';
 
 		this.listener()
 
-		this.langs = this.getLangs()
 	}
 
 	ionViewWillEnter() {
