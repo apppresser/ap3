@@ -78,9 +78,33 @@
 </ion-list>
 </ion-card> -->
 
-<!-- <ion-item>
-  <ion-label>Language</ion-label>
-  <ion-select [(ngModel)]="language" (ionChange)="changeLang($event, language)">
-    <ion-option *ngFor="let lang of langs" value="{{lang.code}}">{{lang.name}}</ion-option>
-  </ion-select>
-</ion-item> -->
+<ion-list>
+  <ion-list-header>
+    Settings
+  </ion-list-header>
+
+  <ion-item>
+  <ion-icon name="cog" item-left></ion-icon>
+    <ion-label>Language</ion-label>
+    <ion-select [(ngModel)]="language" (ionChange)="changeLang($event, language)">
+      <ion-option value="en">English</ion-option>
+      <ion-option value="es">Spanish</ion-option>
+      <ion-option value="de">German</ion-option>
+      <!-- <ion-option *ngFor="let lang of langs" value="{{lang.code}}">{{lang.name}}</ion-option> -->
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-icon name="repeat" item-left></ion-icon>
+    <ion-toggle [(ngModel)]="rtl" (ionChange)="changeRTL($event, rtl)"></ion-toggle>
+    <ion-label>
+      RTL (Right to left)
+    </ion-label>
+  </ion-item>
+
+  <ion-item (click)="updateData()">
+    <ion-icon name="refresh" item-left></ion-icon>
+        Update Data
+    </ion-item>
+
+</ion-list>

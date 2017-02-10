@@ -1,7 +1,7 @@
 import {Component, Renderer, ElementRef} from '@angular/core';
 import {Iframe} from '../../pages/iframe/iframe';
 import {PostList} from '../../pages/post-list/post-list';
-import {Nav, NavParams, ModalController, Platform, ViewController} from 'ionic-angular';
+import {Nav, NavParams, ModalController, Platform, ViewController, Events} from 'ionic-angular';
 import {TranslateService} from 'ng2-translate';
 import {Storage} from '@ionic/storage';
 
@@ -50,7 +50,8 @@ export class CustomPage {
     	public viewCtrl: ViewController,
         public platform: Platform,
         public translate: TranslateService,
-        public storage: Storage
+        public storage: Storage,
+        public events: Events
         ) {
 		this.pagetitle = navParams.data.title;
 	}
@@ -107,6 +108,18 @@ export class CustomPage {
 		changeLang: ( event, lang: string ) => {
 			this.translate.use( lang )
 			this.storage.set( 'app_language', lang )
+		},
+		changeRTL: ( event, rtl ) => {
+			if( rtl ) {	
+				this.platform.setDir('rtl', true)
+			} else {
+				this.platform.setDir('ltr', true)
+			}
+			this.storage.set( 'is_rtl', rtl )
+		},
+		updateData: () => {
+			window.localStorage.removeItem( 'myappp' )
+			this.events.publish( 'data:update' )
 		}
 	}
 

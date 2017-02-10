@@ -76,6 +76,10 @@ export class MyApp {
       this.userLogout();
     });
 
+    events.subscribe('data:update', obj => {
+      this.fetchData();
+    });
+
   }
 
   initializeApp() {
