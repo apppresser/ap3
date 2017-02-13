@@ -77,7 +77,8 @@ export class MyApp {
     });
 
     events.subscribe('data:update', obj => {
-      this.fetchData();
+      console.log('data:update', obj)
+      this.fetchData( obj );
     });
 
   }
@@ -93,7 +94,7 @@ export class MyApp {
 
       this.apiurl = this.globalvars.getApi();
       
-      this.fetchData();
+      this.fetchData( false );
 
       this.doConnectionEvents();
 
@@ -121,7 +122,17 @@ export class MyApp {
 
   }
 
-  fetchData() {
+  fetchData( reset ) {
+
+    // if refreshing the app, have to reset variables first
+    if( reset ) {
+      this.tabs = [];
+      this.pages = null;
+      this.bothMenus = false;
+      this.navparams = [];
+      this.showmenu = false;
+    }
+
     // get our app data, then use it. will return either local data, or get from api
     this.appdata.load(this.apiurl).then( (data: any) => {
 

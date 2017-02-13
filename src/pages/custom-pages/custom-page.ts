@@ -109,6 +109,10 @@ export class CustomPage {
 			this.translate.use( lang )
 			this.storage.set( 'app_language', lang )
 		},
+		updateData: () => {
+			window.localStorage.removeItem( 'myappp' )
+			this.events.publish( 'data:update', true )
+		},
 		changeRTL: ( event, rtl ) => {
 			if( rtl ) {	
 				this.platform.setDir('rtl', true)
@@ -116,10 +120,6 @@ export class CustomPage {
 				this.platform.setDir('ltr', true)
 			}
 			this.storage.set( 'is_rtl', rtl )
-		},
-		updateData: () => {
-			window.localStorage.removeItem( 'myappp' )
-			this.events.publish( 'data:update' )
 		},
 		// doesn't work, not sure why
 		langs: this.getLangs()
