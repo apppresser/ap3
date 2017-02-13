@@ -120,7 +120,9 @@ export class CustomPage {
 		updateData: () => {
 			window.localStorage.removeItem( 'myappp' )
 			this.events.publish( 'data:update' )
-		}
+		},
+		// doesn't work, not sure why
+		langs: this.getLangs()
 	}
 
 	ngOnInit() {
