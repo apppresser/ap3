@@ -477,6 +477,11 @@ export class MyApp {
 
         this.maybeSendPushId( data.ajaxurl );
 
+      } else if( typeof( data.isloggedin ) != "undefined" ) {
+
+        // make sure app and WP have the same status
+        this.syncLoginStatus( data.isloggedin )
+
       }
 
     }, false); // end eventListener
@@ -717,6 +722,32 @@ export class MyApp {
     // "refresh" the view by resetting to home tab
     if( login === false )
         this.openPage( { 'title': this.tabs[0].title, 'url': '', 'component': TabsPage, 'navparams': this.navparams, 'class': this.tabs[0].icon } )
+
+  }
+
+  syncLoginStatus( status ) {
+
+    // sync login status. If WP and app doesn't match up, fix it
+
+    if( status == false && this.login_data ) {
+
+      // logged out of WP but still logged into app: log out of app
+      this.login_data = null
+      this.storage.remove('user_login');
+      this.events.publish( 'modal:logindata', null )
+
+    } else if( status == true && !this.login_data ) {
+
+      // logged into WP but logged out of app: log into app
+      this.login_data = { loggedin: true }
+
+      this.storage.set('user_login', this.login_data ).then( () => {
+
+        this.events.publish( 'modal:logindata', this.login_data )
+
+      })
+      
+    }
 
   }
 
