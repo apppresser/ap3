@@ -61,7 +61,10 @@ export class CustomPage {
 		pages: JSON.parse( window.localStorage.getItem( 'myappp' ) ),
 		pushPage: (page) => {
 
-			if( page.target === '_blank' ) {
+			if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
+		      window.open( page.url, '_system', null );
+		      return;
+		    } else if( page.target === '_blank' ) {
 		      window.open( page.url, page.target, null );
 		      return;
 		    }
@@ -83,10 +86,13 @@ export class CustomPage {
 		},
 		openPage: ( page ) => {
 
-			if( page.target === '_blank' ) {
-			  window.open( page.url, page.target, null );
-			  return;
-			}
+			if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
+		      window.open( page.url, '_system', null );
+		      return;
+		    } else if( page.target === '_blank' ) {
+		      window.open( page.url, page.target, null );
+		      return;
+		    }
 
 			if( page.type === 'apppages' && page.page_type === 'list' ) {
 				this.nav.setRoot( PostList, page );

@@ -98,8 +98,6 @@ export class MyApp {
 
       this.doConnectionEvents();
 
-      this.getSetLogin();
-
       this.attachListeners();
       
       this.maybeDoPush();
@@ -172,6 +170,7 @@ export class MyApp {
     this.loadStyles(data);
     this.maybeDoAds(data);
     this.doStatusBar(data);
+    this.getSetLogin();
 
     this.apptitle = data.title;
 
@@ -296,7 +295,10 @@ export class MyApp {
     // close the menu when clicking a link from the menu
     this.menu.close();
 
-    if( page.target === '_blank' ) {
+    if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
+      this.openIab( page.url, '_system', null );
+      return;
+    } else if( page.target === '_blank' ) {
       this.openIab( page.url, page.target, null );
       return;
     }
@@ -317,6 +319,14 @@ export class MyApp {
 
     // close the menu when clicking a link from the menu
     this.menu.close();
+
+    if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
+      this.openIab( page.url, '_system', null );
+      return;
+    } else if( page.target === '_blank' ) {
+      this.openIab( page.url, page.target, null );
+      return;
+    }
 
     let opt = {};
 
@@ -559,8 +569,6 @@ export class MyApp {
       return;
     }
 
-    console.log(push);
-
     if( push.error )
       return;
 
@@ -568,7 +576,6 @@ export class MyApp {
 
       // kick off aws stuff
       this.pushService.subscribeDevice(data.registrationId).then( (result:string) => {
-        console.log(result);
         var newresult = JSON.parse( result );
 
         window.localStorage.setItem('endpointArn', newresult.endpointArn );
@@ -742,8 +749,10 @@ export class MyApp {
   getSetLogin() {
 
     this.storage.get('user_login').then( data => {
-        if(data)
+        if(data) {
           this.login_data = data;
+          this.resetSideMenu( true );
+        }
     })
 
   }
