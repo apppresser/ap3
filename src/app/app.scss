@@ -125,6 +125,19 @@ ion-content ion-card-content {
 			width: 90%;
 		}
 
+		.item.divider {
+			background-color: rgba(0,0,0,.2);
+			min-height: 3rem;
+			ion-label {
+				font-size: 1.4rem;
+				margin-top:8px;
+				margin-bottom: 8px;
+				text-transform: uppercase;
+				font-weight: bold;
+				opacity: .8
+			}
+		}
+
 	}
 
 	.loggedin-msg {
