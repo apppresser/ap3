@@ -53,9 +53,12 @@ export class Iframe {
         this.storage.get('app_language').then( lang => {
             if( lang )
                 this.lang = '&lang=' + lang
-
-            this.url = this.sanitizer.bypassSecurityTrustResourceUrl( this.navParams.data.url + this.param + this.lang );
         })
+
+        // Have to wait until we get language ^. Can't put this in promise or it breaks, not sure why
+        setTimeout( () => {
+            this.url = this.sanitizer.bypassSecurityTrustResourceUrl( this.navParams.data.url + this.param + this.lang );
+        }, 100)
 
     }
 

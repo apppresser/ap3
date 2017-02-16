@@ -27,5 +27,5 @@
 </ion-header>
 
 <ion-content>
-    <iframe [src]="url" id="ap3-iframe" class="ap3-iframe"></iframe>
+    <iframe *ngIf="url" [src]="url" id="ap3-iframe" class="ap3-iframe"></iframe>
 </ion-content>
