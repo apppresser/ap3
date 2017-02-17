@@ -134,11 +134,19 @@ export class Iframe {
             this.notifyThemeKeyboardOpened();
         });
 
+        window.addEventListener('pause', (e) => {
+            this.postPauseEvent();
+        });
+
         setTimeout(() => {
             loading.dismiss();
         }, 8000);
 
         this.loaded = true;
+    }
+
+    postPauseEvent() {
+        this.iframe.contentWindow.postMessage('{"pause_event":{"platform":"'+device.platform+'"}}', '*');
     }
 
     // find the first ancestor with the given class name
