@@ -54,6 +54,11 @@ export class CustomPage {
         public events: Events
         ) {
 		this.pagetitle = navParams.data.title;
+
+		// kill vids on android
+		if( platform.is('android') ) {
+	      this.killVideos()
+	    }
 	}
 
 	inputData: IComponentInputData = {
@@ -179,6 +184,31 @@ export class CustomPage {
 		  obj = {direction: 'forward'}
 
 		this.nav.pop( obj )
+	}
+
+	// stop videos from playing when app is exited, required by Google
+	killVideos() {
+
+		this.platform.pause.subscribe(() => {
+
+		  let frames = this.elementRef.nativeElement.getElementsByTagName('iframe')
+
+		  let Vidsrc
+
+		  for (let i in frames) {
+
+		    if( /youtube|wistia|vimeo/.test(frames[i].src) ) {
+		       Vidsrc = frames[i].src;
+		       frames[i].src = '';
+		       setTimeout( function() {
+		           frames[i].src = Vidsrc;
+		       }, 500);
+		    }
+
+		  }
+		  
+		})
+
 	}
 
 }

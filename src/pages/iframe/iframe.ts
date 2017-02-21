@@ -146,7 +146,7 @@ export class Iframe {
     }
 
     postPauseEvent() {
-        this.iframe.contentWindow.postMessage('{"pause_event":{"platform":"'+device.platform+'"}}', '*');
+        this.iframe.contentWindow.postMessage('{"pause_event":{"platform":"'+Device.platform+'"}}', '*');
     }
 
     // find the first ancestor with the given class name

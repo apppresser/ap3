@@ -106,7 +106,8 @@ export class MyApp {
       //Keyboard.disableScroll(true);
 
       // check for API updates on resume and on initial load
-      document.addEventListener('resume', () => {
+      this.platform.resume.subscribe(() => {
+          console.log('App resumed');
           this.appdata.checkForUpdates( this.apiurl );
       });
 

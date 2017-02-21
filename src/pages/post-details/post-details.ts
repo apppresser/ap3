@@ -20,7 +20,7 @@ export class PostDetailsPage {
     public sanitizer: DomSanitizer,
     public modalCtrl: ModalController,
     public renderer: Renderer,
-    elementRef: ElementRef,
+    public elementRef: ElementRef,
     public viewCtrl: ViewController,
     public platform: Platform
     ) {
@@ -36,6 +36,10 @@ export class PostDetailsPage {
         window.open( event.target.href, '_blank' );
       }
     });
+
+    if( platform.is('android') ) {
+      this.killVideos()
+    }
 
   }
 
@@ -73,6 +77,32 @@ export class PostDetailsPage {
       obj = {direction: 'forward'}
     
     this.nav.pop( obj )
+  }
+
+  // stop videos from playing when app is exited, required by Google
+  killVideos() {
+
+    // todo: if platform = android
+    this.platform.pause.subscribe(() => {
+
+      let frames = this.elementRef.nativeElement.getElementsByTagName('iframe')
+
+      let Vidsrc
+
+      for (let i in frames) {
+
+        if( /youtube|wistia|vimeo/.test(frames[i].src) ) {
+           Vidsrc = frames[i].src;
+           frames[i].src = '';
+           setTimeout( function() {
+               frames[i].src = Vidsrc;
+           }, 500);
+        }
+
+      }
+      
+    })
+
   }
 
 }
