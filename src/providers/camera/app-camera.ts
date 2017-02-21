@@ -24,6 +24,7 @@ export class AppCamera {
   iframedoc: any;
   iframewin: any;
   appbuddy: boolean = false;
+  progress_timeout: any;
 
   constructor() { }
 
@@ -72,13 +73,21 @@ export class AppCamera {
 
   doCamera() {
 
+    // sneak in the progress bar while taking/choosing photo for better UX
+    this.progress_timeout = setTimeout( () => {
+      this.uploadProgress(5,100);
+    }, 1000 );
+
     Camera.getPicture(this.options).then((imageData) => {
       // imageData is either a base64 encoded string or a file URI
       // If it's base64:
       // let base64Image = "data:image/jpeg;base64," + imageData;
       this.uploadPhoto(imageData);
     }, (err) => {
+
+      this.hideProgress();
       alert(err);
+      
     });
 
   }
@@ -113,6 +122,7 @@ export class AppCamera {
 
       // if no tabs
       this.iframe = active.querySelector('#ap3-iframe');
+      this.iframedoc = this.iframe.contentWindow.document;
 
   }
 
@@ -193,18 +203,8 @@ export class AppCamera {
       }).catch((e) => {
         console.warn(e);
         this.appbuddy = false;
-      });
 
-      fileTransfer.onProgress( (e) => {
-
-        let progress = this.iframedoc.getElementById('cam-progress');
-
-        if (e.lengthComputable) {
-          progress.style.visibility = 'visible';
-          let perc = Math.floor(e.loaded / e.total * 100);
-          progress.value = perc;
-        }
-
+        this.hideProgress();
       });
 
     } else {
@@ -223,19 +223,39 @@ export class AppCamera {
 
       });
 
-      fileTransfer.onProgress((e) => {
-
-        if (e.lengthComputable) {
-          /*appTop.camera.statusProgress().innerHTML = '<progress id="progress" value="1" max="100"></progress>';*/
-          this.iframedoc.getElementById('cam-progress').style.visibility = 'visible';
-          let perc = Math.floor(e.loaded / e.total * 100);
-          this.iframedoc.getElementById('progress').value = perc;
-        }
-
-      });
-
     }
 
+    fileTransfer.onProgress((e) => {
+
+      if (e.lengthComputable) {
+        this.uploadProgress(e.loaded, e.total);
+      }
+
+    });
+  }
+
+  uploadProgress(loaded, total) {
+
+    if( typeof( this.iframedoc ) === "undefined" ) {
+      this.findIframe();
+    }
+
+    let progress = this.iframedoc.getElementById('cam-progress');
+    progress.style.visibility = 'visible';
+    let perc = Math.floor(loaded / total * 100);
+    progress.value = perc;
+  }
+
+  hideProgress() {
+    clearTimeout(this.progress_timeout);
+
+    if( typeof( this.iframedoc ) === "undefined" ) {
+      this.findIframe();
+    }
+
+    let progress = this.iframedoc.getElementById('cam-progress');
+    progress.style.visibility = 'hidden';
+    progress.value = 0;
   }
  
   // handles displaying image in appbuddy activity modal after uploaded
@@ -255,7 +275,7 @@ export class AppCamera {
 
     this.iframedoc.getElementById('attach-image').value = imgUrl;
     this.iframedoc.getElementById('image-status').innerHTML = imgTag;
-    this.iframedoc.getElementById('cam-progress').style.visibility = 'hidden';
+    this.hideProgress();
     this.iframedoc.getElementById('cam-status').innerHTML = '';
 
     // hide action sheet
@@ -284,7 +304,7 @@ export class AppCamera {
     }
 
     status.innerHTML = '<p>' + msg + '</p>';
-    this.iframedoc.getElementById('cam-progress').style.visibility = 'hidden';
+    this.hideProgress();
 
     // clear message after 5 sec
     setTimeout( () => {
@@ -295,6 +315,7 @@ export class AppCamera {
 
   uploadErr(e) {
     console.warn(e);
+    this.hideProgress();
   }
 
   // parse and fetch the image url we need
