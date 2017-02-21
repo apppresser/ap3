@@ -292,7 +292,7 @@ export class MyApp {
   openPage(page) {
 
     // don't do anything if someone clicks a nav divider
-    if( page.extra_classes.indexOf('divider') >= 0 )
+    if( typeof( page.extra_classes ) != "undefined" && page.extra_classes.indexOf('divider') >= 0 )
       return
 
     // close the menu when clicking a link from the menu
@@ -321,7 +321,7 @@ export class MyApp {
   pushPage(page) {
 
     // don't do anything if someone clicks a nav divider
-    if( page.extra_classes.indexOf('divider') >= 0 )
+    if( typeof( page.extra_classes ) != "undefined" && page.extra_classes.indexOf('divider') >= 0 )
       return
 
     // close the menu when clicking a link from the menu
