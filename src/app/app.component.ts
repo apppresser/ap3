@@ -566,7 +566,7 @@ export class MyApp {
             alert: "true",
             badge: true,
             clearBadge: true,
-            sound: 'false'
+            sound: 'true'
         },
         windows: {}
       });
