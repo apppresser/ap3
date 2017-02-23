@@ -511,7 +511,7 @@ export class MyApp {
       } else if( typeof( data.isloggedin ) != "undefined" ) {
 
         // make sure app and WP have the same status
-        this.syncLoginStatus( data.isloggedin )
+        this.syncLoginStatus( data )
 
       }
 
@@ -773,21 +773,26 @@ export class MyApp {
 
   }
 
-  syncLoginStatus( status ) {
+  syncLoginStatus( data ) {
 
     // sync login status. If WP and app doesn't match up, fix it
 
-    if( status == false && this.login_data ) {
+    if( data.isloggedin == false && this.login_data ) {
 
       // logged out of WP but still logged into app: log out of app
       this.login_data = null
       this.storage.remove('user_login');
       this.events.publish( 'modal:logindata', null )
 
-    } else if( status == true && !this.login_data ) {
+    } else if( data.isloggedin == true && !this.login_data ) {
 
       // logged into WP but logged out of app: log into app
-      this.login_data = { loggedin: true }
+      if( data.avatar_url && data.message ) {
+        this.login_data = { loggedin: true, avatar: data.avatar_url, message: data.message }
+      } else {
+        this.login_data = { loggedin: true }
+      }
+      
 
       this.storage.set('user_login', this.login_data ).then( () => {
 
