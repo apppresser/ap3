@@ -40,7 +40,7 @@
 
     <ion-slide *ngFor="let slide of slides" [ngStyle]="{'background-image': 'url(' + (slide.featured_image_urls ? slide.featured_image_urls.large : null) + ')'}" (click)="itemTapped($event, slide)">
 
-      <h3 class="slide-title" [innerHTML]="slide.title.rendered"></h3>
+      <h3 class="slide-title" *ngIf="slide.title && slide.title.rendered" [innerHTML]="slide.title.rendered"></h3>
 
       <div *ngIf="slide.appp && slide.appp.post_list && slide.appp.post_list.slide_content" [innerHTML]="slide.appp.post_list.slide_content"></div>
 
@@ -60,7 +60,7 @@
 
       <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_title" [innerHTML]="item.appp.post_list.above_title"></div>
 
-      <h2 [innerHTML]="item.title.rendered"></h2>
+      <h2 *ngIf="item.title && item.title.rendered" [innerHTML]="item.title.rendered"></h2>
 
       <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_title" [innerHTML]="item.appp.post_list.below_title"></div>
 
@@ -92,7 +92,7 @@
 
       <ion-card-content>
 
-        <ion-card-title>
+        <ion-card-title *ngIf="item.title && item.title.rendered">
           <h2 [innerHTML]="item.title.rendered"></h2>
         </ion-card-title>
 
