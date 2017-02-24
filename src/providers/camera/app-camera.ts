@@ -168,6 +168,9 @@ export class AppCamera {
     let iterator;
     let form = this.iframedoc.getElementById('appp_camera_form');
     let form_elements = form.elements;
+    let shortcode_actions = ['new','this','library'];
+
+    params.appp_action = 'attach'; // default: attach to BP activity
 
     // console.log('elements', form_elements);
 
@@ -175,11 +178,17 @@ export class AppCamera {
       form_fields[iterator] = form_elements[iterator].name;
       form_values[iterator] = form_elements[iterator].value;
       // console.log(form_elements[iterator].name, form_elements[iterator].value);
+
+      // set the action from the shortcode param
+      if( form_elements[iterator].name == 'appp_action' && shortcode_actions.indexOf( form_elements[iterator].value ) > -1 ) {
+        params.appp_action = form_elements[iterator].value;
+        params.action = form_elements[iterator].value;
+      }
+      
     }
 
     params.form_fields = JSON.stringify(form_fields);
     params.form_values = JSON.stringify(form_values);
-    params.appp_action = 'attach';
 
     // Maybe do appbuddy attach stuff. Difference is the action, nonce, and transfer success function.
 
