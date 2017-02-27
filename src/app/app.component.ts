@@ -593,6 +593,13 @@ export class MyApp {
 
     push.on('notification', (data) => {
 
+      // if there's an external url from apppush custom url field, open in IAB
+      if( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 ) {
+        this.openIab( data.additionalData.url, '_blank' );
+        return;
+      }
+
+      // if there's an app page, open it
       if( data.additionalData && (<any>data).additionalData.page ) {
 
         let page = (<any>data).additionalData.page;
