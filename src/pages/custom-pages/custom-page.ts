@@ -110,6 +110,9 @@ export class CustomPage {
 			}
 
 		},
+		back: () => {
+			this.nav.pop()
+		},
 		mediaModal: ( src, img = null ) => {
 
 			let modal = this.modalCtrl.create(MediaPlayer, {source: src, image: img});
