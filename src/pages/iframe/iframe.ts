@@ -1,7 +1,7 @@
 import {NavParams, Nav, LoadingController, ModalController, Platform, ViewController} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
-import {Geolocation, Device, Keyboard} from 'ionic-native';
+import {Geolocation, Device, Keyboard, SocialSharing} from 'ionic-native';
 import {Storage} from '@ionic/storage';
 
 import {MediaPlayer} from '../media-player/media-player';
@@ -18,8 +18,10 @@ export class Iframe {
     loaded: boolean = false;
     activityModal: boolean = false;
     checkinModal: boolean = false;
+    showShare: boolean = false;
     rtlBack: boolean = false;
     lang: string = '';
+    shareUrl: string = '';
 
     constructor(
         public navParams: NavParams,
@@ -31,7 +33,7 @@ export class Iframe {
         public modalCtrl: ModalController,
         public storage: Storage
         ) {
-        this.title = navParams.data.title;
+        
 
         this.setupURL();
 
@@ -63,6 +65,9 @@ export class Iframe {
     }
 
     ionViewWillEnter() {
+
+        this.title = this.navParams.data.title;
+        this.showShare = false;
 
         this.iframeLoading();
 
@@ -121,6 +126,10 @@ export class Iframe {
                       }
                     }
 
+                } else if ( parsed.post_url ) {
+                    this.shareUrl = parsed.post_url
+                    this.title = parsed.post_title
+                    this.showShare = true
                 }
             }
             
@@ -274,4 +283,14 @@ export class Iframe {
 
         this.nav.pop( obj )
     }
+
+    share() {
+
+        SocialSharing.share( this.title, null, null, this.shareUrl ).then(() => {
+          // Sharing via email is possible
+        }).catch(() => {
+          // Sharing via email is not possible
+        });
+
+      }
 }

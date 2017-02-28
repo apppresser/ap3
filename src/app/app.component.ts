@@ -392,6 +392,7 @@ export class MyApp {
 
     // left menu colors
     styles += ".menu-inner .content-md, .menu-inner .content-ios, .menu-inner ion-list .item { color: "  + data.meta.design.left_menu_text + "; background-color: "  + data.meta.design.left_menu_bg + " }";
+    styles += ".menu-inner .loggedin-msg { color: "  + data.meta.design.left_menu_text + " }";
 
     // left menu icon color
     styles += "ion-menu .list-md ion-icon, ion-menu .list-ios ion-icon { color: "  + data.meta.design.left_menu_icons + " }";

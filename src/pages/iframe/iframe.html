@@ -22,6 +22,9 @@
 		<button *ngIf="checkinModal" ion-button (click)="doCheckinModal($event)">
 			<ion-icon name="ios-navigate-outline"></ion-icon>
 		</button>
+		<button *ngIf="showShare" ion-button (click)="share()">
+			<ion-icon name="share"></ion-icon>
+		</button>
 		</ion-buttons>
 	</ion-navbar>
 </ion-header>
