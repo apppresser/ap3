@@ -172,6 +172,7 @@ export class CustomPage {
 	listener() {
 		// Listen for link clicks, open in in app browser
 	    this.listenFunc = this.renderer.listen(this.elementRef.nativeElement, 'click', (event) => {
+	    	
 	      if( event.target.href && event.target.href.indexOf('http') >= 0 ) {
 	        event.preventDefault();
 	        window.open( event.target.href, '_blank' );

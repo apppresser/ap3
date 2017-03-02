@@ -1,5 +1,5 @@
 import {NavParams, Nav, LoadingController, ModalController, Platform, ViewController} from 'ionic-angular';
-import {Component} from '@angular/core';
+import {Component, HostListener} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Geolocation, Device, Keyboard, SocialSharing} from 'ionic-native';
 import {Storage} from '@ionic/storage';
@@ -15,6 +15,7 @@ export class Iframe {
     url: any;
     iframe: any;
     param: string;
+    loading: any;
     loaded: boolean = false;
     activityModal: boolean = false;
     checkinModal: boolean = false;
@@ -85,55 +86,12 @@ export class Iframe {
         if( this.loaded )
             return;
 
-        let loading = this.loadingController.create({
+        this.loading = this.loadingController.create({
             showBackdrop: false,
             dismissOnPageChange: false
         });
 
-        loading.present(loading);
-
-        // When WP site loads, attach our click events
-        window.addEventListener('message', (e) => {
-
-            // get current window so we can find active iframe
-            let w = e.target;
-
-            if( e.data === 'site_loaded' ) {
-                loading.dismiss();
-            } else if( e.data === 'reload_frame' ) {
-
-                // need to reload frame on login
-                this.iframe = (<any>w).document.getElementsByClassName('ap3-iframe')[0];
-                let src = this.iframe.src;
-                this.iframe.src = src;
-
-            } else if( e.data === 'activity_modal' ) {
-                this.activityModal = true;
-            } else if( e.data === 'checkin_modal' ) {
-                this.checkinModal = true;
-            } else if( e.data.indexOf('{') === 0 ) {
-
-                // if it's a json object, parse it
-                var parsed = JSON.parse( e.data );
-
-                if( parsed.media ) {
-                    this.mediaModal( parsed.media, parsed.img );
-                } else if ( parsed.apppkeyboardhelper ) {
-
-                    if(parsed.apppkeyboardhelper === 'close') {
-                      if( Keyboard ) {
-                        Keyboard.close();
-                      }
-                    }
-
-                } else if ( parsed.post_url ) {
-                    this.shareUrl = parsed.post_url
-                    this.title = parsed.post_title
-                    this.showShare = true
-                }
-            }
-            
-        });
+        this.loading.present();      
 
         window.addEventListener('native.keyboardhide', (e) => {
             this.notifyThemeKeyboardClosed();
@@ -148,11 +106,65 @@ export class Iframe {
         });
 
         setTimeout(() => {
-            loading.dismiss();
+            this.loading.dismiss();
         }, 8000);
 
         this.loaded = true;
     }
+
+    // ng2 way of adding a listener
+    @HostListener('window:message', ['$event'])
+    public onMessage(event) {
+      this.myListeners(event)
+    }
+
+    myListeners(e) {
+
+        // get current window so we can find active iframe
+        let w = e.target;
+
+        if( e.data === 'site_loaded' ) {
+            this.loading.dismiss();
+        } else if( e.data === 'reload_frame' ) {
+
+            // need to reload frame on login
+            this.iframe = (<any>w).document.getElementsByClassName('ap3-iframe')[0];
+            let src = this.iframe.src;
+            this.iframe.src = src;
+
+        } else if( e.data === 'activity_modal' ) {
+            this.activityModal = true;
+        } else if( e.data === 'checkin_modal' ) {
+            this.checkinModal = true;
+        } else if( e.data.indexOf('{') === 0 ) {
+
+            // if it's a json object, parse it
+            var parsed = JSON.parse( e.data );
+
+            if( parsed.media ) {
+                this.mediaModal( parsed.media, parsed.img );
+            } else if ( parsed.apppkeyboardhelper ) {
+
+                if(parsed.apppkeyboardhelper === 'close') {
+                  if( Keyboard ) {
+                    Keyboard.close();
+                  }
+                }
+
+            } /* else if ( parsed.post_url ) {
+                // not working 100%, see trello
+                this.shareUrl = parsed.post_url
+                this.changeTitle( parsed.post_title )
+                this.showShare = true
+            } */
+        }
+
+    }
+
+    // changeTitle( title ) {
+    //     console.log('change title' + title)
+    //     this.title = title
+    // }
 
     postPauseEvent() {
         this.iframe.contentWindow.postMessage('{"pause_event":{"platform":"'+Device.platform+'"}}', '*');
