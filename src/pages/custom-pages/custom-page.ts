@@ -6,7 +6,7 @@ import {Nav, NavParams, ModalController, Platform, ViewController, Events} from 
 import {TranslateService} from 'ng2-translate';
 import {Storage} from '@ionic/storage';
 
-import {IonicModule} from 'ionic-angular';
+import {IonicModule, ToastController} from 'ionic-angular';
 
 import {IComponentInputData} from 'angular2-dynamic-component/index';
 
@@ -41,6 +41,8 @@ export class CustomPage {
 	templateUrl: string;
 	extraModules = [IonicModule];
 	langs: any;
+	segments: any;
+	showSegments: boolean = false
 
 	constructor( 
 		public navParams: NavParams, 
@@ -53,7 +55,8 @@ export class CustomPage {
         public translate: TranslateService,
         public storage: Storage,
         public events: Events,
-        public push: PushService
+        public push: PushService,
+        public toastCtrl: ToastController,
         ) {
 		this.pagetitle = navParams.data.title;
 
@@ -66,6 +69,7 @@ export class CustomPage {
 	inputData: IComponentInputData = {
 		// anything that the template needs access to goes here
 		pages: JSON.parse( window.localStorage.getItem( 'myappp' ) ),
+		segments: JSON.parse( window.localStorage.getItem( 'segments' ) ),
 		pushPage: (page) => {
 
 			if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
@@ -137,19 +141,19 @@ export class CustomPage {
 			}
 			this.storage.set( 'is_rtl', rtl )
 		},
-		segmentSubscribe: ( topicArn ) => {
+		toggleSegment: ( segment ) => {
 
-			console.log('segmentSubscribe ' + topicArn )
+			console.log( segment )
 
-			this.storage.get('deviceToken').then( token => {
-				this.push.subscribeToTopic( token, topicArn ).then( res => {
-					console.log(res)
-					// @TODO: save what topics I'm subscribed to
-				})
+			this.storage.get( segment.arn ).then( subscriptionArn => {
+
+				if( subscriptionArn && segment.isChecked == false ) {
+					this.unsubscribe( subscriptionArn, segment.arn )
+				} else {
+					this.subscribe( segment.arn )
+				}
+
 			})
-
-		},
-		segmentUnsubscribe: ( topicArn ) => {
 
 		},
 		// doesn't work, not sure why
@@ -172,6 +176,13 @@ export class CustomPage {
             this.viewCtrl.showBackButton(false)
             this.rtlBack = true
         }
+
+        // have to get data and save to localStorage, only way to get it into IComponentInputData
+        this.storage.get('segments' ).then( segments => {
+			console.log('got segments', segments)
+			this.segments = segments
+			window.localStorage.setItem( 'segments', JSON.stringify( segments ) )
+		})
 
     }
 
@@ -229,6 +240,41 @@ export class CustomPage {
 		  }
 		  
 		})
+
+	}
+
+	subscribe( topicArn ) {
+
+		this.storage.get('deviceToken').then( token => {
+			this.push.subscribeToTopic( token, topicArn ).then( res => {
+				console.log(res)
+				this.storage.set( topicArn, (<any>res).subscriptionArn )
+				this.presentToast('Success')
+			})
+		})
+
+	}
+
+	unsubscribe( subscriptionArn, topicArn ) {
+
+		// have to get subscriptionArn, then send to unsubscribe
+		this.push.unsubscribe( subscriptionArn ).then( res => {
+			console.log(res)
+			this.storage.remove( topicArn )
+			this.presentToast('Success')
+		})
+
+	}
+
+	presentToast(msg) {
+
+	    let toast = this.toastCtrl.create({
+	      message: msg,
+	      duration: 5000,
+	      position: 'bottom'
+	    });
+
+	    toast.present();
 
 	}
 

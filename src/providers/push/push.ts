@@ -80,8 +80,6 @@ export class PushService {
   // Subscribe to a topic, for push segmenting
   subscribeToTopic(token, topicArn) {
 
-    console.log('subscribe to topic ' + topicArn + token )
-
     this.platform = Device.platform;
     let apiRoot = this.globalvars.getApiRoot();
     this.api = apiRoot + 'wp-json/ap3/v1/subscribe/';
@@ -89,7 +87,28 @@ export class PushService {
 
     let params = '?token=' + token + '&platform=' + this.platform + '&id=' + this.appid + '&topicarn=' + topicArn;
 
-    console.log(params)
+    return new Promise(resolve => {
+
+      this.http.post( this.api + params, null, null )
+        .map(res => res.json())
+        .subscribe(
+          data => {
+            resolve(data);
+            // @TODO: save data.subscriptionArn so we can unsubscribe. Has to be linked to topic somehow, cause each topic will have a diff sub arn
+          },
+          error => console.warn('subscribe topic error' + error) 
+        );
+    });
+ 
+  }
+
+  // Unsubscribe. Requires subscriptionArn which is returned after subscribing to a topic.
+  unsubscribe( subscriptionArn ) {
+
+    let apiRoot = this.globalvars.getApiRoot();
+    this.api = apiRoot + 'wp-json/ap3/v1/unsubscribe/';
+
+    let params = '?subscriptionArn=' + subscriptionArn;
 
     return new Promise(resolve => {
 
@@ -97,13 +116,12 @@ export class PushService {
         .map(res => res.json())
         .subscribe(
           data => {
-            console.log(data)
             resolve(data);
           },
-          error => console.warn('subscribeDevice error' + error) 
+          error => console.warn('Unsubscribe error' + error) 
         );
     });
- 
+
   }
 
 }

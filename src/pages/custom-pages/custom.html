@@ -113,3 +113,14 @@
     <ion-icon name="cog" item-left></ion-icon>
         Subscribe to Segment
 </ion-item>
+
+<ion-item *ngFor="let segment of segments" [attr.segment]="segment.name | lowercase">
+  <span item-left class="dot"></span>
+  <ion-label>{{segment.name}}</ion-label>
+  <ion-toggle [(ngModel)]="segment.isChecked" (ionChange)="toggleSegment($event, segment)"></ion-toggle>
+</ion-item>
+
+<ion-item>
+    <ion-label>Pepperoni</ion-label>
+    <ion-toggle [(ngModel)]="value" (ionChange)="toggleSegment($event, value)"></ion-toggle>
+</ion-item>
