@@ -141,7 +141,7 @@ export class CustomPage {
 
 			console.log('segmentSubscribe ' + topicArn )
 
-			this.storage.get('endpointArn').then( token => {
+			this.storage.get('deviceToken').then( token => {
 				this.push.subscribeToTopic( token, topicArn ).then( res => {
 					console.log(res)
 					// @TODO: save what topics I'm subscribed to

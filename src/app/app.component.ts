@@ -582,11 +582,13 @@ export class MyApp {
 
     push.on('registration', (data) => {
 
+      this.storage.set('deviceToken', data.registrationId)
+
       // kick off aws stuff
       this.pushService.subscribeDevice(data.registrationId).then( (result:string) => {
         var newresult = JSON.parse( result );
 
-        this.storage.set('endpointArn', newresult.endpointArn );
+        this.storage.set('endpointArn', newresult.endpointArn )
 
       });
 
