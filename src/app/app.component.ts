@@ -586,7 +586,7 @@ export class MyApp {
       this.pushService.subscribeDevice(data.registrationId).then( (result:string) => {
         var newresult = JSON.parse( result );
 
-        window.localStorage.setItem('endpointArn', newresult.endpointArn );
+        this.storage.set('endpointArn', newresult.endpointArn );
 
       });
 
@@ -632,14 +632,16 @@ export class MyApp {
 
   maybeSendPushId( ajaxurl ) {
 
-    let id = window.localStorage.getItem('endpointArn' );
+    this.storage.get('endpointArn').then( id => {
 
-    if( id ) {
-      // ajax call to save this to user meta
-      this.pushService.sendDeviceToWp(id, ajaxurl).then( result => {
-        console.log(result);
-      });
-    }
+      if( id ) {
+        // ajax call to save this to user meta
+        this.pushService.sendDeviceToWp(id, ajaxurl).then( result => {
+          console.log(result);
+        });
+      }
+
+    })
 
   }
 

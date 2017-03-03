@@ -1,6 +1,7 @@
 import {Component, Renderer, ElementRef} from '@angular/core';
 import {Iframe} from '../../pages/iframe/iframe';
 import {PostList} from '../../pages/post-list/post-list';
+import {PushService} from '../../providers/push/push';
 import {Nav, NavParams, ModalController, Platform, ViewController, Events} from 'ionic-angular';
 import {TranslateService} from 'ng2-translate';
 import {Storage} from '@ionic/storage';
@@ -51,7 +52,8 @@ export class CustomPage {
         public platform: Platform,
         public translate: TranslateService,
         public storage: Storage,
-        public events: Events
+        public events: Events,
+        public push: PushService
         ) {
 		this.pagetitle = navParams.data.title;
 
@@ -134,6 +136,21 @@ export class CustomPage {
 				this.platform.setDir('ltr', true)
 			}
 			this.storage.set( 'is_rtl', rtl )
+		},
+		segmentSubscribe: ( topicArn ) => {
+
+			console.log('segmentSubscribe ' + topicArn )
+
+			this.storage.get('endpointArn').then( token => {
+				this.push.subscribeToTopic( token, topicArn ).then( res => {
+					console.log(res)
+					// @TODO: save what topics I'm subscribed to
+				})
+			})
+
+		},
+		segmentUnsubscribe: ( topicArn ) => {
+
 		},
 		// doesn't work, not sure why
 		langs: this.getLangs()

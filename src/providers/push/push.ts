@@ -5,6 +5,7 @@ import 'rxjs/add/operator/map';
 import {GlobalVars} from '../globalvars/globalvars';
 
 import {Device} from 'ionic-native';
+import {Storage} from '@ionic/storage';
 
 declare var AWS:any;
 
@@ -21,7 +22,11 @@ export class PushService {
   appid: string;
   iframe: any;
 
-  constructor( public http: Http, public globalvars: GlobalVars ) {
+  constructor( 
+    public http: Http, 
+    public globalvars: GlobalVars,
+    public storage: Storage 
+    ) {
   }
 
   // Subscribe for push through our API service
@@ -70,6 +75,35 @@ export class PushService {
     });
 
 
+  }
+
+  // Subscribe to a topic, for push segmenting
+  subscribeToTopic(token, topicArn) {
+
+    console.log('subscribe to topic ' + topicArn + token )
+
+    this.platform = Device.platform;
+    let apiRoot = this.globalvars.getApiRoot();
+    this.api = apiRoot + 'wp-json/ap3/v1/subscribe/';
+    this.appid = this.globalvars.getAppId();
+
+    let params = '?token=' + token + '&platform=' + this.platform + '&id=' + this.appid + '&topicarn=' + topicArn;
+
+    console.log(params)
+
+    return new Promise(resolve => {
+
+      this.http.post( this.api + params, null, null )
+        .map(res => res.json())
+        .subscribe(
+          data => {
+            console.log(data)
+            resolve(data);
+          },
+          error => console.warn('subscribeDevice error' + error) 
+        );
+    });
+ 
   }
 
 }
