@@ -141,11 +141,13 @@ export class CustomPage {
 			}
 			this.storage.set( 'is_rtl', rtl )
 		},
-		toggleSegment: ( segment ) => {
+		toggleSegment: ( segment, segments ) => {
 
-			console.log( segment )
+			console.log( segment, segments )
 
 			this.storage.get( segment.arn ).then( subscriptionArn => {
+
+				console.log( subscriptionArn )
 
 				if( subscriptionArn && segment.isChecked == false ) {
 					this.unsubscribe( subscriptionArn, segment.arn )
@@ -153,10 +155,14 @@ export class CustomPage {
 					this.subscribe( segment.arn )
 				}
 
+				// update storage with toggle values
+				this.storage.set( 'segments', segments )
+				window.localStorage.setItem( 'segments', JSON.stringify( segments ) )
+
 			})
 
 		},
-		// doesn't work, not sure why
+		// @TODO: change this to be like segments
 		langs: this.getLangs()
 	}
 
@@ -164,7 +170,7 @@ export class CustomPage {
 		// console.log(this.navParams);
 		// set our custom template url
 		let slug = this.navParams.data.slug;
-		this.templateUrl = 'build/' + slug + '.html';
+		this.templateUrl = 'build/' + slug + '.html'; 
 
 		this.listener()
 
@@ -177,13 +183,30 @@ export class CustomPage {
             this.rtlBack = true
         }
 
-        // have to get data and save to localStorage, only way to get it into IComponentInputData
+        this.getSegments()
+
+    }
+
+    getSegments() {
+
+    	// have to get data and save to localStorage, only way to get it into IComponentInputData
         this.storage.get('segments' ).then( segments => {
 			console.log('got segments', segments)
-			this.segments = segments
-			window.localStorage.setItem( 'segments', JSON.stringify( segments ) )
+			if( segments ) {
+				this.segments = segments
+			} else {
+				this.segments = this.getSegmentsApi()
+			}
+
+			window.localStorage.setItem( 'segments', JSON.stringify( this.segments ) )
+
 		})
 
+    }
+
+    getSegmentsApi() {
+    	// @TODO: get this remotely
+    	return [{name:'Test asdf', arn:'arn:aws:sns:us-west-2:876904128607:test-asdf'},{name:'New topic test',arn:'arn:aws:sns:us-west-2:876904128607:asdf-newtopictest'}]
     }
 
     getLangs() {
@@ -245,11 +268,12 @@ export class CustomPage {
 
 	subscribe( topicArn ) {
 
+		console.log('subscribing')
+
 		this.storage.get('deviceToken').then( token => {
 			this.push.subscribeToTopic( token, topicArn ).then( res => {
-				console.log(res)
 				this.storage.set( topicArn, (<any>res).subscriptionArn )
-				this.presentToast('Success')
+				this.presentToast( JSON.stringify(res) )
 			})
 		})
 
@@ -257,11 +281,12 @@ export class CustomPage {
 
 	unsubscribe( subscriptionArn, topicArn ) {
 
+		console.log('unsubscribing')
+
 		// have to get subscriptionArn, then send to unsubscribe
 		this.push.unsubscribe( subscriptionArn ).then( res => {
-			console.log(res)
 			this.storage.remove( topicArn )
-			this.presentToast('Success')
+			this.presentToast( JSON.stringify(res) )
 		})
 
 	}

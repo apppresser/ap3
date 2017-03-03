@@ -93,8 +93,8 @@ export class PushService {
         .map(res => res.json())
         .subscribe(
           data => {
-            resolve(data);
-            // @TODO: save data.subscriptionArn so we can unsubscribe. Has to be linked to topic somehow, cause each topic will have a diff sub arn
+            console.log( JSON.parse(data) )
+            resolve( JSON.parse(data) );
           },
           error => console.warn('subscribe topic error' + error) 
         );
