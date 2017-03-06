@@ -30,11 +30,18 @@ export class PushSettings {
   
     this.storage.get( 'segments' ).then( segmentList => {
 
+      if(!segmentList) {
+        // no segments, so don't have to see if they are checked
+        this.segments = JSON.parse( window.localStorage.getItem('myappp') ).segments
+        this.storage.set( 'segments', this.segments )
+        return;
+      }
+
       var checkedSegments = [];
 
       for (var i = segmentList.length - 1; i >= 0; i--) {
         if( segmentList[i].isChecked == true )
-          checkedSegments.push(segmentList[i].name)
+          checkedSegments.push(segmentList[i].arn)
       }
 
       this.setSegments(checkedSegments)
@@ -50,7 +57,7 @@ export class PushSettings {
 
     for (var i = newSegments.length - 1; i >= 0; i--) {
 
-      if( checkedSegments.indexOf(newSegments[i].name) >= 0 ) {
+      if( checkedSegments.indexOf(newSegments[i].arn) >= 0 ) {
         // segment is checked, resave it that way
         newSegments[i].isChecked = true
       }

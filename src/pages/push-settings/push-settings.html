@@ -19,6 +19,7 @@
   <ion-label>{{segment.name}}</ion-label>
   <ion-toggle [(ngModel)]="segment.isChecked" (ionChange)="toggleSegment($event, segment, segments)"></ion-toggle>
 </ion-item>
+<ion-item *ngIf="!segments">No segments available</ion-item>
 </ion-list>
 
 </ion-content>
