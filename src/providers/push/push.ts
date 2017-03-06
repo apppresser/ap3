@@ -93,7 +93,6 @@ export class PushService {
         .map(res => res.json())
         .subscribe(
           data => {
-            console.log( JSON.parse(data) )
             resolve( JSON.parse(data) );
           },
           error => console.warn('subscribe topic error' + error) 
@@ -116,7 +115,7 @@ export class PushService {
         .map(res => res.json())
         .subscribe(
           data => {
-            resolve(data);
+            resolve( JSON.parse(data) );
           },
           error => console.warn('Unsubscribe error' + error) 
         );
