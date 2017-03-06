@@ -12,6 +12,7 @@ import {TabsPage} from '../pages/tabs/tabs';
 import {CustomPage} from '../pages/custom-pages/custom-page';
 import {MediaPlayer} from '../pages/media-player/media-player';
 import {LoginModal} from '../pages/login-modal/login-modal';
+import {PushSettings} from '../pages/push-settings/push-settings';
 
 /* Providers */
 import {AppCamera} from '../providers/camera/app-camera';
@@ -51,7 +52,8 @@ export function createTranslateLoader(http: Http) {
     SanitizeHtml,
     PostDetailsPage,
     MediaPlayer,
-    LoginModal
+    LoginModal,
+    PushSettings
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -76,7 +78,8 @@ export function createTranslateLoader(http: Http) {
     CustomPage,
     PostDetailsPage,
     MediaPlayer,
-    LoginModal
+    LoginModal,
+    PushSettings
   ],
   providers: [
     {provide: ErrorHandler, useClass: IonicErrorHandler},

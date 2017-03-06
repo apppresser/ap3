@@ -12,6 +12,8 @@ import {IComponentInputData} from 'angular2-dynamic-component/index';
 
 import {MediaPlayer} from '../media-player/media-player';
 
+import {PushSettings} from '../push-settings/push-settings';
+
 class DynamicContext {
   value: string;
   pages: any;
@@ -55,7 +57,6 @@ export class CustomPage {
         public translate: TranslateService,
         public storage: Storage,
         public events: Events,
-        public push: PushService,
         public toastCtrl: ToastController,
         ) {
 		this.pagetitle = navParams.data.title;
@@ -141,26 +142,9 @@ export class CustomPage {
 			}
 			this.storage.set( 'is_rtl', rtl )
 		},
-		toggleSegment: ( segment, segments ) => {
-
-			console.log( segment, segments )
-
-			this.storage.get( segment.arn ).then( subscriptionArn => {
-
-				console.log( subscriptionArn )
-
-				if( subscriptionArn && segment.isChecked == false ) {
-					this.unsubscribe( subscriptionArn, segment.arn )
-				} else {
-					this.subscribe( segment.arn )
-				}
-
-				// update storage with toggle values
-				this.storage.set( 'segments', segments )
-				window.localStorage.setItem( 'segments', JSON.stringify( segments ) )
-
-			})
-
+		showSegments: () => {
+			let modal = this.modalCtrl.create(PushSettings);
+			modal.present();
 		},
 		// @TODO: change this to be like segments
 		langs: this.getLangs()
@@ -170,6 +154,7 @@ export class CustomPage {
 		// console.log(this.navParams);
 		// set our custom template url
 		let slug = this.navParams.data.slug;
+		// this.templateUrl = 'custom.html'
 		this.templateUrl = 'build/' + slug + '.html'; 
 
 		this.listener()
@@ -183,30 +168,6 @@ export class CustomPage {
             this.rtlBack = true
         }
 
-        this.getSegments()
-
-    }
-
-    getSegments() {
-
-    	// have to get data and save to localStorage, only way to get it into IComponentInputData
-        this.storage.get('segments' ).then( segments => {
-			console.log('got segments', segments)
-			if( segments ) {
-				this.segments = segments
-			} else {
-				this.segments = this.getSegmentsApi()
-			}
-
-			window.localStorage.setItem( 'segments', JSON.stringify( this.segments ) )
-
-		})
-
-    }
-
-    getSegmentsApi() {
-    	// @TODO: get this remotely
-    	return [{name:'Test asdf', arn:'arn:aws:sns:us-west-2:876904128607:test-asdf'},{name:'New topic test',arn:'arn:aws:sns:us-west-2:876904128607:asdf-newtopictest'}]
     }
 
     getLangs() {
@@ -241,6 +202,18 @@ export class CustomPage {
 		this.nav.pop( obj )
 	}
 
+	presentToast(msg) {
+
+	    let toast = this.toastCtrl.create({
+	      message: msg,
+	      duration: 5000,
+	      position: 'bottom'
+	    });
+
+	    toast.present();
+
+	}
+
 	// stop videos from playing when app is exited, required by Google
 	killVideos() {
 
@@ -263,43 +236,6 @@ export class CustomPage {
 		  }
 		  
 		})
-
-	}
-
-	subscribe( topicArn ) {
-
-		console.log('subscribing')
-
-		this.storage.get('deviceToken').then( token => {
-			this.push.subscribeToTopic( token, topicArn ).then( res => {
-				this.storage.set( topicArn, (<any>res).subscriptionArn )
-				this.presentToast( JSON.stringify(res) )
-			})
-		})
-
-	}
-
-	unsubscribe( subscriptionArn, topicArn ) {
-
-		console.log('unsubscribing')
-
-		// have to get subscriptionArn, then send to unsubscribe
-		this.push.unsubscribe( subscriptionArn ).then( res => {
-			this.storage.remove( topicArn )
-			this.presentToast( JSON.stringify(res) )
-		})
-
-	}
-
-	presentToast(msg) {
-
-	    let toast = this.toastCtrl.create({
-	      message: msg,
-	      duration: 5000,
-	      position: 'bottom'
-	    });
-
-	    toast.present();
 
 	}
 

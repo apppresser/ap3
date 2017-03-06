@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      {{ 'Notification Settings' | translate }}
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+<ion-list>
+<ion-item *ngFor="let segment of segments">
+  <span item-left class="dot"></span>
+  <ion-label>{{segment.name}}</ion-label>
+  <ion-toggle [(ngModel)]="segment.isChecked" (ionChange)="toggleSegment($event, segment, segments)"></ion-toggle>
+</ion-item>
+</ion-list>
+
+</ion-content>
