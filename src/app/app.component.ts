@@ -777,6 +777,7 @@ export class MyApp {
     this.storage.get( 'app_language' ).then( lang => {
       if( lang )
         this.translate.use( lang )
+        this.translate.setDefaultLang('en')
     })
 
   }
