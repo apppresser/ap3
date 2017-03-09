@@ -365,6 +365,13 @@ export class MyApp {
       StatusBar.styleDefault();
     }
 
+    // Android only, background color
+    if( this.platform.is('android') ) {
+      if( data.meta.design && data.meta.design.status_bar_bkg ) {
+        StatusBar.backgroundColorByHexString(data.meta.design.status_bar_bkg);
+      }
+    }
+
   }
 
   doConnectionEvents() {
