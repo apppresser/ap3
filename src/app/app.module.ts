@@ -2,7 +2,7 @@ import { NgModule, ErrorHandler } from '@angular/core';
 import {Http} from '@angular/http';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
-import { TranslateModule, TranslateStaticLoader, TranslateLoader } from 'ng2-translate/ng2-translate';
+import { TranslateModule, TranslateStaticLoader, TranslateLoader, MissingTranslationHandler, MissingTranslationHandlerParams } from 'ng2-translate/ng2-translate';
 
 /* Pages */
 import {PostList} from '../pages/post-list/post-list';
@@ -40,6 +40,12 @@ import {VgBufferingModule} from 'videogular2/buffering';
 // required for ng translate, tells it to look in assets folder for trans files
 export function createTranslateLoader(http: Http) {
     return new TranslateStaticLoader(http, 'assets/i18n', '.json');
+}
+ 
+export class MyMissingTranslationHandler implements MissingTranslationHandler {
+    handle(params: MissingTranslationHandlerParams) {
+        return params.key;
+    }
 }
 
 @NgModule({
@@ -83,6 +89,7 @@ export function createTranslateLoader(http: Http) {
   ],
   providers: [
     {provide: ErrorHandler, useClass: IonicErrorHandler},
+    {provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler},
     AppCamera,
     Posts,
     GlobalVars,

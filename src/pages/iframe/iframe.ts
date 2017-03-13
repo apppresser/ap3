@@ -134,8 +134,11 @@ export class Iframe {
 
         } else if( e.data === 'activity_modal' ) {
             this.activityModal = true;
-        } else if( e.data === 'checkin_modal' ) {
+        } else if( e.data === 'checkin_icon_show' ) {
             this.checkinModal = true;
+        } else if( e.data === 'checkin_modal_show' ) {
+            // @TODO -- error finding iframe
+            // this.doCheckinModal(e);
         } else if( e.data.indexOf('{') === 0 ) {
 
             // if it's a json object, parse it

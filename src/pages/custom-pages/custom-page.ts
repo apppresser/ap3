@@ -1,7 +1,6 @@
 import {Component, Renderer, ElementRef} from '@angular/core';
 import {Iframe} from '../../pages/iframe/iframe';
 import {PostList} from '../../pages/post-list/post-list';
-import {PushService} from '../../providers/push/push';
 import {Nav, NavParams, ModalController, Platform, ViewController, Events} from 'ionic-angular';
 import {TranslateService} from 'ng2-translate';
 import {Storage} from '@ionic/storage';
@@ -154,8 +153,9 @@ export class CustomPage {
 		// console.log(this.navParams);
 		// set our custom template url
 		let slug = this.navParams.data.slug;
+
 		// this.templateUrl = 'custom.html'
-		this.templateUrl = 'build/' + slug + '.html'; 
+		this.templateUrl = 'build/' + slug + '.html?' + this.random(1, 999);
 
 		this.listener()
 
@@ -237,6 +237,18 @@ export class CustomPage {
 		  
 		})
 
+	}
+
+	random(min, max) {
+	  if (min == null && max == null) {
+	    max = 1;
+	  }
+	  min = +min || 0;
+	  if (max == null) {
+	    max = min;
+	    min = 0;
+	  }
+	  return min + Math.floor(Math.random() * ((+max || 0) - min + 1));
 	}
 
 }
