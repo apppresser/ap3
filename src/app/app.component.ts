@@ -622,7 +622,6 @@ export class MyApp {
 
         // if they included an app page, load the page
         this.pushPage( (<any>data).additionalData.page );
-        return;
       }
 
       Dialogs.alert(
