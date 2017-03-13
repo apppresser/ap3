@@ -1,5 +1,5 @@
 import {NavParams, Nav, LoadingController, ModalController, Platform, ViewController} from 'ionic-angular';
-import {Component, HostListener} from '@angular/core';
+import {Component, HostListener, ElementRef} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Geolocation, Device, Keyboard, SocialSharing} from 'ionic-native';
 import {Storage} from '@ionic/storage';
@@ -32,7 +32,8 @@ export class Iframe {
         public loadingController: LoadingController, 
         public sanitizer: DomSanitizer,
         public modalCtrl: ModalController,
-        public storage: Storage
+        public storage: Storage,
+        public el: ElementRef
         ) {
         
 
@@ -134,11 +135,14 @@ export class Iframe {
 
         } else if( e.data === 'activity_modal' ) {
             this.activityModal = true;
-        } else if( e.data === 'checkin_icon_show' ) {
+        } else if( e.data === 'checkin_icon_show' || e.data === 'checkin_modal' /* icon */ ) {
             this.checkinModal = true;
         } else if( e.data === 'checkin_modal_show' ) {
-            // @TODO -- error finding iframe
-            // this.doCheckinModal(e);
+            // doCheckinModal expects an event target, so we'll simulate one
+            let _e = {
+                target: this.el.nativeElement.querySelector('.ap3-iframe')
+            };
+            this.doCheckinModal(_e);
         } else if( e.data.indexOf('{') === 0 ) {
 
             // if it's a json object, parse it
