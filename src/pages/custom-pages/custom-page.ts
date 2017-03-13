@@ -131,6 +131,7 @@ export class CustomPage {
 		},
 		updateData: () => {
 			window.localStorage.removeItem( 'myappp' )
+			this.storage.remove('segments')
 			this.events.publish( 'data:update', true )
 		},
 		changeRTL: ( event, rtl ) => {
