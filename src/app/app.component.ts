@@ -376,7 +376,7 @@ export class MyApp {
 
   doConnectionEvents() {
 
-    this.networkState = Network.connection;
+    this.networkState = Network.type;
 
     if( this.networkState === 'none' || this.networkState === 'unknown' ) {
       this.presentToast('You appear to be offline, app functionality may be limited.');

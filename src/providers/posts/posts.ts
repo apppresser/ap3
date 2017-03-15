@@ -26,7 +26,7 @@ export class Posts {
     }
       
     // if (this.data) {
-    //   // already loaded data
+    //   // already loaded data. this is handled elsewhere for now
     //   return Promise.resolve(this.data);
     // }
 
@@ -50,13 +50,9 @@ export class Posts {
         this.http.get( url + concat + 'appp=3&page=' + page + language)
             .map(res => res.json())
             .subscribe(data => {
-              // we've got back the raw data, now generate the core schedule data
-              // and save the data for later reference
+
               this.data = data;
 
-              // this.storage.set( url.substr(-10, 10) + '_posts', data);
-
-              // console.warn(data);
               resolve(this.data);
             });
         });
