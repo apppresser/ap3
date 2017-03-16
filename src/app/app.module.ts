@@ -12,7 +12,6 @@ import {TabsPage} from '../pages/tabs/tabs';
 import {CustomPage} from '../pages/custom-pages/custom-page';
 import {MediaPlayer} from '../pages/media-player/media-player';
 import {LoginModal} from '../pages/login-modal/login-modal';
-import {PushSettings} from '../pages/push-settings/push-settings';
 import {LanguageSettings} from '../pages/language-settings/language-settings';
 
 /* Providers */
@@ -60,7 +59,6 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     PostDetailsPage,
     MediaPlayer,
     LoginModal,
-    PushSettings,
     LanguageSettings
   ],
   imports: [
@@ -87,7 +85,6 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     PostDetailsPage,
     MediaPlayer,
     LoginModal,
-    PushSettings,
     LanguageSettings
   ],
   providers: [

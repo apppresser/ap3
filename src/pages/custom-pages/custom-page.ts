@@ -11,7 +11,6 @@ import {IComponentInputData} from 'angular2-dynamic-component/index';
 
 import {MediaPlayer} from '../media-player/media-player';
 
-import {PushSettings} from '../push-settings/push-settings';
 import {LanguageSettings} from '../language-settings/language-settings';
 
 class DynamicContext {
@@ -133,10 +132,6 @@ export class CustomPage {
 				this.platform.setDir('ltr', true)
 			}
 			this.storage.set( 'is_rtl', rtl )
-		},
-		showSegments: () => {
-			let modal = this.modalCtrl.create(PushSettings);
-			modal.present();
 		},
 		showLanguages: () => {
 			let modal = this.modalCtrl.create(LanguageSettings);
