@@ -28,7 +28,7 @@ export class LanguageSettings {
   getLanguages() {
   
     // Get languages, these are sent from WP site through postMessage in main component
-    this.storage.get('site_languages').then( langs => {
+    this.storage.get('available_languages').then( langs => {
       console.log('getlangs', langs)
       if(langs)
         this.languages = langs

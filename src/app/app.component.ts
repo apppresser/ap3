@@ -512,10 +512,6 @@ export class MyApp {
 
         this.maybeSendPushId( data.ajaxurl );
 
-      } else if( data.default_languages ) {
-
-        this.storage.set('site_languages', data.default_languages )
-
       } else if( typeof( data.isloggedin ) != "undefined" ) {
 
         // make sure app and WP have the same status
@@ -780,6 +776,16 @@ export class MyApp {
   }
 
   getSetLang() {
+
+    this.appdata.getLanguages().then( (data: any) => {
+
+      this.storage.set('available_languages', data)
+
+    }).catch( e => {
+
+      console.log( 'problem getting languages', e );
+
+    });
 
     this.storage.get( 'app_language' ).then( lang => {
       if( lang ) {
