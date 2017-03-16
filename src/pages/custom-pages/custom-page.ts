@@ -11,6 +11,9 @@ import {IComponentInputData} from 'angular2-dynamic-component/index';
 
 import {MediaPlayer} from '../media-player/media-player';
 
+import {PushSettings} from '../push-settings/push-settings';
+import {LanguageSettings} from '../language-settings/language-settings';
+
 class DynamicContext {
   value: string;
   pages: any;
@@ -119,10 +122,6 @@ export class CustomPage {
 			modal.present();
 
 		},
-		changeLang: ( event, lang: string ) => {
-			this.translate.use( lang )
-			this.storage.set( 'app_language', lang )
-		},
 		updateData: () => {
 			window.localStorage.removeItem( 'myappp' )
 			this.events.publish( 'data:update', true )
@@ -135,8 +134,14 @@ export class CustomPage {
 			}
 			this.storage.set( 'is_rtl', rtl )
 		},
-		// doesn't work, not sure why
-		langs: this.getLangs()
+		showSegments: () => {
+			let modal = this.modalCtrl.create(PushSettings);
+			modal.present();
+		},
+		showLanguages: () => {
+			let modal = this.modalCtrl.create(LanguageSettings);
+			modal.present();
+		}
 	}
 
 	ngOnInit() {
@@ -155,17 +160,6 @@ export class CustomPage {
             this.viewCtrl.showBackButton(false)
             this.rtlBack = true
         }
-
-    }
-
-    getLangs() {
-
-    	// Get languages, these are sent from WP site through postMessage in main component
-		this.storage.get('site_languages').then( langs => {
-			console.log('getlangs', langs)
-			if(langs)
-				return langs
-		})
 
     }
 

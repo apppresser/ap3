@@ -12,6 +12,8 @@ import {TabsPage} from '../pages/tabs/tabs';
 import {CustomPage} from '../pages/custom-pages/custom-page';
 import {MediaPlayer} from '../pages/media-player/media-player';
 import {LoginModal} from '../pages/login-modal/login-modal';
+import {PushSettings} from '../pages/push-settings/push-settings';
+import {LanguageSettings} from '../pages/language-settings/language-settings';
 
 /* Providers */
 import {AppCamera} from '../providers/camera/app-camera';
@@ -57,7 +59,9 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     SanitizeHtml,
     PostDetailsPage,
     MediaPlayer,
-    LoginModal
+    LoginModal,
+    PushSettings,
+    LanguageSettings
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -82,7 +86,9 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     CustomPage,
     PostDetailsPage,
     MediaPlayer,
-    LoginModal
+    LoginModal,
+    PushSettings,
+    LanguageSettings
   ],
   providers: [
     {provide: ErrorHandler, useClass: IonicErrorHandler},
