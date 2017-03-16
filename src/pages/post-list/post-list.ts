@@ -4,7 +4,7 @@ import {Posts} from '../../providers/posts/posts';
 import {PostDetailsPage} from '../post-details/post-details';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {Storage} from '@ionic/storage';
-import {Device} from 'ionic-native';
+import {Device, Network} from 'ionic-native';
 
 @Component({
   templateUrl: 'post-list.html'
@@ -24,6 +24,7 @@ export class PostList {
   doFavorites: boolean = false;
   showSlider: boolean = false;
   rtlBack: boolean = false;
+  networkState: any;
 
   constructor(
     public nav: NavController, 
@@ -61,7 +62,14 @@ export class PostList {
 
   ngOnInit() {
 
-    this.loadPosts( this.route );
+    this.networkState = Network.type;
+
+    if( this.networkState === 'none' || this.networkState === 'unknown' ) {
+      // if offline, get posts from storage
+      this.getStoredPosts();
+    } else {
+      this.loadPosts( this.route );
+    }
 
   }
 
@@ -72,6 +80,19 @@ export class PostList {
         this.rtlBack = true
     }
  
+  }
+
+  // get posts from storage when we are offline
+  getStoredPosts() {
+
+    this.storage.get( this.route.substr(-10, 10) + '_posts' ).then( posts => {
+      if( posts ) {
+        this.items = posts;
+      } else {
+        this.presentToast('No data available, pull to refresh when you are online.');
+      }
+    });
+
   }
 
   loadPosts( route ) {

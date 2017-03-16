@@ -376,7 +376,7 @@ export class MyApp {
 
   doConnectionEvents() {
 
-    this.networkState = Network.connection;
+    this.networkState = Network.type;
 
     if( this.networkState === 'none' || this.networkState === 'unknown' ) {
       this.presentToast('You appear to be offline, app functionality may be limited.');
@@ -785,9 +785,10 @@ export class MyApp {
   getSetLang() {
 
     this.storage.get( 'app_language' ).then( lang => {
-      if( lang )
+      if( lang ) {
         this.translate.use( lang )
         this.translate.setDefaultLang('en')
+      }
     })
 
   }
