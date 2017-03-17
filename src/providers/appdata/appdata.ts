@@ -127,26 +127,6 @@ export class AppData {
       });
   }
 
-  // get available languages from assets/i18n folder
-  getLanguages() {
-
-    return new Promise( (resolve, reject) => {
-
-      this.http.get( 'assets/i18n/index.json' )
-        .map(res => res.json())
-        .subscribe(data => {
-            resolve(data);
-          },
-          error => {
-            // API is down, or bad url, send back to line 65
-            reject(error);
-          }
-        );
-
-    });
-    
-  }
-
   handleError(err) {
     console.warn(err);
   }

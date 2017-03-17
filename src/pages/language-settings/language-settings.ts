@@ -26,10 +26,14 @@ export class LanguageSettings {
 
   // first get existing checked segments
   getLanguages() {
+
+    this.languages = null
   
     // Get languages, these are sent from WP site through postMessage in main component
     this.storage.get('available_languages').then( langs => {
-      console.log('getlangs', langs)
+
+      console.log('got langs', langs)
+
       if(langs)
         this.languages = langs
     })
@@ -37,8 +41,6 @@ export class LanguageSettings {
   }
 
   toggleLanguage( event, language ) {
-
-    console.log('toggleLanguage', language)
 
     this.translate.use( language.code )
     this.storage.set( 'app_language', language.code )
