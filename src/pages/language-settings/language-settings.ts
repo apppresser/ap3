@@ -54,10 +54,11 @@ export class LanguageSettings {
             langs[i].checked = true
 
         }
-
-        this.languages = langs
         
       }
+
+      this.languages = langs
+      
     })
 
   }
