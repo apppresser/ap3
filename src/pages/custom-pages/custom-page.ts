@@ -12,6 +12,7 @@ import {IComponentInputData} from 'angular2-dynamic-component/index';
 import {MediaPlayer} from '../media-player/media-player';
 
 import {PushSettings} from '../push-settings/push-settings';
+import {LanguageSettings} from '../language-settings/language-settings';
 
 class DynamicContext {
   value: string;
@@ -125,10 +126,6 @@ export class CustomPage {
 			modal.present();
 
 		},
-		changeLang: ( event, lang: string ) => {
-			this.translate.use( lang )
-			this.storage.set( 'app_language', lang )
-		},
 		updateData: () => {
 			window.localStorage.removeItem( 'myappp' )
 			this.storage.remove('segments')
@@ -146,8 +143,10 @@ export class CustomPage {
 			let modal = this.modalCtrl.create(PushSettings);
 			modal.present();
 		},
-		// @TODO: change this to be like segments
-		langs: this.getLangs()
+		showLanguages: () => {
+			let modal = this.modalCtrl.create(LanguageSettings);
+			modal.present();
+		}
 	}
 
 	ngOnInit() {
@@ -168,17 +167,6 @@ export class CustomPage {
             this.viewCtrl.showBackButton(false)
             this.rtlBack = true
         }
-
-    }
-
-    getLangs() {
-
-    	// Get languages, these are sent from WP site through postMessage in main component
-		this.storage.get('site_languages').then( langs => {
-			console.log('getlangs', langs)
-			if(langs)
-				return langs
-		})
 
     }
 

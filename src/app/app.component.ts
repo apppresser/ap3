@@ -88,8 +88,6 @@ export class MyApp {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
 
-      this.getSetLang();
-
       this.apiurl = this.globalvars.getApi();
       
       this.fetchData( false );
@@ -169,6 +167,7 @@ export class MyApp {
     this.loadStyles(data);
     this.maybeDoAds(data);
     this.doStatusBar(data);
+    this.getSetLang(data);
     this.getSetLogin();
 
     this.apptitle = data.title;
@@ -512,10 +511,6 @@ export class MyApp {
 
         this.maybeSendPushId( data.ajaxurl );
 
-      } else if( data.default_languages ) {
-
-        this.storage.set('site_languages', data.default_languages )
-
       } else if( typeof( data.isloggedin ) != "undefined" ) {
 
         // make sure app and WP have the same status
@@ -782,7 +777,13 @@ export class MyApp {
 
   }
 
-  getSetLang() {
+  getSetLang( data ) {
+
+    if(data.languages) {
+      this.storage.set('available_languages', data.languages)
+    } else {
+      this.storage.remove('available_languages')
+    }
 
     this.storage.get( 'app_language' ).then( lang => {
       if( lang ) {

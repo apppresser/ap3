@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      {{ 'Language Settings' | translate }}
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+<ion-list radio-group [(ngModel)]="language">
+<ion-item *ngFor="let language of languages">
+  <ion-label>{{language.name}}</ion-label>
+  <ion-radio (ionSelect)="toggleLanguage($event, language)" value="{{language.code}}"></ion-radio>
+</ion-item>
+<ion-item *ngIf="!languages">No languages available</ion-item>
+</ion-list>
+
+</ion-content>
