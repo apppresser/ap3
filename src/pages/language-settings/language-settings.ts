@@ -32,12 +32,34 @@ export class LanguageSettings {
     // Get languages, these are sent from WP site through postMessage in main component
     this.storage.get('available_languages').then( langs => {
 
-      console.log('got langs', langs)
+      if(langs) {
+        // this.languages = langs
+        this.checkCurrent( langs )
+      }
 
-      if(langs)
-        this.languages = langs
     })
     
+  }
+
+  checkCurrent( langs ) {
+
+    this.storage.get( 'app_language' ).then( lang => {
+
+      if( lang ) {
+        // we have an existing language, check it and return languages
+        for (var i = langs.length - 1; i >= 0; i--) {
+
+          // if language codes match, save as checked
+          if( langs[i].code === lang )
+            langs[i].checked = true
+
+        }
+
+        this.languages = langs
+        
+      }
+    })
+
   }
 
   toggleLanguage( event, language ) {
