@@ -596,6 +596,13 @@ export class MyApp {
 
     push.on('notification', (data) => {
 
+      // if apppush post URL
+      if( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 && data.additionalData.target && data.additionalData.target == '_self' ) {
+        let page = { title: data.title, component: Iframe, url: data.additionalData.url, classes: null };
+        this.pushPage( page );
+        return;
+      }
+
       // if there's an external url from apppush custom url field, open in IAB
       if( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 ) {
         this.openIab( data.additionalData.url, '_blank' );
