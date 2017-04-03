@@ -1,5 +1,5 @@
-import {NavController, NavParams, LoadingController, ToastController, ItemSliding, Platform, ViewController} from 'ionic-angular';
-import {Component} from '@angular/core';
+import {NavController, NavParams, LoadingController, ToastController, ItemSliding, Platform, ViewController, Content} from 'ionic-angular';
+import {Component, ViewChild} from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
 import {PostDetailsPage} from '../post-details/post-details';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
@@ -10,6 +10,9 @@ import {Device, Network} from 'ionic-native';
   templateUrl: 'post-list.html'
 })
 export class PostList {
+
+  @ViewChild(Content) content: Content;
+
   selectedItem: any;
   icons: string[];
   items: any;
@@ -23,6 +26,7 @@ export class PostList {
   favorites: any = [];
   doFavorites: boolean = false;
   showSlider: boolean = false;
+  showSearch: boolean = false;
   rtlBack: boolean = false;
   networkState: any;
 
@@ -146,6 +150,27 @@ export class PostList {
     this.loadSlides( this.navParams.data.slide_route );
     // refresh.complete should happen when posts are loaded, not timeout
     setTimeout( ()=> refresh.complete(), 500);
+  }
+
+  toggleSearchBar() {
+    if( this.showSearch === true ) {
+      this.showSearch = false
+    } else {
+      this.showSearch = true
+    }
+
+    this.content.resize()
+  }
+
+  search(ev) {
+    // set val to the value of the searchbar
+    let val = ev.target.value;
+
+    // if the value is an empty string don't filter the items
+    if (val && val.trim() != '') {
+      this.loadPosts( this.route + '?search=' + val )
+    }
+
   }
 
   loadMore(infiniteScroll) {
