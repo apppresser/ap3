@@ -154,6 +154,8 @@ export class AppCamera {
     // prepend image name with random string to avoid duplicate upload errors
     options.fileName = imageURI ? random + image : random;
     options.mimeType = 'image/jpeg';
+    options.httpMethod="POST";
+    options.chunkedMode = false;
 
     let params = {
       form_fields: null,
