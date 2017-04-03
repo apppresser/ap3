@@ -29,7 +29,7 @@ import {WPlogin} from '../providers/wplogin/wplogin';
 /* Other */
 import {SanitizeHtml} from '../pipes/sanitize-html';
 import {DynamicComponentModule} from 'angular2-dynamic-component/index';
-import {Storage} from '@ionic/storage';
+import { IonicStorageModule } from '@ionic/storage'
 
 /* Videogular */
 import {BrowserModule} from '@angular/platform-browser';
@@ -65,6 +65,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
   ],
   imports: [
     IonicModule.forRoot(MyApp),
+    IonicStorageModule.forRoot(),
     DynamicComponentModule,
     BrowserModule,
     VgCoreModule,
@@ -101,7 +102,6 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     PushService,
     AppWoo,
     AppData,
-    Storage,
     WPlogin
   ]
 })

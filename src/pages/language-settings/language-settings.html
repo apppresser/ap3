@@ -16,7 +16,7 @@
 <ion-list radio-group [(ngModel)]="language">
 <ion-item *ngFor="let language of languages">
   <ion-label>{{language.name}}</ion-label>
-  <ion-radio (ionSelect)="toggleLanguage($event, language)" value="{{language.code}}"></ion-radio>
+  <ion-radio (ionSelect)="toggleLanguage($event, language)" value="{{language.code}}" [checked]="language.checked"></ion-radio>
 </ion-item>
 <ion-item *ngIf="!languages">No languages available</ion-item>
 </ion-list>

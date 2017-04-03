@@ -1,17 +1,25 @@
 import {Component, Renderer, ElementRef} from '@angular/core';
-import {Iframe} from '../../pages/iframe/iframe';
-import {PostList} from '../../pages/post-list/post-list';
 import {Nav, NavParams, ModalController, Platform, ViewController, Events} from 'ionic-angular';
 import {TranslateService} from 'ng2-translate';
 import {Storage} from '@ionic/storage';
+<<<<<<< HEAD
 
 import {IonicModule, ToastController} from 'ionic-angular';
 
+=======
+import {IonicModule} from 'ionic-angular';
+>>>>>>> ed4fbfa2ccf7b3628f317b2929abc9dd0e88235c
 import {IComponentInputData} from 'angular2-dynamic-component/index';
 
+import {Iframe} from '../../pages/iframe/iframe';
+import {PostList} from '../../pages/post-list/post-list';
+import {LoginModal} from '../../pages/login-modal/login-modal';
 import {MediaPlayer} from '../media-player/media-player';
+<<<<<<< HEAD
 
 import {PushSettings} from '../push-settings/push-settings';
+=======
+>>>>>>> ed4fbfa2ccf7b3628f317b2929abc9dd0e88235c
 import {LanguageSettings} from '../language-settings/language-settings';
 
 class DynamicContext {
@@ -45,6 +53,7 @@ export class CustomPage {
 	langs: any;
 	segments: any;
 	showSegments: boolean = false
+	loginModal: any;
 
 	constructor( 
 		public navParams: NavParams, 
@@ -146,6 +155,13 @@ export class CustomPage {
 		showLanguages: () => {
 			let modal = this.modalCtrl.create(LanguageSettings);
 			modal.present();
+		},
+		loginModal: () => {
+
+			this.loginModal = this.modalCtrl.create( LoginModal );
+
+			this.loginModal.present();
+
 		}
 	}
 
