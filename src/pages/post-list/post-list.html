@@ -24,7 +24,7 @@
     </ion-navbar>
 
     <ion-toolbar *ngIf="showSearch">
-      <ion-searchbar placeholder="{{'Search' | translate }}" debounce="1000" (ionInput)="search($event)" (ionClear)="ngOnInit()"></ion-searchbar>
+      <ion-searchbar placeholder="{{'Search' | translate }}" debounce="1000" (ionInput)="search($event)" (ionClear)="clearSearch()"></ion-searchbar>
     </ion-toolbar>
 
     <ion-toolbar *ngIf="doFavorites" id="favorites-toolbar">

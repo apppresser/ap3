@@ -30,7 +30,7 @@ export class Posts {
     //   return Promise.resolve(this.data);
     // }
 
-    return new Promise(resolve => {
+    return new Promise( (resolve, reject) => {
 
       // check if url already has a query param
       if( url.indexOf('?') > 0 ) {
@@ -54,7 +54,11 @@ export class Posts {
               this.data = data;
 
               resolve(this.data);
-            });
+            },
+            error => {
+              // probably a bad url or 404
+              reject(error);
+            })
         });
 
 

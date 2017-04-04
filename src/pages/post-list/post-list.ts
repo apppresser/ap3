@@ -168,9 +168,17 @@ export class PostList {
 
     // if the value is an empty string don't filter the items
     if (val && val.trim() != '') {
-      this.loadPosts( this.route + '?search=' + val )
+      // set to this.route so infinite scroll works
+      this.route = this.navParams.data.list_route + '?search=' + val
+      this.loadPosts( this.route )
     }
 
+  }
+
+  clearSearch() {
+    // reset to original query
+    this.route = this.navParams.data.list_route;
+    this.loadPosts(this.route)
   }
 
   loadMore(infiniteScroll) {
@@ -195,7 +203,16 @@ export class PostList {
 
       if(infiniteScroll)
         infiniteScroll.complete();
+
+    }).catch( e => {
+      // promise was rejected, usually a 404 or error response from API
+      if(infiniteScroll)
+        infiniteScroll.complete();
+
+      console.warn(e)
+
     });
+
   }
 
   addFav(slidingItem: ItemSliding, item) {
