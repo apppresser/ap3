@@ -46,6 +46,7 @@ export class CustomPage {
 	segments: any;
 	showSegments: boolean = false
 	loginModal: any;
+	slug: string;
 
 	constructor( 
 		public navParams: NavParams, 
@@ -161,6 +162,7 @@ export class CustomPage {
 		// console.log(this.navParams);
 		// set our custom template url
 		let slug = this.navParams.data.slug;
+		this.slug = slug;
 
 		// this.templateUrl = 'custom.html'
 		this.templateUrl = 'build/' + slug + '.html?' + this.random(1, 999);
