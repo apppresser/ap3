@@ -456,7 +456,7 @@ export class MyApp {
       }
 
       // if it's not our json object, return
-      if (e.data.indexOf('{') != 0)
+      if (typeof e.data !== 'string' && e.data.indexOf('{') != 0)
         return;
 
       var data = JSON.parse(e.data);
