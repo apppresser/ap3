@@ -443,6 +443,10 @@ export class MyApp {
     // When WP site loads, attach our click events
     window.addEventListener('message', (e) => {
 
+      // might be undefined, but we only using strings here
+      if( typeof e.data !== 'string' || e.data == '' )
+        return;
+
       console.log('postMessage', e.data);
 
       if( e.data === 'checkin_success' ) {
@@ -456,7 +460,7 @@ export class MyApp {
       }
 
       // if it's not our json object, return
-      if (typeof e.data !== 'string' && e.data.indexOf('{') != 0)
+      if (e.data.indexOf('{') != 0)
         return;
 
       var data = JSON.parse(e.data);
