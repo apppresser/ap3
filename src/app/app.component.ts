@@ -520,6 +520,9 @@ export class MyApp {
         // make sure app and WP have the same status
         this.syncLoginStatus( data )
 
+      } else if( data.apppage ) {
+        let page = { title: data.title, component: Iframe, url: data.apppage.url, classes: null, page_type: null, type: null };
+        this.openPage( page );
       }
 
     }, false); // end eventListener
