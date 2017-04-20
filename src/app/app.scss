@@ -264,3 +264,25 @@ iframe {
  width: 100%;
  border: 0;
 }
+
+.app-header-logo {
+
+	.title { display: none; } 
+
+	&:before {
+
+		width: 150px;
+		height: 56px;
+		content: "";
+		background-image: url(../assets/header-logo.png);
+		background-size: 56px 56px;  
+		background-repeat: no-repeat;  
+		background-position: center top; 
+		z-index: 100;
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		margin: auto;
+	}
+}
