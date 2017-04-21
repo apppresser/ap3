@@ -267,6 +267,10 @@ iframe {
 
 .app-header-logo {
 
+	.platform-ios &:before {
+		top: 8px;
+	}
+
 	.title { display: none; } 
 
 	&:before {
