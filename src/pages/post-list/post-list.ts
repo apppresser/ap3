@@ -169,10 +169,15 @@ export class PostList {
     // if the value is an empty string don't filter the items
     if (val && val.trim() != '') {
       // set to this.route so infinite scroll works
-      this.route = this.navParams.data.list_route + '?search=' + val
+      this.route = this.addQueryParam(this.navParams.data.list_route, 'search=' + val);
       this.loadPosts( this.route )
     }
 
+  }
+
+  addQueryParam(url, param) {
+    const separator = (url.indexOf('?') > 0) ? '&' : '?';
+    return url + separator + param;
   }
 
   clearSearch() {
