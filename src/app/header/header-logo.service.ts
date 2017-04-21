@@ -9,10 +9,7 @@
  *
  * If the image is not found locally, but is in data.assets.header_logo, we still tell they app it's not there.
  */ 
-export class HeaderLogo {
-
-	private image_url = 'assets/header-logo.png';
-	private data: any;
+export class HeaderLogo { // Service
 
 	constructor() {
 		// console.debug('app-header-logo-remote', window.localStorage.getItem('app-header-logo-remote') );
@@ -20,26 +17,12 @@ export class HeaderLogo {
 	}
 
 	/**
-	 * @param data ajax response object from myapppresser.com API
-	 */
-	imageExists(data) { // locally and remotely
-
-		this.data = data;
-
-		if(this.data.assets) {
-			this.isRemote();
-		} else if( window.localStorage.getItem('app-header-logo-remote') !== '' ) { // check only once: keeps from throwing 404s in the console
-			this.isLocal();
-		}
-	}
-
-	/**
 	 * When we check remote, we are only checking if it's set in the customizer.  We don't use the file, because it should exists locally.
 	 * This way if it's not in the customizer, we won't display it even if it exists locally.
 	 */
-	isRemote() {
-		if(this.data.assets.header_logo) {
-			window.localStorage.setItem('app-header-logo-remote', this.data.assets.header_logo);
+	isRemote(data) {
+		if(data.assets && data.assets.header_logo) {
+			window.localStorage.setItem('app-header-logo-remote', data.assets.header_logo);
 
 			// Found remotely, but if not found locally, remove the local setting because we want to keep checking for it locally
 			if( window.localStorage.getItem('app-header-logo-local') === '' ) {
@@ -53,7 +36,12 @@ export class HeaderLogo {
 
 	isLocal() {
 
+		// check only once: keeps from throwing 404s in the console
+		if( window.localStorage.getItem('app-header-logo-remote') === '' )
+			return;
+
 		const img = new Image();
+		const image_url = 'assets/header-logo.png';
 
 		// console.debug('is there a header image locally?');
 
@@ -69,7 +57,7 @@ export class HeaderLogo {
 			window.localStorage.setItem('app-header-logo-local', '1');
 		}
 
-		img.src = this.image_url;
+		img.src = image_url;
 
 		// it was cached, so remember that
 		if(img.complete) {

@@ -19,7 +19,7 @@ import {FbConnect} from '../providers/facebook/facebook';
 import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
-import {HeaderLogo} from './header/header-logo.model';
+import {HeaderLogo} from './header/header-logo.service';
 
 /* Native */
 import {StatusBar, SocialSharing, Device, InAppBrowser, Splashscreen, Push, Dialogs, Network, Keyboard} from 'ionic-native';
@@ -64,7 +64,7 @@ export class MyApp {
     public storage: Storage,
     public modalCtrl: ModalController,
     public events: Events,
-    private HeaderLogo: HeaderLogo,
+    private headerLogo: HeaderLogo,
     public translate: TranslateService
   ) {
 
@@ -92,7 +92,7 @@ export class MyApp {
 
       this.apiurl = this.globalvars.getApi();
       
-      this.headerLogo({});
+      this.headerLogo.isLocal();
 
       this.fetchData( false );
 
@@ -169,7 +169,7 @@ export class MyApp {
       this.platform.setDir('rtl', true)
 
     this.loadStyles(data);
-    this.headerLogo(data);
+    this.headerLogo.isRemote(data);
     this.maybeDoAds(data);
     this.doStatusBar(data);
     this.getSetLang(data);
@@ -437,16 +437,6 @@ export class MyApp {
 
     this.styles = this.sanitizer.bypassSecurityTrustHtml( styles );
     
-  }
-
-  /*
-   * Checks once if the header logo exists and save results in localStorage so we don't have to keep checking.
-   */
-  headerLogo(data) {
-
-    const logo = new HeaderLogo();
-    logo.imageExists(data);
-
   }
 
   /* 

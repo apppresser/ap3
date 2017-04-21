@@ -25,7 +25,7 @@ import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
 import {WPlogin} from '../providers/wplogin/wplogin';
-import {HeaderLogo} from './header/header-logo.model';
+import {HeaderLogo} from './header/header-logo.service';
 
 /* Other */
 import {SanitizeHtml} from '../pipes/sanitize-html';
