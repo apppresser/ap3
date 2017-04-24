@@ -220,8 +220,6 @@ export class MyApp {
       this.pages = data.menus.items;
       this.pages[0].is_home = true;
 
-      console.log('home page', this.pages[0]);
-
       this.showmenu = true;
 
       // Add pages manually here, can use different components like this...
