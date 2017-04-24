@@ -92,8 +92,6 @@ export class MyApp {
 
       this.apiurl = this.globalvars.getApi();
       
-      this.headerLogo.isLocal();
-
       this.fetchData( false );
 
       this.doConnectionEvents();
@@ -220,6 +218,9 @@ export class MyApp {
     if( data.menus.items ) {
 
       this.pages = data.menus.items;
+      this.pages[0].is_home = true;
+
+      console.log('home page', this.pages[0]);
 
       this.showmenu = true;
 

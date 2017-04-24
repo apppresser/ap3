@@ -29,6 +29,7 @@ export class PostList {
   showSearch: boolean = false;
   rtlBack: boolean = false;
   networkState: any;
+  is_home: boolean = false;
 
   constructor(
     public nav: NavController, 
@@ -44,6 +45,8 @@ export class PostList {
     this.route = navParams.data.list_route;
 
     this.title = navParams.data.title;
+
+    this.is_home = (navParams.data.is_home == true);
 
     if( navParams.data.favorites && navParams.data.favorites === "true" ) {
       this.doFavorites = true;

@@ -13,7 +13,6 @@ import { Observer } from 'rxjs/Observer';
 export class HeaderLogo { // Service
 
 	hasImage: Observable<boolean>;
-	isHomepage = false;
 	image_url: string = 'assets/header-logo.png';
 
 	constructor() {
@@ -22,32 +21,28 @@ export class HeaderLogo { // Service
 			// start off not showing the logo until we know it exists
 			observer.next(false);
 
-			// check only once: keeps from throwing 404s in the console
-		if( this.isHomepage || window.localStorage.getItem('app-header-logo-remote') === '' )
-			return;
+			const img = new Image();
 
-		const img = new Image();
+			// you see a 404 each time this happens, so remember that
+			img.onerror = () => {
+				observer.next(false);
+			}
 
-		// you see a 404 each time this happens, so remember that
-		img.onerror = () => {
-			observer.next(false);
-		}
+			// found it, so remember that
+			img.onload = () => {
+				observer.next(true);
+			}
 
-		// found it, so remember that
-		img.onload = () => {
-			observer.next(true);
-		}
+			img.addEventListener('load', () => {
+				observer.next(true);
+			});
 
-		img.addEventListener('load', () => {
-			observer.next(true);
-		});
+			img.src = this.image_url;
 
-		img.src = this.image_url;
-
-		// it was cached, so remember that
-		if(img.complete) {
-			observer.next(true);
-		}
+			// it was cached, so remember that
+			if(img.complete) {
+				observer.next(true);
+			}
 		});
 	}
 

@@ -23,6 +23,7 @@ export class Iframe {
     rtlBack: boolean = false;
     lang: string = '';
     shareUrl: string = '';
+    is_home: boolean = false;
 
     constructor(
         public navParams: NavParams,
@@ -36,6 +37,7 @@ export class Iframe {
         public el: ElementRef
         ) {
         
+        this.is_home = (navParams.data.is_home == true);
 
         this.setupURL();
 

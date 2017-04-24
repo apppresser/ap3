@@ -47,6 +47,7 @@ export class CustomPage {
 	showSegments: boolean = false
 	loginModal: any;
 	slug: string;
+	is_home: boolean = false;
 
 	constructor( 
 		public navParams: NavParams, 
@@ -62,6 +63,8 @@ export class CustomPage {
         public toastCtrl: ToastController,
         ) {
 		this.pagetitle = navParams.data.title;
+
+		this.is_home = (navParams.data.is_home == true);
 
 		// kill vids on android
 		if( platform.is('android') ) {
