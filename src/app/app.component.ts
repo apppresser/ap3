@@ -184,7 +184,8 @@ export class MyApp {
     // If we have a tab menu, set that up
     if( data.tab_menu.items ) {
 
-      // let e = { 'title': "Custom Page", 'type': 'apppages', 'class': "information-circle", slug: 'custom' };
+      // Add pages manually here, can use different components like this... (then use the slug name to create your page, etc. www/build/custom.html)
+      // let e = { 'title': "Custom Page", 'type': 'apppages', 'class': "information-circle", slug: 'custom', extra_classes: '' };
 
       // data.tab_menu.items.push( e );
 
@@ -222,8 +223,8 @@ export class MyApp {
 
       this.showmenu = true;
 
-      // Add pages manually here, can use different components like this...
-      // let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': { slug: 'custom' } };
+      // Add pages manually here, can use different components like this... (then use the slug name to create your page, etc. www/build/custom.html)
+      // let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': { slug: 'custom' }, extra_classes: '' };
 
       // this.pages.push( e );
 
