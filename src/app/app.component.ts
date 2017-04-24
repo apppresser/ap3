@@ -19,7 +19,7 @@ import {FbConnect} from '../providers/facebook/facebook';
 import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
-import {HeaderLogo} from './header/header-logo.service';
+import {HeaderLogo} from '../providers/headerlogo/header-logo.service';
 
 /* Native */
 import {StatusBar, SocialSharing, Device, InAppBrowser, Splashscreen, Push, Dialogs, Network, Keyboard} from 'ionic-native';
@@ -169,7 +169,6 @@ export class MyApp {
       this.platform.setDir('rtl', true)
 
     this.loadStyles(data);
-    this.headerLogo.isRemote(data);
     this.maybeDoAds(data);
     this.doStatusBar(data);
     this.getSetLang(data);

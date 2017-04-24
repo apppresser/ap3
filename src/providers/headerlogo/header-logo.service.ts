@@ -1,4 +1,5 @@
-
+import { Observable } from 'rxjs/Observable';
+import { Observer } from 'rxjs/Observer';
 /**
  * A lot of logic to basically do two things:
  *
@@ -11,9 +12,43 @@
  */ 
 export class HeaderLogo { // Service
 
+	hasImage: Observable<boolean>;
+	isHomepage = false;
+	image_url: string = 'assets/header-logo.png';
+
 	constructor() {
-		// console.debug('app-header-logo-remote', window.localStorage.getItem('app-header-logo-remote') );
-		// console.debug('app-header-logo-local', window.localStorage.getItem('app-header-logo-local') );
+		this.hasImage = Observable.create((observer: Observer<boolean>) => {
+
+			// start off not showing the logo until we know it exists
+			observer.next(false);
+
+			// check only once: keeps from throwing 404s in the console
+		if( this.isHomepage || window.localStorage.getItem('app-header-logo-remote') === '' )
+			return;
+
+		const img = new Image();
+
+		// you see a 404 each time this happens, so remember that
+		img.onerror = () => {
+			observer.next(false);
+		}
+
+		// found it, so remember that
+		img.onload = () => {
+			observer.next(true);
+		}
+
+		img.addEventListener('load', () => {
+			observer.next(true);
+		});
+
+		img.src = this.image_url;
+
+		// it was cached, so remember that
+		if(img.complete) {
+			observer.next(true);
+		}
+		});
 	}
 
 	/**
@@ -41,27 +76,25 @@ export class HeaderLogo { // Service
 			return;
 
 		const img = new Image();
-		const image_url = 'assets/header-logo.png';
-
-		// console.debug('is there a header image locally?');
 
 		// you see a 404 each time this happens, so remember that
-		img.onerror = function() {
-			// console.debug('logo is not found locally');
+		img.onerror = () => {
 			window.localStorage.setItem('app-header-logo-local', '');
 		}
 
 		// found it, so remember that
-		img.onload = function() {
-			// console.debug('logo is found locally');
+		img.onload = () => {
 			window.localStorage.setItem('app-header-logo-local', '1');
 		}
 
-		img.src = image_url;
+		img.addEventListener('load', () => {
+			window.localStorage.setItem('app-header-logo-local', '1');
+		});
+
+		img.src = this.image_url;
 
 		// it was cached, so remember that
 		if(img.complete) {
-			// console.debug('logo is found locally in cache');
 			window.localStorage.setItem('app-header-logo-local', '1');
 		}
 	}

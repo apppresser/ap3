@@ -25,13 +25,13 @@ import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
 import {WPlogin} from '../providers/wplogin/wplogin';
-import {HeaderLogo} from './header/header-logo.service';
+import {HeaderLogo} from '../providers/headerlogo/header-logo.service';
 
 /* Other */
 import {SanitizeHtml} from '../pipes/sanitize-html';
 import {DynamicComponentModule} from 'angular2-dynamic-component/index';
 import { IonicStorageModule } from '@ionic/storage';
-import {HeaderLogoDirective} from './header/header-logo.directive';
+import {HeaderLogoDirective} from '../providers/headerlogo/header-logo.directive';
 
 /* Videogular */
 import {BrowserModule} from '@angular/platform-browser';
