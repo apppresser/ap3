@@ -12,7 +12,8 @@ export class HeaderLogoDirective implements OnInit {
 	@Input() appHeaderLogo;
 
 	// adds or remove the .app-header-logo class
-	@HostBinding('class.app-header-logo') image: boolean = false;
+	@HostBinding('class.app-header-logo') logo_class: boolean = false;
+	@HostBinding('class.no-header-logo') no_logo_class: boolean = true;
 
 	constructor(private headerLogo: HeaderLogo, private elem: ElementRef, private renderer: Renderer) {}
 
@@ -20,11 +21,10 @@ export class HeaderLogoDirective implements OnInit {
 
 		// appHeaderLogo will containg the value of is_home
 		if(this.appHeaderLogo) {
-			this.renderer.setElementStyle(this.elem.nativeElement, 'backgroundImage', 'url('+this.headerLogo.image_url+')');
-
 			// since the loading of the image is asynchronous we need to subscribe to it
 			this.headerLogo.hasImage.subscribe( (hasImage) => {
-				this.image = hasImage;
+				this.logo_class = hasImage;
+				this.no_logo_class = !hasImage;
 			});		
 		}
 	}

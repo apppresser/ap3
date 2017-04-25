@@ -1,15 +1,18 @@
 import {NavParams, Nav, LoadingController, ModalController, Platform, ViewController} from 'ionic-angular';
-import {Component, HostListener, ElementRef} from '@angular/core';
+import {Component, HostListener, ElementRef, OnInit, Input} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Geolocation, Device, Keyboard, SocialSharing} from 'ionic-native';
 import {Storage} from '@ionic/storage';
 
 import {MediaPlayer} from '../media-player/media-player';
+import { HeaderLogo } from "../../providers/headerlogo/header-logo.service";
 
 @Component({
     templateUrl: 'iframe.html'
 })
 export class Iframe {
+
+    @Input() header_logo_url: string;
 
     title: string;
     url: any;
@@ -34,7 +37,8 @@ export class Iframe {
         public sanitizer: DomSanitizer,
         public modalCtrl: ModalController,
         public storage: Storage,
-        public el: ElementRef
+        public el: ElementRef,
+        private headerLogoService: HeaderLogo
         ) {
         
         this.is_home = (navParams.data.is_home == true);
@@ -46,6 +50,10 @@ export class Iframe {
         // Show error message if in preview and not using https
         this.previewAlert( navParams.data.url );
 
+    }
+
+    ngOnInit() {
+        this.header_logo_url = this.headerLogoService.image_url;
     }
 
     setupURL() {

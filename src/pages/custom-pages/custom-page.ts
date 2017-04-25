@@ -1,4 +1,4 @@
-import {Component, Renderer, ElementRef} from '@angular/core';
+import {Component, Renderer, ElementRef, OnInit, Input} from '@angular/core';
 import {Nav, NavParams, ModalController, Platform, ViewController, Events} from 'ionic-angular';
 import {TranslateService} from 'ng2-translate';
 import {Storage} from '@ionic/storage';
@@ -13,6 +13,7 @@ import {MediaPlayer} from '../media-player/media-player';
 
 import {PushSettings} from '../push-settings/push-settings';
 import {LanguageSettings} from '../language-settings/language-settings';
+import { HeaderLogo } from "../../providers/headerlogo/header-logo.service";
 
 class DynamicContext {
   value: string;
@@ -34,7 +35,9 @@ class DynamicContext {
 @Component({
   templateUrl: "custom-page.html"
 })
-export class CustomPage {
+export class CustomPage implements OnInit {
+
+	@Input() header_logo_url: string;
 
 	pagetitle: string;
 	listenFunc: Function;
@@ -61,6 +64,7 @@ export class CustomPage {
         public storage: Storage,
         public events: Events,
         public toastCtrl: ToastController,
+        private headerLogoService: HeaderLogo
         ) {
 		this.pagetitle = navParams.data.title;
 
@@ -170,7 +174,8 @@ export class CustomPage {
 		// this.templateUrl = 'custom.html'
 		this.templateUrl = 'build/' + slug + '.html?' + this.random(1, 999);
 
-		this.listener()
+		this.listener();
+		this.header_logo_url = this.headerLogoService.image_url;
 
 	}
 

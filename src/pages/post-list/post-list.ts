@@ -1,17 +1,19 @@
 import {NavController, NavParams, LoadingController, ToastController, ItemSliding, Platform, ViewController, Content} from 'ionic-angular';
-import {Component, ViewChild} from '@angular/core';
+import {Component, ViewChild, OnInit, Input} from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
 import {PostDetailsPage} from '../post-details/post-details';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
+import {HeaderLogo} from '../../providers/headerlogo/header-logo.service';
 import {Storage} from '@ionic/storage';
 import {Device, Network} from 'ionic-native';
 
 @Component({
   templateUrl: 'post-list.html'
 })
-export class PostList {
+export class PostList implements OnInit {
 
   @ViewChild(Content) content: Content;
+  @Input() header_logo_url: string;
 
   selectedItem: any;
   icons: string[];
@@ -40,7 +42,8 @@ export class PostList {
     public storage: Storage, 
     public toastCtrl: ToastController,
     public viewCtrl: ViewController,
-    public platform: Platform ) {
+    public platform: Platform,
+    private headerLogoService: HeaderLogo ) {
 
     this.route = navParams.data.list_route;
 
@@ -77,6 +80,8 @@ export class PostList {
     } else {
       this.loadPosts( this.route );
     }
+
+    this.header_logo_url = this.headerLogoService.image_url;
 
   }
 
