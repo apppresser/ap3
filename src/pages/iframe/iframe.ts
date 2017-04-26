@@ -5,14 +5,12 @@ import {Geolocation, Device, Keyboard, SocialSharing} from 'ionic-native';
 import {Storage} from '@ionic/storage';
 
 import {MediaPlayer} from '../media-player/media-player';
-import { HeaderLogo } from "../../providers/headerlogo/header-logo.service";
+import {HeaderLogo} from "../../providers/header-logo/header-logo";
 
 @Component({
     templateUrl: 'iframe.html'
 })
 export class Iframe {
-
-    @Input() header_logo_url: string;
 
     title: string;
     url: any;
@@ -26,7 +24,8 @@ export class Iframe {
     rtlBack: boolean = false;
     lang: string = '';
     shareUrl: string = '';
-    is_home: boolean = false;
+    header_logo_url: string;
+    show_header_logo: boolean = false;
 
     constructor(
         public navParams: NavParams,
@@ -41,7 +40,9 @@ export class Iframe {
         private headerLogoService: HeaderLogo
         ) {
         
-        this.is_home = (navParams.data.is_home == true);
+        if(navParams.data.is_home == true) {
+          this.doLogo()
+        }
 
         this.setupURL();
 
@@ -50,10 +51,6 @@ export class Iframe {
         // Show error message if in preview and not using https
         this.previewAlert( navParams.data.url );
 
-    }
-
-    ngOnInit() {
-        this.header_logo_url = this.headerLogoService.image_url;
     }
 
     setupURL() {
@@ -321,5 +318,16 @@ export class Iframe {
           // Sharing via email is not possible
         });
 
-      }
+    }
+
+    doLogo() {
+        // check if logo file exists. If so, show it
+        this.headerLogoService.checkLogo().then( data => {
+          this.show_header_logo = true
+          this.header_logo_url = (<string>data)
+        }).catch( e => {
+            // no logo, do nothing
+            //console.log(e)
+        })
+    }
 }

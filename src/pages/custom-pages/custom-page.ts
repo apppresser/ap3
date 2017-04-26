@@ -13,7 +13,7 @@ import {MediaPlayer} from '../media-player/media-player';
 
 import {PushSettings} from '../push-settings/push-settings';
 import {LanguageSettings} from '../language-settings/language-settings';
-import { HeaderLogo } from "../../providers/headerlogo/header-logo.service";
+import {HeaderLogo} from '../../providers/header-logo/header-logo';
 
 class DynamicContext {
   value: string;
@@ -37,8 +37,6 @@ class DynamicContext {
 })
 export class CustomPage implements OnInit {
 
-	@Input() header_logo_url: string;
-
 	pagetitle: string;
 	listenFunc: Function;
 	rtlBack: boolean = false;
@@ -50,7 +48,8 @@ export class CustomPage implements OnInit {
 	showSegments: boolean = false
 	loginModal: any;
 	slug: string;
-	is_home: boolean = false;
+	header_logo_url: string;
+	show_header_logo: boolean = false;
 
 	constructor( 
 		public navParams: NavParams, 
@@ -68,7 +67,9 @@ export class CustomPage implements OnInit {
         ) {
 		this.pagetitle = navParams.data.title;
 
-		this.is_home = (navParams.data.is_home == true);
+		if(navParams.data.is_home == true) {
+	      this.doLogo()
+	    }
 
 		// kill vids on android
 		if( platform.is('android') ) {
@@ -175,7 +176,6 @@ export class CustomPage implements OnInit {
 		this.templateUrl = 'build/' + slug + '.html?' + this.random(1, 999);
 
 		this.listener();
-		this.header_logo_url = this.headerLogoService.image_url;
 
 	}
 
@@ -256,6 +256,17 @@ export class CustomPage implements OnInit {
 	    min = 0;
 	  }
 	  return min + Math.floor(Math.random() * ((+max || 0) - min + 1));
+	}
+
+	doLogo() {
+		// check if logo file exists. If so, show it
+		this.headerLogoService.checkLogo().then( data => {
+			this.show_header_logo = true
+			this.header_logo_url = (<string>data)
+		}).catch( e => {
+			// no logo, do nothing
+            //console.log(e)
+		})
 	}
 
 }

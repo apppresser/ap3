@@ -19,7 +19,6 @@ import {FbConnect} from '../providers/facebook/facebook';
 import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
-import {HeaderLogo} from '../providers/headerlogo/header-logo.service';
 
 /* Native */
 import {StatusBar, SocialSharing, Device, InAppBrowser, Splashscreen, Push, Dialogs, Network, Keyboard} from 'ionic-native';
@@ -64,7 +63,6 @@ export class MyApp {
     public storage: Storage,
     public modalCtrl: ModalController,
     public events: Events,
-    private headerLogo: HeaderLogo,
     public translate: TranslateService
   ) {
 

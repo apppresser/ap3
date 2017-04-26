@@ -3,7 +3,7 @@ import {Component, ViewChild, OnInit, Input} from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
 import {PostDetailsPage} from '../post-details/post-details';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
-import {HeaderLogo} from '../../providers/headerlogo/header-logo.service';
+import {HeaderLogo} from '../../providers/header-logo/header-logo';
 import {Storage} from '@ionic/storage';
 import {Device, Network} from 'ionic-native';
 
@@ -13,7 +13,6 @@ import {Device, Network} from 'ionic-native';
 export class PostList implements OnInit {
 
   @ViewChild(Content) content: Content;
-  @Input() header_logo_url: string;
 
   selectedItem: any;
   icons: string[];
@@ -31,7 +30,8 @@ export class PostList implements OnInit {
   showSearch: boolean = false;
   rtlBack: boolean = false;
   networkState: any;
-  is_home: boolean = false;
+  header_logo_url: string;
+  show_header_logo: boolean = false;
 
   constructor(
     public nav: NavController, 
@@ -49,7 +49,9 @@ export class PostList implements OnInit {
 
     this.title = navParams.data.title;
 
-    this.is_home = (navParams.data.is_home == true);
+    if(navParams.data.is_home == true) {
+      this.doLogo()
+    }
 
     if( navParams.data.favorites && navParams.data.favorites === "true" ) {
       this.doFavorites = true;
@@ -80,8 +82,6 @@ export class PostList implements OnInit {
     } else {
       this.loadPosts( this.route );
     }
-
-    this.header_logo_url = this.headerLogoService.image_url;
 
   }
 
@@ -356,6 +356,17 @@ export class PostList implements OnInit {
       obj = {direction: 'forward'}
     
     this.nav.pop( obj )
+  }
+
+  doLogo() {
+    // check if logo file exists. If so, show it
+    this.headerLogoService.checkLogo().then( data => {
+      this.show_header_logo = true
+      this.header_logo_url = (<string>data)
+    }).catch( e => {
+      // no logo, do nothing
+      //console.log(e)
+    })
   }
 
 }

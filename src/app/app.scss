@@ -265,32 +265,14 @@ iframe {
  border: 0;
 }
 
-.no-header-logo {
-	img {
-		display: none;
-	}
+.header-logo {
+	display: block;
+	width: auto;
+	height: 30px;
 }
 
-.app-header-logo {
-
-	.platform-ios & img {
-		top: 8px;
-	}
-
-	.title { display: none; } 
-
-	img {
-
-		max-width: 150px;
-		height: 56px;
-		content: "";
-		background-repeat: no-repeat;  
-		background-position: center;
-		z-index: 100;
-		position: absolute;
-		left: 0;
-		right: 0;
-		top: 0;
-		margin: auto;
+.toolbar-content-ios {
+	.header-logo {
+		margin: 0 auto;
 	}
 }
