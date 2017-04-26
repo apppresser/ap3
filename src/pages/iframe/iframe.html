@@ -14,7 +14,9 @@
 
 		</ion-buttons>
 
-	    <ion-title>{{title | translate}}</ion-title>
+	    <img class="header-logo" *ngIf="show_header_logo" [src]="header_logo_url" />
+
+    	<ion-title *ngIf="!show_header_logo">{{title | translate}}</ion-title>
 
 	    <ion-buttons end>
 	    <button *ngIf="activityModal" ion-button (click)="doActivityModal($event)">

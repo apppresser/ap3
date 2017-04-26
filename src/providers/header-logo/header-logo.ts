@@ -16,7 +16,7 @@ export class HeaderLogo {
 
     return new Promise( (resolve, reject) => {
 
-	    this.http.get( '../assets/header-logo.png' )
+	    this.http.get( './assets/header-logo.png' )
 	        .subscribe(data => {
 
 	          // logo file exists, return url 
