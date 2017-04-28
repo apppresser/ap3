@@ -50,6 +50,7 @@ export class CustomPage implements OnInit {
 	slug: string;
 	header_logo_url: string;
 	show_header_logo: boolean = false;
+	customClasses: string;
 
 	constructor( 
 		public navParams: NavParams, 
@@ -174,6 +175,8 @@ export class CustomPage implements OnInit {
 
 		// this.templateUrl = 'custom.html'
 		this.templateUrl = 'build/' + slug + '.html?' + this.random(1, 999);
+
+		this.customClasses = 'custom-page page-' + this.slug
 
 		this.listener();
 
