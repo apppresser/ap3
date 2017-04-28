@@ -3,6 +3,22 @@ import {Http} from '@angular/http';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { TranslateModule, TranslateStaticLoader, TranslateLoader, MissingTranslationHandler, MissingTranslationHandlerParams } from 'ng2-translate/ng2-translate';
+import { ActionSheet } from "@ionic-native/action-sheet";
+import { Camera } from "@ionic-native/camera";
+import { Device } from "@ionic-native/device";
+import { Transfer } from "@ionic-native/transfer";
+import { File } from "@ionic-native/file";
+import { AdMob } from "@ionic-native/admob";
+import { Facebook } from "@ionic-native/facebook";
+import { InAppBrowser } from "@ionic-native/in-app-browser";
+import { Keyboard } from "@ionic-native/keyboard";
+import { SplashScreen } from "@ionic-native/splash-screen";
+import { StatusBar } from "@ionic-native/status-bar";
+import { Network } from "@ionic-native/network";
+import { SocialSharing } from "@ionic-native/social-sharing";
+import { Push } from "@ionic-native/push";
+import { Dialogs } from "@ionic-native/dialogs";
+import { Geolocation } from "@ionic-native/geolocation";
 
 /* Pages */
 import {PostList} from '../pages/post-list/post-list';
@@ -104,7 +120,23 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     AppWoo,
     AppData,
     WPlogin,
-    HeaderLogo
+    HeaderLogo,
+    ActionSheet,
+    Camera,
+    Device,
+    Transfer,
+    File,
+    AdMob,
+    Facebook,
+    InAppBrowser,
+    Keyboard,
+    SplashScreen,
+    StatusBar,
+    Network,
+    SocialSharing,
+    Push,
+    Dialogs,
+    Geolocation
   ]
 })
 export class AppModule {}

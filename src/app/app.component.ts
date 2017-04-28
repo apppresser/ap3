@@ -21,7 +21,15 @@ import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
 
 /* Native */
-import {StatusBar, SocialSharing, Device, InAppBrowser, Splashscreen, Push, Dialogs, Network, Keyboard} from 'ionic-native';
+import { StatusBar } from '@ionic-native/status-bar';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { Device } from '@ionic-native/device';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { SplashScreen } from '@ionic-native/splash-screen';
+import { Push, PushObject, PushOptions } from '@ionic-native/push';
+import { Dialogs } from '@ionic-native/dialogs';
+import { Network } from '@ionic-native/network';
+import { Keyboard } from '@ionic-native/keyboard';
 import {Storage} from '@ionic/storage';
 
 @Component({
@@ -63,7 +71,15 @@ export class MyApp {
     public storage: Storage,
     public modalCtrl: ModalController,
     public events: Events,
-    public translate: TranslateService
+    public translate: TranslateService,
+    private Keyboard: Keyboard,
+    private SplashScreen: SplashScreen,
+    private StatusBar: StatusBar,
+    private Network: Network,
+    private SocialSharing: SocialSharing,
+    private Device: Device,
+    private Push: Push,
+    private Dialogs: Dialogs
   ) {
 
     this.initializeApp();
@@ -99,7 +115,7 @@ export class MyApp {
       this.maybeDoPush();
 
       // prevents bug where select done button didn't display
-      Keyboard.hideKeyboardAccessoryBar(false);
+      this.Keyboard.hideKeyboardAccessoryBar(false);
       // Disable scroll fixes webview displacement, but hides content lower on page. Can't use
       //Keyboard.disableScroll(true);
 
@@ -152,7 +168,7 @@ export class MyApp {
 
   afterData(data) {
 
-    Splashscreen.hide();
+    this.SplashScreen.hide();
     this.loadMenu(data);
 
     this.showLogin = ( data.side_menu_login == "on" ) ? true : false;
@@ -355,21 +371,21 @@ export class MyApp {
 
   doStatusBar(data) {
 
-    if( !StatusBar )
+    if( !this.StatusBar )
       return;
 
     if( data.meta.light_status_bar == true ) {
       // Light text, for dark backgrounds
-      StatusBar.styleLightContent();
+      this.StatusBar.styleLightContent();
     } else {
       // Dark text
-      StatusBar.styleDefault();
+      this.StatusBar.styleDefault();
     }
 
     // Android only, background color
     if( this.platform.is('android') ) {
       if( data.meta.design && data.meta.design.status_bar_bkg ) {
-        StatusBar.backgroundColorByHexString(data.meta.design.status_bar_bkg);
+        this.StatusBar.backgroundColorByHexString(data.meta.design.status_bar_bkg);
       }
     }
 
@@ -377,7 +393,7 @@ export class MyApp {
 
   doConnectionEvents() {
 
-    this.networkState = Network.type;
+    this.networkState = this.Network.type;
 
     if( this.networkState === 'none' || this.networkState === 'unknown' ) {
       this.presentToast('You appear to be offline, app functionality may be limited.');
@@ -476,7 +492,7 @@ export class MyApp {
       } else if (data.msg) {
 
         // social sharing was clicked, show that
-        SocialSharing.share(data.msg, null, null, data.link);
+        this.SocialSharing.share(data.msg, null, null, data.link);
 
       } else if (data.iablink) {
 
@@ -540,7 +556,7 @@ export class MyApp {
   maybeDoAds(data) {
 
     // only show ads on a device
-    if( !Device.platform ) 
+    if( !this.Device.platform ) 
       return;
 
     // If we don't have any ads set, stop
@@ -551,11 +567,11 @@ export class MyApp {
 
     this.appads.setOptions();
 
-    if( Device.platform === 'iOS' && data.ads.ios.banner != '' ) {
+    if( this.Device.platform === 'iOS' && data.ads.ios.banner != '' ) {
       this.appads.createBanner( data.ads.ios.banner );
     }
      
-    if( Device.platform === 'Android' && data.ads.android.banner != '' ) {
+    if( this.Device.platform === 'Android' && data.ads.android.banner != '' ) {
       this.appads.createBanner( data.ads.android.banner );
     }
 
@@ -570,7 +586,7 @@ export class MyApp {
 
     try {
 
-      push = Push.init({
+      push = this.Push.init({
         android: {
             senderID: "[[gcm_sender]]"
         },
@@ -591,7 +607,7 @@ export class MyApp {
     if( push.error )
       return;
 
-    push.on('registration', (data) => {
+    push.on('registration').subscribe((data: any) => {
 
       this.storage.set('deviceToken', data.registrationId)
 
@@ -605,7 +621,7 @@ export class MyApp {
 
     });
 
-    push.on('notification', (data) => {
+    push.on('notification').subscribe((data: any) => {
 
       // if apppush post URL
       if( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 && data.additionalData.target && data.additionalData.target == '_self' ) {
@@ -635,7 +651,7 @@ export class MyApp {
         this.pushPage( (<any>data).additionalData.page );
       }
 
-      Dialogs.alert(
+      this.Dialogs.alert(
         data.message,  // message
         data.title,            // title
         'Done'                // buttonName
@@ -643,7 +659,7 @@ export class MyApp {
 
     });
 
-    push.on('error', (e) => {
+    push.on('error').subscribe((e) => {
       console.log(e.message);
     });
 

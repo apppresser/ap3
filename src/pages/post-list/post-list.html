@@ -49,7 +49,7 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <ion-slides *ngIf="showSlider" [options]='{pager:true}'>
+  <ion-slides *ngIf="showSlider" [pager]='true'>
 
     <ion-slide *ngFor="let slide of slides" [ngStyle]="{'background-image': 'url(' + (slide.featured_image_urls ? slide.featured_image_urls.large : null) + ')'}" (click)="itemTapped($event, slide)">
 

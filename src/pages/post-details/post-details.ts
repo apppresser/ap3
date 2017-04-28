@@ -1,7 +1,7 @@
 import {NavController, NavParams, ModalController, Platform, ViewController} from 'ionic-angular';
 import {Component, Renderer, ElementRef} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
-import {SocialSharing} from 'ionic-native';
+import {SocialSharing} from '@ionic-native/social-sharing';
 
 import {MediaPlayer} from '../media-player/media-player';
 
@@ -22,7 +22,8 @@ export class PostDetailsPage {
     public renderer: Renderer,
     public elementRef: ElementRef,
     public viewCtrl: ViewController,
-    public platform: Platform
+    public platform: Platform,
+    private SocialSharing: SocialSharing
     ) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = navParams.get('item');
@@ -85,7 +86,7 @@ export class PostDetailsPage {
 
   share() {
 
-    SocialSharing.share( this.selectedItem.title.rendered, null, null, this.selectedItem.link ).then(() => {
+    this.SocialSharing.share( this.selectedItem.title.rendered, null, null, this.selectedItem.link ).then(() => {
       // Sharing via email is possible
     }).catch(() => {
       // Sharing via email is not possible

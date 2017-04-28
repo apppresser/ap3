@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import 'rxjs/add/operator/map';
-import {Device} from 'ionic-native';
+import {Device} from '@ionic-native/device';
 
 /* 
 // on first load, use app-data.json file and save to localstorage.
@@ -14,7 +14,7 @@ export class AppData {
   local: any = false;
   updateNeeded: boolean = false;
 
-  constructor(public http: Http) {
+  constructor(public http: Http, private Device: Device) {
   }
 
   /*
@@ -34,7 +34,7 @@ export class AppData {
 
     this.updateNeeded = ( window.localStorage.getItem( 'myappp_update' ) == 'true' ) ? true : false;
 
-    if( Device.platform != 'iOS' && Device.platform != 'Android' ) {
+    if( this.Device.platform != 'iOS' && this.Device.platform != 'Android' ) {
       // if we are not on a device, don't cache data. helps preview update faster
       this.updateNeeded = true;
     }

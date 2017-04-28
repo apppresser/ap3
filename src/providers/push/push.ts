@@ -4,7 +4,7 @@ import 'rxjs/add/operator/map';
 
 import {GlobalVars} from '../globalvars/globalvars';
 
-import {Device} from 'ionic-native';
+import {Device} from '@ionic-native/device';
 import {Storage} from '@ionic/storage';
 
 declare var AWS:any;
@@ -25,19 +25,22 @@ export class PushService {
   constructor( 
     public http: Http, 
     public globalvars: GlobalVars,
-    public storage: Storage 
+    public storage: Storage,
+    private Device: Device
     ) {
   }
 
   // Subscribe for push through our API service
   subscribeDevice(token) {
 
-    this.platform = Device.platform;
+    this.platform = this.Device.platform;
     let apiRoot = this.globalvars.getApiRoot();
     this.api = apiRoot + 'wp-json/ap3/v1/subscribe/';
     this.appid = this.globalvars.getAppId();
 
     let params = '?token=' + token + '&platform=' + this.platform + '&id=' + this.appid;
+
+    console.debug('subscribeDevice', this.api + params);
 
     // let headers = new Headers({ 'Content-Type': 'application/json' });
     // let options = new RequestOptions({ headers: headers });
@@ -80,7 +83,7 @@ export class PushService {
   // Subscribe to a topic, for push segmenting
   subscribeToTopic(token, topicArn) {
 
-    this.platform = Device.platform;
+    this.platform = this.Device.platform;
     let apiRoot = this.globalvars.getApiRoot();
     this.api = apiRoot + 'wp-json/ap3/v1/subscribe/';
     this.appid = this.globalvars.getAppId();

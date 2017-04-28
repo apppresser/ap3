@@ -1,7 +1,9 @@
 import {Injectable} from '@angular/core';
-import {Camera, Transfer, Device, ActionSheet} from 'ionic-native';
-
-declare var FileUploadOptions:any;
+import {Camera} from '@ionic-native/camera';
+import { Transfer, FileUploadOptions, TransferObject } from '@ionic-native/transfer';
+import { File } from '@ionic-native/file';
+import { Device } from "@ionic-native/device";
+import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
 
 /*
   Generated class for the Menus provider.
@@ -14,7 +16,7 @@ export class AppCamera {
 
   options: any = {
     quality: 30,
-    destinationType: Camera.DestinationType.FILE_URI,
+    destinationType: this.Camera.DestinationType.FILE_URI,
     correctOrientation: true,
     targetWidth: 1204,
     targetHeight: 1204
@@ -26,15 +28,17 @@ export class AppCamera {
   appbuddy: boolean = false;
   progress_timeout: any;
 
-  constructor() { }
+  constructor(private actionSheet: ActionSheet, private Camera: Camera, private Device: Device, private Transfer: Transfer, private File: File) { }
 
   openSheet( appbuddy ) {
 
     let buttonLabels = ['Take Photo', 'Photo Library'];
-    ActionSheet.show({
-      'title': 'Choose an image',
-      'buttonLabels': buttonLabels,
-      'addCancelButtonWithLabel': 'Cancel'
+    
+    this.actionSheet.show({
+      title: 'Choose an image',
+      buttonLabels: buttonLabels,
+      addCancelButtonWithLabel: 'Cancel',
+      destructiveButtonLast: true
     }).then((buttonIndex: number) => {
       if( buttonIndex === 1 ) {
         this.takePicture(appbuddy);
@@ -51,7 +55,7 @@ export class AppCamera {
       this.appbuddy = true;
     }
 
-    this.options.sourceType = Camera.PictureSourceType.CAMERA;
+    this.options.sourceType = this.Camera.PictureSourceType.CAMERA;
 
     this.doCamera();
 
@@ -65,7 +69,7 @@ export class AppCamera {
 
     // console.log('appbuddy app-camera.ts', this.appbuddy);
 
-    this.options.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
+    this.options.sourceType = this.Camera.PictureSourceType.PHOTOLIBRARY;
 
     this.doCamera();
 
@@ -78,7 +82,7 @@ export class AppCamera {
       this.uploadProgress(5,100);
     }, 1000 );
 
-    Camera.getPicture(this.options).then((imageData) => {
+    this.Camera.getPicture(this.options).then((imageData) => {
       // imageData is either a base64 encoded string or a file URI
       // If it's base64:
       // let base64Image = "data:image/jpeg;base64," + imageData;
@@ -128,7 +132,7 @@ export class AppCamera {
 
   uploadPhoto(imageURI) {
 
-    const fileTransfer = new Transfer();
+    const fileTransfer: TransferObject = this.Transfer.create();
 
     this.findIframe();
 
@@ -141,7 +145,7 @@ export class AppCamera {
     let anumber = image.split("?")[1];
     let ajaxurl = this.iframewin.apppCore.ajaxurl;
 
-    if ('Android' === Device.platform) {
+    if ('Android' === this.Device.platform) {
       image = anumber + '.jpg';
     }
 
@@ -149,13 +153,14 @@ export class AppCamera {
     let d = new Date().toTimeString();
     let random = d.replace(/[\W_]+/g, "").substr(0,6);
 
-    let options = new FileUploadOptions();
-    options.fileKey = 'appp_cam_file';
-    // prepend image name with random string to avoid duplicate upload errors
-    options.fileName = imageURI ? random + image : random;
-    options.mimeType = 'image/jpeg';
-    options.httpMethod="POST";
-    options.chunkedMode = false;
+    let options: FileUploadOptions = {
+      fileKey: 'appp_cam_file',
+      // prepend image name with random string to avoid duplicate upload errors
+      fileName: imageURI ? random + image : random,
+      mimeType: 'image/jpeg',
+      httpMethod: "POST",
+      chunkedMode: false
+    };
 
     let params = {
       form_fields: null,

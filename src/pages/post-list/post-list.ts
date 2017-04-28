@@ -5,7 +5,8 @@ import {PostDetailsPage} from '../post-details/post-details';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
 import {Storage} from '@ionic/storage';
-import {Device, Network} from 'ionic-native';
+import {Device} from '@ionic-native/device';
+import {Network} from '@ionic-native/network';
 
 @Component({
   templateUrl: 'post-list.html'
@@ -43,7 +44,10 @@ export class PostList implements OnInit {
     public toastCtrl: ToastController,
     public viewCtrl: ViewController,
     public platform: Platform,
-    private headerLogoService: HeaderLogo ) {
+    private headerLogoService: HeaderLogo,
+    private Network: Network,
+    private Device: Device
+  ) {
 
     this.route = navParams.data.list_route;
 
@@ -74,7 +78,7 @@ export class PostList implements OnInit {
 
   ngOnInit() {
 
-    this.networkState = Network.type;
+    this.networkState = this.Network.type;
 
     if( this.networkState === 'none' || this.networkState === 'unknown' ) {
       // if offline, get posts from storage
@@ -324,7 +328,7 @@ export class PostList implements OnInit {
   // Show alert in preview if not using https
   previewAlert(url) {
 
-    if( Device.platform != 'iOS' && Device.platform != 'Android' && url.indexOf('http://') >= 0 ) {
+    if( this.Device.platform != 'iOS' && this.Device.platform != 'Android' && url.indexOf('http://') >= 0 ) {
           alert('Cannot display http pages in browser preview. Please build app for device or use https.');
       }
 

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {InAppBrowser} from 'ionic-native';
+import {InAppBrowser} from '@ionic-native/in-app-browser';
 
 /*
   Appwoo
@@ -11,12 +11,12 @@ export class AppWoo {
   iframe: any;
   browser: any;
 
-  constructor() {
+  constructor(private iab: InAppBrowser) {
   }
 
   paypal( paypal_url, redirect ) {
 
-    this.browser = new InAppBrowser( paypal_url, '_blank' );
+    this.browser = this.iab.create( paypal_url, '_blank' );
 
     this.browser.addEventListener( 'exit', () => {
       this.browserClose( redirect );

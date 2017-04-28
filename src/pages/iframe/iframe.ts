@@ -1,7 +1,10 @@
 import {NavParams, Nav, LoadingController, ModalController, Platform, ViewController} from 'ionic-angular';
 import {Component, HostListener, ElementRef, OnInit, Input} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
-import {Geolocation, Device, Keyboard, SocialSharing} from 'ionic-native';
+import { Geolocation } from '@ionic-native/geolocation';
+import { Device } from '@ionic-native/device';
+import { Keyboard } from '@ionic-native/keyboard';
+import { SocialSharing } from '@ionic-native/social-sharing';
 import {Storage} from '@ionic/storage';
 
 import {MediaPlayer} from '../media-player/media-player';
@@ -37,7 +40,11 @@ export class Iframe {
         public modalCtrl: ModalController,
         public storage: Storage,
         public el: ElementRef,
-        private headerLogoService: HeaderLogo
+        private headerLogoService: HeaderLogo,
+        private Keyboard: Keyboard,
+        private Device: Device,
+        private Geolocation: Geolocation,
+        private SocialSharing: SocialSharing
         ) {
         
         if(navParams.data.is_home == true) {
@@ -160,8 +167,8 @@ export class Iframe {
             } else if ( parsed.apppkeyboardhelper ) {
 
                 if(parsed.apppkeyboardhelper === 'close') {
-                  if( Keyboard ) {
-                    Keyboard.close();
+                  if( this.Keyboard ) {
+                    this.Keyboard.close();
                   }
                 }
 
@@ -181,7 +188,7 @@ export class Iframe {
     // }
 
     postPauseEvent() {
-        this.iframe.contentWindow.postMessage('{"pause_event":{"platform":"'+Device.platform+'"}}', '*');
+        this.iframe.contentWindow.postMessage('{"pause_event":{"platform":"'+this.Device.platform+'"}}', '*');
     }
 
     // find the first ancestor with the given class name
@@ -206,7 +213,7 @@ export class Iframe {
         this.iframe.contentWindow.postMessage('checkin', '*');
 
         // Do this when checkin button clicked
-        Geolocation.getCurrentPosition().then((position) => {
+        this.Geolocation.getCurrentPosition().then((position) => {
 
             let latitude = position.coords.latitude;
             let longitude = position.coords.longitude;
@@ -245,7 +252,7 @@ export class Iframe {
     // Show alert in preview if not using https
     previewAlert(url) {
 
-        if( Device.platform != 'iOS' && Device.platform != 'Android' && url.indexOf('http://') >= 0 ) {
+        if( this.Device.platform != 'iOS' && this.Device.platform != 'Android' && url.indexOf('http://') >= 0 ) {
 
           alert('Cannot display http pages in browser preview. Please build app for device or use https.');
 
@@ -312,7 +319,7 @@ export class Iframe {
 
     share() {
 
-        SocialSharing.share( this.title, null, null, this.shareUrl ).then(() => {
+        this.SocialSharing.share( this.title, null, null, this.shareUrl ).then(() => {
           // Sharing via email is possible
         }).catch(() => {
           // Sharing via email is not possible

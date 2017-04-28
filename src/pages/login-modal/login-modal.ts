@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, NavParams, Events, ViewController, ToastController, LoadingController } from 'ionic-angular';
 import {WPlogin} from '../../providers/wplogin/wplogin';
 import { Storage } from '@ionic/storage';
-import {Device} from 'ionic-native';
+import {Device} from '@ionic-native/device';
 
 /*
   Generated class for the LoginModal page.
@@ -25,7 +25,8 @@ export class LoginModal {
 		public loadingCtrl: LoadingController,
 		public wplogin: WPlogin,
 		public events: Events,
-		public storage: Storage
+		public storage: Storage,
+		private Device: Device
 		) {
 
 		// login through postmessage sets login_data this way
@@ -47,7 +48,7 @@ export class LoginModal {
 	doLogin() {
 
 		// if in preview, Device.platform is empty object. On device it should be string like 'iOS'
-		if( typeof Device.platform != 'string' ) {
+		if( typeof this.Device.platform != 'string' ) {
 
 			alert('Please try from a device.');
 

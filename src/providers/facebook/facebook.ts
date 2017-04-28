@@ -5,7 +5,7 @@ import 'rxjs/add/operator/map';
 import {Storage} from '@ionic/storage';
 import {Events} from 'ionic-angular';
 
-import {Facebook} from 'ionic-native';
+import {Facebook} from '@ionic-native/facebook';
 
 /*
   Facebook Connect
@@ -22,7 +22,8 @@ export class FbConnect {
   constructor(
     public http: Http,
     public storage: Storage,
-    public events: Events
+    public events: Events,
+    private Facebook: Facebook
     ) {
 
     this.fbconnectvars = {
@@ -64,7 +65,7 @@ export class FbConnect {
 
     this.init();
 
-    Facebook.login( this.fbconnectvars.login_scope ).then( result => {
+    this.Facebook.login( this.fbconnectvars.login_scope ).then( result => {
       // we get back an auth response here, should save it or something
       this.statusChangeCallback(result);
     });
@@ -127,7 +128,7 @@ export class FbConnect {
 
   fbMe(response) {
 
-    Facebook.api(
+    this.Facebook.api(
       "/me?fields=" + this.iframewin.apppfb.me_fields,
       null
     ).then( response => {
@@ -189,7 +190,7 @@ export class FbConnect {
   // Button.  See the onlogin handler attached to it in the sample
   // code below.
   checkLoginState() {
-    Facebook.getLoginStatus().then( result => {
+    this.Facebook.getLoginStatus().then( result => {
       this.statusChangeCallback(result);
     })
   }
