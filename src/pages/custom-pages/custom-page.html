@@ -20,7 +20,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content class="custom-page page-{{ slug }}">
+<ion-content [ngClass]="customClasses">
 
 <DynamicComponent 
     [componentTemplateUrl]="templateUrl" 
