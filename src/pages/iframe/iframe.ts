@@ -120,6 +120,25 @@ export class Iframe {
         this.loaded = true;
     }
 
+    ionSelected() {
+        // fires when an active menu item is pressed again, causing a refresh
+
+        this.loading = this.loadingController.create({
+            showBackdrop: false,
+            dismissOnPageChange: false
+        });
+
+        this.loading.present();
+
+        var url = this.url
+        this.url = ''
+
+        setTimeout( () => {
+            this.url = url
+        }, 1)
+
+    }
+
     // ng2 way of adding a listener
     @HostListener('window:message', ['$event'])
     public onMessage(event) {
