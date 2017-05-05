@@ -527,9 +527,9 @@ export class MyApp {
 
       } else if( data.loggedin ) {
 
-        this.storage.set('user_login', this.login_data )
-
         this.userLogin(data)
+
+        this.storage.set('user_login', this.login_data )
 
         this.maybeSendPushId( data.ajaxurl );
 

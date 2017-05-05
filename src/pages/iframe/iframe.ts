@@ -1,5 +1,5 @@
 import {NavParams, Nav, LoadingController, ModalController, Platform, ViewController} from 'ionic-angular';
-import {Component, HostListener, ElementRef, OnInit, Input} from '@angular/core';
+import {Component, HostListener, ElementRef, OnInit, Input, NgZone} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import { Geolocation } from '@ionic-native/geolocation';
 import { Device } from '@ionic-native/device';
@@ -44,7 +44,8 @@ export class Iframe {
         private Keyboard: Keyboard,
         private Device: Device,
         private Geolocation: Geolocation,
-        private SocialSharing: SocialSharing
+        private SocialSharing: SocialSharing,
+        public zone: NgZone
         ) {
         
         if(navParams.data.is_home == true) {
@@ -127,6 +128,25 @@ export class Iframe {
         this.loaded = true;
     }
 
+    ionSelected() {
+        // fires when an active menu item is pressed again, causing a refresh
+
+        this.loading = this.loadingController.create({
+            showBackdrop: false,
+            dismissOnPageChange: false
+        });
+
+        this.loading.present();
+
+        var url = this.url
+        this.url = ''
+
+        setTimeout( () => {
+            this.url = url
+        }, 1)
+
+    }
+
     // ng2 way of adding a listener
     @HostListener('window:message', ['$event'])
     public onMessage(event) {
@@ -172,20 +192,23 @@ export class Iframe {
                   }
                 }
 
-            } /* else if ( parsed.post_url ) {
+            } else if ( parsed.post_url ) {
                 // not working 100%, see trello
                 this.shareUrl = parsed.post_url
                 this.changeTitle( parsed.post_title )
                 this.showShare = true
-            } */
+            }
         }
 
     }
 
-    // changeTitle( title ) {
-    //     console.log('change title' + title)
-    //     this.title = title
-    // }
+    changeTitle( title ) {
+        // zone fixes bug where title didn't update properly on device
+        this.zone.run( () => {
+            console.log('change title' + title)
+            this.title = title
+        } )
+    }
 
     postPauseEvent() {
         this.iframe.contentWindow.postMessage('{"pause_event":{"platform":"'+this.Device.platform+'"}}', '*');
