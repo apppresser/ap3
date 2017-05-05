@@ -76,7 +76,8 @@ export class Iframe {
 
     ionViewWillEnter() {
 
-        this.title = this.navParams.data.title;
+        this.title = this.navParams.get('title');
+
         this.showShare = false;
 
         this.iframeLoading();
@@ -85,8 +86,12 @@ export class Iframe {
             this.viewCtrl.showBackButton(false)
             this.rtlBack = true
         }
+   
+    }
 
-        
+    ionViewWillLeave() {
+        // Hack to clear page title when going back. Otherwise page title will be from previous page
+        window.postMessage( JSON.stringify({post_title:'', post_url: 'none'}), '*' )
     }
 
     iframeLoading() {
@@ -142,7 +147,8 @@ export class Iframe {
 
     // ng2 way of adding a listener
     @HostListener('window:message', ['$event'])
-    public onMessage(event) {
+
+    onMessage(event) {
       this.myListeners(event)
     }
 
@@ -185,11 +191,14 @@ export class Iframe {
                   }
                 }
 
-            } else if ( parsed.post_url ) {
-                // not working 100%, see trello
+            } else if ( parsed.post_url && parsed.post_url != 'none' ) {
                 this.shareUrl = parsed.post_url
                 this.changeTitle( parsed.post_title )
                 this.showShare = true
+            } else if( parsed.post_url && parsed.post_url === 'none' ) {
+                // part of the hack to clear page titles when going back
+                this.showShare = false
+                this.changeTitle( this.navParams.get('title') )
             }
         }
 
@@ -198,7 +207,6 @@ export class Iframe {
     changeTitle( title ) {
         // zone fixes bug where title didn't update properly on device
         this.zone.run( () => {
-            console.log('change title' + title)
             this.title = title
         } )
     }
