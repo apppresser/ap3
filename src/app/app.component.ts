@@ -233,7 +233,6 @@ export class MyApp {
     if( data.menus.items ) {
 
       this.pages = data.menus.items;
-      this.pages[0].is_home = true;
 
       this.showmenu = true;
 
@@ -244,9 +243,13 @@ export class MyApp {
 
       // set the home page to the proper component
       if( this.tabs ) {
-        this.pages.unshift( { 'title': data.tab_menu.name, 'url': '', 'component': TabsPage, 'navparams': this.navparams, 'class': 'home', 'extra_classes':'hide' } );
+
+        this.pages.unshift( { 'title': data.tab_menu.name, 'url': '', 'component': TabsPage, 'navparams': this.navparams, 'class': 'home', 'extra_classes':'hide', 'is_home': true } );
       } else if( !this.tabs && data.menus.items[0].type === 'apppages' ) {
-        
+
+        // used for custom logo
+        data.menus.items[0].is_home = true;
+
         // if it's a list page, use PostList component
         if( data.menus.items[0].page_type === 'list' ) {
           this.nav.setRoot( PostList, data.menus.items[0] );
@@ -256,6 +259,9 @@ export class MyApp {
         }
 
       } else {
+
+        // used for custom logo
+        data.menus.items[0].is_home = true;
 
         // anything else uses Iframe component
         this.nav.setRoot( Iframe, data.menus.items[0] );
@@ -278,7 +284,7 @@ export class MyApp {
   // construct tab items
   navParamsPush( item, root ) {
 
-    this.navparams.push( { 'title': item.title, 'url': item.url, 'root': root, 'icon': item.class, 'slug': item.slug, 'list_route': item.list_route, 'list_display': item.list_display, 'favorites': item.favorites, 'extra_classes': item.extra_classes, 'show' : item.show, 'show_slider': item.show_slider, 'slide_route': item.slide_route, 'type': item.type, 'page_type': item.page_type } );
+    this.navparams.push( { 'title': item.title, 'url': item.url, 'root': root, 'icon': item.class, 'slug': item.slug, 'list_route': item.list_route, 'list_display': item.list_display, 'favorites': item.favorites, 'extra_classes': item.extra_classes, 'show' : item.show, 'show_slider': item.show_slider, 'slide_route': item.slide_route, 'type': item.type, 'page_type': item.page_type, 'is_home': true } );
 
   }
 
