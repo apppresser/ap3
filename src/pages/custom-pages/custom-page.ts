@@ -57,14 +57,14 @@ export class CustomPage implements OnInit {
 		public nav: Nav,
 		public modalCtrl: ModalController,
 		public renderer: Renderer,
-    	public elementRef: ElementRef,
-    	public viewCtrl: ViewController,
-        public platform: Platform,
-        public translate: TranslateService,
-        public storage: Storage,
-        public events: Events,
-        public toastCtrl: ToastController,
-        private headerLogoService: HeaderLogo
+		public elementRef: ElementRef,
+		public viewCtrl: ViewController,
+		private platform: Platform,
+		public translate: TranslateService,
+		public storage: Storage,
+		public events: Events,
+		public toastCtrl: ToastController,
+		private headerLogoService: HeaderLogo
         ) {
 		this.pagetitle = navParams.data.title;
 
@@ -94,7 +94,7 @@ export class CustomPage implements OnInit {
 
 		    let opt = {};
 
-		    if( this.platform.isRTL() && this.platform.is('ios') )
+		    if( this.platform.isRTL && this.platform.is('ios') )
 		      opt = { direction: 'back' }
 
 			if( page.type === 'apppages' && page.page_type === 'list' ) {
@@ -184,7 +184,7 @@ export class CustomPage implements OnInit {
 
 	ionViewWillEnter() {
 
-        if( this.platform.isRTL() && this.viewCtrl.enableBack() ) {
+        if( this.platform.isRTL && this.viewCtrl.enableBack() ) {
             this.viewCtrl.showBackButton(false)
             this.rtlBack = true
         }

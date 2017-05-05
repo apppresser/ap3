@@ -89,7 +89,7 @@ export class Iframe {
 
         this.iframeLoading();
 
-        if( this.platform.isRTL() && this.viewCtrl.enableBack() ) {
+        if( this.platform.isRTL && this.viewCtrl.enableBack() ) {
             this.viewCtrl.showBackButton(false)
             this.rtlBack = true
         }

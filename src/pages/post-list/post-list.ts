@@ -91,7 +91,7 @@ export class PostList implements OnInit {
 
   ionViewWillEnter() {
 
-    if( this.platform.isRTL() && this.viewCtrl.enableBack() ) {
+    if( this.platform.isRTL && this.viewCtrl.enableBack() ) {
         this.viewCtrl.showBackButton(false)
         this.rtlBack = true
     }
@@ -149,7 +149,7 @@ export class PostList implements OnInit {
 
     let opt = {};
 
-    if( this.platform.isRTL() && this.platform.is('ios') )
+    if( this.platform.isRTL && this.platform.is('ios') )
       opt = { direction: 'back' }
 
     this.nav.push(PostDetailsPage, {

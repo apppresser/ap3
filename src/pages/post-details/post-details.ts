@@ -16,7 +16,7 @@ export class PostDetailsPage {
 
   constructor(
     public nav: NavController, 
-    navParams: NavParams, 
+    public navParams: NavParams, 
     public sanitizer: DomSanitizer,
     public modalCtrl: ModalController,
     public renderer: Renderer,
@@ -26,7 +26,7 @@ export class PostDetailsPage {
     private SocialSharing: SocialSharing
     ) {
     // If we navigated to this page, we will have an item available as a nav param
-    this.selectedItem = navParams.get('item');
+    this.selectedItem = this.navParams.get('item');
 
     this.content = sanitizer.bypassSecurityTrustHtml( this.selectedItem.content.rendered );
 
@@ -70,7 +70,7 @@ export class PostDetailsPage {
 
   ionViewWillEnter() {
 
-    if( this.platform.isRTL() && this.viewCtrl.enableBack() ) {
+    if( this.platform.isRTL && this.viewCtrl.enableBack() ) {
         this.viewCtrl.showBackButton(false)
         this.rtlBack = true
     }
