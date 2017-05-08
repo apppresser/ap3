@@ -1,4 +1,4 @@
-import {NavParams, Nav, LoadingController, ModalController, Platform, ViewController} from 'ionic-angular';
+import {NavParams, Nav, LoadingController, ModalController, Platform, ViewController, IonicPage} from 'ionic-angular';
 import {Component, HostListener, ElementRef, OnInit, Input, NgZone} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import { Geolocation } from '@ionic-native/geolocation';
@@ -10,6 +10,7 @@ import {Storage} from '@ionic/storage';
 import {MediaPlayer} from '../media-player/media-player';
 import {HeaderLogo} from "../../providers/header-logo/header-logo";
 
+@IonicPage()
 @Component({
     templateUrl: 'iframe.html'
 })

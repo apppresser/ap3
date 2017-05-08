@@ -1,8 +1,11 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import {Http} from '@angular/http';
-import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
+import { HttpModule } from '@angular/http';
+import { IonicApp, IonicModule, IonicErrorHandler, IonicPageModule } from 'ionic-angular';
 import { MyApp } from './app.component';
-import { TranslateModule, TranslateStaticLoader, TranslateLoader, MissingTranslationHandler, MissingTranslationHandlerParams } from 'ng2-translate/ng2-translate';
+import { TranslateModule, TranslateLoader, MissingTranslationHandler, MissingTranslationHandlerParams } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { TranslateStore } from "@ngx-translate/core/src/translate.store";
 import { ActionSheet } from "@ionic-native/action-sheet";
 import { Camera } from "@ionic-native/camera";
 import { Device } from "@ionic-native/device";
@@ -21,11 +24,7 @@ import { Dialogs } from "@ionic-native/dialogs";
 import { Geolocation } from "@ionic-native/geolocation";
 
 /* Pages */
-import {PostList} from '../pages/post-list/post-list';
-import {PostDetailsPage} from '../pages/post-details/post-details';
-import {Iframe} from '../pages/iframe/iframe';
 import {TabsPage} from '../pages/tabs/tabs';
-import {CustomPage} from '../pages/custom-pages/custom-page';
 import {MediaPlayer} from '../pages/media-player/media-player';
 import {LoginModal} from '../pages/login-modal/login-modal';
 import {PushSettings} from '../pages/push-settings/push-settings';
@@ -45,6 +44,7 @@ import {HeaderLogo} from '../providers/header-logo/header-logo';
 
 /* Other */
 import {SanitizeHtml} from '../pipes/sanitize-html';
+// import {SanitizeHtmlModule} from '../pipes/sanitize-html.module';
 import {DynamicComponentModule} from 'angular2-dynamic-component/index';
 import { IonicStorageModule } from '@ionic/storage';
 
@@ -57,7 +57,7 @@ import {VgBufferingModule} from 'videogular2/buffering';
 
 // required for ng translate, tells it to look in assets folder for trans files
 export function createTranslateLoader(http: Http) {
-    return new TranslateStaticLoader(http, 'assets/i18n', '.json');
+    return new TranslateHttpLoader(http, 'assets/i18n', '.json');
 }
  
 export class MyMissingTranslationHandler implements MissingTranslationHandler {
@@ -69,12 +69,8 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
 @NgModule({
   declarations: [ // pages, custom components, pipes, etc
     MyApp,
-    PostList,
-    Iframe,
     TabsPage,
-    CustomPage,
     SanitizeHtml,
-    PostDetailsPage,
     MediaPlayer,
     LoginModal,
     PushSettings,
@@ -83,26 +79,26 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
   imports: [
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot(),
+    // SanitizeHtmlModule.forRoot(),
     DynamicComponentModule,
     BrowserModule,
+    HttpModule,
     VgCoreModule,
     VgControlsModule,
     VgOverlayPlayModule,
     VgBufferingModule,
     TranslateModule.forRoot({
-      provide: TranslateLoader,
-      useFactory: (createTranslateLoader),
-      deps: [Http]
+      loader: {
+        provide: TranslateLoader,
+        useFactory: (createTranslateLoader),
+        deps: [Http]
+      }
     })
   ],
   bootstrap: [IonicApp],
   entryComponents: [ // pages go here
     MyApp,
-    PostList,
-    Iframe,
     TabsPage,
-    CustomPage,
-    PostDetailsPage,
     MediaPlayer,
     LoginModal,
     PushSettings,
@@ -136,6 +132,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     SocialSharing,
     Push,
     Dialogs,
+    SanitizeHtml,
     Geolocation
   ]
 })

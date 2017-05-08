@@ -1,13 +1,11 @@
 import {Component, Renderer, ElementRef, OnInit, Input} from '@angular/core';
-import {Nav, NavParams, ModalController, Platform, ViewController, Events} from 'ionic-angular';
-import {TranslateService} from 'ng2-translate';
+import {Nav, NavParams, ModalController, Platform, ViewController, Events, IonicPage} from 'ionic-angular';
+import {TranslateService} from '@ngx-translate/core';
 import {Storage} from '@ionic/storage';
 
 import {IonicModule, ToastController} from 'ionic-angular';
 import {IComponentInputData} from 'angular2-dynamic-component/index';
 
-import {Iframe} from '../../pages/iframe/iframe';
-import {PostList} from '../../pages/post-list/post-list';
 import {LoginModal} from '../../pages/login-modal/login-modal';
 import {MediaPlayer} from '../media-player/media-player';
 
@@ -32,6 +30,9 @@ class DynamicContext {
 /*
  * Uses dynamic component creation, see https://github.com/apoterenko/angular2-dynamic-component
  */
+@IonicPage({
+  priority: 'high'
+})
 @Component({
   templateUrl: "custom-page.html"
 })
@@ -98,11 +99,11 @@ export class CustomPage implements OnInit {
 		      opt = { direction: 'back' }
 
 			if( page.type === 'apppages' && page.page_type === 'list' ) {
-				this.nav.push( PostList, page, opt );
+				this.nav.push( 'PostList', page, opt );
 			} else if( page.type === 'apppages' ) {
-				this.nav.push( CustomPage, page, opt );
+				this.nav.push( 'CustomPage', page, opt );
 			} else if (page.url) {
-				this.nav.push(Iframe, page, opt);
+				this.nav.push('Iframe', page, opt);
 			} else {
 				this.nav.push(page.component, page.navparams, opt);
 			}
@@ -118,11 +119,11 @@ export class CustomPage implements OnInit {
 		    }
 
 			if( page.type === 'apppages' && page.page_type === 'list' ) {
-				this.nav.setRoot( PostList, page );
+				this.nav.setRoot( 'PostList', page );
 			} else if( page.type === 'apppages' ) {
-				this.nav.setRoot( CustomPage, page );
+				this.nav.setRoot( 'CustomPage', page );
 			} else if (page.url) {
-				this.nav.setRoot(Iframe, page);
+				this.nav.setRoot('Iframe', page);
 			} else {
 				this.nav.setRoot(page.component, page.navparams);
 			}

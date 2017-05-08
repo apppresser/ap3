@@ -1,13 +1,13 @@
-import {NavController, NavParams, LoadingController, ToastController, ItemSliding, Platform, ViewController, Content} from 'ionic-angular';
+import {NavController, NavParams, LoadingController, ToastController, ItemSliding, Platform, ViewController, Content, IonicPage} from 'ionic-angular';
 import {Component, ViewChild, OnInit, Input} from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
-import {PostDetailsPage} from '../post-details/post-details';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
 import {Storage} from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {Network} from '@ionic-native/network';
 
+@IonicPage()
 @Component({
   templateUrl: 'post-list.html'
 })
@@ -152,7 +152,7 @@ export class PostList implements OnInit {
     if( this.platform.isRTL && this.platform.is('ios') )
       opt = { direction: 'back' }
 
-    this.nav.push(PostDetailsPage, {
+    this.nav.push('PostDetailsPage', {
       item: item
     }, opt);
   }
@@ -327,6 +327,10 @@ export class PostList implements OnInit {
 
   // Show alert in preview if not using https
   previewAlert(url) {
+
+    if(!url) {
+      return;
+    }
 
     if( this.Device.platform != 'iOS' && this.Device.platform != 'Android' && url.indexOf('http://') >= 0 ) {
           alert('Cannot display http pages in browser preview. Please build app for device or use https.');

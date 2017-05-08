@@ -1,10 +1,11 @@
-import {NavController, NavParams, ModalController, Platform, ViewController} from 'ionic-angular';
+import {NavController, NavParams, ModalController, Platform, ViewController, IonicPage} from 'ionic-angular';
 import {Component, Renderer, ElementRef} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SocialSharing} from '@ionic-native/social-sharing';
 
 import {MediaPlayer} from '../media-player/media-player';
 
+@IonicPage()
 @Component({
   templateUrl: 'post-details.html'
 })
@@ -55,7 +56,7 @@ export class PostDetailsPage {
       event.preventDefault()
       window.open( el.href, target )
 
-    } else if( el.tagName == 'IMG' && el.parentNode.href.indexOf('http') >= 0 ) {
+    } else if( el.tagName == 'IMG' && el.parentNode.href && el.parentNode.href.indexOf('http') >= 0 ) {
 
       // handle image tags that have link as the parent
       if( el.parentNode.classList && el.parentNode.classList.contains('system') )

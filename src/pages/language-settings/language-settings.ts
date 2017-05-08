@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {ViewController, ToastController} from 'ionic-angular';
 import {Storage} from '@ionic/storage';
-import {TranslateService} from 'ng2-translate';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   templateUrl: 'language-settings.html',

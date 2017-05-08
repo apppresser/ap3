@@ -2,13 +2,10 @@
 import {ViewChild, Component} from '@angular/core';
 import {Platform, MenuController, Nav, ToastController, ModalController, Events} from 'ionic-angular';
 import {DomSanitizer} from '@angular/platform-browser';
-import {TranslateService} from 'ng2-translate';
+import {TranslateService} from '@ngx-translate/core';
 
 /* Pages */
-import {PostList} from '../pages/post-list/post-list';
-import {Iframe} from '../pages/iframe/iframe';
 import {TabsPage} from '../pages/tabs/tabs';
-import {CustomPage} from '../pages/custom-pages/custom-page';
 import {LoginModal} from '../pages/login-modal/login-modal';
 
 /* Providers (make sure to add to app.module.ts providers too) */
@@ -206,12 +203,12 @@ export class MyApp {
       for( let item of data.tab_menu.items ) {
 
         // set component, default is Iframe
-        var root:Object = Iframe;
+        var root:Object = 'Iframe';
 
         if( item.type === 'apppages' && item.page_type === 'list' ) {
-          root = PostList;
+          root = 'PostList';
         } else if( item.type === 'apppages' ) {
-          root = CustomPage;
+          root = 'CustomPage';
         }
 
         // hide the tab if user added class of hide
@@ -252,10 +249,10 @@ export class MyApp {
 
         // if it's a list page, use PostList component
         if( data.menus.items[0].page_type === 'list' ) {
-          this.nav.setRoot( PostList, data.menus.items[0] );
+          this.nav.setRoot( 'PostList', data.menus.items[0] );
         } else {
           // otherwise use CustomPage
-          this.nav.setRoot( CustomPage, data.menus.items[0] );
+          this.nav.setRoot( 'CustomPage', data.menus.items[0] );
         }
 
       } else {
@@ -264,7 +261,7 @@ export class MyApp {
         data.menus.items[0].is_home = true;
 
         // anything else uses Iframe component
-        this.nav.setRoot( Iframe, data.menus.items[0] );
+        this.nav.setRoot( 'Iframe', data.menus.items[0] );
 
       }
 
@@ -296,9 +293,9 @@ export class MyApp {
     if( this.introshown === "true" ) 
       return;
 
-    let intro = { 'title': "Introduction", 'component': CustomPage, 'class': "", 'navparams': { 'slug': slug } };
+    let intro = { 'title': "Introduction", 'component': 'CustomPage', 'class': "", 'navparams': { 'slug': slug } };
 
-    this.nav.push( CustomPage, intro.navparams );
+    this.nav.push( 'CustomPage', intro.navparams );
 
     window.localStorage.setItem('app-intro-shown', "true" );
   }
@@ -330,11 +327,11 @@ export class MyApp {
     }
 
     if( page.type === 'apppages' && page.page_type === 'list' ) {
-      this.nav.setRoot( PostList, page );
+      this.nav.setRoot( 'PostList', page );
     } else if( page.type === 'apppages' ) {
-      this.nav.setRoot( CustomPage, page );
+      this.nav.setRoot( 'CustomPage', page );
     } else if (page.url) {
-      this.nav.setRoot(Iframe, page);
+      this.nav.setRoot('Iframe', page);
     } else {
       this.nav.setRoot(page.component, page.navparams);
     }
@@ -364,11 +361,11 @@ export class MyApp {
       opt = { direction: 'back' }
 
     if( page.type === 'apppages' && page.page_type === 'list' ) {
-      this.nav.push( PostList, page, opt );
+      this.nav.push( 'PostList', page, opt );
     } else if( page.type === 'apppages' ) {
-      this.nav.push( CustomPage, page, opt );
+      this.nav.push( 'CustomPage', page, opt );
     } else if (page.url) {
-      this.nav.push(Iframe, page, opt);
+      this.nav.push('Iframe', page, opt);
     } else {
       this.nav.push(page.component, page.navparams, opt);
     }
@@ -492,7 +489,7 @@ export class MyApp {
       if (data.url) {
 
         // push a new page
-        let page = { title: data.title, component: Iframe, url: data.url, classes: null };
+        let page = { title: data.title, component: 'Iframe', url: data.url, classes: null };
         this.pushPage( page );
 
       } else if (data.msg) {
@@ -545,7 +542,7 @@ export class MyApp {
         this.syncLoginStatus( data )
 
       } else if( data.apppage ) {
-        let page = { title: data.title, component: Iframe, url: data.apppage.url, classes: null, page_type: null, type: null };
+        let page = { title: data.title, component: 'Iframe', url: data.apppage.url, classes: null, page_type: null, type: null };
         this.openPage( page );
       }
 
@@ -631,7 +628,7 @@ export class MyApp {
 
       // if apppush post URL
       if( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 && data.additionalData.target && data.additionalData.target == '_self' ) {
-        let page = { title: data.title, component: Iframe, url: data.additionalData.url, classes: null };
+        let page = { title: data.title, component: 'Iframe', url: data.additionalData.url, classes: null };
         this.pushPage( page );
         return;
       }
@@ -772,12 +769,12 @@ export class MyApp {
     for( let item of this.tabs ) {
 
       // set component, default is Iframe
-      var root:Object = Iframe;
+      var root:Object = 'Iframe';
 
       if( item.type === 'apppages' && item.page_type === 'list' ) {
-        root = PostList;
+        root = 'PostList';
       } else if( item.type === 'apppages' ) {
-        root = CustomPage;
+        root = 'CustomPage';
       }
 
       // hide the tab if user added class of hide
