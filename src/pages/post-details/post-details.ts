@@ -4,6 +4,7 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {SocialSharing} from 'ionic-native';
 
 import {MediaPlayer} from '../media-player/media-player';
+import { VideoUtils } from "../../providers/video/video-utils";
 
 @Component({
   templateUrl: 'post-details.html'
@@ -22,7 +23,8 @@ export class PostDetailsPage {
     public renderer: Renderer,
     public elementRef: ElementRef,
     public viewCtrl: ViewController,
-    public platform: Platform
+    public platform: Platform,
+    private videoUtils: VideoUtils
     ) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = navParams.get('item');
@@ -37,7 +39,7 @@ export class PostDetailsPage {
     });
 
     if( platform.is('android') ) {
-      this.killVideos()
+      this.videoUtils.killVideos(this.elementRef);
     }
 
   }
@@ -101,32 +103,6 @@ export class PostDetailsPage {
       obj = {direction: 'forward'}
     
     this.nav.pop( obj )
-  }
-
-  // stop videos from playing when app is exited, required by Google
-  killVideos() {
-
-    // todo: if platform = android
-    this.platform.pause.subscribe(() => {
-
-      let frames = this.elementRef.nativeElement.getElementsByTagName('iframe')
-
-      let Vidsrc
-
-      for (let i in frames) {
-
-        if( /youtube|wistia|vimeo/.test(frames[i].src) ) {
-           Vidsrc = frames[i].src;
-           frames[i].src = '';
-           setTimeout( function() {
-               frames[i].src = Vidsrc;
-           }, 500);
-        }
-
-      }
-      
-    })
-
   }
 
 }
