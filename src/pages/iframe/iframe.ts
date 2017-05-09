@@ -6,6 +6,7 @@ import {Storage} from '@ionic/storage';
 
 import {MediaPlayer} from '../media-player/media-player';
 import {HeaderLogo} from "../../providers/header-logo/header-logo";
+import { VideoUtils } from "../../providers/video/video-utils";
 
 @Component({
     templateUrl: 'iframe.html'
@@ -38,7 +39,8 @@ export class Iframe {
         public storage: Storage,
         public el: ElementRef,
         private headerLogoService: HeaderLogo,
-        public zone: NgZone
+        public zone: NgZone,
+        private videoUtils: VideoUtils
         ) {
         
         if(navParams.data.is_home == true) {
@@ -51,6 +53,11 @@ export class Iframe {
 
         // Show error message if in preview and not using https
         this.previewAlert( navParams.data.url );
+
+        // kill vids on android
+		if( platform.is('android') ) {
+	      this.videoUtils.killVideos(this.el);
+	    }
 
     }
 

@@ -14,6 +14,7 @@ import {MediaPlayer} from '../media-player/media-player';
 import {PushSettings} from '../push-settings/push-settings';
 import {LanguageSettings} from '../language-settings/language-settings';
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
+import {VideoUtils} from "../../providers/video/video-utils";
 
 class DynamicContext {
   value: string;
@@ -57,14 +58,15 @@ export class CustomPage implements OnInit {
 		public nav: Nav,
 		public modalCtrl: ModalController,
 		public renderer: Renderer,
-    	public elementRef: ElementRef,
-    	public viewCtrl: ViewController,
-        public platform: Platform,
-        public translate: TranslateService,
-        public storage: Storage,
-        public events: Events,
-        public toastCtrl: ToastController,
-        private headerLogoService: HeaderLogo
+		public elementRef: ElementRef,
+		public viewCtrl: ViewController,
+		public platform: Platform,
+		public translate: TranslateService,
+		public storage: Storage,
+		public events: Events,
+		public toastCtrl: ToastController,
+		private headerLogoService: HeaderLogo,
+		private videoUtils: VideoUtils
         ) {
 		this.pagetitle = navParams.data.title;
 
@@ -74,7 +76,7 @@ export class CustomPage implements OnInit {
 
 		// kill vids on android
 		if( platform.is('android') ) {
-	      this.killVideos()
+	      this.videoUtils.killVideos(this.elementRef);
 	    }
 	}
 
@@ -221,31 +223,6 @@ export class CustomPage implements OnInit {
 	    });
 
 	    toast.present();
-
-	}
-
-	// stop videos from playing when app is exited, required by Google
-	killVideos() {
-
-		this.platform.pause.subscribe(() => {
-
-		  let frames = this.elementRef.nativeElement.getElementsByTagName('iframe')
-
-		  let Vidsrc
-
-		  for (let i in frames) {
-
-		    if( /youtube|wistia|vimeo/.test(frames[i].src) ) {
-		       Vidsrc = frames[i].src;
-		       frames[i].src = '';
-		       setTimeout( function() {
-		           frames[i].src = Vidsrc;
-		       }, 500);
-		    }
-
-		  }
-		  
-		})
 
 	}
 
