@@ -274,9 +274,9 @@ iframe {
 .toolbar-content-ios {
 	.header-logo {
 		margin: 0 auto;
-		&.move-left {
-			position: relative;
-			left: -25px;
-		}
+	    position: absolute;
+	    top: 7px;
+	    left: 0;
+	    right: 0;
 	}
 }
