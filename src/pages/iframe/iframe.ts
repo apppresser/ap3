@@ -218,6 +218,9 @@ export class Iframe {
     }
 
     changeTitle( title ) {
+        if( title === '' )
+            return;
+        
         // zone fixes bug where title didn't update properly on device
         this.zone.run( () => {
             this.title = title
