@@ -25,6 +25,8 @@ export class Iframe {
     rtlBack: boolean = false;
     lang: string = '';
     shareUrl: string = '';
+    cart_link: string = '';
+    showCartLink: boolean = false;
     header_logo_url: string;
     show_header_logo: boolean = false;
 
@@ -198,6 +200,10 @@ export class Iframe {
                   }
                 }
 
+            } else if ( parsed.cart_link && parsed.cart_link != '' ) {
+                this.cart_link = parsed.cart_link
+                this.changeTitle( parsed.post_title )
+                this.showCartLink = true
             } else if ( parsed.post_url && parsed.post_url != 'none' ) {
                 this.shareUrl = parsed.post_url
                 this.changeTitle( parsed.post_title )
@@ -356,6 +362,10 @@ export class Iframe {
           // Sharing via email is not possible
         });
 
+    }
+
+    cartLink() {
+        this.nav.setRoot(Iframe, { 'title': '', 'url': this.cart_link } );
     }
 
     doLogo() {
