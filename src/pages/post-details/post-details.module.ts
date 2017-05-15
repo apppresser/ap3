@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { PostDetailsPage } from './post-details';
+import { SanitizeHtmlModule } from '../../pipes/sanitize-html/sanitize-html.module';
 
 @NgModule({
   declarations: [
@@ -9,7 +10,8 @@ import { PostDetailsPage } from './post-details';
   ],
   imports: [
     IonicPageModule.forChild(PostDetailsPage),
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
+    SanitizeHtmlModule
   ],
   exports: [
     PostDetailsPage

@@ -376,7 +376,7 @@ export class Iframe {
     }
 
     cartLink() {
-        this.nav.push(Iframe, { 'title': '', 'url': this.cart_link } );
+        this.nav.push('Iframe', { 'title': '', 'url': this.cart_link } );
     }
 
     doLogo() {

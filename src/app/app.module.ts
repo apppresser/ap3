@@ -44,8 +44,6 @@ import {HeaderLogo} from '../providers/header-logo/header-logo';
 import {VideoUtils} from "../providers/video/video-utils";
 
 /* Other */
-import {SanitizeHtml} from '../pipes/sanitize-html';
-// import {SanitizeHtmlModule} from '../pipes/sanitize-html.module';
 import {DynamicComponentModule} from 'angular2-dynamic-component/index';
 import { IonicStorageModule } from '@ionic/storage';
 
@@ -71,7 +69,6 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
   declarations: [ // pages, custom components, pipes, etc
     MyApp,
     TabsPage,
-    SanitizeHtml,
     MediaPlayer,
     LoginModal,
     PushSettings,
@@ -80,7 +77,6 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
   imports: [
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot(),
-    // SanitizeHtmlModule.forRoot(),
     DynamicComponentModule,
     BrowserModule,
     HttpModule,
@@ -133,7 +129,6 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     SocialSharing,
     Push,
     Dialogs,
-    SanitizeHtml,
     Geolocation,
     VideoUtils
   ]
