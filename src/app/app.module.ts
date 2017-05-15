@@ -41,6 +41,7 @@ import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
 import {WPlogin} from '../providers/wplogin/wplogin';
 import {HeaderLogo} from '../providers/header-logo/header-logo';
+import {VideoUtils} from "../providers/video/video-utils";
 
 /* Other */
 import {SanitizeHtml} from '../pipes/sanitize-html';
@@ -133,7 +134,8 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     Push,
     Dialogs,
     SanitizeHtml,
-    Geolocation
+    Geolocation,
+    VideoUtils
   ]
 })
 export class AppModule {}

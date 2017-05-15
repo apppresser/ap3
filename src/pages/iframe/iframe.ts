@@ -9,6 +9,7 @@ import {Storage} from '@ionic/storage';
 
 import {MediaPlayer} from '../media-player/media-player';
 import {HeaderLogo} from "../../providers/header-logo/header-logo";
+import { VideoUtils } from "../../providers/video/video-utils";
 
 @IonicPage()
 @Component({
@@ -28,6 +29,8 @@ export class Iframe {
     rtlBack: boolean = false;
     lang: string = '';
     shareUrl: string = '';
+    cart_link: string = '';
+    showCartLink: boolean = false;
     header_logo_url: string;
     show_header_logo: boolean = false;
 
@@ -46,7 +49,8 @@ export class Iframe {
         private Device: Device,
         private Geolocation: Geolocation,
         private SocialSharing: SocialSharing,
-        public zone: NgZone
+        public zone: NgZone,
+        private videoUtils: VideoUtils
         ) {
         
         if(navParams.data.is_home == true) {
@@ -59,6 +63,11 @@ export class Iframe {
 
         // Show error message if in preview and not using https
         this.previewAlert( navParams.data.url );
+
+        // kill vids on android
+		if( platform.is('android') ) {
+	      this.videoUtils.killVideos(this.el);
+	    }
 
     }
 
@@ -199,6 +208,10 @@ export class Iframe {
                   }
                 }
 
+            } else if ( parsed.cart_link && parsed.cart_link != '' ) {
+                this.cart_link = parsed.cart_link
+                this.changeTitle( parsed.post_title )
+                this.showCartLink = true
             } else if ( parsed.post_url && parsed.post_url != 'none' ) {
                 this.shareUrl = parsed.post_url
                 this.changeTitle( parsed.post_title )
@@ -213,6 +226,9 @@ export class Iframe {
     }
 
     changeTitle( title ) {
+        if( title === '' )
+            return;
+        
         // zone fixes bug where title didn't update properly on device
         this.zone.run( () => {
             this.title = title
@@ -357,6 +373,10 @@ export class Iframe {
           // Sharing via email is not possible
         });
 
+    }
+
+    cartLink() {
+        this.nav.push(Iframe, { 'title': '', 'url': this.cart_link } );
     }
 
     doLogo() {
