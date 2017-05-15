@@ -208,7 +208,7 @@ export class MyApp {
         if( item.type === 'apppages' && item.page_type === 'list' ) {
           root = 'PostList';
         } else if( item.type === 'apppages' ) {
-          root = 'CustomPage';
+          root = 'Page' + item.page_id;
         }
 
         // hide the tab if user added class of hide
@@ -252,7 +252,7 @@ export class MyApp {
           this.nav.setRoot( 'PostList', data.menus.items[0] );
         } else {
           // otherwise use CustomPage
-          this.nav.setRoot( 'CustomPage', data.menus.items[0] );
+          this.nav.setRoot( 'Page' + data.menus.items[0].page_id, data.menus.items[0] );
         }
 
       } else {
@@ -329,7 +329,7 @@ export class MyApp {
     if( page.type === 'apppages' && page.page_type === 'list' ) {
       this.nav.setRoot( 'PostList', page );
     } else if( page.type === 'apppages' ) {
-      this.nav.setRoot( 'CustomPage', page );
+      this.nav.setRoot( 'Page' + page.page_id, page );
     } else if (page.url) {
       this.nav.setRoot('Iframe', page);
     } else {
@@ -363,7 +363,7 @@ export class MyApp {
     if( page.type === 'apppages' && page.page_type === 'list' ) {
       this.nav.push( 'PostList', page, opt );
     } else if( page.type === 'apppages' ) {
-      this.nav.push( 'CustomPage', page, opt );
+      this.nav.push( 'Page' + page.page_id, page, opt );
     } else if (page.url) {
       this.nav.push('Iframe', page, opt);
     } else {
@@ -774,7 +774,7 @@ export class MyApp {
       if( item.type === 'apppages' && item.page_type === 'list' ) {
         root = 'PostList';
       } else if( item.type === 'apppages' ) {
-        root = 'CustomPage';
+        root = 'Page' + item.page_id;
       }
 
       // hide the tab if user added class of hide

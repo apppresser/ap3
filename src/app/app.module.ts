@@ -23,13 +23,6 @@ import { Push } from "@ionic-native/push";
 import { Dialogs } from "@ionic-native/dialogs";
 import { Geolocation } from "@ionic-native/geolocation";
 
-/* Pages */
-import {TabsPage} from '../pages/tabs/tabs';
-import {MediaPlayer} from '../pages/media-player/media-player';
-import {LoginModal} from '../pages/login-modal/login-modal';
-import {PushSettings} from '../pages/push-settings/push-settings';
-import {LanguageSettings} from '../pages/language-settings/language-settings';
-
 /* Providers */
 import {AppCamera} from '../providers/camera/app-camera';
 import {Posts} from '../providers/posts/posts';
@@ -44,7 +37,6 @@ import {HeaderLogo} from '../providers/header-logo/header-logo';
 import {VideoUtils} from "../providers/video/video-utils";
 
 /* Other */
-import {DynamicComponentModule} from 'angular2-dynamic-component/index';
 import { IonicStorageModule } from '@ionic/storage';
 
 /* Videogular */
@@ -67,17 +59,11 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
 
 @NgModule({
   declarations: [ // pages, custom components, pipes, etc
-    MyApp,
-    TabsPage,
-    MediaPlayer,
-    LoginModal,
-    PushSettings,
-    LanguageSettings
+    MyApp
   ],
   imports: [
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot(),
-    DynamicComponentModule,
     BrowserModule,
     HttpModule,
     VgCoreModule,
@@ -94,12 +80,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
   ],
   bootstrap: [IonicApp],
   entryComponents: [ // pages go here
-    MyApp,
-    TabsPage,
-    MediaPlayer,
-    LoginModal,
-    PushSettings,
-    LanguageSettings
+    MyApp
   ],
   providers: [
     {provide: ErrorHandler, useClass: IonicErrorHandler},
