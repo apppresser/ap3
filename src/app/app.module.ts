@@ -1,7 +1,8 @@
+import {BrowserModule} from '@angular/platform-browser';
 import { NgModule, ErrorHandler } from '@angular/core';
 import {Http} from '@angular/http';
 import { HttpModule } from '@angular/http';
-import { IonicApp, IonicModule, IonicErrorHandler, IonicPageModule } from 'ionic-angular';
+import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { TranslateModule, TranslateLoader, MissingTranslationHandler, MissingTranslationHandlerParams } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -40,13 +41,6 @@ import {VideoUtils} from "../providers/video/video-utils";
 import {DynamicComponentModule} from 'angular2-dynamic-component/index';
 import { IonicStorageModule } from '@ionic/storage';
 
-/* Videogular */
-import {BrowserModule} from '@angular/platform-browser';
-import {VgCoreModule} from 'videogular2/core';
-import {VgControlsModule} from 'videogular2/controls';
-import {VgOverlayPlayModule} from 'videogular2/overlay-play';
-import {VgBufferingModule} from 'videogular2/buffering';
-
 // required for ng translate, tells it to look in assets folder for trans files
 export function createTranslateLoader(http: Http) {
     return new TranslateHttpLoader(http, 'assets/i18n', '.json');
@@ -68,10 +62,6 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     DynamicComponentModule,
     BrowserModule,
     HttpModule,
-    VgCoreModule,
-    VgControlsModule,
-    VgOverlayPlayModule,
-    VgBufferingModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
