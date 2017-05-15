@@ -1,21 +1,21 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { Page597 } from './custom-html-template';
+import { Page166 } from './custom-html-template';
 
 @NgModule({
   declarations: [
-    Page597,
+    Page166,
   ],
   imports: [
-    IonicPageModule.forChild(Page597),
+    IonicPageModule.forChild(Page166),
     TranslateModule.forChild()
   ],
   entryComponents: [
-    Page597
+    Page166
   ],
   exports: [
-    Page597
+    Page166
   ]
 })
-export class Page597Module {}
+export class Page166Module {}

@@ -16,7 +16,7 @@ import {HeaderLogo} from '../../providers/header-logo/header-logo';
 @Component({
   templateUrl: "custom-html-template.html"
 })
-export class Page597 implements OnInit {
+export class Page166 implements OnInit {
 
 	pagetitle: string;
 	listenFunc: Function;
