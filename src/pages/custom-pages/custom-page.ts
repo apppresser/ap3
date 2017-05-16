@@ -5,12 +5,6 @@ import {Storage} from '@ionic/storage';
 
 import {IonicModule, ToastController} from 'ionic-angular';
 import {IComponentInputData} from 'angular2-dynamic-component/index';
-
-import {LoginModal} from '../../pages/login-modal/login-modal';
-import {MediaPlayer} from '../media-player/media-player';
-
-import {PushSettings} from '../push-settings/push-settings';
-import {LanguageSettings} from '../language-settings/language-settings';
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
 
 class DynamicContext {
@@ -134,7 +128,7 @@ export class CustomPage implements OnInit {
 		},
 		mediaModal: ( src, img = null ) => {
 
-			let modal = this.modalCtrl.create(MediaPlayer, {source: src, image: img});
+			let modal = this.modalCtrl.create('MediaPlayer', {source: src, image: img});
 			modal.present();
 
 		},
@@ -152,16 +146,16 @@ export class CustomPage implements OnInit {
 			this.storage.set( 'is_rtl', rtl )
 		},
 		showSegments: () => {
-			let modal = this.modalCtrl.create(PushSettings);
+			let modal = this.modalCtrl.create('PushSettings');
 			modal.present();
 		},
 		showLanguages: () => {
-			let modal = this.modalCtrl.create(LanguageSettings);
+			let modal = this.modalCtrl.create('LanguageSettings');
 			modal.present();
 		},
 		loginModal: () => {
 
-			this.loginModal = this.modalCtrl.create( LoginModal );
+			this.loginModal = this.modalCtrl.create( 'LoginModal' );
 
 			this.loginModal.present();
 

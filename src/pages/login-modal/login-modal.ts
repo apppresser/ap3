@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, Events, ViewController, ToastController, LoadingController } from 'ionic-angular';
+import { Events, ViewController, ToastController, LoadingController } from 'ionic-angular';
 import {WPlogin} from '../../providers/wplogin/wplogin';
 import { Storage } from '@ionic/storage';
 import {Device} from '@ionic-native/device';
@@ -19,8 +19,6 @@ export class LoginModal {
 	spinner: any
 
 	constructor(
-		public navCtrl: NavController, 
-		public navParams: NavParams,
 		public viewCtrl: ViewController,
 		public loadingCtrl: LoadingController,
 		public wplogin: WPlogin,
