@@ -4,8 +4,8 @@
   "homepage": "https://apppresser.com/",
   "private": true,
   "scripts": {
-    "ionic:build": "ionic-app-scripts build",
-    "ionic:serve": "ionic-app-scripts serve"
+    "build": "ionic-app-scripts build",
+    "serve": "ionic-app-scripts serve"
   },
   "dependencies": {
     "@angular/animations": "4.1.0",
