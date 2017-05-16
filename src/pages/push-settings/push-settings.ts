@@ -1,8 +1,9 @@
 import {Component} from '@angular/core';
-import {NavParams, ViewController, ToastController} from 'ionic-angular';
+import {NavParams, ViewController, ToastController, IonicPage} from 'ionic-angular';
 import {Storage} from '@ionic/storage';
 import {PushService} from '../../providers/push/push';
 
+@IonicPage()
 @Component({
   templateUrl: 'push-settings.html',
   selector: 'push-settings'

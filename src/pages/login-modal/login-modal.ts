@@ -1,13 +1,10 @@
 import { Component } from '@angular/core';
-import { Events, ViewController, ToastController, LoadingController } from 'ionic-angular';
+import { Events, ViewController, ToastController, LoadingController, IonicPage } from 'ionic-angular';
 import {WPlogin} from '../../providers/wplogin/wplogin';
 import { Storage } from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 
-/*
-  Generated class for the LoginModal page.
-
-*/
+@IonicPage()
 @Component({
   selector: 'page-login-modal',
   templateUrl: 'login-modal.html'
