@@ -9,7 +9,6 @@ import {Storage} from '@ionic/storage';
 
 import {MediaPlayer} from '../media-player/media-player';
 import {HeaderLogo} from "../../providers/header-logo/header-logo";
-import { VideoUtils } from "../../providers/video/video-utils";
 
 @IonicPage()
 @Component({
@@ -49,8 +48,7 @@ export class Iframe {
         private Device: Device,
         private Geolocation: Geolocation,
         private SocialSharing: SocialSharing,
-        public zone: NgZone,
-        private videoUtils: VideoUtils
+        public zone: NgZone
         ) {
         
         if(navParams.data.is_home == true) {
@@ -63,11 +61,6 @@ export class Iframe {
 
         // Show error message if in preview and not using https
         this.previewAlert( navParams.data.url );
-
-        // kill vids on android
-		if( platform.is('android') ) {
-	      this.videoUtils.killVideos(this.el);
-	    }
 
     }
 
@@ -132,7 +125,7 @@ export class Iframe {
             this.notifyThemeKeyboardOpened();
         });
 
-        window.addEventListener('pause', (e) => {
+        this.platform.pause.subscribe(() => {
             this.postPauseEvent();
         });
 
@@ -236,6 +229,9 @@ export class Iframe {
     }
 
     postPauseEvent() {
+
+        this.findIframe();
+
         this.iframe.contentWindow.postMessage('{"pause_event":{"platform":"'+this.Device.platform+'"}}', '*');
     }
 

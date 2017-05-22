@@ -4,10 +4,6 @@ import {Platform, MenuController, Nav, ToastController, ModalController, Events}
 import {DomSanitizer} from '@angular/platform-browser';
 import {TranslateService} from '@ngx-translate/core';
 
-/* Pages */
-import {TabsPage} from '../pages/tabs/tabs';
-import {LoginModal} from '../pages/login-modal/login-modal';
-
 /* Providers (make sure to add to app.module.ts providers too) */
 import {AppCamera} from '../providers/camera/app-camera';
 import {GlobalVars} from '../providers/globalvars/globalvars';
@@ -48,7 +44,7 @@ export class MyApp {
   introshown: any;
   networkState: any;
   bothMenus: boolean = false;
-  loginModal: any;
+  myLoginModal: any;
   showLogin: boolean = false;
   menu_side: string = "left";
   rtl: boolean = false;
@@ -203,7 +199,7 @@ export class MyApp {
       for( let item of data.tab_menu.items ) {
 
         // set component, default is Iframe
-        var root:Object = 'Iframe';
+        var root = 'Iframe';
 
         if( item.type === 'apppages' && item.page_type === 'list' ) {
           root = 'PostList';
@@ -223,7 +219,7 @@ export class MyApp {
 
       this.tabs = this.navparams;
 
-      this.nav.setRoot(TabsPage, this.tabs);
+      this.nav.setRoot('TabsPage', this.tabs);
 
     }
 
@@ -241,7 +237,7 @@ export class MyApp {
       // set the home page to the proper component
       if( this.tabs ) {
 
-        this.pages.unshift( { 'title': data.tab_menu.name, 'url': '', 'component': TabsPage, 'navparams': this.navparams, 'class': 'home', 'extra_classes':'hide', 'is_home': true } );
+        this.pages.unshift( { 'title': data.tab_menu.name, 'url': '', 'component': 'TabsPage', 'navparams': this.navparams, 'class': 'home', 'extra_classes':'hide', 'is_home': true } );
       } else if( !this.tabs && data.menus.items[0].type === 'apppages' ) {
 
         // used for custom logo
@@ -705,9 +701,9 @@ export class MyApp {
 
   openLoginModal() {
 
-    this.loginModal = this.modalCtrl.create( LoginModal );
+    this.myLoginModal = this.modalCtrl.create( 'LoginModal' );
     
-    this.loginModal.present();
+    this.myLoginModal.present();
 
   }
 
@@ -769,7 +765,7 @@ export class MyApp {
     for( let item of this.tabs ) {
 
       // set component, default is Iframe
-      var root:Object = 'Iframe';
+      var root = 'Iframe';
 
       if( item.type === 'apppages' && item.page_type === 'list' ) {
         root = 'PostList';
@@ -796,8 +792,10 @@ export class MyApp {
     this.tabs = this.navparams;
 
     // "refresh" the view by resetting to home tab
-    if( login === false )
-        this.openPage( { 'title': this.tabs[0].title, 'url': '', 'component': TabsPage, 'navparams': this.navparams, 'class': this.tabs[0].icon } )
+    if( login === false ) {
+        //this.openPage( { 'title': this.tabs[0].title, 'url': '', 'component': 'TabsPage', 'navparams': this.navparams, 'class': this.tabs[0].icon } )
+        this.nav.setRoot( 'TabsPage', this.navparams )
+      }
 
   }
 
