@@ -43,7 +43,7 @@ import { IonicStorageModule } from '@ionic/storage';
 
 // required for ng translate, tells it to look in assets folder for trans files
 export function createTranslateLoader(http: Http) {
-    return new TranslateHttpLoader(http, 'assets/i18n', '.json');
+    return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
 }
  
 export class MyMissingTranslationHandler implements MissingTranslationHandler {
