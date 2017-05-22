@@ -204,12 +204,9 @@ export class FbConnect {
 
     let params = '?appp=3&action=appp_wp_fblogin&user_email=' + email + '&full_name=' + nameStripped + '&security=' + this.iframewin.apppfb.security;
 
-    let headers = new Headers({ 'Content-Type': 'application/json' });
-    let options = new RequestOptions({ headers: headers });
-
     return new Promise(resolve => {
 
-      this.http.post( this.iframewin.apppCore.ajaxurl + params, null, options )
+      this.http.post( this.iframewin.apppCore.ajaxurl + params, null )
         .map(res => res.json())
         .subscribe(
           data => {

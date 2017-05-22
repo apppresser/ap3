@@ -42,9 +42,6 @@ export class PushService {
 
     console.debug('subscribeDevice', this.api + params);
 
-    // let headers = new Headers({ 'Content-Type': 'application/json' });
-    // let options = new RequestOptions({ headers: headers });
-
     return new Promise(resolve => {
 
       this.http.post( this.api + params, null, null )
