@@ -27,14 +27,11 @@ export class WPlogin {
       if( !this.url )
         reject({ data: { message: "No WordPress URL set. " } })
 
-      let url = this.url + 'wp-admin/admin-ajax.php?action=apppajaxlogin';
+      let auth = btoa( form.user + ':' + form.pass )
 
-      let auth = btoa( form.user + ':' + form.pass );
+      let url = this.url + 'wp-admin/admin-ajax.php?action=apppajaxlogin' + '&auth=' + auth;
 
-      let headers = new Headers({ 'Authorization': 'Basic ' + auth });
-      let options = new RequestOptions({ headers: headers });
-
-      this.http.post( url, null, options )
+      this.http.get( url )
         .map(res => res.json())
         .subscribe(data => {
 
