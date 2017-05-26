@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, RequestOptions} from '@angular/http';
+import {Http} from '@angular/http';
 import 'rxjs/add/operator/map';
 
 /* 
@@ -10,7 +10,7 @@ export class WPlogin {
   data: any = null;
   url: any;
 
-  constructor(public http: Http) {
+  constructor(private http: Http) {
 
     let item = window.localStorage.getItem( 'myappp' );
     this.url = JSON.parse( item ).wordpress_url;
@@ -27,24 +27,30 @@ export class WPlogin {
       if( !this.url )
         reject({ data: { message: "No WordPress URL set. " } })
 
-      let auth = btoa( form.user + ':' + form.pass )
+      let url = this.url + 'wp-admin/admin-ajax.php?action=apppajaxlogin';
+      const data = {
+        action: 'apppajaxlogin',
+        username: form.user,
+        password: form.pass
+      };
 
-      let url = this.url + 'wp-admin/admin-ajax.php?action=apppajaxlogin' + '&auth=' + auth;
+      var formData = new FormData();
 
-      this.http.get( url )
-        .map(res => res.json())
-        .subscribe(data => {
+      formData.append("username", form.user);
+      formData.append("password", form.pass);
 
-            if( data.success == true )
-              resolve(data);
-
-            reject(data)
-          },
-          error => {
-
-            reject(error);
+      var request = new XMLHttpRequest();
+      request.open("POST", url);
+      request.send(formData);
+      request.onload = function (e) {
+        if (request.readyState === 4) {
+          if (request.status === 200) {
+            resolve(JSON.parse(request.responseText));
+          } else {
+            reject(JSON.parse(request.statusText));
           }
-        );
+        }
+      };
 
     });
     
