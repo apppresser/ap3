@@ -1,0 +1,17 @@
+{
+  "name": "apppagecompiler",
+  "version": "1.0.0",
+  "description": "Creates component pages and compiles the app into production mode.",
+  "repository": {
+    "type": "git",
+    "url": "https://mattt@apppresser.git.beanstalkapp.com/app-page-compiler.git"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "@types/node": "^7.0.22"
+  },
+  "devDependencies": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
