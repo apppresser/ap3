@@ -5,6 +5,7 @@ import { ContentCollector } from './modules/ContentCollector';
 import { AppZip } from "./modules/AppZip";
 import fs = require('fs'); // nodejs filesystem
 import path = require('path'); // nodejs directory utilities
+import process = require('process');
 
 
 class AppBuilder {
@@ -12,6 +13,7 @@ class AppBuilder {
 	private cli_params: {site_name: string, app_id: string} | null;
 	private myappp_settings: any;
 	private build_dir = __dirname + '/builds';
+	private zip_basename: string; // i.e. app-6.4 (the zip file without the .zip; used for unzipped dirname)
 	
 	run() {
 
@@ -46,7 +48,6 @@ class AppBuilder {
 				this.set_globalvars();
 
 				const zip = new AppZip(this.myappp_settings, this.cli_params);
-				const dest_dir = 'builds/app_'+this.cli_params.site_name+'_'+this.cli_params.app_id + '/';
 				zip.get_app_zip();
 			} else {
 				console.log(json);
@@ -169,20 +170,6 @@ class AppBuilder {
 			site_name: params[2],
 			app_id: params[3]
 		};
-	}
-
-	/**
-	 * Runs cli to compile the ionic app
-	 * 
-	 * @TODO
-	 */
-	build_production_app() {
-		var exec = require('child_process').exec;
-		var cmd = 'cd ../ && npm run build --prod';
-
-		exec(cmd, (error, stdout, stderr) => {
-			console.log(stdout);
-		});
 	}
 
 	/**

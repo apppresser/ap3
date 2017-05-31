@@ -7,6 +7,7 @@ const ContentCollector_1 = require("./modules/ContentCollector");
 const AppZip_1 = require("./modules/AppZip");
 const fs = require("fs"); // nodejs filesystem
 const path = require("path"); // nodejs directory utilities
+const process = require("process");
 class AppBuilder {
     constructor() {
         this.build_dir = __dirname + '/builds';
@@ -38,7 +39,6 @@ class AppBuilder {
                 this.make_components();
                 this.set_globalvars();
                 const zip = new AppZip_1.AppZip(this.myappp_settings, this.cli_params);
-                const dest_dir = 'builds/app_' + this.cli_params.site_name + '_' + this.cli_params.app_id + '/';
                 zip.get_app_zip();
             }
             else {
@@ -143,18 +143,6 @@ class AppBuilder {
             site_name: params[2],
             app_id: params[3]
         };
-    }
-    /**
-     * Runs cli to compile the ionic app
-     *
-     * @TODO
-     */
-    build_production_app() {
-        var exec = require('child_process').exec;
-        var cmd = 'cd ../ && npm run build --prod';
-        exec(cmd, (error, stdout, stderr) => {
-            console.log(stdout);
-        });
     }
     /**
      * Uses the AppConfig.ts file to return the API URL.
