@@ -752,6 +752,10 @@ export class MyApp {
         item.extra_classes += " show";
       } else if( login === false && item.extra_classes.indexOf('loggedin') >= 0 ) {
         item.extra_classes = item.extra_classes.replace(" show", "");
+      } else if( login === true && item.extra_classes.indexOf('loggedout') >= 0 ) {
+        item.extra_classes += " hide";
+      } else if( login === false && item.extra_classes.indexOf('loggedout') >= 0 ) {
+        item.extra_classes = item.extra_classes.replace(" hide", "");
       }
 
     }
@@ -780,6 +784,8 @@ export class MyApp {
       }
 
       if( login === false && item.extra_classes.indexOf('loggedin') >= 0 ) {
+        item.show = false;
+      } else if( login === true && item.extra_classes.indexOf('loggedout') >= 0 ) {
         item.show = false;
       }
 
