@@ -48,6 +48,7 @@ export class MyApp {
   showLogin: boolean = false;
   menu_side: string = "left";
   rtl: boolean = false;
+  ajax_url: string;
 
   constructor(
     private platform: Platform,
@@ -530,8 +531,6 @@ export class MyApp {
 
         this.storage.set('user_login', this.login_data )
 
-        this.maybeSendPushId( data.ajaxurl );
-
       } else if( typeof( data.isloggedin ) != "undefined" ) {
 
         // make sure app and WP have the same status
@@ -664,7 +663,15 @@ export class MyApp {
 
   }
 
-  maybeSendPushId( ajaxurl ) {
+  maybeSendPushId( ajaxurl? ) {
+
+    if(!ajaxurl)
+      ajaxurl = this.getAjaxURL();
+
+    if(!ajaxurl) {
+      console.log('Not able to send endpointArn, missing ajaxurl');
+      return;
+    }
 
     this.storage.get('endpointArn').then( id => {
 
@@ -711,10 +718,12 @@ export class MyApp {
 
     this.login_data = data
 
+    this.maybeSendPushId();
     // tell the modal we are logged in
     this.events.publish('modal:logindata', data )
 
     this.presentToast('Login successful')
+
 
     if( this.pages )
       this.resetSideMenu(true)
@@ -862,6 +871,22 @@ export class MyApp {
       
     }
 
+  }
+
+  getAjaxURL() {
+
+    if(!this.ajax_url) {
+      let item = window.localStorage.getItem( 'myappp' );
+      let myapp = JSON.parse( item );
+      if(myapp.wordpress_url) {
+        this.ajax_url = myapp.wordpress_url + 'wp-admin/admin-ajax.php';
+      } else {
+        return '';
+      }
+    }
+
+    return this.ajax_url;
+    
   }
 
 }
