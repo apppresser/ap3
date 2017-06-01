@@ -4,10 +4,14 @@ export class ProductionProc {
 
 	post_build_cleanup() {
 		const exec = require('child_process').exec;
-		let commands = [
-			'rm -rf ../src/pages/page-*',
-			'rm -rf builds/app_green_636'
-		];
+		
+		// reset globalvars.ts
+		exec('cp templates/globalvars.ts ../src/providers/globalvars/');
+		
+		exec('rm -rf ../src/pages/page-*', () => {
+			console.log('Done!');
+		});
+
 	}
 
 	/**
@@ -48,6 +52,11 @@ export class ProductionProc {
 		const exec = require('child_process').exec;
 		const cmd  = 'cd ../ && npm run build --prod';
 
+		console.log('');
+		console.log('');
+		console.log('Buffering output, please wait . . .');
+		console.log('');
+
 		// For that warm fuzzy feeling
 		console.log('npm run build --prod');
 
@@ -87,9 +96,9 @@ export class ProductionProc {
 		
 		let commands = [
 			'cd ../ && mv www/build/* mkpages/builds/'+app_dir+'/'+zip_basename+'/build/',
-			'cd builds/'+app_dir+'/ && zip -r production-'+zip_basename+'.zip '+zip_basename
+			'cd builds/'+app_dir+'/ && zip -r production-'+zip_basename+'.zip '+zip_basename+' && echo "Your production app is ready!" && echo "Cleaning up . . ."'
 		];
-		
+
 		commands.forEach(cmd => {
 
 			if(!fail) {
@@ -110,5 +119,9 @@ export class ProductionProc {
 			}
 
 		});
+
+		setTimeout(() => {
+			this.post_build_cleanup();
+		}, 3000);
 	}
 }

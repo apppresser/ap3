@@ -52,7 +52,7 @@ class TemplateMaker {
                         if (err) {
                             // I don't care if the directory already exists, it's what I want	
                         }
-                        this.writeFile(new_filename, content);
+                        this.writeFile(new_file, content);
                     });
                 }
             });
@@ -61,11 +61,12 @@ class TemplateMaker {
     /**
      * Save our new content into a new file.
      *
-     * @param new_filename The file name
+     * @param new_file The full file path
      * @param content The new content
      */
-    writeFile(new_filename, content) {
-        fs.writeFile(this.doc_root + this.dest_dir + '/' + this.file_dir + '/' + new_filename, content, 'utf8', (err) => {
+    writeFile(new_file, content) {
+        console.log('Writting to ' + new_file);
+        fs.writeFile(new_file, content, 'utf8', (err) => {
             if (err)
                 return console.log(err);
         });
