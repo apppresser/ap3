@@ -3,15 +3,18 @@ export class ProductionProc {
 	constructor(private cli_params, private zip_basename) { }
 
 	post_build_cleanup() {
+		const site_name = this.cli_params.site_name;
+		const app_id = this.cli_params.app_id;
+		const app_dir = 'app_'+site_name+'_'+app_id;
 		const exec = require('child_process').exec;
 		
 		// reset globalvars.ts
-		exec('cp templates/globalvars.ts ../src/providers/globalvars/');
+		exec('mv builds/'+app_dir+'/bak/app.component.ts ../src/app/app.component.ts', () => { });
+		exec('mv builds/'+app_dir+'/bak/globalvars.ts ../src/providers/globalvars/globalvars.ts', () => { });
 		
 		exec('rm -rf ../src/pages/page-*', () => {
 			console.log('Done!');
 		});
-
 	}
 
 	/**
@@ -39,6 +42,7 @@ export class ProductionProc {
 		
 		execSync('mv builds/'+app_dir+'/page-* ../src/pages/');
 		execSync('mv builds/'+app_dir+'/globalvars/globalvars.ts ../src/providers/globalvars/');
+		execSync('mv builds/'+app_dir+'/app/app.component.ts ../src/app/app.component.ts');
 		
 		setTimeout(() => {
 			this.create_production_app();

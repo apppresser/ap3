@@ -14,6 +14,7 @@ class AppBuilder {
 	private myappp_settings: any;
 	private build_dir = __dirname + '/builds';
 	private zip_basename: string; // i.e. app-6.4 (the zip file without the .zip; used for unzipped dirname)
+	private intro_page_id = 0;
 	
 	run() {
 
@@ -44,6 +45,12 @@ class AppBuilder {
 		app_settings.get_settings().then( (json) => {
 			this.myappp_settings = json;
 			if(typeof json === 'object') {
+
+				if(this.myappp_settings.meta.intro_slug != '') {
+					this.set_IntroPage();
+				}
+
+				this.make_backup_copies();
 				this.make_components();
 				this.set_globalvars();
 
@@ -57,10 +64,26 @@ class AppBuilder {
 		})
 	}
 
+	/**
+	 * We need to restore some files to their original state after compiling
+	 */
+	make_backup_copies() {
+		let exec = require('child_process').execSync;
+
+		const site_name = this.cli_params.site_name;
+		const app_id = this.cli_params.app_id;
+		const app_dir = 'app_'+site_name+'_'+app_id;
+
+		exec('mkdir -p builds/'+app_dir+'/bak');
+		exec('cp ../src/app/app.component.ts builds/'+app_dir+'/bak/app.component.ts', () => { });
+		exec('cp ../src/providers/globalvars/globalvars.ts builds/'+app_dir+'/bak/globalvars.ts', () => { });
+		
+	}
+
 	make_components() {
 
 		this.myappp_settings.menus.items.forEach(element => {
-			if(element.page_type == 'html') {
+			if(element.page_type == 'html' || element.page_id == this.intro_page_id) {
 				console.log('processing page: ' + element.title);
 				this.make_page_html_component(element);
 			}
@@ -86,6 +109,42 @@ class AppBuilder {
 			{key: "\\[\\[appp_app_id\\]\\]", value: this.cli_params.app_id},
 			{key: "\\[\\[myappp_url\\]\\]", value: this.get_myapp_url()}
 		]);
+	}
+
+	set_IntroPage() {
+		const root_folder = path.resolve(__dirname, '..', '..') + '/';
+		const src_folder = 'src/app';
+		const new_folder = 'app';
+		const dest_dir = 'mkpages/builds/app_'+this.cli_params.site_name+'_'+this.cli_params.app_id;
+
+		const intro_slug = this.myappp_settings.meta.intro_slug;
+
+		let menu_items = this.myappp_settings.menus.items;
+
+		if(this.myappp_settings.tab_menu && this.myappp_settings.tab_menu.items) {
+			menu_items.push(...this.myappp_settings.tab_menu.items);
+		}
+
+		let page_id = 0;
+
+		for(let i = 0; i < menu_items.length;i++) {
+
+			if(menu_items[i].slug == intro_slug) {
+				page_id = menu_items[i].page_id;
+				this.intro_page_id = page_id;
+				break;
+			}
+		}
+
+		if(page_id) {
+			const componentMaker = new TemplateMaker(src_folder, new_folder, dest_dir, root_folder);
+
+			const template_file = 'app.component.ts';
+			const new_file = 'app.component.ts';
+			componentMaker.build_template( template_file, new_file, [
+				{key: "CustomPage", value: 'Page'+page_id}
+			]);
+		}
 	}
 
 	/**
