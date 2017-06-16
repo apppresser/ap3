@@ -94,6 +94,9 @@ export class MyApp {
   }
 
   initializeApp() {
+
+    this.translate.setDefaultLang('en');
+
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -396,7 +399,9 @@ export class MyApp {
     this.networkState = this.Network.type;
 
     if( this.networkState === 'none' || this.networkState === 'unknown' ) {
-      this.presentToast('You appear to be offline, app functionality may be limited.');
+      this.translate.get('You appear to be offline, app functionality may be limited.').subscribe( text => {
+        this.presentToast(text);
+      });
     }
 
   }
@@ -469,7 +474,9 @@ export class MyApp {
 
       if( e.data === 'checkin_success' ) {
 
-        this.presentToast('Check in successful!');
+        this.translate.get('Check in successful!').subscribe( text => {
+          this.presentToast(text);
+        });
 
       } else if ( e.data === 'logout' ) {
 
@@ -652,7 +659,7 @@ export class MyApp {
       this.Dialogs.alert(
         data.message,  // message
         data.title,            // title
-        'Done'                // buttonName
+        this.translate.instant('Done')  // buttonName
       );
 
     });
@@ -722,8 +729,10 @@ export class MyApp {
     // tell the modal we are logged in
     this.events.publish('modal:logindata', data )
 
-    this.presentToast('Login successful')
-
+    this.translate.get('Login successful').subscribe( text => {
+      this.presentToast(text);
+    });
+    
 
     if( this.pages )
       this.resetSideMenu(true)
@@ -749,7 +758,9 @@ export class MyApp {
       // this.openPage(this.pages[0])
     }
 
-    this.presentToast('Logout successful')
+    this.translate.get('Logout successful').subscribe( text => {
+      this.presentToast(text);
+    });
 
   }
 
