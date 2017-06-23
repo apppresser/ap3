@@ -95,6 +95,8 @@ export class MyApp {
 
   initializeApp() {
 
+    this.translate.setDefaultLang('en');
+
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -845,7 +847,6 @@ export class MyApp {
     this.storage.get( 'app_language' ).then( lang => {
       if( lang ) {
         this.translate.use( lang )
-        this.translate.setDefaultLang('en')
       }
     })
 
