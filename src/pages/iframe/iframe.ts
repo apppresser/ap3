@@ -213,6 +213,12 @@ export class Iframe {
                 // part of the hack to clear page titles when going back
                 this.showShare = false
                 this.changeTitle( this.navParams.get('title') )
+            } else if( parsed.geo_place ) {
+                // doCheckinPlaceModal expects an event target, so we'll simulate one
+                let _e = {
+                    target: this.el.nativeElement.querySelector('.ap3-iframe')
+                };
+                this.doCheckinPlaceModal(_e, parsed.geo_place);
             }
         }
 
@@ -265,6 +271,24 @@ export class Iframe {
             console.log('position', position);
             // need to postmessage this
             this.iframe.contentWindow.postMessage({ lat: latitude, long: longitude }, '*');
+
+        });
+
+    }
+
+    doCheckinPlaceModal( event, place ) {
+
+        this.findIframeBySelector( event.target );
+
+        // Do this when checkin button clicked when it has a place parameter
+        this.Geolocation.getCurrentPosition().then((position) => {
+
+            let latitude = position.coords.latitude;
+            let longitude = position.coords.longitude;
+
+            console.log('position', position);
+            // need to postmessage this
+            this.iframe.contentWindow.postMessage({ geo_place: place, lat: latitude, long: longitude }, '*');
 
         });
 

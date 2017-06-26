@@ -48,6 +48,7 @@ export class MyApp {
   showLogin: boolean = false;
   menu_side: string = "left";
   rtl: boolean = false;
+  ajax_url: string;
 
   constructor(
     private platform: Platform,
@@ -93,6 +94,9 @@ export class MyApp {
   }
 
   initializeApp() {
+
+    this.translate.setDefaultLang('en');
+
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -395,7 +399,9 @@ export class MyApp {
     this.networkState = this.Network.type;
 
     if( this.networkState === 'none' || this.networkState === 'unknown' ) {
-      this.presentToast('You appear to be offline, app functionality may be limited.');
+      this.translate.get('You appear to be offline, app functionality may be limited.').subscribe( text => {
+        this.presentToast(text);
+      });
     }
 
   }
@@ -468,7 +474,9 @@ export class MyApp {
 
       if( e.data === 'checkin_success' ) {
 
-        this.presentToast('Check in successful!');
+        this.translate.get('Check in successful!').subscribe( text => {
+          this.presentToast(text);
+        });
 
       } else if ( e.data === 'logout' ) {
 
@@ -529,8 +537,6 @@ export class MyApp {
         this.userLogin(data)
 
         this.storage.set('user_login', this.login_data )
-
-        this.maybeSendPushId( data.ajaxurl );
 
       } else if( typeof( data.isloggedin ) != "undefined" ) {
 
@@ -653,7 +659,7 @@ export class MyApp {
       this.Dialogs.alert(
         data.message,  // message
         data.title,            // title
-        'Done'                // buttonName
+        this.translate.instant('Done')  // buttonName
       );
 
     });
@@ -664,7 +670,15 @@ export class MyApp {
 
   }
 
-  maybeSendPushId( ajaxurl ) {
+  maybeSendPushId( ajaxurl? ) {
+
+    if(!ajaxurl)
+      ajaxurl = this.getAjaxURL();
+
+    if(!ajaxurl) {
+      console.log('Not able to send endpointArn, missing ajaxurl');
+      return;
+    }
 
     this.storage.get('endpointArn').then( id => {
 
@@ -711,10 +725,14 @@ export class MyApp {
 
     this.login_data = data
 
+    this.maybeSendPushId();
     // tell the modal we are logged in
     this.events.publish('modal:logindata', data )
 
-    this.presentToast('Login successful')
+    this.translate.get('Login successful').subscribe( text => {
+      this.presentToast(text);
+    });
+    
 
     if( this.pages )
       this.resetSideMenu(true)
@@ -740,7 +758,9 @@ export class MyApp {
       // this.openPage(this.pages[0])
     }
 
-    this.presentToast('Logout successful')
+    this.translate.get('Logout successful').subscribe( text => {
+      this.presentToast(text);
+    });
 
   }
 
@@ -752,6 +772,10 @@ export class MyApp {
         item.extra_classes += " show";
       } else if( login === false && item.extra_classes.indexOf('loggedin') >= 0 ) {
         item.extra_classes = item.extra_classes.replace(" show", "");
+      } else if( login === true && item.extra_classes.indexOf('loggedout') >= 0 ) {
+        item.extra_classes += " hide";
+      } else if( login === false && item.extra_classes.indexOf('loggedout') >= 0 ) {
+        item.extra_classes = item.extra_classes.replace(" hide", "");
       }
 
     }
@@ -780,6 +804,8 @@ export class MyApp {
       }
 
       if( login === false && item.extra_classes.indexOf('loggedin') >= 0 ) {
+        item.show = false;
+      } else if( login === true && item.extra_classes.indexOf('loggedout') >= 0 ) {
         item.show = false;
       }
 
@@ -821,7 +847,6 @@ export class MyApp {
     this.storage.get( 'app_language' ).then( lang => {
       if( lang ) {
         this.translate.use( lang )
-        this.translate.setDefaultLang('en')
       }
     })
 
@@ -856,6 +881,22 @@ export class MyApp {
       
     }
 
+  }
+
+  getAjaxURL() {
+
+    if(!this.ajax_url) {
+      let item = window.localStorage.getItem( 'myappp' );
+      let myapp = JSON.parse( item );
+      if(myapp.wordpress_url) {
+        this.ajax_url = myapp.wordpress_url + 'wp-admin/admin-ajax.php';
+      } else {
+        return '';
+      }
+    }
+
+    return this.ajax_url;
+    
   }
 
 }
