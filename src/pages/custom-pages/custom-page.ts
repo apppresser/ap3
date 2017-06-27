@@ -1,6 +1,6 @@
 import {Component, Renderer, ElementRef, OnInit, Input} from '@angular/core';
 import {Nav, NavParams, ModalController, Platform, ViewController, Events, IonicPage} from 'ionic-angular';
-import {TranslateService} from '@ngx-translate/core';
+import {TranslateService, TranslateModule} from '@ngx-translate/core';
 import {Storage} from '@ionic/storage';
 
 import {IonicModule, ToastController} from 'ionic-angular';
@@ -37,7 +37,7 @@ export class CustomPage implements OnInit {
 	rtlBack: boolean = false;
 	language: any;
 	templateUrl: string;
-	extraModules = [IonicModule];
+	extraModules = [IonicModule, TranslateModule];
 	langs: any;
 	segments: any;
 	showSegments: boolean = false
