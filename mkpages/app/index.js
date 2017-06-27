@@ -19,6 +19,7 @@ class AppBuilder {
         if (!this.cli_params) {
             return false;
         }
+        this.clean_up_old_builds();
         // be sure we have a place to save our files
         fs.access(this.build_dir, (err) => {
             if (err && err.code === 'ENOENT') {
@@ -28,6 +29,10 @@ class AppBuilder {
             // Start by getting myapp settings
             this.get_myappp_settings(); // from api
         });
+    }
+    clean_up_old_builds() {
+        let execSync = require('child_process').execSync;
+        execSync('rm -rf builds/app_*');
     }
     /**
      * API call to myapppresser.com
