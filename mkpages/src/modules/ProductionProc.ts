@@ -21,9 +21,10 @@ export class ProductionProc {
 	 * Copy, move and delete files where the need to go
 	 */
 	move_production_files() {
-		var fail = false;
+		let fail = false;
 		let exec = require('child_process').exec;
 		let execSync = require('child_process').execSync;
+		let fs = require('fs');
 		const site_name = this.cli_params.site_name;
 		const app_id = this.cli_params.app_id;
 		const zip_basename = this.zip_basename;
@@ -42,7 +43,11 @@ export class ProductionProc {
 		
 		execSync('mv builds/'+app_dir+'/page-* ../src/pages/');
 		execSync('mv builds/'+app_dir+'/globalvars/globalvars.ts ../src/providers/globalvars/');
-		execSync('mv builds/'+app_dir+'/app/app.component.ts ../src/app/app.component.ts');
+
+		// If there was an intro page
+		if (fs.existsSync('builds/'+app_dir+'/app/app.component.ts')) {
+			execSync('mv builds/'+app_dir+'/app/app.component.ts ../src/app/app.component.ts');
+		}
 		
 		setTimeout(() => {
 			this.create_production_app();

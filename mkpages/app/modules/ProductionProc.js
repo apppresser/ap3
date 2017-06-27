@@ -40,7 +40,11 @@ class ProductionProc {
         });
         execSync('mv builds/' + app_dir + '/page-* ../src/pages/');
         execSync('mv builds/' + app_dir + '/globalvars/globalvars.ts ../src/providers/globalvars/');
-        execSync('mv builds/' + app_dir + '/app/app.component.ts ../src/app/app.component.ts');
+        // If there was an intro page
+        // @TODO -- 
+        if (fail) {
+            execSync('mv builds/' + app_dir + '/app/app.component.ts ../src/app/app.component.ts');
+        }
         setTimeout(() => {
             this.create_production_app();
         }, 3000);
