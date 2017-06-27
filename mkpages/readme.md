@@ -4,6 +4,11 @@ How to get started
 # (You need to be in the same directory as this readme file)
 npm install
 
+# REINSTALL (might need to reinstall node modules in the parent directory)
+cd ../
+rm -rf node_modules
+npm install
+
 # EDIT
 Do code modifications the mkpages/src folder in TypeScript
 Set server configurations in `src/AppConfig.ts`
