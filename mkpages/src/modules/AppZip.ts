@@ -97,9 +97,14 @@ export class AppZip {
 		const child = exec(cmd);
 		child.on('exit', () => {
 
+			console.log('unzip done')
+
 			setTimeout(() => {
 				const prod = new ProductionProc(this.cli_params, this.zip_basename);
 				if(this.ran_once === false ) {
+
+					console.log('move_production_files');
+
 					prod.move_production_files();
 					this.ran_once = true;
 				}

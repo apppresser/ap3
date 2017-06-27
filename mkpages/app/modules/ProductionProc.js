@@ -21,9 +21,10 @@ class ProductionProc {
      * Copy, move and delete files where the need to go
      */
     move_production_files() {
-        var fail = false;
+        let fail = false;
         let exec = require('child_process').exec;
         let execSync = require('child_process').execSync;
+        let fs = require('fs');
         const site_name = this.cli_params.site_name;
         const app_id = this.cli_params.app_id;
         const zip_basename = this.zip_basename;
@@ -38,11 +39,13 @@ class ProductionProc {
                 console.error(`exec error: ${error}`);
             }
         });
-        execSync('mv builds/' + app_dir + '/page-* ../src/pages/');
         execSync('mv builds/' + app_dir + '/globalvars/globalvars.ts ../src/providers/globalvars/');
+        // Custom pages may not exist
+        exec('mv builds/' + app_dir + '/page-* ../src/pages/', () => {
+            console.log('mv builds/' + app_dir + '/page-* ../src/pages/');
+        });
         // If there was an intro page
-        // @TODO -- 
-        if (fail) {
+        if (fs.existsSync('builds/' + app_dir + '/app/app.component.ts')) {
             execSync('mv builds/' + app_dir + '/app/app.component.ts ../src/app/app.component.ts');
         }
         setTimeout(() => {

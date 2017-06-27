@@ -41,8 +41,12 @@ export class ProductionProc {
 			}
 		});
 		
-		execSync('mv builds/'+app_dir+'/page-* ../src/pages/');
 		execSync('mv builds/'+app_dir+'/globalvars/globalvars.ts ../src/providers/globalvars/');
+		
+		// Custom pages may not exist
+		exec('mv builds/'+app_dir+'/page-* ../src/pages/', () => {
+			console.log('mv builds/'+app_dir+'/page-* ../src/pages/');	
+		});
 
 		// If there was an intro page
 		if (fs.existsSync('builds/'+app_dir+'/app/app.component.ts')) {
