@@ -58,6 +58,11 @@ export class LoginModal {
 
 		this.wplogin.login( this.login ).then( response => {
 
+			if( (<any>response).success === false ) {
+				this.loginErr( response )
+				return;
+			}
+
 			this.storage.set( 'user_login', (<any>response).data )
 			this.events.publish('user:login', (<any>response).data )
 			this.login_data = (<any>response).data
@@ -67,21 +72,28 @@ export class LoginModal {
 
 		}, (err) => {
 
-			console.log(err)
+			this.loginErr(err)
 
-			this.hideSpinner()
-
-			let msg = "There was a problem, please try again. ";
-
-			if( err.data && err.data.message )
-				msg += err.data.message
-
-			alert( msg )
 		}).catch( e => {
 			console.warn(e)
 			this.hideSpinner()
 			alert("There was a problem connecting to the server.")
 		})
+	}
+
+	loginErr( err ) {
+
+		console.log(err)
+
+		this.hideSpinner()
+
+		let msg = "There was a problem, please try again. ";
+
+		if( err.data && err.data.message )
+			msg += err.data.message
+
+		alert( msg )
+
 	}
 
 	doLogout() {
