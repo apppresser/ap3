@@ -12,6 +12,7 @@ import {FbConnect} from '../providers/facebook/facebook';
 import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
+import {AppGeo} from '../providers/appgeo/appgeo';
 
 /* Native */
 import { StatusBar } from '@ionic-native/status-bar';
@@ -56,6 +57,7 @@ export class MyApp {
     private menu: MenuController,
     private globalvars: GlobalVars,
     private appads: AppAds,
+    private appgeo: AppGeo,
     private fbconnect: FbConnect,
     private sanitizer: DomSanitizer,
     private pushService: PushService,
@@ -546,6 +548,8 @@ export class MyApp {
       } else if( data.apppage ) {
         let page = { title: data.title, component: 'Iframe', url: data.apppage.url, classes: null, page_type: null, type: null };
         this.openPage( page );
+      } else if( data.geouserpref ) {
+        this.appgeo.startBeacon(data.geouserpref);
       }
 
     }, false); // end eventListener
