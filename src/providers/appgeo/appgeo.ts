@@ -70,6 +70,30 @@ export class AppGeo {
 		return this.position_options;
 	}
 
+	verifyDefaultFile(data) {
+		return new Promise( (resolve, reject) => {
+
+			if(data.default_language) {
+
+				const lang = data.default_language;
+
+				this.http.get( './assets/i18n/'+lang+'.json' )
+					.subscribe(data => {
+
+						// language file exists, return url 
+						resolve(lang);
+				},
+				error => {
+					// language file does not exist
+					resolve('en');
+				});
+
+			} else {
+				resolve('en');
+			}
+	    });
+	}
+
 	setCurrentPositionOptions(geouserdata) {
 		let timeout, maximumAge, enableHighAccuracy;
 		let default_options = {
