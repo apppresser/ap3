@@ -73,7 +73,7 @@ class AppBuilder {
     make_components() {
         this.myappp_settings.menus.items.forEach(element => {
             if (element.page_type == 'html' || element.page_id == this.intro_page_id) {
-                console.log('processing page: ' + element.title);
+                console.log('processing page: (' + element.page_id + ') ' + element.title);
                 this.make_page_html_component(element);
             }
         });
@@ -166,10 +166,15 @@ class AppBuilder {
      */
     get_page_content(componentMaker, file_name, page_id) {
         const contentCollector = new ContentCollector_1.ContentCollector(this.cli_params.site_name);
+        file_name = 'page-' + page_id + '.html';
         contentCollector.get_page_content(page_id).then((content) => {
-            file_name = 'page-' + page_id + '.html';
             componentMaker.build_template('custom-html-template.html', file_name, [
                 { key: 'Content goes here', value: content }
+            ]);
+        }).catch((error) => {
+            console.error(error);
+            componentMaker.build_template('custom-html-template.html', file_name, [
+                { key: 'Content goes here', value: '' }
             ]);
         });
     }
