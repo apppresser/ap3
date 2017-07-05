@@ -34,19 +34,24 @@ export class AppSettings {
 					reject(e.message);
 				});
 			} else if(this.port == 443) {
-				req = https.request(options, (res) => {
+				https.request(options, (res) => {
 					res.setEncoding('utf8');
+					let data = '';
 					res.on('data', (chunk) => {
-						resolve(JSON.parse(chunk.toString()));
-					});
-				});
-
-				req.on('error', function(e) {
+						data += chunk;
+					}).on('end', () => {
+						try{
+							resolve(JSON.parse(data.toString()));
+						} catch(e) {
+							console.error(e.message);
+						}
+					})
+				}).on('error', function(e) {
 					console.log('problem with request: ' + e.message);
 					reject(e.message);
-				});
-
-				req.end();
+				}).on('end', ()=>{
+					console.log('request end event');
+				}).end();
 			};
 		});
 	}
