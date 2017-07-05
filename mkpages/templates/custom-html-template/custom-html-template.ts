@@ -1,51 +1,36 @@
 import {Component, Renderer, ElementRef, OnInit, Input} from '@angular/core';
 import {Nav, NavParams, ModalController, Platform, ViewController, Events, IonicPage} from 'ionic-angular';
-import {TranslateService, TranslateModule} from '@ngx-translate/core';
+import {TranslateService} from '@ngx-translate/core';
 import {Storage} from '@ionic/storage';
 
-import {IonicModule, ToastController} from 'ionic-angular';
-import {IComponentInputData} from 'angular2-dynamic-component/index';
+import {ToastController} from 'ionic-angular';
+
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
 
-class DynamicContext {
-  value: string;
-  pages: any;
-  tab_menu_items: any;
-
-  constructor(){
-  }
-
-  onChange() {
-    //console.log(this.value)
-  }
-
-}
-
 /*
- * Uses dynamic component creation, see https://github.com/apoterenko/angular2-dynamic-component
+ * Template for creating custom HTML pages
  */
 @IonicPage({
   priority: 'high'
 })
 @Component({
-  templateUrl: "custom-page.html"
+  templateUrl: "custom-html-template.html"
 })
-export class CustomPage implements OnInit {
+export class CustomHtmlTemplate implements OnInit {
 
 	pagetitle: string;
 	listenFunc: Function;
 	rtlBack: boolean = false;
 	language: any;
 	templateUrl: string;
-	extraModules = [IonicModule, TranslateModule];
 	langs: any;
-	segments: any;
-	showSegments: boolean = false
-	loginModal: any;
+	pages: any = JSON.parse( window.localStorage.getItem( 'myappp' ) );
+	segments: any = JSON.parse( window.localStorage.getItem( 'segments' ) );
 	slug: string;
 	header_logo_url: string;
 	show_header_logo: boolean = false;
 	customClasses: string;
+	myLoginModal: any;
 
 	constructor( 
 		public navParams: NavParams, 
@@ -73,103 +58,10 @@ export class CustomPage implements OnInit {
 	    }
 	}
 
-	inputData: IComponentInputData = {
-		// anything that the template needs access to goes here
-		pages: JSON.parse( window.localStorage.getItem( 'myappp' ) ),
-		segments: JSON.parse( window.localStorage.getItem( 'segments' ) ),
-		pushPage: (page) => {
-
-			if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
-		      window.open( page.url, '_system', null );
-		      return;
-		    } else if( page.target === '_blank' ) {
-		      window.open( page.url, page.target, null );
-		      return;
-		    }
-
-		    let opt = {};
-
-		    if( this.platform.isRTL && this.platform.is('ios') )
-		      opt = { direction: 'back' }
-
-			if( page.type === 'apppages' && page.page_type === 'list' ) {
-				this.nav.push( 'PostList', page, opt );
-			} else if( page.type === 'apppages' ) {
-				this.nav.push( 'CustomPage', page, opt );
-			} else if (page.url) {
-				this.nav.push('Iframe', page, opt);
-			} else {
-				this.nav.push(page.component, page.navparams, opt);
-			}
-		},
-		openPage: ( page ) => {
-
-			if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
-		      window.open( page.url, '_system', null );
-		      return;
-		    } else if( page.target === '_blank' ) {
-		      window.open( page.url, page.target, null );
-		      return;
-		    }
-
-			if( page.type === 'apppages' && page.page_type === 'list' ) {
-				this.nav.setRoot( 'PostList', page );
-			} else if( page.type === 'apppages' ) {
-				this.nav.setRoot( 'CustomPage', page );
-			} else if (page.url) {
-				this.nav.setRoot('Iframe', page);
-			} else {
-				this.nav.setRoot(page.component, page.navparams);
-			}
-
-		},
-		back: () => {
-			this.nav.pop()
-		},
-		mediaModal: ( src, img = null ) => {
-
-			let modal = this.modalCtrl.create('MediaPlayer', {source: src, image: img});
-			modal.present();
-
-		},
-		updateData: () => {
-			window.localStorage.removeItem( 'myappp' )
-			this.storage.remove('segments')
-			this.events.publish( 'data:update', true )
-		},
-		changeRTL: ( event, rtl ) => {
-			if( rtl ) {	
-				this.platform.setDir('rtl', true)
-			} else {
-				this.platform.setDir('ltr', true)
-			}
-			this.storage.set( 'is_rtl', rtl )
-		},
-		showSegments: () => {
-			let modal = this.modalCtrl.create('PushSettings');
-			modal.present();
-		},
-		showLanguages: () => {
-			let modal = this.modalCtrl.create('LanguageSettings');
-			modal.present();
-		},
-		loginModal: () => {
-
-			this.loginModal = this.modalCtrl.create( 'LoginModal' );
-
-			this.loginModal.present();
-
-		}
-	}
-
 	ngOnInit() {
-		// console.log(this.navParams);
-		// set our custom template url
+
 		let slug = this.navParams.data.slug;
 		this.slug = slug;
-
-		// this.templateUrl = 'custom.html'
-		this.templateUrl = 'build/' + slug + '.html?' + this.random(1, 999);
 
 		this.customClasses = 'custom-page page-' + this.slug
 
@@ -195,6 +87,98 @@ export class CustomPage implements OnInit {
 	        window.open( event.target.href, '_blank' );
 	      }
 	    });
+	}
+
+	pushPage(page) {
+
+		if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
+	      window.open( page.url, '_system', null );
+	      return;
+	    } else if( page.target === '_blank' ) {
+	      window.open( page.url, page.target, null );
+	      return;
+	    }
+
+	    let opt = {};
+
+	    if( this.platform.isRTL && this.platform.is('ios') )
+	      opt = { direction: 'back' }
+
+		if( page.type === 'apppages' && page.page_type === 'list' ) {
+			this.nav.push( 'PostList', page, opt );
+		} else if( page.type === 'apppages' ) {
+			this.nav.push( 'Page' + page.page_id, page, opt );
+		} else if (page.url) {
+			this.nav.push('Iframe', page, opt);
+		} else {
+			this.nav.push(page.component, page.navparams, opt);
+		}
+	}
+
+	openPage( page ) {
+
+		if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
+	      window.open( page.url, '_system', null );
+	      return;
+	    } else if( page.target === '_blank' ) {
+	      window.open( page.url, page.target, null );
+	      return;
+	    }
+
+		if( page.type === 'apppages' && page.page_type === 'list' ) {
+			this.nav.setRoot( 'PostList', page );
+		} else if( page.type === 'apppages' ) {
+			this.nav.setRoot( 'Page' + page.page_id, page );
+		} else if (page.url) {
+			this.nav.setRoot('Iframe', page);
+		} else {
+			this.nav.setRoot(page.component, page.navparams);
+		}
+
+	}
+
+	back() {
+		this.nav.pop()
+	}
+
+	mediaModal( src, img = null ) {
+
+		let modal = this.modalCtrl.create('MediaPlayer', {source: src, image: img});
+		modal.present();
+
+	}
+
+	updateData() {
+		window.localStorage.removeItem( 'myappp' )
+		this.storage.remove('segments')
+		this.events.publish( 'data:update', true )
+	}
+
+	changeRTL( event, rtl ) {
+		if( rtl ) {	
+			this.platform.setDir('rtl', true)
+		} else {
+			this.platform.setDir('ltr', true)
+		}
+		this.storage.set( 'is_rtl', rtl )
+	}
+
+	showSegments() {
+		let modal = this.modalCtrl.create('PushSettings');
+		modal.present();
+	}
+
+	showLanguages() {
+		let modal = this.modalCtrl.create('LanguageSettings');
+		modal.present();
+	}
+
+	loginModal() {
+
+		this.myLoginModal = this.modalCtrl.create( 'LoginModal' );
+
+		this.myLoginModal.present();
+
 	}
 
 	// changes the back button transition direction if app is RTL

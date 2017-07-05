@@ -1,0 +1,126 @@
+<!-- test page, simulates a static page generated through app build -->
+<!-- pages are pages.menus.items, tab menu is pages.tab_menu.items -->
+<ion-grid>
+  <ion-row>
+    <ion-col col-6 *ngFor="let p of pages.menus.items" [ngClass]="p.extra_classes">
+      <ion-card (click)="pushPage(p)" class="menu-card">
+        <div class="card-title"><ion-icon *ngIf="p.class" name="{{p.class}}"></ion-icon></div>
+        <div class="card-subtitle">{{p.title}}</div>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+
+<ion-slides pager>
+<ion-slide>
+  <div class="icon-hero"><ion-icon name="aperture"></ion-icon></div>
+  <h2 class="slide-title">Learn</h2>
+  <p>Learn from our library of educational materials, and share with your friends.</p>
+</ion-slide>
+<ion-slide>
+  <div class="icon-hero"><ion-icon name="people"></ion-icon></div>
+  <h2 class="slide-title">Connect</h2>
+  <p>Connect with other app users in our vast app network.</p>
+</ion-slide>
+<ion-slide>
+  <div class="icon-hero"><ion-icon name="bulb"></ion-icon></div>
+  <h2 class="slide-title">Ready to Go?</h2>
+  <button ion-button large (click)="openPage(pages.menus.items[0])">
+    Get Started
+    <ion-icon name="arrow-forward"></ion-icon>
+  </button>
+</ion-slide>
+</ion-slides>
+
+<!-- <ion-row wrap>
+  <ion-col width-50 *ngFor="let p of tab_menu_items">
+  
+  <ion-card (click)="pushPage(p)">
+    
+    <div class="card-title"><ion-icon *ngIf="p.class" name="{{p.class}}"></ion-icon></div>
+    <div class="card-subtitle">{{p.title}}</div>
+  </ion-card>
+  </ion-col>
+</ion-row> -->
+
+<!-- <ion-row wrap>
+  <ion-col width-50 *ngFor="let p of pages">
+  
+  <ion-card (click)="openPage(p)">
+    
+    <div class="card-title"><ion-icon *ngIf="p.class" name="{{p.class}}"></ion-icon></div>
+    <div class="card-subtitle">{{p.title}}</div>
+  </ion-card>
+  </ion-col>
+</ion-row> -->
+
+<!-- <ion-card>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/J5mX7RJGj2M?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
+  <ion-card-content>
+    <ion-card-title>
+      Welcome to our Church!
+      </ion-card-title>
+<p>Check out this video to learn a little more about who we are, what we believe, what we value, and how we can serve you. We are one church with many locations and we have found that we are truly better together. 
+</p>
+  </ion-card-content>
+
+<ion-list>
+    <button ion-item (click)="pushPage( pages.tab_menu.items[1] )">
+      <ion-icon name="logo-youtube" item-left></ion-icon>
+      Watch Sermons
+     <ion-icon name="ios-arrow-forward" item-right></ion-icon>
+    </button>
+    <button ion-item (click)="pushPage( {url:'https://saddleback.com',target:'_blank' } )">
+      <ion-icon name="globe" item-left></ion-icon>
+      Our Website
+     <ion-icon name="ios-arrow-forward" item-right></ion-icon>
+    </button>
+</ion-list>
+</ion-card> -->
+
+<ion-list>
+  <ion-list-header>
+    Settings
+  </ion-list-header>
+
+  <ion-item>
+  <ion-icon name="cog" item-left></ion-icon>
+    <ion-label>Language</ion-label>
+    <ion-select [(ngModel)]="language" (ionChange)="changeLang($event, language)">
+      <ion-option value="en">English</ion-option>
+      <ion-option value="es">Spanish</ion-option>
+      <ion-option value="de">German</ion-option>
+      <!-- <ion-option *ngFor="let lang of langs" value="{{lang.code}}">{{lang.name}}</ion-option> -->
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-icon name="repeat" item-left></ion-icon>
+    <ion-toggle [(ngModel)]="rtl" (ionChange)="changeRTL($event, rtl)"></ion-toggle>
+    <ion-label>
+      RTL (Right to left)
+    </ion-label>
+  </ion-item>
+
+  <ion-item (click)="updateData()">
+    <ion-icon name="refresh" item-left></ion-icon>
+        Update Data
+    </ion-item>
+
+</ion-list>
+
+<ion-item (click)="segmentSubscribe('arn:aws:sns:us-west-2:876904128607:asdf-newtopictest')">
+    <ion-icon name="cog" item-left></ion-icon>
+        Subscribe to Segment
+</ion-item>
+
+<ion-item *ngFor="let segment of segments" [attr.segment]="segment.name | lowercase">
+  <span item-left class="dot"></span>
+  <ion-label>{{segment.name}}</ion-label>
+  <ion-toggle [(ngModel)]="segment.isChecked" (ionChange)="toggleSegment($event, segment)"></ion-toggle>
+</ion-item>
+
+<ion-item>
+    <ion-label>Pepperoni</ion-label>
+    <ion-toggle [(ngModel)]="value" (ionChange)="toggleSegment($event, value)"></ion-toggle>
+</ion-item>
