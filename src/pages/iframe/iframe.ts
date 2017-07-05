@@ -110,12 +110,7 @@ export class Iframe {
         if( this.loaded )
             return;
 
-        this.loading = this.loadingController.create({
-            showBackdrop: false,
-            dismissOnPageChange: false
-        });
-
-        this.loading.present();      
+        this.showSpinner()
 
         window.addEventListener('native.keyboardhide', (e) => {
             this.notifyThemeKeyboardClosed();
@@ -129,22 +124,26 @@ export class Iframe {
             this.postPauseEvent();
         });
 
-        setTimeout(() => {
-            this.loading.dismiss();
-        }, 8000);
-
         this.loaded = true;
     }
 
-    ionSelected() {
-        // fires when an active menu item is pressed again, causing a refresh
-
+    showSpinner() {
         this.loading = this.loadingController.create({
             showBackdrop: false,
             dismissOnPageChange: false
         });
 
         this.loading.present();
+
+        setTimeout(() => {
+            this.loading.dismiss();
+        }, 8000);
+    }
+
+    ionSelected() {
+        // fires when an active menu item is pressed again, causing a refresh
+
+        this.showSpinner()
 
         var url = this.url
         this.url = ''
@@ -169,6 +168,8 @@ export class Iframe {
 
         if( e.data === 'site_loaded' ) {
             this.loading.dismiss();
+        } else if( e.data === 'show_spinner' ) {
+            this.showSpinner()
         } else if( e.data === 'reload_frame' ) {
 
             // need to reload frame on login

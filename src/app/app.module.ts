@@ -36,6 +36,7 @@ import {AppData} from '../providers/appdata/appdata';
 import {WPlogin} from '../providers/wplogin/wplogin';
 import {HeaderLogo} from '../providers/header-logo/header-logo';
 import {VideoUtils} from "../providers/video/video-utils";
+import {AppGeo} from "../providers/appgeo/appgeo";
 
 /* Other */
 import { IonicStorageModule } from '@ionic/storage';
@@ -83,6 +84,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     PushService,
     AppWoo,
     AppData,
+    AppGeo,
     WPlogin,
     HeaderLogo,
     ActionSheet,

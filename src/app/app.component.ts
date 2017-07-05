@@ -3,6 +3,7 @@ import {ViewChild, Component} from '@angular/core';
 import {Platform, MenuController, Nav, ToastController, ModalController, Events} from 'ionic-angular';
 import {DomSanitizer} from '@angular/platform-browser';
 import {TranslateService} from '@ngx-translate/core';
+import {Http} from '@angular/http';
 
 /* Providers (make sure to add to app.module.ts providers too) */
 import {AppCamera} from '../providers/camera/app-camera';
@@ -12,6 +13,7 @@ import {FbConnect} from '../providers/facebook/facebook';
 import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
+import {AppGeo} from '../providers/appgeo/appgeo';
 
 /* Native */
 import { StatusBar } from '@ionic-native/status-bar';
@@ -56,6 +58,7 @@ export class MyApp {
     private menu: MenuController,
     private globalvars: GlobalVars,
     private appads: AppAds,
+    private appgeo: AppGeo,
     private fbconnect: FbConnect,
     private sanitizer: DomSanitizer,
     private pushService: PushService,
@@ -73,6 +76,7 @@ export class MyApp {
     private SocialSharing: SocialSharing,
     private Device: Device,
     private Push: Push,
+    private http: Http,
     private Dialogs: Dialogs
   ) {
 
@@ -94,8 +98,6 @@ export class MyApp {
   }
 
   initializeApp() {
-
-    this.translate.setDefaultLang('en');
 
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
@@ -173,6 +175,8 @@ export class MyApp {
     this.menu_side = ( data.meta.menu_right == true ) ? "right" : "left";
 
     this.rtl = ( data.meta.rtl == true ) ? true : false;
+
+    this.verifyLanguageFile(data);
 
     if( this.rtl === true )
       this.platform.setDir('rtl', true)
@@ -546,6 +550,8 @@ export class MyApp {
       } else if( data.apppage ) {
         let page = { title: data.title, component: 'Iframe', url: data.apppage.url, classes: null, page_type: null, type: null };
         this.openPage( page );
+      } else if( data.geouserpref ) {
+        this.appgeo.startBeacon(data.geouserpref);
       }
 
     }, false); // end eventListener
@@ -898,5 +904,40 @@ export class MyApp {
     return this.ajax_url;
     
   }
+
+  verifyLanguageFile(data) {
+    // check if language file exists. If not, default to en.json
+    this.langFileExists(data).then( data => {
+      const lang = (<string>data)
+
+      console.log('set language to ' + lang);
+
+      this.translate.setDefaultLang(lang);
+    });
+  }
+
+  langFileExists(data) {
+		return new Promise( (resolve, reject) => {
+
+			if(data.default_language) {
+
+				const lang = data.default_language;
+
+				this.http.get( './assets/i18n/'+lang+'.json' )
+					.subscribe(data => {
+
+						// language file exists, return url 
+						resolve(lang);
+				},
+				error => {
+					// language file does not exist
+					resolve('en');
+				});
+
+			} else {
+				resolve('en');
+			}
+	    });
+	}
 
 }
