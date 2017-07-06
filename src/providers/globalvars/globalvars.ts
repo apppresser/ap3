@@ -12,6 +12,7 @@ import 'rxjs/add/operator/map';
 export class GlobalVars {
 
   data: any = null;
+  isInProductionMode = false;
   // url should be WP site with AP installed, dynamically changes based on build form
   // appid: string = '163';
   // apiurl: string = 'http://staging.myapppresser.com/test/'
