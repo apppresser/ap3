@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "build": "ionic-app-scripts build",
-    "serve": "ionic-app-scripts serve"
+    "serve": "ionic-app-scripts serve",
+    "pages": "cd mkpages && node app"
   },
   "dependencies": {
     "@angular/animations": "4.1.0",
