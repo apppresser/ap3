@@ -71,13 +71,30 @@ class AppBuilder {
         exec('cp ../src/providers/globalvars/globalvars.ts builds/' + app_dir + '/bak/globalvars.ts', () => { });
     }
     make_components() {
-        this.myappp_settings.menus.items.forEach(element => {
+        let menu_items = this.get_menu_items();
+        menu_items.forEach(element => {
             if (element.page_type == 'html' || element.page_id == this.intro_page_id) {
                 console.log('processing page: (' + element.page_id + ') ' + element.title);
                 this.make_page_html_component(element);
             }
         });
         console.log('done!');
+    }
+    get_menu_items() {
+        let menu_items = this.myappp_settings.menus.items;
+        if (this.myappp_settings.tab_menu && this.myappp_settings.tab_menu.items) {
+            if (menu_items) {
+                menu_items.push(...this.myappp_settings.tab_menu.items);
+            }
+            else {
+                // This app only has a tab menu
+                menu_items = this.myappp_settings.tab_menu.items;
+            }
+        }
+        if (menu_items === null) {
+            throw new Error('This app must have a menu');
+        }
+        return menu_items;
     }
     set_globalvars() {
         const src_folder = 'templates';
@@ -100,10 +117,7 @@ class AppBuilder {
         const new_folder = 'app';
         const dest_dir = 'mkpages/builds/app_' + this.cli_params.site_name + '_' + this.cli_params.app_id;
         const intro_slug = this.myappp_settings.meta.intro_slug;
-        let menu_items = this.myappp_settings.menus.items;
-        if (this.myappp_settings.tab_menu && this.myappp_settings.tab_menu.items) {
-            menu_items.push(...this.myappp_settings.tab_menu.items);
-        }
+        let menu_items = this.get_menu_items();
         let page_id = 0;
         for (let i = 0; i < menu_items.length; i++) {
             if (menu_items[i].slug == intro_slug) {
