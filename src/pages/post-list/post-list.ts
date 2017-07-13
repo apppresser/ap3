@@ -95,6 +95,11 @@ export class PostList implements OnInit {
         this.viewCtrl.showBackButton(false)
         this.rtlBack = true
     }
+
+    this.storage.get( this.route.substr(-10, 10) + '_favorites' ).then( (favorites) => {
+      if( favorites )
+        this.favorites = favorites
+    })
  
   }
 
