@@ -297,11 +297,25 @@ export class MyApp {
     if( this.introshown === "true" ) 
       return;
 
-    let intro = { 'title': "Introduction", 'component': 'CustomPage', 'class': "", 'navparams': { 'slug': slug } };
+    let page_id = this.getPageIdBySlug(slug);
 
-    this.nav.push( 'CustomPage', intro.navparams );
+    let intro = { 'title': "Introduction", 'component': this.getPageModuleName(page_id), 'class': "", 'navparams': { 'slug': slug } };
+
+    this.nav.push( this.getPageModuleName(page_id), intro.navparams );
 
     window.localStorage.setItem('app-intro-shown', "true" );
+  }
+
+  getPageIdBySlug(slug) {
+
+    let page_id = 0;
+
+    this.pages.forEach(page => {
+      if(page.slug && page.slug == slug && page.page_id)
+        page_id = page.page_id;
+    });
+
+    return page_id;
   }
 
   // side menu link. determine which func to use
@@ -322,7 +336,7 @@ export class MyApp {
     // close the menu when clicking a link from the menu
     this.menu.close();
 
-    if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
+    if( page.target === '_blank' && typeof(page.extra_classes) !== 'undefined' && page.extra_classes.indexOf('system') >= 0 ) {
       this.openIab( page.url, '_system', null );
       return;
     } else if( page.target === '_blank' ) {
