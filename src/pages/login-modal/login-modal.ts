@@ -3,6 +3,7 @@ import { Events, ViewController, ToastController, LoadingController, IonicPage }
 import {WPlogin} from '../../providers/wplogin/wplogin';
 import { Storage } from '@ionic/storage';
 import {Device} from '@ionic-native/device';
+import {TranslateService} from '@ngx-translate/core';
 
 @IonicPage()
 @Component({
@@ -21,6 +22,7 @@ export class LoginModal {
 		public wplogin: WPlogin,
 		public events: Events,
 		public storage: Storage,
+		public translate: TranslateService,
 		private Device: Device
 		) {
 
@@ -45,14 +47,18 @@ export class LoginModal {
 		// if in preview, Device.platform is empty object. On device it should be string like 'iOS'
 		if( typeof this.Device.platform != 'string' ) {
 
-			alert('Please try from a device.');
+			this.translate.get('Please try from a device.').subscribe( text => {
+				alert(text);
+			})
 
 			return;
 
 		}
 
-		if( !this.login )
-			alert('Please enter a valid login.')
+		this.translate.get('Please enter a valid login.').subscribe( text => {
+			if( !this.login )
+				alert(text)
+		})
 
 		this.showSpinner()
 
@@ -77,7 +83,9 @@ export class LoginModal {
 		}).catch( e => {
 			console.warn(e)
 			this.hideSpinner()
-			alert("There was a problem connecting to the server.")
+			this.translate.get('There was a problem connecting to the server.').subscribe( text => {
+				alert(text);
+			});
 		})
 	}
 
@@ -87,12 +95,14 @@ export class LoginModal {
 
 		this.hideSpinner()
 
-		let msg = "There was a problem, please try again. ";
+		this.translate.get('There was a problem, please try again.').subscribe( text => {
+			let msg = text;
 
-		if( err.data && err.data.message )
-			msg += err.data.message
+			if( err.data && err.data.message )
+				msg += ' ' + err.data.message
 
-		alert( msg )
+			alert( msg )
+		});
 
 	}
 
@@ -117,16 +127,20 @@ export class LoginModal {
 
 			console.log(err)
 
-			let msg = "You are logged out of the app, but there was a problem on the server. ";
+			this.translate.get('You are logged out of the app, but there was a problem on the server.').subscribe( text => {
+				let msg = text;
 
-			if( err.data && err.data.message )
-				msg += err.data.message
+				if( err.data && err.data.message )
+					msg += ' ' + err.data.message
 
-			alert( msg )
+				alert( msg )
+			})
 		}).catch( e => {
 			console.warn(e)
 			this.hideSpinner()
-			alert("There was a problem connecting to the server.")
+			this.translate.get('There was a problem connecting to the server.').subscribe( text => {
+				alert(text)
+			})
 		})
 
 	}
