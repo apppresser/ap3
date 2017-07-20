@@ -759,6 +759,7 @@ export class MyApp {
       this.presentToast(text);
     });
     
+    this.maybeLoginRedirect(data);
 
     if( this.pages )
       this.resetSideMenu(true)
@@ -767,6 +768,42 @@ export class MyApp {
       this.resetTabs(true)
   }
 
+  /**
+   * Handle the appp_login_redirect filter from WordPress
+   * @param data Login data
+   */
+  maybeLoginRedirect(data) {
+    
+    if(data.login_redirect) {
+      console.log('redirecting to ' + data.login_redirect);
+
+      let page: object;
+
+      if(typeof data.login_redirect === 'string') {
+        page = { 
+          title: '',
+          url: data.login_redirect,
+          component: 'Iframe',
+          classes: null,
+          target: '',
+          extra_classes: '',
+        };
+      } else if(typeof data.login_redirect === 'object') {
+        page = {
+          title: data.login_redirect.title,
+          url: data.login_redirect.url,
+          component: 'Iframe',
+          classes: null,
+          target: '',
+          extra_classes: '',
+        };
+      }
+
+      if(page) {
+        this.pushPage(page);
+      }   
+    }
+  }
   userLogout() {
     // this.storage.remove('user_login').then( () => {
     //   this.presentToast('Logged out successfully.')
