@@ -91,7 +91,6 @@ export class MyApp {
     });
 
     events.subscribe('data:update', obj => {
-      console.log('data:update', obj)
       this.fetchData( obj );
     });
 
@@ -857,7 +856,13 @@ export class MyApp {
     this.storage.get('user_login').then( data => {
         if(data) {
           this.login_data = data;
-          this.resetSideMenu( true );
+          
+          if( this.pages )
+            this.resetSideMenu(true)
+
+          if( this.tabs )
+            this.resetTabs(true)
+    
         }
     })
 
