@@ -15,6 +15,7 @@ class AppBuilder {
 	private build_dir = __dirname + '/builds';
 	private zip_basename: string; // i.e. app-6.4 (the zip file without the .zip; used for unzipped dirname)
 	private intro_page_id = 0;
+	private continue_processing = true;
 	
 	run() {
 
@@ -59,16 +60,21 @@ class AppBuilder {
 
 				this.make_backup_copies();
 				this.make_components();
-				this.set_globalvars();
-
-				const zip = new AppZip(this.myappp_settings, this.cli_params);
-				zip.get_app_zip();
+				
 			} else {
 				console.log(json);
 			}
 		}, (error) => {
 			console.error("Failed!", error);
 		})
+	}
+
+	// @TODO connect this into an event listener
+	all_pages_downloaded() {
+		this.set_globalvars();
+
+		const zip = new AppZip(this.myappp_settings, this.cli_params);
+		zip.get_app_zip();
 	}
 
 	/**
@@ -92,13 +98,24 @@ class AppBuilder {
 		let menu_items = this.get_menu_items();
 
 		menu_items.forEach(element => {
-			if(element.page_type == 'html' || element.page_id == this.intro_page_id) {
-				console.log('processing page: (' + element.page_id + ') '  + element.title);
-				this.make_page_html_component(element);
+			if(this.continue_processing) {
+				if(element.page_type == 'html' || element.page_id == this.intro_page_id) {
+					console.log('processing page: (' + element.page_id + ') '  + element.title);
+					this.make_page_html_component(element);
+				}
 			}
 		});
 
 		console.log('done!');
+
+		setTimeout(() => {
+			// @TODO instead of a long timeout, trigger an event when ready to continue, if all the pages were created, currently this happends too quickly if there is an error getting page content
+			if(this.continue_processing)
+				this.all_pages_downloaded();
+			else
+				console.log('Unable to continue');
+		}, 10000);
+		
 	}
 
 	get_menu_items() {
@@ -230,10 +247,10 @@ class AppBuilder {
 				{key: 'Content goes here', value: content}
 			]);
 		}).catch((error) => {
+			if(error.indexOf('json response') > 0) {
+				this.continue_processing = false;
+			}
 			console.error(error);
-			componentMaker.build_template( 'custom-html-template.html', file_name, [
-				{key: 'Content goes here', value: ''}
-			]);
 		})
 	}
 

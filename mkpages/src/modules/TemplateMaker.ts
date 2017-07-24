@@ -77,7 +77,7 @@ export class TemplateMaker {
 	 */
 	writeFile(new_file, content) {
 
-		console.log('Writting to ' + new_file);
+		console.log('Writing to ' + new_file);
 
 		fs.writeFile(new_file, content, 'utf8', (err) => {
 			if (err) return console.log(err);

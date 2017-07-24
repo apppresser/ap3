@@ -38,11 +38,18 @@ class ContentCollector {
                 req = https.request(options, (res) => {
                     res.setEncoding('utf8');
                     res.on('data', (chunk) => {
-                        const json = JSON.parse(chunk.toString());
-                        if (json.content && json.content.rendered) {
-                            resolve(json.content.rendered);
+                        try {
+                            const json = JSON.parse(chunk.toString());
+                            if (json.content && json.content.rendered) {
+                                resolve(json.content.rendered);
+                            }
+                            else {
+                                console.log('No content found for page id ' + page_id);
+                                resolve('');
+                            }
                         }
-                        else {
+                        catch (error) {
+                            console.log('page_id: ' + page_id + ' did not contain a json response');
                             reject('No content found for page id ' + page_id);
                         }
                     });
