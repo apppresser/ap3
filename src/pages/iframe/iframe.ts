@@ -239,7 +239,12 @@ export class Iframe {
 
         this.findIframe();
 
-        this.iframe.contentWindow.postMessage('{"pause_event":{"platform":"'+this.Device.platform+'"}}', '*');
+        if(this.iframe && this.iframe.contentWindow) {
+            this.iframe.contentWindow.postMessage('{"pause_event":{"platform":"'+this.Device.platform+'"}}', '*');
+        } else {
+            console.warn('contentWindow not found in iframe.ts postPauseEvent()');
+        }
+
     }
 
     // find the first ancestor with the given class name
