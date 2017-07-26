@@ -40,6 +40,7 @@ export class MyApp {
   login: boolean;
   navparams: any = [];
   tabs: any;
+  originalTabs: any;
   login_data: any;
   showmenu: boolean = false;
   apptitle: string;
@@ -225,6 +226,8 @@ export class MyApp {
       }
 
       this.tabs = this.navparams;
+      if(typeof this.originalTabs === 'undefined')
+        this.originalTabs = this.tabs.slice(); // make a copy
 
       this.nav.setRoot('TabsPage', this.tabs);
 
@@ -303,6 +306,43 @@ export class MyApp {
     this.nav.push( this.getPageModuleName(page_id), intro.navparams );
 
     window.localStorage.setItem('app-intro-shown', "true" );
+  }
+
+  /**
+   * Get side menu index by page slug
+   */
+  getMenuIndexBySlug(slug: string) {
+    return this.getIndexBySlug(slug, this.pages);
+  }
+
+  /**
+   * Get tab menu index by page slug
+   * @param slug page slug
+   */
+  getTabIndexBySlug(slug: string) {
+    return this.getIndexBySlug(slug, this.tabs);
+  }
+
+  /**
+   * Side or tab menus
+   * @param slug page slug
+   * @param pages menu or tab pages
+   */
+  getIndexBySlug(slug: string, pages) {
+    let menu_index: number;
+    let count: number = 0;
+
+    for(let page of pages) {
+      if(page.slug && page.slug == slug) {
+        menu_index = count;
+      }
+      count++;
+    };
+
+    if(typeof menu_index === 'undefined')
+      console.log(pages); // you can find the slugs here
+
+    return menu_index;
   }
 
   getPageIdBySlug(slug) {
@@ -386,7 +426,87 @@ export class MyApp {
     } else {
       this.nav.push(page.component, page.navparams, opt);
     }
+  }
 
+  openTab(tab_index: number) {
+    this.restoreTabs();
+    let tabs = this.nav.getActiveChildNav();
+    if(tabs) {
+      this.nav.popToRoot({animate:true}).then(() => { // close any transitioned pages
+          tabs.select(tab_index);
+      });
+    }
+  }
+
+  /**
+   * Experimental: need to get this.removeNewTab() working
+   * @param page object
+   */
+  openNewTab(page) {
+    this.nav.popToRoot({animate:true}).then(() => { // close any transitioned pages
+      this.restoreTabs();
+      this.tabs.unshift(page);
+      let loggedin = (typeof this.login_data === 'object');
+      this.resetTabs(loggedin);
+      this.nav.setRoot( 'TabsPage', this.navparams );
+    });
+  }
+
+  /**
+   * Restore the original tabs.
+   */
+  restoreTabs() {
+    this.tabs = this.originalTabs.slice(); // copy back
+  }
+
+  openMenuLink(data: {menulink}) {
+    let page: any;
+    let menu_index: number;
+
+    if(typeof data.menulink.menu !== 'undefined') { // might be 0; check undefined
+      if(typeof data.menulink.menu === 'number')
+        menu_index = data.menulink.menu;
+      else if(typeof data.menulink.menu === 'string')
+        menu_index = this.getMenuIndexBySlug(data.menulink.menu);
+      if(typeof menu_index !== 'undefined')
+        page = this.pages[menu_index];
+    } else if(typeof data.menulink.tab_menu !== 'undefined') {
+      if(typeof data.menulink.tab_menu === 'number')
+        menu_index = data.menulink.tab_menu;
+      else if(typeof data.menulink.tab_menu === 'string')
+        menu_index = this.getTabIndexBySlug(data.menulink.tab_menu);
+      if(typeof menu_index !== 'undefined')
+        page = this.tabs[menu_index];
+    }
+
+    // Verify logins
+    if(page && page.extra_classes) {
+      if(page.extra_classes == 'loggedin' && typeof this.login_data != 'object') {
+        this.translate.get('Please login').subscribe( text => {
+          this.presentToast(text);
+        });
+        return;
+      }
+      if(page.extra_classes == 'loggedout' && typeof this.login_data == 'object') {
+        console.log('login_data', this.login_data);
+        page = null;
+      }
+    }
+
+    if(page) {
+
+      if(data.menulink.new_tab) {
+        this.openNewTab(page);
+      } else if(data.menulink.backbtn || typeof data.menulink.menu !== 'undefined') {
+        this.pushPage(page);
+      } else {
+        this.openTab(menu_index);
+      }
+    } else {
+      this.translate.get('Page not found').subscribe( text => {
+        this.presentToast(text);
+      });
+    }
   }
 
   getPageModuleName(page_id) {
@@ -572,6 +692,8 @@ export class MyApp {
         this.openPage( page );
       } else if( data.geouserpref ) {
         this.appgeo.startBeacon(data.geouserpref);
+      } else if(data.menulink) {
+        this.openMenuLink(data);
       }
 
     }, false); // end eventListener
@@ -883,7 +1005,7 @@ export class MyApp {
     // "refresh" the view by resetting to home tab
     if( login === false ) {
         //this.openPage( { 'title': this.tabs[0].title, 'url': '', 'component': 'TabsPage', 'navparams': this.navparams, 'class': this.tabs[0].icon } )
-        this.nav.setRoot( 'TabsPage', this.navparams )
+        this.nav.setRoot( 'TabsPage', this.navparams );
       }
 
   }

@@ -191,8 +191,13 @@ export class CustomPage implements OnInit {
 	    this.listenFunc = this.renderer.listen(this.elementRef.nativeElement, 'click', (event) => {
 	    	
 	      if( event.target.href && event.target.href.indexOf('http') >= 0 ) {
-	        event.preventDefault();
-	        window.open( event.target.href, '_blank' );
+					event.preventDefault();
+					if(event.target.target && event.target.target) {
+						window.open( event.target.href, event.target.target);
+					} else {
+						window.open( event.target.href, '_blank' );
+					}
+	        
 	      }
 	    });
 	}
