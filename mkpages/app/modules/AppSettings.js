@@ -26,6 +26,7 @@ class AppSettings {
                     });
                 }).on('error', (e) => {
                     console.error(e);
+                    console.log('API failed', options);
                     reject(e.message);
                 });
             }
@@ -41,6 +42,7 @@ class AppSettings {
                         }
                         catch (e) {
                             console.error(e.message);
+                            console.log('API failed', options);
                         }
                     });
                 }).on('error', function (e) {

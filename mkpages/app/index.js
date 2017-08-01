@@ -139,14 +139,6 @@ class AppBuilder {
                 break;
             }
         }
-        if (page_id) {
-            const componentMaker = new TemplateMaker_1.TemplateMaker(src_folder, new_folder, dest_dir, root_folder);
-            const template_file = 'app.component.ts';
-            const new_file = 'app.component.ts';
-            componentMaker.build_template(template_file, new_file, [
-                { key: "CustomPage", value: 'Page' + page_id }
-            ]);
-        }
     }
     /**
      * Each page component consists of

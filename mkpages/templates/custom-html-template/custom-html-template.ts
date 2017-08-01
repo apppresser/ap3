@@ -3,9 +3,9 @@ import {Nav, NavParams, ModalController, Platform, ViewController, Events, Ionic
 import {TranslateService} from '@ngx-translate/core';
 import {Storage} from '@ionic/storage';
 
-import {ToastController} from 'ionic-angular';
-
+import {IonicModule, ToastController} from 'ionic-angular';
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
+import {GlobalVars} from '../../providers/globalvars/globalvars';
 
 /*
  * Template for creating custom HTML pages
@@ -24,13 +24,18 @@ export class CustomHtmlTemplate implements OnInit {
 	language: any;
 	templateUrl: string;
 	langs: any;
-	pages: any = JSON.parse( window.localStorage.getItem( 'myappp' ) );
-	segments: any = JSON.parse( window.localStorage.getItem( 'segments' ) );
+	segments: any;
+	show_segments: boolean = false;
+	login_modal: any;
 	slug: string;
 	header_logo_url: string;
 	show_header_logo: boolean = false;
 	customClasses: string;
-	myLoginModal: any;
+	pages: any;
+	menus: {
+		side: any,
+		tabs: any
+	};
 
 	constructor( 
 		public navParams: NavParams, 
@@ -44,6 +49,7 @@ export class CustomHtmlTemplate implements OnInit {
 		public storage: Storage,
 		public events: Events,
 		public toastCtrl: ToastController,
+		private globalvars: GlobalVars,
 		private headerLogoService: HeaderLogo
         ) {
 		this.pagetitle = navParams.data.title;
@@ -56,6 +62,13 @@ export class CustomHtmlTemplate implements OnInit {
 		if( platform.is('android') ) {
 	      this.killVideos()
 	    }
+
+		this.pages = this.getPages(); // not just pages: this is the whole myappp data
+		this.menus = {
+			side: this.getSideMenu(),
+			tabs: this.getTabs()
+		};
+		this.segments = this.getSegments();
 	}
 
 	ngOnInit() {
@@ -84,101 +97,14 @@ export class CustomHtmlTemplate implements OnInit {
 	    	
 	      if( event.target.href && event.target.href.indexOf('http') >= 0 ) {
 	        event.preventDefault();
+					if(event.target.target && event.target.target) {
+						window.open( event.target.href, event.target.target);
+					} else {
 	        window.open( event.target.href, '_blank' );
 	      }
+
+	      }
 	    });
-	}
-
-	pushPage(page) {
-
-		if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
-	      window.open( page.url, '_system', null );
-	      return;
-	    } else if( page.target === '_blank' ) {
-	      window.open( page.url, page.target, null );
-	      return;
-	    }
-
-	    let opt = {};
-
-	    if( this.platform.isRTL && this.platform.is('ios') )
-	      opt = { direction: 'back' }
-
-		if( page.type === 'apppages' && page.page_type === 'list' ) {
-			this.nav.push( 'PostList', page, opt );
-		} else if( page.type === 'apppages' ) {
-			this.nav.push( 'Page' + page.page_id, page, opt );
-		} else if (page.url) {
-			this.nav.push('Iframe', page, opt);
-		} else {
-			this.nav.push(page.component, page.navparams, opt);
-		}
-	}
-
-	openPage( page ) {
-
-		if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
-	      window.open( page.url, '_system', null );
-	      return;
-	    } else if( page.target === '_blank' ) {
-	      window.open( page.url, page.target, null );
-	      return;
-	    }
-
-		if( page.type === 'apppages' && page.page_type === 'list' ) {
-			this.nav.setRoot( 'PostList', page );
-		} else if( page.type === 'apppages' ) {
-			this.nav.setRoot( 'Page' + page.page_id, page );
-		} else if (page.url) {
-			this.nav.setRoot('Iframe', page);
-		} else {
-			this.nav.setRoot(page.component, page.navparams);
-		}
-
-	}
-
-	back() {
-		this.nav.pop()
-	}
-
-	mediaModal( src, img = null ) {
-
-		let modal = this.modalCtrl.create('MediaPlayer', {source: src, image: img});
-		modal.present();
-
-	}
-
-	updateData() {
-		window.localStorage.removeItem( 'myappp' )
-		this.storage.remove('segments')
-		this.events.publish( 'data:update', true )
-	}
-
-	changeRTL( event, rtl ) {
-		if( rtl ) {	
-			this.platform.setDir('rtl', true)
-		} else {
-			this.platform.setDir('ltr', true)
-		}
-		this.storage.set( 'is_rtl', rtl )
-	}
-
-	showSegments() {
-		let modal = this.modalCtrl.create('PushSettings');
-		modal.present();
-	}
-
-	showLanguages() {
-		let modal = this.modalCtrl.create('LanguageSettings');
-		modal.present();
-	}
-
-	loginModal() {
-
-		this.myLoginModal = this.modalCtrl.create( 'LoginModal' );
-
-		this.myLoginModal.present();
-
 	}
 
 	// changes the back button transition direction if app is RTL
@@ -229,15 +155,15 @@ export class CustomHtmlTemplate implements OnInit {
 	}
 
 	random(min, max) {
-	  if (min == null && max == null) {
-	    max = 1;
-	  }
-	  min = +min || 0;
-	  if (max == null) {
-	    max = min;
-	    min = 0;
-	  }
-	  return min + Math.floor(Math.random() * ((+max || 0) - min + 1));
+		if (min == null && max == null) {
+			max = 1;
+		}
+		min = +min || 0;
+		if (max == null) {
+			max = min;
+			min = 0;
+		}
+		return min + Math.floor(Math.random() * ((+max || 0) - min + 1));
 	}
 
 	doLogo() {
@@ -249,6 +175,205 @@ export class CustomHtmlTemplate implements OnInit {
 			// no logo, do nothing
             //console.log(e)
 		})
+	}
+
+	/**
+	 * Get side menu index by page slug
+	 */
+	getMenuIndexBySlug(slug: string) {
+		return this.getIndexBySlug(slug, this.menus.side);
+	}
+
+	/**
+	 * Get tab menu index by page slug
+	 * @param slug page slug
+	 */
+	getTabIndexBySlug(slug: string) {
+		return this.getIndexBySlug(slug, this.menus.tabs);
+	}
+
+	/**
+	 * Side or tab menus
+	 * @param slug page slug
+	 * @param pages menu or tab pages
+	 */
+	getIndexBySlug(slug: string, pages) {
+		let menu_index: number;
+		let count: number = 0;
+
+		if(!pages)
+			return menu_index;
+
+		for(let page of pages) {
+			if(page.slug && page.slug == slug) {
+			menu_index = count;
+			}
+			count++;
+		};
+
+		if(!menu_index && menu_index !== 0)
+			console.log(pages); // you can find the slugs here
+
+    	return menu_index;
+	}
+	
+	getPage(page_slug: string) {
+
+		let menu_index: number;
+		let page: object;
+		
+		menu_index = this.getMenuIndexBySlug(page_slug);
+
+		if(menu_index || menu_index === 0) {
+			return this.menus.side[menu_index];
+		}
+
+		menu_index = this.getTabIndexBySlug(page_slug);
+
+		if(menu_index || menu_index === 0) {
+			return this.menus.tabs[menu_index];
+		}
+
+		// otherwise . . .
+		this.translate.get('Page not found').subscribe( text => {
+			this.presentToast(text);
+	    });
+
+		return false;
+	}
+
+	pushPage(page) {
+
+			if(typeof page === 'string') {
+				page = this.getPage(page);
+				if(page === false)
+					return;
+			}
+
+		if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
+	      window.open( page.url, '_system', null );
+	      return;
+	    } else if( page.target === '_blank' ) {
+	      window.open( page.url, page.target, null );
+	      return;
+	    }
+
+	    let opt = {};
+
+	    if( this.platform.isRTL && this.platform.is('ios') )
+	      opt = { direction: 'back' }
+
+		if( page.type === 'apppages' && page.page_type === 'list' ) {
+			this.nav.push( 'PostList', page, opt );
+		} else if( page.type === 'apppages' ) {
+			this.nav.push(this.getPageModuleName(page.page_id), page, opt );
+		} else if (page.url) {
+			this.nav.push('Iframe', page, opt);
+		} else {
+			this.nav.push(page.component, page.navparams, opt);
+		}
+	}
+
+	openPage(page) {
+
+		console.log('openPage', page);
+
+		if(typeof page === 'string') {
+			page = this.getPage(page);
+			console.log('openPage after getPage', page);
+			if(page === false)
+				return;
+		}
+
+		console.log('openPage before setRoot', page);
+
+		if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
+	      window.open( page.url, '_system', null );
+	      return;
+	    } else if( page.target === '_blank' ) {
+	      window.open( page.url, page.target, null );
+	      return;
+	    }
+
+		if( page.type === 'apppages' && page.page_type === 'list' ) {
+			this.nav.setRoot( 'PostList', page );
+		} else if( page.type === 'apppages' ) {
+			this.nav.setRoot(this.getPageModuleName(page.page_id), page );
+		} else if (page.url) {
+			this.nav.setRoot('Iframe', page);
+		} else {
+			this.nav.setRoot(page.component, page.navparams);
+		}
+	}
+
+	back() {
+		this.nav.pop();
+	}
+
+	mediaModal( src, img = null ) {
+		let modal = this.modalCtrl.create('MediaPlayer', {source: src, image: img});
+		modal.present();
+	}
+
+	updateData() {
+		window.localStorage.removeItem( 'myappp' )
+		this.storage.remove('segments')
+		this.events.publish( 'data:update', true )
+	}
+
+	changeRTL( event, rtl ) {
+		if( rtl ) {	
+			this.platform.setDir('rtl', true)
+		} else {
+			this.platform.setDir('ltr', true)
+		}
+		this.storage.set( 'is_rtl', rtl )
+	}
+
+	showSegments() {
+		let modal = this.modalCtrl.create('PushSettings');
+		modal.present();
+	}
+
+	showLanguages() {
+		let modal = this.modalCtrl.create('LanguageSettings');
+		modal.present();
+	}
+
+	loginModal() {
+		this.login_modal = this.modalCtrl.create( 'LoginModal' );
+		this.login_modal.present();
+	}
+
+	getPages() {
+		if(!this.pages) {
+			this.pages = JSON.parse( window.localStorage.getItem( 'myappp' ) );
+	}
+		return this.pages;
+	}
+
+	getSegments() {
+		if(!this.segments)
+			this.segments = JSON.parse( window.localStorage.getItem( 'segments' ) );
+		return this.segments;
+		    }
+
+	getSideMenu() {
+		let myappp = JSON.parse( window.localStorage.getItem( 'myappp' ) );
+		return myappp.menus.items;
+		  }
+
+	getTabs() {
+		let myappp = JSON.parse( window.localStorage.getItem( 'myappp' ) );
+		return myappp.tab_menu.items;
+	}
+
+	getPageModuleName(page_id) {
+		console.log('isInProductionMode', this.globalvars.isInProductionMode);
+		if(this.globalvars.isInProductionMode)
+			return 'Page'+page_id;
+		else
+			return 'CustomPage';
 	}
 
 }

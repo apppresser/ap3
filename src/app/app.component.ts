@@ -287,7 +287,26 @@ export class MyApp {
   // construct tab items
   navParamsPush( item, root ) {
 
-    this.navparams.push( { 'title': item.title, 'url': item.url, 'root': root, 'icon': item.class, 'slug': item.slug, 'list_route': item.list_route, 'list_display': item.list_display, 'favorites': item.favorites, 'extra_classes': item.extra_classes, 'show' : item.show, 'show_slider': item.show_slider, 'slide_route': item.slide_route, 'type': item.type, 'page_type': item.page_type, 'is_home': true } );
+    let page: object;
+
+    this.navparams.push( { 
+      'title': item.title,
+      'url': item.url, 
+      'root': root,
+      'icon': item.class,
+      'slug': item.slug,
+      'list_route': item.list_route,
+      'list_display': item.list_display,
+      'favorites': item.favorites,
+      'extra_classes': item.extra_classes,
+      'show' : item.show,
+      'show_slider': item.show_slider,
+      'slide_route': item.slide_route,
+      'type': item.type,
+      'page_type': item.page_type,
+      'page_id': item.page_id,
+      'is_home': true
+    } );
 
   }
 
@@ -332,6 +351,9 @@ export class MyApp {
     let menu_index: number;
     let count: number = 0;
 
+    if(!pages)
+			return menu_index;
+
     for(let page of pages) {
       if(page.slug && page.slug == slug) {
         menu_index = count;
@@ -339,7 +361,7 @@ export class MyApp {
       count++;
     };
 
-    if(typeof menu_index === 'undefined')
+    if(!menu_index && menu_index !== 0)
       console.log(pages); // you can find the slugs here
 
     return menu_index;

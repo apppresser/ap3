@@ -31,6 +31,7 @@ export class AppSettings {
 
 				}).on('error', (e) => {
 					console.error(e);
+					console.log('API failed', options);
 					reject(e.message);
 				});
 			} else if(this.port == 443) {
@@ -44,6 +45,7 @@ export class AppSettings {
 							resolve(JSON.parse(data.toString()));
 						} catch(e) {
 							console.error(e.message);
+							console.log('API failed', options);
 						}
 					})
 				}).on('error', function(e) {
