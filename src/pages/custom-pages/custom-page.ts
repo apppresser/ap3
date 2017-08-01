@@ -448,7 +448,6 @@ export class CustomPage implements OnInit {
 	}
 
 	getPageModuleName(page_id) {
-		console.log('isInProductionMode', this.globalvars.isInProductionMode);
 		if(this.globalvars.isInProductionMode)
 			return 'Page'+page_id;
 		else
