@@ -1,0 +1,1591 @@
+/**
+ * MyAppPresser
+ * Configured by Matt Thiessen
+ * August 4, 2017
+ *
+ * Adds Font Awesome to the ion icon
+ * for the side menu.
+ *
+ * i.e. Just add fa-car in a menu's Icon class field
+ */
+
+
+$fa-ion-md-css-prefix: "ion-md-fa";
+$fa-ion-ios-css-prefix: "ion-ios-fa";
+
+.ion-md:before {
+  font-family: "FontAwesome";
+}
+
+.#{$fa-ion-md-css-prefix}-glass:before,
+.#{$fa-ion-ios-css-prefix}-glass:before { @extend .ion-md:before;content: $fa-var-glass; }
+.#{$fa-ion-md-css-prefix}-music:before,
+.#{$fa-ion-ios-css-prefix}-music:before { @extend .ion-md:before;content: $fa-var-music; }
+.#{$fa-ion-md-css-prefix}-search:before,
+.#{$fa-ion-ios-css-prefix}-search:before { @extend .ion-md:before;content: $fa-var-search; }
+.#{$fa-ion-md-css-prefix}-envelope-o:before,
+.#{$fa-ion-ios-css-prefix}-envelope-o:before { @extend .ion-md:before;content: $fa-var-envelope-o; }
+.#{$fa-ion-md-css-prefix}-heart:before,
+.#{$fa-ion-ios-css-prefix}-heart:before { @extend .ion-md:before;content: $fa-var-heart; }
+.#{$fa-ion-md-css-prefix}-star:before,
+.#{$fa-ion-ios-css-prefix}-star:before { @extend .ion-md:before;content: $fa-var-star; }
+.#{$fa-ion-md-css-prefix}-star-o:before,
+.#{$fa-ion-ios-css-prefix}-star-o:before { @extend .ion-md:before;content: $fa-var-star-o; }
+.#{$fa-ion-md-css-prefix}-user:before,
+.#{$fa-ion-ios-css-prefix}-user:before { @extend .ion-md:before;content: $fa-var-user; }
+.#{$fa-ion-md-css-prefix}-film:before,
+.#{$fa-ion-ios-css-prefix}-film:before { @extend .ion-md:before;content: $fa-var-film; }
+.#{$fa-ion-md-css-prefix}-th-large:before,
+.#{$fa-ion-ios-css-prefix}-th-large:before { @extend .ion-md:before;content: $fa-var-th-large; }
+.#{$fa-ion-md-css-prefix}-th:before,
+.#{$fa-ion-ios-css-prefix}-th:before { @extend .ion-md:before;content: $fa-var-th; }
+.#{$fa-ion-md-css-prefix}-th-list:before,
+.#{$fa-ion-ios-css-prefix}-th-list:before { @extend .ion-md:before;content: $fa-var-th-list; }
+.#{$fa-ion-md-css-prefix}-check:before,
+.#{$fa-ion-ios-css-prefix}-check:before { @extend .ion-md:before;content: $fa-var-check; }
+.#{$fa-ion-md-css-prefix}-remove:before,
+.#{$fa-ion-ios-css-prefix}-remove:before,
+.#{$fa-ion-md-css-prefix}-close:before,
+.#{$fa-ion-ios-css-prefix}-close:before,
+.#{$fa-ion-md-css-prefix}-times:before,
+.#{$fa-ion-ios-css-prefix}-times:before { @extend .ion-md:before;content: $fa-var-times; }
+.#{$fa-ion-md-css-prefix}-search-plus:before,
+.#{$fa-ion-ios-css-prefix}-search-plus:before { @extend .ion-md:before;content: $fa-var-search-plus; }
+.#{$fa-ion-md-css-prefix}-search-minus:before,
+.#{$fa-ion-ios-css-prefix}-search-minus:before { @extend .ion-md:before;content: $fa-var-search-minus; }
+.#{$fa-ion-md-css-prefix}-power-off:before,
+.#{$fa-ion-ios-css-prefix}-power-off:before { @extend .ion-md:before;content: $fa-var-power-off; }
+.#{$fa-ion-md-css-prefix}-signal:before,
+.#{$fa-ion-ios-css-prefix}-signal:before { @extend .ion-md:before;content: $fa-var-signal; }
+.#{$fa-ion-md-css-prefix}-gear:before,
+.#{$fa-ion-ios-css-prefix}-gear:before,
+.#{$fa-ion-md-css-prefix}-cog:before,
+.#{$fa-ion-ios-css-prefix}-cog:before { @extend .ion-md:before;content: $fa-var-cog; }
+.#{$fa-ion-md-css-prefix}-trash-o:before,
+.#{$fa-ion-ios-css-prefix}-trash-o:before { @extend .ion-md:before;content: $fa-var-trash-o; }
+.#{$fa-ion-md-css-prefix}-home:before,
+.#{$fa-ion-ios-css-prefix}-home:before { @extend .ion-md:before;content: $fa-var-home; }
+.#{$fa-ion-md-css-prefix}-file-o:before,
+.#{$fa-ion-ios-css-prefix}-file-o:before { @extend .ion-md:before;content: $fa-var-file-o; }
+.#{$fa-ion-md-css-prefix}-clock-o:before,
+.#{$fa-ion-ios-css-prefix}-clock-o:before { @extend .ion-md:before;content: $fa-var-clock-o; }
+.#{$fa-ion-md-css-prefix}-road:before,
+.#{$fa-ion-ios-css-prefix}-road:before { @extend .ion-md:before;content: $fa-var-road; }
+.#{$fa-ion-md-css-prefix}-download:before,
+.#{$fa-ion-ios-css-prefix}-download:before { @extend .ion-md:before;content: $fa-var-download; }
+.#{$fa-ion-md-css-prefix}-arrow-circle-o-down:before,
+.#{$fa-ion-ios-css-prefix}-arrow-circle-o-down:before { @extend .ion-md:before;content: $fa-var-arrow-circle-o-down; }
+.#{$fa-ion-md-css-prefix}-arrow-circle-o-up:before,
+.#{$fa-ion-ios-css-prefix}-arrow-circle-o-up:before { @extend .ion-md:before;content: $fa-var-arrow-circle-o-up; }
+.#{$fa-ion-md-css-prefix}-inbox:before,
+.#{$fa-ion-ios-css-prefix}-inbox:before { @extend .ion-md:before;content: $fa-var-inbox; }
+.#{$fa-ion-md-css-prefix}-play-circle-o:before,
+.#{$fa-ion-ios-css-prefix}-play-circle-o:before { @extend .ion-md:before;content: $fa-var-play-circle-o; }
+.#{$fa-ion-md-css-prefix}-rotate-right:before,
+.#{$fa-ion-ios-css-prefix}-rotate-right:before,
+.#{$fa-ion-md-css-prefix}-repeat:before,
+.#{$fa-ion-ios-css-prefix}-repeat:before { @extend .ion-md:before;content: $fa-var-repeat; }
+.#{$fa-ion-md-css-prefix}-refresh:before,
+.#{$fa-ion-ios-css-prefix}-refresh:before { @extend .ion-md:before;content: $fa-var-refresh; }
+.#{$fa-ion-md-css-prefix}-list-alt:before,
+.#{$fa-ion-ios-css-prefix}-list-alt:before { @extend .ion-md:before;content: $fa-var-list-alt; }
+.#{$fa-ion-md-css-prefix}-lock:before,
+.#{$fa-ion-ios-css-prefix}-lock:before { @extend .ion-md:before;content: $fa-var-lock; }
+.#{$fa-ion-md-css-prefix}-flag:before,
+.#{$fa-ion-ios-css-prefix}-flag:before { @extend .ion-md:before;content: $fa-var-flag; }
+.#{$fa-ion-md-css-prefix}-headphones:before,
+.#{$fa-ion-ios-css-prefix}-headphones:before { @extend .ion-md:before;content: $fa-var-headphones; }
+.#{$fa-ion-md-css-prefix}-volume-off:before,
+.#{$fa-ion-ios-css-prefix}-volume-off:before { @extend .ion-md:before;content: $fa-var-volume-off; }
+.#{$fa-ion-md-css-prefix}-volume-down:before,
+.#{$fa-ion-ios-css-prefix}-volume-down:before { @extend .ion-md:before;content: $fa-var-volume-down; }
+.#{$fa-ion-md-css-prefix}-volume-up:before,
+.#{$fa-ion-ios-css-prefix}-volume-up:before { @extend .ion-md:before;content: $fa-var-volume-up; }
+.#{$fa-ion-md-css-prefix}-qrcode:before,
+.#{$fa-ion-ios-css-prefix}-qrcode:before { @extend .ion-md:before;content: $fa-var-qrcode; }
+.#{$fa-ion-md-css-prefix}-barcode:before,
+.#{$fa-ion-ios-css-prefix}-barcode:before { @extend .ion-md:before;content: $fa-var-barcode; }
+.#{$fa-ion-md-css-prefix}-tag:before,
+.#{$fa-ion-ios-css-prefix}-tag:before { @extend .ion-md:before;content: $fa-var-tag; }
+.#{$fa-ion-md-css-prefix}-tags:before,
+.#{$fa-ion-ios-css-prefix}-tags:before { @extend .ion-md:before;content: $fa-var-tags; }
+.#{$fa-ion-md-css-prefix}-book:before,
+.#{$fa-ion-ios-css-prefix}-book:before { @extend .ion-md:before;content: $fa-var-book; }
+.#{$fa-ion-md-css-prefix}-bookmark:before,
+.#{$fa-ion-ios-css-prefix}-bookmark:before { @extend .ion-md:before;content: $fa-var-bookmark; }
+.#{$fa-ion-md-css-prefix}-print:before,
+.#{$fa-ion-ios-css-prefix}-print:before { @extend .ion-md:before;content: $fa-var-print; }
+.#{$fa-ion-md-css-prefix}-camera:before,
+.#{$fa-ion-ios-css-prefix}-camera:before { @extend .ion-md:before;content: $fa-var-camera; }
+.#{$fa-ion-md-css-prefix}-font:before,
+.#{$fa-ion-ios-css-prefix}-font:before { @extend .ion-md:before;content: $fa-var-font; }
+.#{$fa-ion-md-css-prefix}-bold:before,
+.#{$fa-ion-ios-css-prefix}-bold:before { @extend .ion-md:before;content: $fa-var-bold; }
+.#{$fa-ion-md-css-prefix}-italic:before,
+.#{$fa-ion-ios-css-prefix}-italic:before { @extend .ion-md:before;content: $fa-var-italic; }
+.#{$fa-ion-md-css-prefix}-text-height:before,
+.#{$fa-ion-ios-css-prefix}-text-height:before { @extend .ion-md:before;content: $fa-var-text-height; }
+.#{$fa-ion-md-css-prefix}-text-width:before,
+.#{$fa-ion-ios-css-prefix}-text-width:before { @extend .ion-md:before;content: $fa-var-text-width; }
+.#{$fa-ion-md-css-prefix}-align-left:before,
+.#{$fa-ion-ios-css-prefix}-align-left:before { @extend .ion-md:before;content: $fa-var-align-left; }
+.#{$fa-ion-md-css-prefix}-align-center:before,
+.#{$fa-ion-ios-css-prefix}-align-center:before { @extend .ion-md:before;content: $fa-var-align-center; }
+.#{$fa-ion-md-css-prefix}-align-right:before,
+.#{$fa-ion-ios-css-prefix}-align-right:before { @extend .ion-md:before;content: $fa-var-align-right; }
+.#{$fa-ion-md-css-prefix}-align-justify:before,
+.#{$fa-ion-ios-css-prefix}-align-justify:before { @extend .ion-md:before;content: $fa-var-align-justify; }
+.#{$fa-ion-md-css-prefix}-list:before,
+.#{$fa-ion-ios-css-prefix}-list:before { @extend .ion-md:before;content: $fa-var-list; }
+.#{$fa-ion-md-css-prefix}-dedent:before,
+.#{$fa-ion-ios-css-prefix}-dedent:before,
+.#{$fa-ion-md-css-prefix}-outdent:before,
+.#{$fa-ion-ios-css-prefix}-outdent:before { @extend .ion-md:before;content: $fa-var-outdent; }
+.#{$fa-ion-md-css-prefix}-indent:before,
+.#{$fa-ion-ios-css-prefix}-indent:before { @extend .ion-md:before;content: $fa-var-indent; }
+.#{$fa-ion-md-css-prefix}-video-camera:before,
+.#{$fa-ion-ios-css-prefix}-video-camera:before { @extend .ion-md:before;content: $fa-var-video-camera; }
+.#{$fa-ion-md-css-prefix}-photo:before,
+.#{$fa-ion-ios-css-prefix}-photo:before,
+.#{$fa-ion-md-css-prefix}-image:before,
+.#{$fa-ion-ios-css-prefix}-image:before,
+.#{$fa-ion-md-css-prefix}-picture-o:before,
+.#{$fa-ion-ios-css-prefix}-picture-o:before { @extend .ion-md:before;content: $fa-var-picture-o; }
+.#{$fa-ion-md-css-prefix}-pencil:before,
+.#{$fa-ion-ios-css-prefix}-pencil:before { @extend .ion-md:before;content: $fa-var-pencil; }
+.#{$fa-ion-md-css-prefix}-map-marker:before,
+.#{$fa-ion-ios-css-prefix}-map-marker:before { @extend .ion-md:before;content: $fa-var-map-marker; }
+.#{$fa-ion-md-css-prefix}-adjust:before,
+.#{$fa-ion-ios-css-prefix}-adjust:before { @extend .ion-md:before;content: $fa-var-adjust; }
+.#{$fa-ion-md-css-prefix}-tint:before,
+.#{$fa-ion-ios-css-prefix}-tint:before { @extend .ion-md:before;content: $fa-var-tint; }
+.#{$fa-ion-md-css-prefix}-edit:before,
+.#{$fa-ion-ios-css-prefix}-edit:before,
+.#{$fa-ion-md-css-prefix}-pencil-square-o:before,
+.#{$fa-ion-ios-css-prefix}-pencil-square-o:before { @extend .ion-md:before;content: $fa-var-pencil-square-o; }
+.#{$fa-ion-md-css-prefix}-share-square-o:before,
+.#{$fa-ion-ios-css-prefix}-share-square-o:before { @extend .ion-md:before;content: $fa-var-share-square-o; }
+.#{$fa-ion-md-css-prefix}-check-square-o:before,
+.#{$fa-ion-ios-css-prefix}-check-square-o:before { @extend .ion-md:before;content: $fa-var-check-square-o; }
+.#{$fa-ion-md-css-prefix}-arrows:before,
+.#{$fa-ion-ios-css-prefix}-arrows:before { @extend .ion-md:before;content: $fa-var-arrows; }
+.#{$fa-ion-md-css-prefix}-step-backward:before,
+.#{$fa-ion-ios-css-prefix}-step-backward:before { @extend .ion-md:before;content: $fa-var-step-backward; }
+.#{$fa-ion-md-css-prefix}-fast-backward:before,
+.#{$fa-ion-ios-css-prefix}-fast-backward:before { @extend .ion-md:before;content: $fa-var-fast-backward; }
+.#{$fa-ion-md-css-prefix}-backward:before,
+.#{$fa-ion-ios-css-prefix}-backward:before { @extend .ion-md:before;content: $fa-var-backward; }
+.#{$fa-ion-md-css-prefix}-play:before,
+.#{$fa-ion-ios-css-prefix}-play:before { @extend .ion-md:before;content: $fa-var-play; }
+.#{$fa-ion-md-css-prefix}-pause:before,
+.#{$fa-ion-ios-css-prefix}-pause:before { @extend .ion-md:before;content: $fa-var-pause; }
+.#{$fa-ion-md-css-prefix}-stop:before,
+.#{$fa-ion-ios-css-prefix}-stop:before { @extend .ion-md:before;content: $fa-var-stop; }
+.#{$fa-ion-md-css-prefix}-forward:before,
+.#{$fa-ion-ios-css-prefix}-forward:before { @extend .ion-md:before;content: $fa-var-forward; }
+.#{$fa-ion-md-css-prefix}-fast-forward:before,
+.#{$fa-ion-ios-css-prefix}-fast-forward:before { @extend .ion-md:before;content: $fa-var-fast-forward; }
+.#{$fa-ion-md-css-prefix}-step-forward:before,
+.#{$fa-ion-ios-css-prefix}-step-forward:before { @extend .ion-md:before;content: $fa-var-step-forward; }
+.#{$fa-ion-md-css-prefix}-eject:before,
+.#{$fa-ion-ios-css-prefix}-eject:before { @extend .ion-md:before;content: $fa-var-eject; }
+.#{$fa-ion-md-css-prefix}-chevron-left:before,
+.#{$fa-ion-ios-css-prefix}-chevron-left:before { @extend .ion-md:before;content: $fa-var-chevron-left; }
+.#{$fa-ion-md-css-prefix}-chevron-right:before,
+.#{$fa-ion-ios-css-prefix}-chevron-right:before { @extend .ion-md:before;content: $fa-var-chevron-right; }
+.#{$fa-ion-md-css-prefix}-plus-circle:before,
+.#{$fa-ion-ios-css-prefix}-plus-circle:before { @extend .ion-md:before;content: $fa-var-plus-circle; }
+.#{$fa-ion-md-css-prefix}-minus-circle:before,
+.#{$fa-ion-ios-css-prefix}-minus-circle:before { @extend .ion-md:before;content: $fa-var-minus-circle; }
+.#{$fa-ion-md-css-prefix}-times-circle:before,
+.#{$fa-ion-ios-css-prefix}-times-circle:before { @extend .ion-md:before;content: $fa-var-times-circle; }
+.#{$fa-ion-md-css-prefix}-check-circle:before,
+.#{$fa-ion-ios-css-prefix}-check-circle:before { @extend .ion-md:before;content: $fa-var-check-circle; }
+.#{$fa-ion-md-css-prefix}-question-circle:before,
+.#{$fa-ion-ios-css-prefix}-question-circle:before { @extend .ion-md:before;content: $fa-var-question-circle; }
+.#{$fa-ion-md-css-prefix}-info-circle:before,
+.#{$fa-ion-ios-css-prefix}-info-circle:before { @extend .ion-md:before;content: $fa-var-info-circle; }
+.#{$fa-ion-md-css-prefix}-crosshairs:before,
+.#{$fa-ion-ios-css-prefix}-crosshairs:before { @extend .ion-md:before;content: $fa-var-crosshairs; }
+.#{$fa-ion-md-css-prefix}-times-circle-o:before,
+.#{$fa-ion-ios-css-prefix}-times-circle-o:before { @extend .ion-md:before;content: $fa-var-times-circle-o; }
+.#{$fa-ion-md-css-prefix}-check-circle-o:before,
+.#{$fa-ion-ios-css-prefix}-check-circle-o:before { @extend .ion-md:before;content: $fa-var-check-circle-o; }
+.#{$fa-ion-md-css-prefix}-ban:before,
+.#{$fa-ion-ios-css-prefix}-ban:before { @extend .ion-md:before;content: $fa-var-ban; }
+.#{$fa-ion-md-css-prefix}-arrow-left:before,
+.#{$fa-ion-ios-css-prefix}-arrow-left:before { @extend .ion-md:before;content: $fa-var-arrow-left; }
+.#{$fa-ion-md-css-prefix}-arrow-right:before,
+.#{$fa-ion-ios-css-prefix}-arrow-right:before { @extend .ion-md:before;content: $fa-var-arrow-right; }
+.#{$fa-ion-md-css-prefix}-arrow-up:before,
+.#{$fa-ion-ios-css-prefix}-arrow-up:before { @extend .ion-md:before;content: $fa-var-arrow-up; }
+.#{$fa-ion-md-css-prefix}-arrow-down:before,
+.#{$fa-ion-ios-css-prefix}-arrow-down:before { @extend .ion-md:before;content: $fa-var-arrow-down; }
+.#{$fa-ion-md-css-prefix}-mail-forward:before,
+.#{$fa-ion-ios-css-prefix}-mail-forward:before,
+.#{$fa-ion-md-css-prefix}-share:before,
+.#{$fa-ion-ios-css-prefix}-share:before { @extend .ion-md:before;content: $fa-var-share; }
+.#{$fa-ion-md-css-prefix}-expand:before,
+.#{$fa-ion-ios-css-prefix}-expand:before { @extend .ion-md:before;content: $fa-var-expand; }
+.#{$fa-ion-md-css-prefix}-compress:before,
+.#{$fa-ion-ios-css-prefix}-compress:before { @extend .ion-md:before;content: $fa-var-compress; }
+.#{$fa-ion-md-css-prefix}-plus:before,
+.#{$fa-ion-ios-css-prefix}-plus:before { @extend .ion-md:before;content: $fa-var-plus; }
+.#{$fa-ion-md-css-prefix}-minus:before,
+.#{$fa-ion-ios-css-prefix}-minus:before { @extend .ion-md:before;content: $fa-var-minus; }
+.#{$fa-ion-md-css-prefix}-asterisk:before,
+.#{$fa-ion-ios-css-prefix}-asterisk:before { @extend .ion-md:before;content: $fa-var-asterisk; }
+.#{$fa-ion-md-css-prefix}-exclamation-circle:before,
+.#{$fa-ion-ios-css-prefix}-exclamation-circle:before { @extend .ion-md:before;content: $fa-var-exclamation-circle; }
+.#{$fa-ion-md-css-prefix}-gift:before,
+.#{$fa-ion-ios-css-prefix}-gift:before { @extend .ion-md:before;content: $fa-var-gift; }
+.#{$fa-ion-md-css-prefix}-leaf:before,
+.#{$fa-ion-ios-css-prefix}-leaf:before { @extend .ion-md:before;content: $fa-var-leaf; }
+.#{$fa-ion-md-css-prefix}-fire:before,
+.#{$fa-ion-ios-css-prefix}-fire:before { @extend .ion-md:before;content: $fa-var-fire; }
+.#{$fa-ion-md-css-prefix}-eye:before,
+.#{$fa-ion-ios-css-prefix}-eye:before { @extend .ion-md:before;content: $fa-var-eye; }
+.#{$fa-ion-md-css-prefix}-eye-slash:before,
+.#{$fa-ion-ios-css-prefix}-eye-slash:before { @extend .ion-md:before;content: $fa-var-eye-slash; }
+.#{$fa-ion-md-css-prefix}-warning:before,
+.#{$fa-ion-ios-css-prefix}-warning:before,
+.#{$fa-ion-md-css-prefix}-exclamation-triangle:before,
+.#{$fa-ion-ios-css-prefix}-exclamation-triangle:before { @extend .ion-md:before;content: $fa-var-exclamation-triangle; }
+.#{$fa-ion-md-css-prefix}-plane:before,
+.#{$fa-ion-ios-css-prefix}-plane:before { @extend .ion-md:before;content: $fa-var-plane; }
+.#{$fa-ion-md-css-prefix}-calendar:before,
+.#{$fa-ion-ios-css-prefix}-calendar:before { @extend .ion-md:before;content: $fa-var-calendar; }
+.#{$fa-ion-md-css-prefix}-random:before,
+.#{$fa-ion-ios-css-prefix}-random:before { @extend .ion-md:before;content: $fa-var-random; }
+.#{$fa-ion-md-css-prefix}-comment:before,
+.#{$fa-ion-ios-css-prefix}-comment:before { @extend .ion-md:before;content: $fa-var-comment; }
+.#{$fa-ion-md-css-prefix}-magnet:before,
+.#{$fa-ion-ios-css-prefix}-magnet:before { @extend .ion-md:before;content: $fa-var-magnet; }
+.#{$fa-ion-md-css-prefix}-chevron-up:before,
+.#{$fa-ion-ios-css-prefix}-chevron-up:before { @extend .ion-md:before;content: $fa-var-chevron-up; }
+.#{$fa-ion-md-css-prefix}-chevron-down:before,
+.#{$fa-ion-ios-css-prefix}-chevron-down:before { @extend .ion-md:before;content: $fa-var-chevron-down; }
+.#{$fa-ion-md-css-prefix}-retweet:before,
+.#{$fa-ion-ios-css-prefix}-retweet:before { @extend .ion-md:before;content: $fa-var-retweet; }
+.#{$fa-ion-md-css-prefix}-shopping-cart:before,
+.#{$fa-ion-ios-css-prefix}-shopping-cart:before { @extend .ion-md:before;content: $fa-var-shopping-cart; }
+.#{$fa-ion-md-css-prefix}-folder:before,
+.#{$fa-ion-ios-css-prefix}-folder:before { @extend .ion-md:before;content: $fa-var-folder; }
+.#{$fa-ion-md-css-prefix}-folder-open:before,
+.#{$fa-ion-ios-css-prefix}-folder-open:before { @extend .ion-md:before;content: $fa-var-folder-open; }
+.#{$fa-ion-md-css-prefix}-arrows-v:before,
+.#{$fa-ion-ios-css-prefix}-arrows-v:before { @extend .ion-md:before;content: $fa-var-arrows-v; }
+.#{$fa-ion-md-css-prefix}-arrows-h:before,
+.#{$fa-ion-ios-css-prefix}-arrows-h:before { @extend .ion-md:before;content: $fa-var-arrows-h; }
+.#{$fa-ion-md-css-prefix}-bar-chart-o:before,
+.#{$fa-ion-ios-css-prefix}-bar-chart-o:before,
+.#{$fa-ion-md-css-prefix}-bar-chart:before,
+.#{$fa-ion-ios-css-prefix}-bar-chart:before { @extend .ion-md:before;content: $fa-var-bar-chart; }
+.#{$fa-ion-md-css-prefix}-twitter-square:before,
+.#{$fa-ion-ios-css-prefix}-twitter-square:before { @extend .ion-md:before;content: $fa-var-twitter-square; }
+.#{$fa-ion-md-css-prefix}-facebook-square:before,
+.#{$fa-ion-ios-css-prefix}-facebook-square:before { @extend .ion-md:before;content: $fa-var-facebook-square; }
+.#{$fa-ion-md-css-prefix}-camera-retro:before,
+.#{$fa-ion-ios-css-prefix}-camera-retro:before { @extend .ion-md:before;content: $fa-var-camera-retro; }
+.#{$fa-ion-md-css-prefix}-key:before,
+.#{$fa-ion-ios-css-prefix}-key:before { @extend .ion-md:before;content: $fa-var-key; }
+.#{$fa-ion-md-css-prefix}-gears:before,
+.#{$fa-ion-ios-css-prefix}-gears:before,
+.#{$fa-ion-md-css-prefix}-cogs:before,
+.#{$fa-ion-ios-css-prefix}-cogs:before { @extend .ion-md:before;content: $fa-var-cogs; }
+.#{$fa-ion-md-css-prefix}-comments:before,
+.#{$fa-ion-ios-css-prefix}-comments:before { @extend .ion-md:before;content: $fa-var-comments; }
+.#{$fa-ion-md-css-prefix}-thumbs-o-up:before,
+.#{$fa-ion-ios-css-prefix}-thumbs-o-up:before { @extend .ion-md:before;content: $fa-var-thumbs-o-up; }
+.#{$fa-ion-md-css-prefix}-thumbs-o-down:before,
+.#{$fa-ion-ios-css-prefix}-thumbs-o-down:before { @extend .ion-md:before;content: $fa-var-thumbs-o-down; }
+.#{$fa-ion-md-css-prefix}-star-half:before,
+.#{$fa-ion-ios-css-prefix}-star-half:before { @extend .ion-md:before;content: $fa-var-star-half; }
+.#{$fa-ion-md-css-prefix}-heart-o:before,
+.#{$fa-ion-ios-css-prefix}-heart-o:before { @extend .ion-md:before;content: $fa-var-heart-o; }
+.#{$fa-ion-md-css-prefix}-sign-out:before,
+.#{$fa-ion-ios-css-prefix}-sign-out:before { @extend .ion-md:before;content: $fa-var-sign-out; }
+.#{$fa-ion-md-css-prefix}-linkedin-square:before,
+.#{$fa-ion-ios-css-prefix}-linkedin-square:before { @extend .ion-md:before;content: $fa-var-linkedin-square; }
+.#{$fa-ion-md-css-prefix}-thumb-tack:before,
+.#{$fa-ion-ios-css-prefix}-thumb-tack:before { @extend .ion-md:before;content: $fa-var-thumb-tack; }
+.#{$fa-ion-md-css-prefix}-external-link:before,
+.#{$fa-ion-ios-css-prefix}-external-link:before { @extend .ion-md:before;content: $fa-var-external-link; }
+.#{$fa-ion-md-css-prefix}-sign-in:before,
+.#{$fa-ion-ios-css-prefix}-sign-in:before { @extend .ion-md:before;content: $fa-var-sign-in; }
+.#{$fa-ion-md-css-prefix}-trophy:before,
+.#{$fa-ion-ios-css-prefix}-trophy:before { @extend .ion-md:before;content: $fa-var-trophy; }
+.#{$fa-ion-md-css-prefix}-github-square:before,
+.#{$fa-ion-ios-css-prefix}-github-square:before { @extend .ion-md:before;content: $fa-var-github-square; }
+.#{$fa-ion-md-css-prefix}-upload:before,
+.#{$fa-ion-ios-css-prefix}-upload:before { @extend .ion-md:before;content: $fa-var-upload; }
+.#{$fa-ion-md-css-prefix}-lemon-o:before,
+.#{$fa-ion-ios-css-prefix}-lemon-o:before { @extend .ion-md:before;content: $fa-var-lemon-o; }
+.#{$fa-ion-md-css-prefix}-phone:before,
+.#{$fa-ion-ios-css-prefix}-phone:before { @extend .ion-md:before;content: $fa-var-phone; }
+.#{$fa-ion-md-css-prefix}-square-o:before,
+.#{$fa-ion-ios-css-prefix}-square-o:before { @extend .ion-md:before;content: $fa-var-square-o; }
+.#{$fa-ion-md-css-prefix}-bookmark-o:before,
+.#{$fa-ion-ios-css-prefix}-bookmark-o:before { @extend .ion-md:before;content: $fa-var-bookmark-o; }
+.#{$fa-ion-md-css-prefix}-phone-square:before,
+.#{$fa-ion-ios-css-prefix}-phone-square:before { @extend .ion-md:before;content: $fa-var-phone-square; }
+.#{$fa-ion-md-css-prefix}-twitter:before,
+.#{$fa-ion-ios-css-prefix}-twitter:before { @extend .ion-md:before;content: $fa-var-twitter; }
+.#{$fa-ion-md-css-prefix}-facebook-f:before,
+.#{$fa-ion-ios-css-prefix}-facebook-f:before,
+.#{$fa-ion-md-css-prefix}-facebook:before,
+.#{$fa-ion-ios-css-prefix}-facebook:before { @extend .ion-md:before;content: $fa-var-facebook; }
+.#{$fa-ion-md-css-prefix}-github:before,
+.#{$fa-ion-ios-css-prefix}-github:before { @extend .ion-md:before;content: $fa-var-github; }
+.#{$fa-ion-md-css-prefix}-unlock:before,
+.#{$fa-ion-ios-css-prefix}-unlock:before { @extend .ion-md:before;content: $fa-var-unlock; }
+.#{$fa-ion-md-css-prefix}-credit-card:before,
+.#{$fa-ion-ios-css-prefix}-credit-card:before { @extend .ion-md:before;content: $fa-var-credit-card; }
+.#{$fa-ion-md-css-prefix}-feed:before,
+.#{$fa-ion-ios-css-prefix}-feed:before,
+.#{$fa-ion-md-css-prefix}-rss:before,
+.#{$fa-ion-ios-css-prefix}-rss:before { @extend .ion-md:before;content: $fa-var-rss; }
+.#{$fa-ion-md-css-prefix}-hdd-o:before,
+.#{$fa-ion-ios-css-prefix}-hdd-o:before { @extend .ion-md:before;content: $fa-var-hdd-o; }
+.#{$fa-ion-md-css-prefix}-bullhorn:before,
+.#{$fa-ion-ios-css-prefix}-bullhorn:before { @extend .ion-md:before;content: $fa-var-bullhorn; }
+.#{$fa-ion-md-css-prefix}-bell:before,
+.#{$fa-ion-ios-css-prefix}-bell:before { @extend .ion-md:before;content: $fa-var-bell; }
+.#{$fa-ion-md-css-prefix}-certificate:before,
+.#{$fa-ion-ios-css-prefix}-certificate:before { @extend .ion-md:before;content: $fa-var-certificate; }
+.#{$fa-ion-md-css-prefix}-hand-o-right:before,
+.#{$fa-ion-ios-css-prefix}-hand-o-right:before { @extend .ion-md:before;content: $fa-var-hand-o-right; }
+.#{$fa-ion-md-css-prefix}-hand-o-left:before,
+.#{$fa-ion-ios-css-prefix}-hand-o-left:before { @extend .ion-md:before;content: $fa-var-hand-o-left; }
+.#{$fa-ion-md-css-prefix}-hand-o-up:before,
+.#{$fa-ion-ios-css-prefix}-hand-o-up:before { @extend .ion-md:before;content: $fa-var-hand-o-up; }
+.#{$fa-ion-md-css-prefix}-hand-o-down:before,
+.#{$fa-ion-ios-css-prefix}-hand-o-down:before { @extend .ion-md:before;content: $fa-var-hand-o-down; }
+.#{$fa-ion-md-css-prefix}-arrow-circle-left:before,
+.#{$fa-ion-ios-css-prefix}-arrow-circle-left:before { @extend .ion-md:before;content: $fa-var-arrow-circle-left; }
+.#{$fa-ion-md-css-prefix}-arrow-circle-right:before,
+.#{$fa-ion-ios-css-prefix}-arrow-circle-right:before { @extend .ion-md:before;content: $fa-var-arrow-circle-right; }
+.#{$fa-ion-md-css-prefix}-arrow-circle-up:before,
+.#{$fa-ion-ios-css-prefix}-arrow-circle-up:before { @extend .ion-md:before;content: $fa-var-arrow-circle-up; }
+.#{$fa-ion-md-css-prefix}-arrow-circle-down:before,
+.#{$fa-ion-ios-css-prefix}-arrow-circle-down:before { @extend .ion-md:before;content: $fa-var-arrow-circle-down; }
+.#{$fa-ion-md-css-prefix}-globe:before,
+.#{$fa-ion-ios-css-prefix}-globe:before { @extend .ion-md:before;content: $fa-var-globe; }
+.#{$fa-ion-md-css-prefix}-wrench:before,
+.#{$fa-ion-ios-css-prefix}-wrench:before { @extend .ion-md:before;content: $fa-var-wrench; }
+.#{$fa-ion-md-css-prefix}-tasks:before,
+.#{$fa-ion-ios-css-prefix}-tasks:before { @extend .ion-md:before;content: $fa-var-tasks; }
+.#{$fa-ion-md-css-prefix}-filter:before,
+.#{$fa-ion-ios-css-prefix}-filter:before { @extend .ion-md:before;content: $fa-var-filter; }
+.#{$fa-ion-md-css-prefix}-briefcase:before,
+.#{$fa-ion-ios-css-prefix}-briefcase:before { @extend .ion-md:before;content: $fa-var-briefcase; }
+.#{$fa-ion-md-css-prefix}-arrows-alt:before,
+.#{$fa-ion-ios-css-prefix}-arrows-alt:before { @extend .ion-md:before;content: $fa-var-arrows-alt; }
+.#{$fa-ion-md-css-prefix}-group:before,
+.#{$fa-ion-ios-css-prefix}-group:before,
+.#{$fa-ion-md-css-prefix}-users:before,
+.#{$fa-ion-ios-css-prefix}-users:before { @extend .ion-md:before;content: $fa-var-users; }
+.#{$fa-ion-md-css-prefix}-chain:before,
+.#{$fa-ion-ios-css-prefix}-chain:before,
+.#{$fa-ion-md-css-prefix}-link:before,
+.#{$fa-ion-ios-css-prefix}-link:before { @extend .ion-md:before;content: $fa-var-link; }
+.#{$fa-ion-md-css-prefix}-cloud:before,
+.#{$fa-ion-ios-css-prefix}-cloud:before { @extend .ion-md:before;content: $fa-var-cloud; }
+.#{$fa-ion-md-css-prefix}-flask:before,
+.#{$fa-ion-ios-css-prefix}-flask:before { @extend .ion-md:before;content: $fa-var-flask; }
+.#{$fa-ion-md-css-prefix}-cut:before,
+.#{$fa-ion-ios-css-prefix}-cut:before,
+.#{$fa-ion-md-css-prefix}-scissors:before,
+.#{$fa-ion-ios-css-prefix}-scissors:before { @extend .ion-md:before;content: $fa-var-scissors; }
+.#{$fa-ion-md-css-prefix}-copy:before,
+.#{$fa-ion-ios-css-prefix}-copy:before,
+.#{$fa-ion-md-css-prefix}-files-o:before,
+.#{$fa-ion-ios-css-prefix}-files-o:before { @extend .ion-md:before;content: $fa-var-files-o; }
+.#{$fa-ion-md-css-prefix}-paperclip:before,
+.#{$fa-ion-ios-css-prefix}-paperclip:before { @extend .ion-md:before;content: $fa-var-paperclip; }
+.#{$fa-ion-md-css-prefix}-save:before,
+.#{$fa-ion-ios-css-prefix}-save:before,
+.#{$fa-ion-md-css-prefix}-floppy-o:before,
+.#{$fa-ion-ios-css-prefix}-floppy-o:before { @extend .ion-md:before;content: $fa-var-floppy-o; }
+.#{$fa-ion-md-css-prefix}-square:before,
+.#{$fa-ion-ios-css-prefix}-square:before { @extend .ion-md:before;content: $fa-var-square; }
+.#{$fa-ion-md-css-prefix}-navicon:before,
+.#{$fa-ion-ios-css-prefix}-navicon:before,
+.#{$fa-ion-md-css-prefix}-reorder:before,
+.#{$fa-ion-ios-css-prefix}-reorder:before,
+.#{$fa-ion-md-css-prefix}-bars:before,
+.#{$fa-ion-ios-css-prefix}-bars:before { @extend .ion-md:before;content: $fa-var-bars; }
+.#{$fa-ion-md-css-prefix}-list-ul:before,
+.#{$fa-ion-ios-css-prefix}-list-ul:before { @extend .ion-md:before;content: $fa-var-list-ul; }
+.#{$fa-ion-md-css-prefix}-list-ol:before,
+.#{$fa-ion-ios-css-prefix}-list-ol:before { @extend .ion-md:before;content: $fa-var-list-ol; }
+.#{$fa-ion-md-css-prefix}-strikethrough:before,
+.#{$fa-ion-ios-css-prefix}-strikethrough:before { @extend .ion-md:before;content: $fa-var-strikethrough; }
+.#{$fa-ion-md-css-prefix}-underline:before,
+.#{$fa-ion-ios-css-prefix}-underline:before { @extend .ion-md:before;content: $fa-var-underline; }
+.#{$fa-ion-md-css-prefix}-table:before,
+.#{$fa-ion-ios-css-prefix}-table:before { @extend .ion-md:before;content: $fa-var-table; }
+.#{$fa-ion-md-css-prefix}-magic:before,
+.#{$fa-ion-ios-css-prefix}-magic:before { @extend .ion-md:before;content: $fa-var-magic; }
+.#{$fa-ion-md-css-prefix}-truck:before,
+.#{$fa-ion-ios-css-prefix}-truck:before { @extend .ion-md:before;content: $fa-var-truck; }
+.#{$fa-ion-md-css-prefix}-pinterest:before,
+.#{$fa-ion-ios-css-prefix}-pinterest:before { @extend .ion-md:before;content: $fa-var-pinterest; }
+.#{$fa-ion-md-css-prefix}-pinterest-square:before,
+.#{$fa-ion-ios-css-prefix}-pinterest-square:before { @extend .ion-md:before;content: $fa-var-pinterest-square; }
+.#{$fa-ion-md-css-prefix}-google-plus-square:before,
+.#{$fa-ion-ios-css-prefix}-google-plus-square:before { @extend .ion-md:before;content: $fa-var-google-plus-square; }
+.#{$fa-ion-md-css-prefix}-google-plus:before,
+.#{$fa-ion-ios-css-prefix}-google-plus:before { @extend .ion-md:before;content: $fa-var-google-plus; }
+.#{$fa-ion-md-css-prefix}-money:before,
+.#{$fa-ion-ios-css-prefix}-money:before { @extend .ion-md:before;content: $fa-var-money; }
+.#{$fa-ion-md-css-prefix}-caret-down:before,
+.#{$fa-ion-ios-css-prefix}-caret-down:before { @extend .ion-md:before;content: $fa-var-caret-down; }
+.#{$fa-ion-md-css-prefix}-caret-up:before,
+.#{$fa-ion-ios-css-prefix}-caret-up:before { @extend .ion-md:before;content: $fa-var-caret-up; }
+.#{$fa-ion-md-css-prefix}-caret-left:before,
+.#{$fa-ion-ios-css-prefix}-caret-left:before { @extend .ion-md:before;content: $fa-var-caret-left; }
+.#{$fa-ion-md-css-prefix}-caret-right:before,
+.#{$fa-ion-ios-css-prefix}-caret-right:before { @extend .ion-md:before;content: $fa-var-caret-right; }
+.#{$fa-ion-md-css-prefix}-columns:before,
+.#{$fa-ion-ios-css-prefix}-columns:before { @extend .ion-md:before;content: $fa-var-columns; }
+.#{$fa-ion-md-css-prefix}-unsorted:before,
+.#{$fa-ion-ios-css-prefix}-unsorted:before,
+.#{$fa-ion-md-css-prefix}-sort:before,
+.#{$fa-ion-ios-css-prefix}-sort:before { @extend .ion-md:before;content: $fa-var-sort; }
+.#{$fa-ion-md-css-prefix}-sort-down:before,
+.#{$fa-ion-ios-css-prefix}-sort-down:before,
+.#{$fa-ion-md-css-prefix}-sort-desc:before,
+.#{$fa-ion-ios-css-prefix}-sort-desc:before { @extend .ion-md:before;content: $fa-var-sort-desc; }
+.#{$fa-ion-md-css-prefix}-sort-up:before,
+.#{$fa-ion-ios-css-prefix}-sort-up:before,
+.#{$fa-ion-md-css-prefix}-sort-asc:before,
+.#{$fa-ion-ios-css-prefix}-sort-asc:before { @extend .ion-md:before;content: $fa-var-sort-asc; }
+.#{$fa-ion-md-css-prefix}-envelope:before,
+.#{$fa-ion-ios-css-prefix}-envelope:before { @extend .ion-md:before;content: $fa-var-envelope; }
+.#{$fa-ion-md-css-prefix}-linkedin:before,
+.#{$fa-ion-ios-css-prefix}-linkedin:before { @extend .ion-md:before;content: $fa-var-linkedin; }
+.#{$fa-ion-md-css-prefix}-rotate-left:before,
+.#{$fa-ion-ios-css-prefix}-rotate-left:before,
+.#{$fa-ion-md-css-prefix}-undo:before,
+.#{$fa-ion-ios-css-prefix}-undo:before { @extend .ion-md:before;content: $fa-var-undo; }
+.#{$fa-ion-md-css-prefix}-legal:before,
+.#{$fa-ion-ios-css-prefix}-legal:before,
+.#{$fa-ion-md-css-prefix}-gavel:before,
+.#{$fa-ion-ios-css-prefix}-gavel:before { @extend .ion-md:before;content: $fa-var-gavel; }
+.#{$fa-ion-md-css-prefix}-dashboard:before,
+.#{$fa-ion-ios-css-prefix}-dashboard:before,
+.#{$fa-ion-md-css-prefix}-tachometer:before,
+.#{$fa-ion-ios-css-prefix}-tachometer:before { @extend .ion-md:before;content: $fa-var-tachometer; }
+.#{$fa-ion-md-css-prefix}-comment-o:before,
+.#{$fa-ion-ios-css-prefix}-comment-o:before { @extend .ion-md:before;content: $fa-var-comment-o; }
+.#{$fa-ion-md-css-prefix}-comments-o:before,
+.#{$fa-ion-ios-css-prefix}-comments-o:before { @extend .ion-md:before;content: $fa-var-comments-o; }
+.#{$fa-ion-md-css-prefix}-flash:before,
+.#{$fa-ion-ios-css-prefix}-flash:before,
+.#{$fa-ion-md-css-prefix}-bolt:before,
+.#{$fa-ion-ios-css-prefix}-bolt:before { @extend .ion-md:before;content: $fa-var-bolt; }
+.#{$fa-ion-md-css-prefix}-sitemap:before,
+.#{$fa-ion-ios-css-prefix}-sitemap:before { @extend .ion-md:before;content: $fa-var-sitemap; }
+.#{$fa-ion-md-css-prefix}-umbrella:before,
+.#{$fa-ion-ios-css-prefix}-umbrella:before { @extend .ion-md:before;content: $fa-var-umbrella; }
+.#{$fa-ion-md-css-prefix}-paste:before,
+.#{$fa-ion-ios-css-prefix}-paste:before,
+.#{$fa-ion-md-css-prefix}-clipboard:before,
+.#{$fa-ion-ios-css-prefix}-clipboard:before { @extend .ion-md:before;content: $fa-var-clipboard; }
+.#{$fa-ion-md-css-prefix}-lightbulb-o:before,
+.#{$fa-ion-ios-css-prefix}-lightbulb-o:before { @extend .ion-md:before;content: $fa-var-lightbulb-o; }
+.#{$fa-ion-md-css-prefix}-exchange:before,
+.#{$fa-ion-ios-css-prefix}-exchange:before { @extend .ion-md:before;content: $fa-var-exchange; }
+.#{$fa-ion-md-css-prefix}-cloud-download:before,
+.#{$fa-ion-ios-css-prefix}-cloud-download:before { @extend .ion-md:before;content: $fa-var-cloud-download; }
+.#{$fa-ion-md-css-prefix}-cloud-upload:before,
+.#{$fa-ion-ios-css-prefix}-cloud-upload:before { @extend .ion-md:before;content: $fa-var-cloud-upload; }
+.#{$fa-ion-md-css-prefix}-user-md:before,
+.#{$fa-ion-ios-css-prefix}-user-md:before { @extend .ion-md:before;content: $fa-var-user-md; }
+.#{$fa-ion-md-css-prefix}-stethoscope:before,
+.#{$fa-ion-ios-css-prefix}-stethoscope:before { @extend .ion-md:before;content: $fa-var-stethoscope; }
+.#{$fa-ion-md-css-prefix}-suitcase:before,
+.#{$fa-ion-ios-css-prefix}-suitcase:before { @extend .ion-md:before;content: $fa-var-suitcase; }
+.#{$fa-ion-md-css-prefix}-bell-o:before,
+.#{$fa-ion-ios-css-prefix}-bell-o:before { @extend .ion-md:before;content: $fa-var-bell-o; }
+.#{$fa-ion-md-css-prefix}-coffee:before,
+.#{$fa-ion-ios-css-prefix}-coffee:before { @extend .ion-md:before;content: $fa-var-coffee; }
+.#{$fa-ion-md-css-prefix}-cutlery:before,
+.#{$fa-ion-ios-css-prefix}-cutlery:before { @extend .ion-md:before;content: $fa-var-cutlery; }
+.#{$fa-ion-md-css-prefix}-file-text-o:before,
+.#{$fa-ion-ios-css-prefix}-file-text-o:before { @extend .ion-md:before;content: $fa-var-file-text-o; }
+.#{$fa-ion-md-css-prefix}-building-o:before,
+.#{$fa-ion-ios-css-prefix}-building-o:before { @extend .ion-md:before;content: $fa-var-building-o; }
+.#{$fa-ion-md-css-prefix}-hospital-o:before,
+.#{$fa-ion-ios-css-prefix}-hospital-o:before { @extend .ion-md:before;content: $fa-var-hospital-o; }
+.#{$fa-ion-md-css-prefix}-ambulance:before,
+.#{$fa-ion-ios-css-prefix}-ambulance:before { @extend .ion-md:before;content: $fa-var-ambulance; }
+.#{$fa-ion-md-css-prefix}-medkit:before,
+.#{$fa-ion-ios-css-prefix}-medkit:before { @extend .ion-md:before;content: $fa-var-medkit; }
+.#{$fa-ion-md-css-prefix}-fighter-jet:before,
+.#{$fa-ion-ios-css-prefix}-fighter-jet:before { @extend .ion-md:before;content: $fa-var-fighter-jet; }
+.#{$fa-ion-md-css-prefix}-beer:before,
+.#{$fa-ion-ios-css-prefix}-beer:before { @extend .ion-md:before;content: $fa-var-beer; }
+.#{$fa-ion-md-css-prefix}-h-square:before,
+.#{$fa-ion-ios-css-prefix}-h-square:before { @extend .ion-md:before;content: $fa-var-h-square; }
+.#{$fa-ion-md-css-prefix}-plus-square:before,
+.#{$fa-ion-ios-css-prefix}-plus-square:before { @extend .ion-md:before;content: $fa-var-plus-square; }
+.#{$fa-ion-md-css-prefix}-angle-double-left:before,
+.#{$fa-ion-ios-css-prefix}-angle-double-left:before { @extend .ion-md:before;content: $fa-var-angle-double-left; }
+.#{$fa-ion-md-css-prefix}-angle-double-right:before,
+.#{$fa-ion-ios-css-prefix}-angle-double-right:before { @extend .ion-md:before;content: $fa-var-angle-double-right; }
+.#{$fa-ion-md-css-prefix}-angle-double-up:before,
+.#{$fa-ion-ios-css-prefix}-angle-double-up:before { @extend .ion-md:before;content: $fa-var-angle-double-up; }
+.#{$fa-ion-md-css-prefix}-angle-double-down:before,
+.#{$fa-ion-ios-css-prefix}-angle-double-down:before { @extend .ion-md:before;content: $fa-var-angle-double-down; }
+.#{$fa-ion-md-css-prefix}-angle-left:before,
+.#{$fa-ion-ios-css-prefix}-angle-left:before { @extend .ion-md:before;content: $fa-var-angle-left; }
+.#{$fa-ion-md-css-prefix}-angle-right:before,
+.#{$fa-ion-ios-css-prefix}-angle-right:before { @extend .ion-md:before;content: $fa-var-angle-right; }
+.#{$fa-ion-md-css-prefix}-angle-up:before,
+.#{$fa-ion-ios-css-prefix}-angle-up:before { @extend .ion-md:before;content: $fa-var-angle-up; }
+.#{$fa-ion-md-css-prefix}-angle-down:before,
+.#{$fa-ion-ios-css-prefix}-angle-down:before { @extend .ion-md:before;content: $fa-var-angle-down; }
+.#{$fa-ion-md-css-prefix}-desktop:before,
+.#{$fa-ion-ios-css-prefix}-desktop:before { @extend .ion-md:before;content: $fa-var-desktop; }
+.#{$fa-ion-md-css-prefix}-laptop:before,
+.#{$fa-ion-ios-css-prefix}-laptop:before { @extend .ion-md:before;content: $fa-var-laptop; }
+.#{$fa-ion-md-css-prefix}-tablet:before,
+.#{$fa-ion-ios-css-prefix}-tablet:before { @extend .ion-md:before;content: $fa-var-tablet; }
+.#{$fa-ion-md-css-prefix}-mobile-phone:before,
+.#{$fa-ion-ios-css-prefix}-mobile-phone:before,
+.#{$fa-ion-md-css-prefix}-mobile:before,
+.#{$fa-ion-ios-css-prefix}-mobile:before { @extend .ion-md:before;content: $fa-var-mobile; }
+.#{$fa-ion-md-css-prefix}-circle-o:before,
+.#{$fa-ion-ios-css-prefix}-circle-o:before { @extend .ion-md:before;content: $fa-var-circle-o; }
+.#{$fa-ion-md-css-prefix}-quote-left:before,
+.#{$fa-ion-ios-css-prefix}-quote-left:before { @extend .ion-md:before;content: $fa-var-quote-left; }
+.#{$fa-ion-md-css-prefix}-quote-right:before,
+.#{$fa-ion-ios-css-prefix}-quote-right:before { @extend .ion-md:before;content: $fa-var-quote-right; }
+.#{$fa-ion-md-css-prefix}-spinner:before,
+.#{$fa-ion-ios-css-prefix}-spinner:before { @extend .ion-md:before;content: $fa-var-spinner; }
+.#{$fa-ion-md-css-prefix}-circle:before,
+.#{$fa-ion-ios-css-prefix}-circle:before { @extend .ion-md:before;content: $fa-var-circle; }
+.#{$fa-ion-md-css-prefix}-mail-reply:before,
+.#{$fa-ion-ios-css-prefix}-mail-reply:before,
+.#{$fa-ion-md-css-prefix}-reply:before,
+.#{$fa-ion-ios-css-prefix}-reply:before { @extend .ion-md:before;content: $fa-var-reply; }
+.#{$fa-ion-md-css-prefix}-github-alt:before,
+.#{$fa-ion-ios-css-prefix}-github-alt:before { @extend .ion-md:before;content: $fa-var-github-alt; }
+.#{$fa-ion-md-css-prefix}-folder-o:before,
+.#{$fa-ion-ios-css-prefix}-folder-o:before { @extend .ion-md:before;content: $fa-var-folder-o; }
+.#{$fa-ion-md-css-prefix}-folder-open-o:before,
+.#{$fa-ion-ios-css-prefix}-folder-open-o:before { @extend .ion-md:before;content: $fa-var-folder-open-o; }
+.#{$fa-ion-md-css-prefix}-smile-o:before,
+.#{$fa-ion-ios-css-prefix}-smile-o:before { @extend .ion-md:before;content: $fa-var-smile-o; }
+.#{$fa-ion-md-css-prefix}-frown-o:before,
+.#{$fa-ion-ios-css-prefix}-frown-o:before { @extend .ion-md:before;content: $fa-var-frown-o; }
+.#{$fa-ion-md-css-prefix}-meh-o:before,
+.#{$fa-ion-ios-css-prefix}-meh-o:before { @extend .ion-md:before;content: $fa-var-meh-o; }
+.#{$fa-ion-md-css-prefix}-gamepad:before,
+.#{$fa-ion-ios-css-prefix}-gamepad:before { @extend .ion-md:before;content: $fa-var-gamepad; }
+.#{$fa-ion-md-css-prefix}-keyboard-o:before,
+.#{$fa-ion-ios-css-prefix}-keyboard-o:before { @extend .ion-md:before;content: $fa-var-keyboard-o; }
+.#{$fa-ion-md-css-prefix}-flag-o:before,
+.#{$fa-ion-ios-css-prefix}-flag-o:before { @extend .ion-md:before;content: $fa-var-flag-o; }
+.#{$fa-ion-md-css-prefix}-flag-checkered:before,
+.#{$fa-ion-ios-css-prefix}-flag-checkered:before { @extend .ion-md:before;content: $fa-var-flag-checkered; }
+.#{$fa-ion-md-css-prefix}-terminal:before,
+.#{$fa-ion-ios-css-prefix}-terminal:before { @extend .ion-md:before;content: $fa-var-terminal; }
+.#{$fa-ion-md-css-prefix}-code:before,
+.#{$fa-ion-ios-css-prefix}-code:before { @extend .ion-md:before;content: $fa-var-code; }
+.#{$fa-ion-md-css-prefix}-mail-reply-all:before,
+.#{$fa-ion-ios-css-prefix}-mail-reply-all:before,
+.#{$fa-ion-md-css-prefix}-reply-all:before,
+.#{$fa-ion-ios-css-prefix}-reply-all:before { @extend .ion-md:before;content: $fa-var-reply-all; }
+.#{$fa-ion-md-css-prefix}-star-half-empty:before,
+.#{$fa-ion-ios-css-prefix}-star-half-empty:before,
+.#{$fa-ion-md-css-prefix}-star-half-full:before,
+.#{$fa-ion-ios-css-prefix}-star-half-full:before,
+.#{$fa-ion-md-css-prefix}-star-half-o:before,
+.#{$fa-ion-ios-css-prefix}-star-half-o:before { @extend .ion-md:before;content: $fa-var-star-half-o; }
+.#{$fa-ion-md-css-prefix}-location-arrow:before,
+.#{$fa-ion-ios-css-prefix}-location-arrow:before { @extend .ion-md:before;content: $fa-var-location-arrow; }
+.#{$fa-ion-md-css-prefix}-crop:before,
+.#{$fa-ion-ios-css-prefix}-crop:before { @extend .ion-md:before;content: $fa-var-crop; }
+.#{$fa-ion-md-css-prefix}-code-fork:before,
+.#{$fa-ion-ios-css-prefix}-code-fork:before { @extend .ion-md:before;content: $fa-var-code-fork; }
+.#{$fa-ion-md-css-prefix}-unlink:before,
+.#{$fa-ion-ios-css-prefix}-unlink:before,
+.#{$fa-ion-md-css-prefix}-chain-broken:before,
+.#{$fa-ion-ios-css-prefix}-chain-broken:before { @extend .ion-md:before;content: $fa-var-chain-broken; }
+.#{$fa-ion-md-css-prefix}-question:before,
+.#{$fa-ion-ios-css-prefix}-question:before { @extend .ion-md:before;content: $fa-var-question; }
+.#{$fa-ion-md-css-prefix}-info:before,
+.#{$fa-ion-ios-css-prefix}-info:before { @extend .ion-md:before;content: $fa-var-info; }
+.#{$fa-ion-md-css-prefix}-exclamation:before,
+.#{$fa-ion-ios-css-prefix}-exclamation:before { @extend .ion-md:before;content: $fa-var-exclamation; }
+.#{$fa-ion-md-css-prefix}-superscript:before,
+.#{$fa-ion-ios-css-prefix}-superscript:before { @extend .ion-md:before;content: $fa-var-superscript; }
+.#{$fa-ion-md-css-prefix}-subscript:before,
+.#{$fa-ion-ios-css-prefix}-subscript:before { @extend .ion-md:before;content: $fa-var-subscript; }
+.#{$fa-ion-md-css-prefix}-eraser:before,
+.#{$fa-ion-ios-css-prefix}-eraser:before { @extend .ion-md:before;content: $fa-var-eraser; }
+.#{$fa-ion-md-css-prefix}-puzzle-piece:before,
+.#{$fa-ion-ios-css-prefix}-puzzle-piece:before { @extend .ion-md:before;content: $fa-var-puzzle-piece; }
+.#{$fa-ion-md-css-prefix}-microphone:before,
+.#{$fa-ion-ios-css-prefix}-microphone:before { @extend .ion-md:before;content: $fa-var-microphone; }
+.#{$fa-ion-md-css-prefix}-microphone-slash:before,
+.#{$fa-ion-ios-css-prefix}-microphone-slash:before { @extend .ion-md:before;content: $fa-var-microphone-slash; }
+.#{$fa-ion-md-css-prefix}-shield:before,
+.#{$fa-ion-ios-css-prefix}-shield:before { @extend .ion-md:before;content: $fa-var-shield; }
+.#{$fa-ion-md-css-prefix}-calendar-o:before,
+.#{$fa-ion-ios-css-prefix}-calendar-o:before { @extend .ion-md:before;content: $fa-var-calendar-o; }
+.#{$fa-ion-md-css-prefix}-fire-extinguisher:before,
+.#{$fa-ion-ios-css-prefix}-fire-extinguisher:before { @extend .ion-md:before;content: $fa-var-fire-extinguisher; }
+.#{$fa-ion-md-css-prefix}-rocket:before,
+.#{$fa-ion-ios-css-prefix}-rocket:before { @extend .ion-md:before;content: $fa-var-rocket; }
+.#{$fa-ion-md-css-prefix}-maxcdn:before,
+.#{$fa-ion-ios-css-prefix}-maxcdn:before { @extend .ion-md:before;content: $fa-var-maxcdn; }
+.#{$fa-ion-md-css-prefix}-chevron-circle-left:before,
+.#{$fa-ion-ios-css-prefix}-chevron-circle-left:before { @extend .ion-md:before;content: $fa-var-chevron-circle-left; }
+.#{$fa-ion-md-css-prefix}-chevron-circle-right:before,
+.#{$fa-ion-ios-css-prefix}-chevron-circle-right:before { @extend .ion-md:before;content: $fa-var-chevron-circle-right; }
+.#{$fa-ion-md-css-prefix}-chevron-circle-up:before,
+.#{$fa-ion-ios-css-prefix}-chevron-circle-up:before { @extend .ion-md:before;content: $fa-var-chevron-circle-up; }
+.#{$fa-ion-md-css-prefix}-chevron-circle-down:before,
+.#{$fa-ion-ios-css-prefix}-chevron-circle-down:before { @extend .ion-md:before;content: $fa-var-chevron-circle-down; }
+.#{$fa-ion-md-css-prefix}-html5:before,
+.#{$fa-ion-ios-css-prefix}-html5:before { @extend .ion-md:before;content: $fa-var-html5; }
+.#{$fa-ion-md-css-prefix}-css3:before,
+.#{$fa-ion-ios-css-prefix}-css3:before { @extend .ion-md:before;content: $fa-var-css3; }
+.#{$fa-ion-md-css-prefix}-anchor:before,
+.#{$fa-ion-ios-css-prefix}-anchor:before { @extend .ion-md:before;content: $fa-var-anchor; }
+.#{$fa-ion-md-css-prefix}-unlock-alt:before,
+.#{$fa-ion-ios-css-prefix}-unlock-alt:before { @extend .ion-md:before;content: $fa-var-unlock-alt; }
+.#{$fa-ion-md-css-prefix}-bullseye:before,
+.#{$fa-ion-ios-css-prefix}-bullseye:before { @extend .ion-md:before;content: $fa-var-bullseye; }
+.#{$fa-ion-md-css-prefix}-ellipsis-h:before,
+.#{$fa-ion-ios-css-prefix}-ellipsis-h:before { @extend .ion-md:before;content: $fa-var-ellipsis-h; }
+.#{$fa-ion-md-css-prefix}-ellipsis-v:before,
+.#{$fa-ion-ios-css-prefix}-ellipsis-v:before { @extend .ion-md:before;content: $fa-var-ellipsis-v; }
+.#{$fa-ion-md-css-prefix}-rss-square:before,
+.#{$fa-ion-ios-css-prefix}-rss-square:before { @extend .ion-md:before;content: $fa-var-rss-square; }
+.#{$fa-ion-md-css-prefix}-play-circle:before,
+.#{$fa-ion-ios-css-prefix}-play-circle:before { @extend .ion-md:before;content: $fa-var-play-circle; }
+.#{$fa-ion-md-css-prefix}-ticket:before,
+.#{$fa-ion-ios-css-prefix}-ticket:before { @extend .ion-md:before;content: $fa-var-ticket; }
+.#{$fa-ion-md-css-prefix}-minus-square:before,
+.#{$fa-ion-ios-css-prefix}-minus-square:before { @extend .ion-md:before;content: $fa-var-minus-square; }
+.#{$fa-ion-md-css-prefix}-minus-square-o:before,
+.#{$fa-ion-ios-css-prefix}-minus-square-o:before { @extend .ion-md:before;content: $fa-var-minus-square-o; }
+.#{$fa-ion-md-css-prefix}-level-up:before,
+.#{$fa-ion-ios-css-prefix}-level-up:before { @extend .ion-md:before;content: $fa-var-level-up; }
+.#{$fa-ion-md-css-prefix}-level-down:before,
+.#{$fa-ion-ios-css-prefix}-level-down:before { @extend .ion-md:before;content: $fa-var-level-down; }
+.#{$fa-ion-md-css-prefix}-check-square:before,
+.#{$fa-ion-ios-css-prefix}-check-square:before { @extend .ion-md:before;content: $fa-var-check-square; }
+.#{$fa-ion-md-css-prefix}-pencil-square:before,
+.#{$fa-ion-ios-css-prefix}-pencil-square:before { @extend .ion-md:before;content: $fa-var-pencil-square; }
+.#{$fa-ion-md-css-prefix}-external-link-square:before,
+.#{$fa-ion-ios-css-prefix}-external-link-square:before { @extend .ion-md:before;content: $fa-var-external-link-square; }
+.#{$fa-ion-md-css-prefix}-share-square:before,
+.#{$fa-ion-ios-css-prefix}-share-square:before { @extend .ion-md:before;content: $fa-var-share-square; }
+.#{$fa-ion-md-css-prefix}-compass:before,
+.#{$fa-ion-ios-css-prefix}-compass:before { @extend .ion-md:before;content: $fa-var-compass; }
+.#{$fa-ion-md-css-prefix}-toggle-down:before,
+.#{$fa-ion-ios-css-prefix}-toggle-down:before,
+.#{$fa-ion-md-css-prefix}-caret-square-o-down:before,
+.#{$fa-ion-ios-css-prefix}-caret-square-o-down:before { @extend .ion-md:before;content: $fa-var-caret-square-o-down; }
+.#{$fa-ion-md-css-prefix}-toggle-up:before,
+.#{$fa-ion-ios-css-prefix}-toggle-up:before,
+.#{$fa-ion-md-css-prefix}-caret-square-o-up:before,
+.#{$fa-ion-ios-css-prefix}-caret-square-o-up:before { @extend .ion-md:before;content: $fa-var-caret-square-o-up; }
+.#{$fa-ion-md-css-prefix}-toggle-right:before,
+.#{$fa-ion-ios-css-prefix}-toggle-right:before,
+.#{$fa-ion-md-css-prefix}-caret-square-o-right:before,
+.#{$fa-ion-ios-css-prefix}-caret-square-o-right:before { @extend .ion-md:before;content: $fa-var-caret-square-o-right; }
+.#{$fa-ion-md-css-prefix}-euro:before,
+.#{$fa-ion-ios-css-prefix}-euro:before,
+.#{$fa-ion-md-css-prefix}-eur:before,
+.#{$fa-ion-ios-css-prefix}-eur:before { @extend .ion-md:before;content: $fa-var-eur; }
+.#{$fa-ion-md-css-prefix}-gbp:before,
+.#{$fa-ion-ios-css-prefix}-gbp:before { @extend .ion-md:before;content: $fa-var-gbp; }
+.#{$fa-ion-md-css-prefix}-dollar:before,
+.#{$fa-ion-ios-css-prefix}-dollar:before,
+.#{$fa-ion-md-css-prefix}-usd:before,
+.#{$fa-ion-ios-css-prefix}-usd:before { @extend .ion-md:before;content: $fa-var-usd; }
+.#{$fa-ion-md-css-prefix}-rupee:before,
+.#{$fa-ion-ios-css-prefix}-rupee:before,
+.#{$fa-ion-md-css-prefix}-inr:before,
+.#{$fa-ion-ios-css-prefix}-inr:before { @extend .ion-md:before;content: $fa-var-inr; }
+.#{$fa-ion-md-css-prefix}-cny:before,
+.#{$fa-ion-ios-css-prefix}-cny:before,
+.#{$fa-ion-md-css-prefix}-rmb:before,
+.#{$fa-ion-ios-css-prefix}-rmb:before,
+.#{$fa-ion-md-css-prefix}-yen:before,
+.#{$fa-ion-ios-css-prefix}-yen:before,
+.#{$fa-ion-md-css-prefix}-jpy:before,
+.#{$fa-ion-ios-css-prefix}-jpy:before { @extend .ion-md:before;content: $fa-var-jpy; }
+.#{$fa-ion-md-css-prefix}-ruble:before,
+.#{$fa-ion-ios-css-prefix}-ruble:before,
+.#{$fa-ion-md-css-prefix}-rouble:before,
+.#{$fa-ion-ios-css-prefix}-rouble:before,
+.#{$fa-ion-md-css-prefix}-rub:before,
+.#{$fa-ion-ios-css-prefix}-rub:before { @extend .ion-md:before;content: $fa-var-rub; }
+.#{$fa-ion-md-css-prefix}-won:before,
+.#{$fa-ion-ios-css-prefix}-won:before,
+.#{$fa-ion-md-css-prefix}-krw:before,
+.#{$fa-ion-ios-css-prefix}-krw:before { @extend .ion-md:before;content: $fa-var-krw; }
+.#{$fa-ion-md-css-prefix}-bitcoin:before,
+.#{$fa-ion-ios-css-prefix}-bitcoin:before,
+.#{$fa-ion-md-css-prefix}-btc:before,
+.#{$fa-ion-ios-css-prefix}-btc:before { @extend .ion-md:before;content: $fa-var-btc; }
+.#{$fa-ion-md-css-prefix}-file:before,
+.#{$fa-ion-ios-css-prefix}-file:before { @extend .ion-md:before;content: $fa-var-file; }
+.#{$fa-ion-md-css-prefix}-file-text:before,
+.#{$fa-ion-ios-css-prefix}-file-text:before { @extend .ion-md:before;content: $fa-var-file-text; }
+.#{$fa-ion-md-css-prefix}-sort-alpha-asc:before,
+.#{$fa-ion-ios-css-prefix}-sort-alpha-asc:before { @extend .ion-md:before;content: $fa-var-sort-alpha-asc; }
+.#{$fa-ion-md-css-prefix}-sort-alpha-desc:before,
+.#{$fa-ion-ios-css-prefix}-sort-alpha-desc:before { @extend .ion-md:before;content: $fa-var-sort-alpha-desc; }
+.#{$fa-ion-md-css-prefix}-sort-amount-asc:before,
+.#{$fa-ion-ios-css-prefix}-sort-amount-asc:before { @extend .ion-md:before;content: $fa-var-sort-amount-asc; }
+.#{$fa-ion-md-css-prefix}-sort-amount-desc:before,
+.#{$fa-ion-ios-css-prefix}-sort-amount-desc:before { @extend .ion-md:before;content: $fa-var-sort-amount-desc; }
+.#{$fa-ion-md-css-prefix}-sort-numeric-asc:before,
+.#{$fa-ion-ios-css-prefix}-sort-numeric-asc:before { @extend .ion-md:before;content: $fa-var-sort-numeric-asc; }
+.#{$fa-ion-md-css-prefix}-sort-numeric-desc:before,
+.#{$fa-ion-ios-css-prefix}-sort-numeric-desc:before { @extend .ion-md:before;content: $fa-var-sort-numeric-desc; }
+.#{$fa-ion-md-css-prefix}-thumbs-up:before,
+.#{$fa-ion-ios-css-prefix}-thumbs-up:before { @extend .ion-md:before;content: $fa-var-thumbs-up; }
+.#{$fa-ion-md-css-prefix}-thumbs-down:before,
+.#{$fa-ion-ios-css-prefix}-thumbs-down:before { @extend .ion-md:before;content: $fa-var-thumbs-down; }
+.#{$fa-ion-md-css-prefix}-youtube-square:before,
+.#{$fa-ion-ios-css-prefix}-youtube-square:before { @extend .ion-md:before;content: $fa-var-youtube-square; }
+.#{$fa-ion-md-css-prefix}-youtube:before,
+.#{$fa-ion-ios-css-prefix}-youtube:before { @extend .ion-md:before;content: $fa-var-youtube; }
+.#{$fa-ion-md-css-prefix}-xing:before,
+.#{$fa-ion-ios-css-prefix}-xing:before { @extend .ion-md:before;content: $fa-var-xing; }
+.#{$fa-ion-md-css-prefix}-xing-square:before,
+.#{$fa-ion-ios-css-prefix}-xing-square:before { @extend .ion-md:before;content: $fa-var-xing-square; }
+.#{$fa-ion-md-css-prefix}-youtube-play:before,
+.#{$fa-ion-ios-css-prefix}-youtube-play:before { @extend .ion-md:before;content: $fa-var-youtube-play; }
+.#{$fa-ion-md-css-prefix}-dropbox:before,
+.#{$fa-ion-ios-css-prefix}-dropbox:before { @extend .ion-md:before;content: $fa-var-dropbox; }
+.#{$fa-ion-md-css-prefix}-stack-overflow:before,
+.#{$fa-ion-ios-css-prefix}-stack-overflow:before { @extend .ion-md:before;content: $fa-var-stack-overflow; }
+.#{$fa-ion-md-css-prefix}-instagram:before,
+.#{$fa-ion-ios-css-prefix}-instagram:before { @extend .ion-md:before;content: $fa-var-instagram; }
+.#{$fa-ion-md-css-prefix}-flickr:before,
+.#{$fa-ion-ios-css-prefix}-flickr:before { @extend .ion-md:before;content: $fa-var-flickr; }
+.#{$fa-ion-md-css-prefix}-adn:before,
+.#{$fa-ion-ios-css-prefix}-adn:before { @extend .ion-md:before;content: $fa-var-adn; }
+.#{$fa-ion-md-css-prefix}-bitbucket:before,
+.#{$fa-ion-ios-css-prefix}-bitbucket:before { @extend .ion-md:before;content: $fa-var-bitbucket; }
+.#{$fa-ion-md-css-prefix}-bitbucket-square:before,
+.#{$fa-ion-ios-css-prefix}-bitbucket-square:before { @extend .ion-md:before;content: $fa-var-bitbucket-square; }
+.#{$fa-ion-md-css-prefix}-tumblr:before,
+.#{$fa-ion-ios-css-prefix}-tumblr:before { @extend .ion-md:before;content: $fa-var-tumblr; }
+.#{$fa-ion-md-css-prefix}-tumblr-square:before,
+.#{$fa-ion-ios-css-prefix}-tumblr-square:before { @extend .ion-md:before;content: $fa-var-tumblr-square; }
+.#{$fa-ion-md-css-prefix}-long-arrow-down:before,
+.#{$fa-ion-ios-css-prefix}-long-arrow-down:before { @extend .ion-md:before;content: $fa-var-long-arrow-down; }
+.#{$fa-ion-md-css-prefix}-long-arrow-up:before,
+.#{$fa-ion-ios-css-prefix}-long-arrow-up:before { @extend .ion-md:before;content: $fa-var-long-arrow-up; }
+.#{$fa-ion-md-css-prefix}-long-arrow-left:before,
+.#{$fa-ion-ios-css-prefix}-long-arrow-left:before { @extend .ion-md:before;content: $fa-var-long-arrow-left; }
+.#{$fa-ion-md-css-prefix}-long-arrow-right:before,
+.#{$fa-ion-ios-css-prefix}-long-arrow-right:before { @extend .ion-md:before;content: $fa-var-long-arrow-right; }
+.#{$fa-ion-md-css-prefix}-apple:before,
+.#{$fa-ion-ios-css-prefix}-apple:before { @extend .ion-md:before;content: $fa-var-apple; }
+.#{$fa-ion-md-css-prefix}-windows:before,
+.#{$fa-ion-ios-css-prefix}-windows:before { @extend .ion-md:before;content: $fa-var-windows; }
+.#{$fa-ion-md-css-prefix}-android:before,
+.#{$fa-ion-ios-css-prefix}-android:before { @extend .ion-md:before;content: $fa-var-android; }
+.#{$fa-ion-md-css-prefix}-linux:before,
+.#{$fa-ion-ios-css-prefix}-linux:before { @extend .ion-md:before;content: $fa-var-linux; }
+.#{$fa-ion-md-css-prefix}-dribbble:before,
+.#{$fa-ion-ios-css-prefix}-dribbble:before { @extend .ion-md:before;content: $fa-var-dribbble; }
+.#{$fa-ion-md-css-prefix}-skype:before,
+.#{$fa-ion-ios-css-prefix}-skype:before { @extend .ion-md:before;content: $fa-var-skype; }
+.#{$fa-ion-md-css-prefix}-foursquare:before,
+.#{$fa-ion-ios-css-prefix}-foursquare:before { @extend .ion-md:before;content: $fa-var-foursquare; }
+.#{$fa-ion-md-css-prefix}-trello:before,
+.#{$fa-ion-ios-css-prefix}-trello:before { @extend .ion-md:before;content: $fa-var-trello; }
+.#{$fa-ion-md-css-prefix}-female:before,
+.#{$fa-ion-ios-css-prefix}-female:before { @extend .ion-md:before;content: $fa-var-female; }
+.#{$fa-ion-md-css-prefix}-male:before,
+.#{$fa-ion-ios-css-prefix}-male:before { @extend .ion-md:before;content: $fa-var-male; }
+.#{$fa-ion-md-css-prefix}-gittip:before,
+.#{$fa-ion-ios-css-prefix}-gittip:before,
+.#{$fa-ion-md-css-prefix}-gratipay:before,
+.#{$fa-ion-ios-css-prefix}-gratipay:before { @extend .ion-md:before;content: $fa-var-gratipay; }
+.#{$fa-ion-md-css-prefix}-sun-o:before,
+.#{$fa-ion-ios-css-prefix}-sun-o:before { @extend .ion-md:before;content: $fa-var-sun-o; }
+.#{$fa-ion-md-css-prefix}-moon-o:before,
+.#{$fa-ion-ios-css-prefix}-moon-o:before { @extend .ion-md:before;content: $fa-var-moon-o; }
+.#{$fa-ion-md-css-prefix}-archive:before,
+.#{$fa-ion-ios-css-prefix}-archive:before { @extend .ion-md:before;content: $fa-var-archive; }
+.#{$fa-ion-md-css-prefix}-bug:before,
+.#{$fa-ion-ios-css-prefix}-bug:before { @extend .ion-md:before;content: $fa-var-bug; }
+.#{$fa-ion-md-css-prefix}-vk:before,
+.#{$fa-ion-ios-css-prefix}-vk:before { @extend .ion-md:before;content: $fa-var-vk; }
+.#{$fa-ion-md-css-prefix}-weibo:before,
+.#{$fa-ion-ios-css-prefix}-weibo:before { @extend .ion-md:before;content: $fa-var-weibo; }
+.#{$fa-ion-md-css-prefix}-renren:before,
+.#{$fa-ion-ios-css-prefix}-renren:before { @extend .ion-md:before;content: $fa-var-renren; }
+.#{$fa-ion-md-css-prefix}-pagelines:before,
+.#{$fa-ion-ios-css-prefix}-pagelines:before { @extend .ion-md:before;content: $fa-var-pagelines; }
+.#{$fa-ion-md-css-prefix}-stack-exchange:before,
+.#{$fa-ion-ios-css-prefix}-stack-exchange:before { @extend .ion-md:before;content: $fa-var-stack-exchange; }
+.#{$fa-ion-md-css-prefix}-arrow-circle-o-right:before,
+.#{$fa-ion-ios-css-prefix}-arrow-circle-o-right:before { @extend .ion-md:before;content: $fa-var-arrow-circle-o-right; }
+.#{$fa-ion-md-css-prefix}-arrow-circle-o-left:before,
+.#{$fa-ion-ios-css-prefix}-arrow-circle-o-left:before { @extend .ion-md:before;content: $fa-var-arrow-circle-o-left; }
+.#{$fa-ion-md-css-prefix}-toggle-left:before,
+.#{$fa-ion-ios-css-prefix}-toggle-left:before,
+.#{$fa-ion-md-css-prefix}-caret-square-o-left:before,
+.#{$fa-ion-ios-css-prefix}-caret-square-o-left:before { @extend .ion-md:before;content: $fa-var-caret-square-o-left; }
+.#{$fa-ion-md-css-prefix}-dot-circle-o:before,
+.#{$fa-ion-ios-css-prefix}-dot-circle-o:before { @extend .ion-md:before;content: $fa-var-dot-circle-o; }
+.#{$fa-ion-md-css-prefix}-wheelchair:before,
+.#{$fa-ion-ios-css-prefix}-wheelchair:before { @extend .ion-md:before;content: $fa-var-wheelchair; }
+.#{$fa-ion-md-css-prefix}-vimeo-square:before,
+.#{$fa-ion-ios-css-prefix}-vimeo-square:before { @extend .ion-md:before;content: $fa-var-vimeo-square; }
+.#{$fa-ion-md-css-prefix}-turkish-lira:before,
+.#{$fa-ion-ios-css-prefix}-turkish-lira:before,
+.#{$fa-ion-md-css-prefix}-try:before,
+.#{$fa-ion-ios-css-prefix}-try:before { @extend .ion-md:before;content: $fa-var-try; }
+.#{$fa-ion-md-css-prefix}-plus-square-o:before,
+.#{$fa-ion-ios-css-prefix}-plus-square-o:before { @extend .ion-md:before;content: $fa-var-plus-square-o; }
+.#{$fa-ion-md-css-prefix}-space-shuttle:before,
+.#{$fa-ion-ios-css-prefix}-space-shuttle:before { @extend .ion-md:before;content: $fa-var-space-shuttle; }
+.#{$fa-ion-md-css-prefix}-slack:before,
+.#{$fa-ion-ios-css-prefix}-slack:before { @extend .ion-md:before;content: $fa-var-slack; }
+.#{$fa-ion-md-css-prefix}-envelope-square:before,
+.#{$fa-ion-ios-css-prefix}-envelope-square:before { @extend .ion-md:before;content: $fa-var-envelope-square; }
+.#{$fa-ion-md-css-prefix}-wordpress:before,
+.#{$fa-ion-ios-css-prefix}-wordpress:before { @extend .ion-md:before;content: $fa-var-wordpress; }
+.#{$fa-ion-md-css-prefix}-openid:before,
+.#{$fa-ion-ios-css-prefix}-openid:before { @extend .ion-md:before;content: $fa-var-openid; }
+.#{$fa-ion-md-css-prefix}-institution:before,
+.#{$fa-ion-ios-css-prefix}-institution:before,
+.#{$fa-ion-md-css-prefix}-bank:before,
+.#{$fa-ion-ios-css-prefix}-bank:before,
+.#{$fa-ion-md-css-prefix}-university:before,
+.#{$fa-ion-ios-css-prefix}-university:before { @extend .ion-md:before;content: $fa-var-university; }
+.#{$fa-ion-md-css-prefix}-mortar-board:before,
+.#{$fa-ion-ios-css-prefix}-mortar-board:before,
+.#{$fa-ion-md-css-prefix}-graduation-cap:before,
+.#{$fa-ion-ios-css-prefix}-graduation-cap:before { @extend .ion-md:before;content: $fa-var-graduation-cap; }
+.#{$fa-ion-md-css-prefix}-yahoo:before,
+.#{$fa-ion-ios-css-prefix}-yahoo:before { @extend .ion-md:before;content: $fa-var-yahoo; }
+.#{$fa-ion-md-css-prefix}-google:before,
+.#{$fa-ion-ios-css-prefix}-google:before { @extend .ion-md:before;content: $fa-var-google; }
+.#{$fa-ion-md-css-prefix}-reddit:before,
+.#{$fa-ion-ios-css-prefix}-reddit:before { @extend .ion-md:before;content: $fa-var-reddit; }
+.#{$fa-ion-md-css-prefix}-reddit-square:before,
+.#{$fa-ion-ios-css-prefix}-reddit-square:before { @extend .ion-md:before;content: $fa-var-reddit-square; }
+.#{$fa-ion-md-css-prefix}-stumbleupon-circle:before,
+.#{$fa-ion-ios-css-prefix}-stumbleupon-circle:before { @extend .ion-md:before;content: $fa-var-stumbleupon-circle; }
+.#{$fa-ion-md-css-prefix}-stumbleupon:before,
+.#{$fa-ion-ios-css-prefix}-stumbleupon:before { @extend .ion-md:before;content: $fa-var-stumbleupon; }
+.#{$fa-ion-md-css-prefix}-delicious:before,
+.#{$fa-ion-ios-css-prefix}-delicious:before { @extend .ion-md:before;content: $fa-var-delicious; }
+.#{$fa-ion-md-css-prefix}-digg:before,
+.#{$fa-ion-ios-css-prefix}-digg:before { @extend .ion-md:before;content: $fa-var-digg; }
+.#{$fa-ion-md-css-prefix}-pied-piper-pp:before,
+.#{$fa-ion-ios-css-prefix}-pied-piper-pp:before { @extend .ion-md:before;content: $fa-var-pied-piper-pp; }
+.#{$fa-ion-md-css-prefix}-pied-piper-alt:before,
+.#{$fa-ion-ios-css-prefix}-pied-piper-alt:before { @extend .ion-md:before;content: $fa-var-pied-piper-alt; }
+.#{$fa-ion-md-css-prefix}-drupal:before,
+.#{$fa-ion-ios-css-prefix}-drupal:before { @extend .ion-md:before;content: $fa-var-drupal; }
+.#{$fa-ion-md-css-prefix}-joomla:before,
+.#{$fa-ion-ios-css-prefix}-joomla:before { @extend .ion-md:before;content: $fa-var-joomla; }
+.#{$fa-ion-md-css-prefix}-language:before,
+.#{$fa-ion-ios-css-prefix}-language:before { @extend .ion-md:before;content: $fa-var-language; }
+.#{$fa-ion-md-css-prefix}-fax:before,
+.#{$fa-ion-ios-css-prefix}-fax:before { @extend .ion-md:before;content: $fa-var-fax; }
+.#{$fa-ion-md-css-prefix}-building:before,
+.#{$fa-ion-ios-css-prefix}-building:before { @extend .ion-md:before;content: $fa-var-building; }
+.#{$fa-ion-md-css-prefix}-child:before,
+.#{$fa-ion-ios-css-prefix}-child:before { @extend .ion-md:before;content: $fa-var-child; }
+.#{$fa-ion-md-css-prefix}-paw:before,
+.#{$fa-ion-ios-css-prefix}-paw:before { @extend .ion-md:before;content: $fa-var-paw; }
+.#{$fa-ion-md-css-prefix}-spoon:before,
+.#{$fa-ion-ios-css-prefix}-spoon:before { @extend .ion-md:before;content: $fa-var-spoon; }
+.#{$fa-ion-md-css-prefix}-cube:before,
+.#{$fa-ion-ios-css-prefix}-cube:before { @extend .ion-md:before;content: $fa-var-cube; }
+.#{$fa-ion-md-css-prefix}-cubes:before,
+.#{$fa-ion-ios-css-prefix}-cubes:before { @extend .ion-md:before;content: $fa-var-cubes; }
+.#{$fa-ion-md-css-prefix}-behance:before,
+.#{$fa-ion-ios-css-prefix}-behance:before { @extend .ion-md:before;content: $fa-var-behance; }
+.#{$fa-ion-md-css-prefix}-behance-square:before,
+.#{$fa-ion-ios-css-prefix}-behance-square:before { @extend .ion-md:before;content: $fa-var-behance-square; }
+.#{$fa-ion-md-css-prefix}-steam:before,
+.#{$fa-ion-ios-css-prefix}-steam:before { @extend .ion-md:before;content: $fa-var-steam; }
+.#{$fa-ion-md-css-prefix}-steam-square:before,
+.#{$fa-ion-ios-css-prefix}-steam-square:before { @extend .ion-md:before;content: $fa-var-steam-square; }
+.#{$fa-ion-md-css-prefix}-recycle:before,
+.#{$fa-ion-ios-css-prefix}-recycle:before { @extend .ion-md:before;content: $fa-var-recycle; }
+.#{$fa-ion-md-css-prefix}-automobile:before,
+.#{$fa-ion-ios-css-prefix}-automobile:before,
+.#{$fa-ion-md-css-prefix}-car:before,
+.#{$fa-ion-ios-css-prefix}-car:before { @extend .ion-md:before;content: $fa-var-car; }
+.#{$fa-ion-md-css-prefix}-cab:before,
+.#{$fa-ion-ios-css-prefix}-cab:before,
+.#{$fa-ion-md-css-prefix}-taxi:before,
+.#{$fa-ion-ios-css-prefix}-taxi:before { @extend .ion-md:before;content: $fa-var-taxi; }
+.#{$fa-ion-md-css-prefix}-tree:before,
+.#{$fa-ion-ios-css-prefix}-tree:before { @extend .ion-md:before;content: $fa-var-tree; }
+.#{$fa-ion-md-css-prefix}-spotify:before,
+.#{$fa-ion-ios-css-prefix}-spotify:before { @extend .ion-md:before;content: $fa-var-spotify; }
+.#{$fa-ion-md-css-prefix}-deviantart:before,
+.#{$fa-ion-ios-css-prefix}-deviantart:before { @extend .ion-md:before;content: $fa-var-deviantart; }
+.#{$fa-ion-md-css-prefix}-soundcloud:before,
+.#{$fa-ion-ios-css-prefix}-soundcloud:before { @extend .ion-md:before;content: $fa-var-soundcloud; }
+.#{$fa-ion-md-css-prefix}-database:before,
+.#{$fa-ion-ios-css-prefix}-database:before { @extend .ion-md:before;content: $fa-var-database; }
+.#{$fa-ion-md-css-prefix}-file-pdf-o:before,
+.#{$fa-ion-ios-css-prefix}-file-pdf-o:before { @extend .ion-md:before;content: $fa-var-file-pdf-o; }
+.#{$fa-ion-md-css-prefix}-file-word-o:before,
+.#{$fa-ion-ios-css-prefix}-file-word-o:before { @extend .ion-md:before;content: $fa-var-file-word-o; }
+.#{$fa-ion-md-css-prefix}-file-excel-o:before,
+.#{$fa-ion-ios-css-prefix}-file-excel-o:before { @extend .ion-md:before;content: $fa-var-file-excel-o; }
+.#{$fa-ion-md-css-prefix}-file-powerpoint-o:before,
+.#{$fa-ion-ios-css-prefix}-file-powerpoint-o:before { @extend .ion-md:before;content: $fa-var-file-powerpoint-o; }
+.#{$fa-ion-md-css-prefix}-file-photo-o:before,
+.#{$fa-ion-ios-css-prefix}-file-photo-o:before,
+.#{$fa-ion-md-css-prefix}-file-picture-o:before,
+.#{$fa-ion-ios-css-prefix}-file-picture-o:before,
+.#{$fa-ion-md-css-prefix}-file-image-o:before,
+.#{$fa-ion-ios-css-prefix}-file-image-o:before { @extend .ion-md:before;content: $fa-var-file-image-o; }
+.#{$fa-ion-md-css-prefix}-file-zip-o:before,
+.#{$fa-ion-ios-css-prefix}-file-zip-o:before,
+.#{$fa-ion-md-css-prefix}-file-archive-o:before,
+.#{$fa-ion-ios-css-prefix}-file-archive-o:before { @extend .ion-md:before;content: $fa-var-file-archive-o; }
+.#{$fa-ion-md-css-prefix}-file-sound-o:before,
+.#{$fa-ion-ios-css-prefix}-file-sound-o:before,
+.#{$fa-ion-md-css-prefix}-file-audio-o:before,
+.#{$fa-ion-ios-css-prefix}-file-audio-o:before { @extend .ion-md:before;content: $fa-var-file-audio-o; }
+.#{$fa-ion-md-css-prefix}-file-movie-o:before,
+.#{$fa-ion-ios-css-prefix}-file-movie-o:before,
+.#{$fa-ion-md-css-prefix}-file-video-o:before,
+.#{$fa-ion-ios-css-prefix}-file-video-o:before { @extend .ion-md:before;content: $fa-var-file-video-o; }
+.#{$fa-ion-md-css-prefix}-file-code-o:before,
+.#{$fa-ion-ios-css-prefix}-file-code-o:before { @extend .ion-md:before;content: $fa-var-file-code-o; }
+.#{$fa-ion-md-css-prefix}-vine:before,
+.#{$fa-ion-ios-css-prefix}-vine:before { @extend .ion-md:before;content: $fa-var-vine; }
+.#{$fa-ion-md-css-prefix}-codepen:before,
+.#{$fa-ion-ios-css-prefix}-codepen:before { @extend .ion-md:before;content: $fa-var-codepen; }
+.#{$fa-ion-md-css-prefix}-jsfiddle:before,
+.#{$fa-ion-ios-css-prefix}-jsfiddle:before { @extend .ion-md:before;content: $fa-var-jsfiddle; }
+.#{$fa-ion-md-css-prefix}-life-bouy:before,
+.#{$fa-ion-ios-css-prefix}-life-bouy:before,
+.#{$fa-ion-md-css-prefix}-life-buoy:before,
+.#{$fa-ion-ios-css-prefix}-life-buoy:before,
+.#{$fa-ion-md-css-prefix}-life-saver:before,
+.#{$fa-ion-ios-css-prefix}-life-saver:before,
+.#{$fa-ion-md-css-prefix}-support:before,
+.#{$fa-ion-ios-css-prefix}-support:before,
+.#{$fa-ion-md-css-prefix}-life-ring:before,
+.#{$fa-ion-ios-css-prefix}-life-ring:before { @extend .ion-md:before;content: $fa-var-life-ring; }
+.#{$fa-ion-md-css-prefix}-circle-o-notch:before,
+.#{$fa-ion-ios-css-prefix}-circle-o-notch:before { @extend .ion-md:before;content: $fa-var-circle-o-notch; }
+.#{$fa-ion-md-css-prefix}-ra:before,
+.#{$fa-ion-ios-css-prefix}-ra:before,
+.#{$fa-ion-md-css-prefix}-resistance:before,
+.#{$fa-ion-ios-css-prefix}-resistance:before,
+.#{$fa-ion-md-css-prefix}-rebel:before,
+.#{$fa-ion-ios-css-prefix}-rebel:before { @extend .ion-md:before;content: $fa-var-rebel; }
+.#{$fa-ion-md-css-prefix}-ge:before,
+.#{$fa-ion-ios-css-prefix}-ge:before,
+.#{$fa-ion-md-css-prefix}-empire:before,
+.#{$fa-ion-ios-css-prefix}-empire:before { @extend .ion-md:before;content: $fa-var-empire; }
+.#{$fa-ion-md-css-prefix}-git-square:before,
+.#{$fa-ion-ios-css-prefix}-git-square:before { @extend .ion-md:before;content: $fa-var-git-square; }
+.#{$fa-ion-md-css-prefix}-git:before,
+.#{$fa-ion-ios-css-prefix}-git:before { @extend .ion-md:before;content: $fa-var-git; }
+.#{$fa-ion-md-css-prefix}-y-combinator-square:before,
+.#{$fa-ion-ios-css-prefix}-y-combinator-square:before,
+.#{$fa-ion-md-css-prefix}-yc-square:before,
+.#{$fa-ion-ios-css-prefix}-yc-square:before,
+.#{$fa-ion-md-css-prefix}-hacker-news:before,
+.#{$fa-ion-ios-css-prefix}-hacker-news:before { @extend .ion-md:before;content: $fa-var-hacker-news; }
+.#{$fa-ion-md-css-prefix}-tencent-weibo:before,
+.#{$fa-ion-ios-css-prefix}-tencent-weibo:before { @extend .ion-md:before;content: $fa-var-tencent-weibo; }
+.#{$fa-ion-md-css-prefix}-qq:before,
+.#{$fa-ion-ios-css-prefix}-qq:before { @extend .ion-md:before;content: $fa-var-qq; }
+.#{$fa-ion-md-css-prefix}-wechat:before,
+.#{$fa-ion-ios-css-prefix}-wechat:before,
+.#{$fa-ion-md-css-prefix}-weixin:before,
+.#{$fa-ion-ios-css-prefix}-weixin:before { @extend .ion-md:before;content: $fa-var-weixin; }
+.#{$fa-ion-md-css-prefix}-send:before,
+.#{$fa-ion-ios-css-prefix}-send:before,
+.#{$fa-ion-md-css-prefix}-paper-plane:before,
+.#{$fa-ion-ios-css-prefix}-paper-plane:before { @extend .ion-md:before;content: $fa-var-paper-plane; }
+.#{$fa-ion-md-css-prefix}-send-o:before,
+.#{$fa-ion-ios-css-prefix}-send-o:before,
+.#{$fa-ion-md-css-prefix}-paper-plane-o:before,
+.#{$fa-ion-ios-css-prefix}-paper-plane-o:before { @extend .ion-md:before;content: $fa-var-paper-plane-o; }
+.#{$fa-ion-md-css-prefix}-history:before,
+.#{$fa-ion-ios-css-prefix}-history:before { @extend .ion-md:before;content: $fa-var-history; }
+.#{$fa-ion-md-css-prefix}-circle-thin:before,
+.#{$fa-ion-ios-css-prefix}-circle-thin:before { @extend .ion-md:before;content: $fa-var-circle-thin; }
+.#{$fa-ion-md-css-prefix}-header:before,
+.#{$fa-ion-ios-css-prefix}-header:before { @extend .ion-md:before;content: $fa-var-header; }
+.#{$fa-ion-md-css-prefix}-paragraph:before,
+.#{$fa-ion-ios-css-prefix}-paragraph:before { @extend .ion-md:before;content: $fa-var-paragraph; }
+.#{$fa-ion-md-css-prefix}-sliders:before,
+.#{$fa-ion-ios-css-prefix}-sliders:before { @extend .ion-md:before;content: $fa-var-sliders; }
+.#{$fa-ion-md-css-prefix}-share-alt:before,
+.#{$fa-ion-ios-css-prefix}-share-alt:before { @extend .ion-md:before;content: $fa-var-share-alt; }
+.#{$fa-ion-md-css-prefix}-share-alt-square:before,
+.#{$fa-ion-ios-css-prefix}-share-alt-square:before { @extend .ion-md:before;content: $fa-var-share-alt-square; }
+.#{$fa-ion-md-css-prefix}-bomb:before,
+.#{$fa-ion-ios-css-prefix}-bomb:before { @extend .ion-md:before;content: $fa-var-bomb; }
+.#{$fa-ion-md-css-prefix}-soccer-ball-o:before,
+.#{$fa-ion-ios-css-prefix}-soccer-ball-o:before,
+.#{$fa-ion-md-css-prefix}-futbol-o:before,
+.#{$fa-ion-ios-css-prefix}-futbol-o:before { @extend .ion-md:before;content: $fa-var-futbol-o; }
+.#{$fa-ion-md-css-prefix}-tty:before,
+.#{$fa-ion-ios-css-prefix}-tty:before { @extend .ion-md:before;content: $fa-var-tty; }
+.#{$fa-ion-md-css-prefix}-binoculars:before,
+.#{$fa-ion-ios-css-prefix}-binoculars:before { @extend .ion-md:before;content: $fa-var-binoculars; }
+.#{$fa-ion-md-css-prefix}-plug:before,
+.#{$fa-ion-ios-css-prefix}-plug:before { @extend .ion-md:before;content: $fa-var-plug; }
+.#{$fa-ion-md-css-prefix}-slideshare:before,
+.#{$fa-ion-ios-css-prefix}-slideshare:before { @extend .ion-md:before;content: $fa-var-slideshare; }
+.#{$fa-ion-md-css-prefix}-twitch:before,
+.#{$fa-ion-ios-css-prefix}-twitch:before { @extend .ion-md:before;content: $fa-var-twitch; }
+.#{$fa-ion-md-css-prefix}-yelp:before,
+.#{$fa-ion-ios-css-prefix}-yelp:before { @extend .ion-md:before;content: $fa-var-yelp; }
+.#{$fa-ion-md-css-prefix}-newspaper-o:before,
+.#{$fa-ion-ios-css-prefix}-newspaper-o:before { @extend .ion-md:before;content: $fa-var-newspaper-o; }
+.#{$fa-ion-md-css-prefix}-wifi:before,
+.#{$fa-ion-ios-css-prefix}-wifi:before { @extend .ion-md:before;content: $fa-var-wifi; }
+.#{$fa-ion-md-css-prefix}-calculator:before,
+.#{$fa-ion-ios-css-prefix}-calculator:before { @extend .ion-md:before;content: $fa-var-calculator; }
+.#{$fa-ion-md-css-prefix}-paypal:before,
+.#{$fa-ion-ios-css-prefix}-paypal:before { @extend .ion-md:before;content: $fa-var-paypal; }
+.#{$fa-ion-md-css-prefix}-google-wallet:before,
+.#{$fa-ion-ios-css-prefix}-google-wallet:before { @extend .ion-md:before;content: $fa-var-google-wallet; }
+.#{$fa-ion-md-css-prefix}-cc-visa:before,
+.#{$fa-ion-ios-css-prefix}-cc-visa:before { @extend .ion-md:before;content: $fa-var-cc-visa; }
+.#{$fa-ion-md-css-prefix}-cc-mastercard:before,
+.#{$fa-ion-ios-css-prefix}-cc-mastercard:before { @extend .ion-md:before;content: $fa-var-cc-mastercard; }
+.#{$fa-ion-md-css-prefix}-cc-discover:before,
+.#{$fa-ion-ios-css-prefix}-cc-discover:before { @extend .ion-md:before;content: $fa-var-cc-discover; }
+.#{$fa-ion-md-css-prefix}-cc-amex:before,
+.#{$fa-ion-ios-css-prefix}-cc-amex:before { @extend .ion-md:before;content: $fa-var-cc-amex; }
+.#{$fa-ion-md-css-prefix}-cc-paypal:before,
+.#{$fa-ion-ios-css-prefix}-cc-paypal:before { @extend .ion-md:before;content: $fa-var-cc-paypal; }
+.#{$fa-ion-md-css-prefix}-cc-stripe:before,
+.#{$fa-ion-ios-css-prefix}-cc-stripe:before { @extend .ion-md:before;content: $fa-var-cc-stripe; }
+.#{$fa-ion-md-css-prefix}-bell-slash:before,
+.#{$fa-ion-ios-css-prefix}-bell-slash:before { @extend .ion-md:before;content: $fa-var-bell-slash; }
+.#{$fa-ion-md-css-prefix}-bell-slash-o:before,
+.#{$fa-ion-ios-css-prefix}-bell-slash-o:before { @extend .ion-md:before;content: $fa-var-bell-slash-o; }
+.#{$fa-ion-md-css-prefix}-trash:before,
+.#{$fa-ion-ios-css-prefix}-trash:before { @extend .ion-md:before;content: $fa-var-trash; }
+.#{$fa-ion-md-css-prefix}-copyright:before,
+.#{$fa-ion-ios-css-prefix}-copyright:before { @extend .ion-md:before;content: $fa-var-copyright; }
+.#{$fa-ion-md-css-prefix}-at:before,
+.#{$fa-ion-ios-css-prefix}-at:before { @extend .ion-md:before;content: $fa-var-at; }
+.#{$fa-ion-md-css-prefix}-eyedropper:before,
+.#{$fa-ion-ios-css-prefix}-eyedropper:before { @extend .ion-md:before;content: $fa-var-eyedropper; }
+.#{$fa-ion-md-css-prefix}-paint-brush:before,
+.#{$fa-ion-ios-css-prefix}-paint-brush:before { @extend .ion-md:before;content: $fa-var-paint-brush; }
+.#{$fa-ion-md-css-prefix}-birthday-cake:before,
+.#{$fa-ion-ios-css-prefix}-birthday-cake:before { @extend .ion-md:before;content: $fa-var-birthday-cake; }
+.#{$fa-ion-md-css-prefix}-area-chart:before,
+.#{$fa-ion-ios-css-prefix}-area-chart:before { @extend .ion-md:before;content: $fa-var-area-chart; }
+.#{$fa-ion-md-css-prefix}-pie-chart:before,
+.#{$fa-ion-ios-css-prefix}-pie-chart:before { @extend .ion-md:before;content: $fa-var-pie-chart; }
+.#{$fa-ion-md-css-prefix}-line-chart:before,
+.#{$fa-ion-ios-css-prefix}-line-chart:before { @extend .ion-md:before;content: $fa-var-line-chart; }
+.#{$fa-ion-md-css-prefix}-lastfm:before,
+.#{$fa-ion-ios-css-prefix}-lastfm:before { @extend .ion-md:before;content: $fa-var-lastfm; }
+.#{$fa-ion-md-css-prefix}-lastfm-square:before,
+.#{$fa-ion-ios-css-prefix}-lastfm-square:before { @extend .ion-md:before;content: $fa-var-lastfm-square; }
+.#{$fa-ion-md-css-prefix}-toggle-off:before,
+.#{$fa-ion-ios-css-prefix}-toggle-off:before { @extend .ion-md:before;content: $fa-var-toggle-off; }
+.#{$fa-ion-md-css-prefix}-toggle-on:before,
+.#{$fa-ion-ios-css-prefix}-toggle-on:before { @extend .ion-md:before;content: $fa-var-toggle-on; }
+.#{$fa-ion-md-css-prefix}-bicycle:before,
+.#{$fa-ion-ios-css-prefix}-bicycle:before { @extend .ion-md:before;content: $fa-var-bicycle; }
+.#{$fa-ion-md-css-prefix}-bus:before,
+.#{$fa-ion-ios-css-prefix}-bus:before { @extend .ion-md:before;content: $fa-var-bus; }
+.#{$fa-ion-md-css-prefix}-ioxhost:before,
+.#{$fa-ion-ios-css-prefix}-ioxhost:before { @extend .ion-md:before;content: $fa-var-ioxhost; }
+.#{$fa-ion-md-css-prefix}-angellist:before,
+.#{$fa-ion-ios-css-prefix}-angellist:before { @extend .ion-md:before;content: $fa-var-angellist; }
+.#{$fa-ion-md-css-prefix}-cc:before,
+.#{$fa-ion-ios-css-prefix}-cc:before { @extend .ion-md:before;content: $fa-var-cc; }
+.#{$fa-ion-md-css-prefix}-shekel:before,
+.#{$fa-ion-ios-css-prefix}-shekel:before,
+.#{$fa-ion-md-css-prefix}-sheqel:before,
+.#{$fa-ion-ios-css-prefix}-sheqel:before,
+.#{$fa-ion-md-css-prefix}-ils:before,
+.#{$fa-ion-ios-css-prefix}-ils:before { @extend .ion-md:before;content: $fa-var-ils; }
+.#{$fa-ion-md-css-prefix}-meanpath:before,
+.#{$fa-ion-ios-css-prefix}-meanpath:before { @extend .ion-md:before;content: $fa-var-meanpath; }
+.#{$fa-ion-md-css-prefix}-buysellads:before,
+.#{$fa-ion-ios-css-prefix}-buysellads:before { @extend .ion-md:before;content: $fa-var-buysellads; }
+.#{$fa-ion-md-css-prefix}-connectdevelop:before,
+.#{$fa-ion-ios-css-prefix}-connectdevelop:before { @extend .ion-md:before;content: $fa-var-connectdevelop; }
+.#{$fa-ion-md-css-prefix}-dashcube:before,
+.#{$fa-ion-ios-css-prefix}-dashcube:before { @extend .ion-md:before;content: $fa-var-dashcube; }
+.#{$fa-ion-md-css-prefix}-forumbee:before,
+.#{$fa-ion-ios-css-prefix}-forumbee:before { @extend .ion-md:before;content: $fa-var-forumbee; }
+.#{$fa-ion-md-css-prefix}-leanpub:before,
+.#{$fa-ion-ios-css-prefix}-leanpub:before { @extend .ion-md:before;content: $fa-var-leanpub; }
+.#{$fa-ion-md-css-prefix}-sellsy:before,
+.#{$fa-ion-ios-css-prefix}-sellsy:before { @extend .ion-md:before;content: $fa-var-sellsy; }
+.#{$fa-ion-md-css-prefix}-shirtsinbulk:before,
+.#{$fa-ion-ios-css-prefix}-shirtsinbulk:before { @extend .ion-md:before;content: $fa-var-shirtsinbulk; }
+.#{$fa-ion-md-css-prefix}-simplybuilt:before,
+.#{$fa-ion-ios-css-prefix}-simplybuilt:before { @extend .ion-md:before;content: $fa-var-simplybuilt; }
+.#{$fa-ion-md-css-prefix}-skyatlas:before,
+.#{$fa-ion-ios-css-prefix}-skyatlas:before { @extend .ion-md:before;content: $fa-var-skyatlas; }
+.#{$fa-ion-md-css-prefix}-cart-plus:before,
+.#{$fa-ion-ios-css-prefix}-cart-plus:before { @extend .ion-md:before;content: $fa-var-cart-plus; }
+.#{$fa-ion-md-css-prefix}-cart-arrow-down:before,
+.#{$fa-ion-ios-css-prefix}-cart-arrow-down:before { @extend .ion-md:before;content: $fa-var-cart-arrow-down; }
+.#{$fa-ion-md-css-prefix}-diamond:before,
+.#{$fa-ion-ios-css-prefix}-diamond:before { @extend .ion-md:before;content: $fa-var-diamond; }
+.#{$fa-ion-md-css-prefix}-ship:before,
+.#{$fa-ion-ios-css-prefix}-ship:before { @extend .ion-md:before;content: $fa-var-ship; }
+.#{$fa-ion-md-css-prefix}-user-secret:before,
+.#{$fa-ion-ios-css-prefix}-user-secret:before { @extend .ion-md:before;content: $fa-var-user-secret; }
+.#{$fa-ion-md-css-prefix}-motorcycle:before,
+.#{$fa-ion-ios-css-prefix}-motorcycle:before { @extend .ion-md:before;content: $fa-var-motorcycle; }
+.#{$fa-ion-md-css-prefix}-street-view:before,
+.#{$fa-ion-ios-css-prefix}-street-view:before { @extend .ion-md:before;content: $fa-var-street-view; }
+.#{$fa-ion-md-css-prefix}-heartbeat:before,
+.#{$fa-ion-ios-css-prefix}-heartbeat:before { @extend .ion-md:before;content: $fa-var-heartbeat; }
+.#{$fa-ion-md-css-prefix}-venus:before,
+.#{$fa-ion-ios-css-prefix}-venus:before { @extend .ion-md:before;content: $fa-var-venus; }
+.#{$fa-ion-md-css-prefix}-mars:before,
+.#{$fa-ion-ios-css-prefix}-mars:before { @extend .ion-md:before;content: $fa-var-mars; }
+.#{$fa-ion-md-css-prefix}-mercury:before,
+.#{$fa-ion-ios-css-prefix}-mercury:before { @extend .ion-md:before;content: $fa-var-mercury; }
+.#{$fa-ion-md-css-prefix}-intersex:before,
+.#{$fa-ion-ios-css-prefix}-intersex:before,
+.#{$fa-ion-md-css-prefix}-transgender:before,
+.#{$fa-ion-ios-css-prefix}-transgender:before { @extend .ion-md:before;content: $fa-var-transgender; }
+.#{$fa-ion-md-css-prefix}-transgender-alt:before,
+.#{$fa-ion-ios-css-prefix}-transgender-alt:before { @extend .ion-md:before;content: $fa-var-transgender-alt; }
+.#{$fa-ion-md-css-prefix}-venus-double:before,
+.#{$fa-ion-ios-css-prefix}-venus-double:before { @extend .ion-md:before;content: $fa-var-venus-double; }
+.#{$fa-ion-md-css-prefix}-mars-double:before,
+.#{$fa-ion-ios-css-prefix}-mars-double:before { @extend .ion-md:before;content: $fa-var-mars-double; }
+.#{$fa-ion-md-css-prefix}-venus-mars:before,
+.#{$fa-ion-ios-css-prefix}-venus-mars:before { @extend .ion-md:before;content: $fa-var-venus-mars; }
+.#{$fa-ion-md-css-prefix}-mars-stroke:before,
+.#{$fa-ion-ios-css-prefix}-mars-stroke:before { @extend .ion-md:before;content: $fa-var-mars-stroke; }
+.#{$fa-ion-md-css-prefix}-mars-stroke-v:before,
+.#{$fa-ion-ios-css-prefix}-mars-stroke-v:before { @extend .ion-md:before;content: $fa-var-mars-stroke-v; }
+.#{$fa-ion-md-css-prefix}-mars-stroke-h:before,
+.#{$fa-ion-ios-css-prefix}-mars-stroke-h:before { @extend .ion-md:before;content: $fa-var-mars-stroke-h; }
+.#{$fa-ion-md-css-prefix}-neuter:before,
+.#{$fa-ion-ios-css-prefix}-neuter:before { @extend .ion-md:before;content: $fa-var-neuter; }
+.#{$fa-ion-md-css-prefix}-genderless:before,
+.#{$fa-ion-ios-css-prefix}-genderless:before { @extend .ion-md:before;content: $fa-var-genderless; }
+.#{$fa-ion-md-css-prefix}-facebook-official:before,
+.#{$fa-ion-ios-css-prefix}-facebook-official:before { @extend .ion-md:before;content: $fa-var-facebook-official; }
+.#{$fa-ion-md-css-prefix}-pinterest-p:before,
+.#{$fa-ion-ios-css-prefix}-pinterest-p:before { @extend .ion-md:before;content: $fa-var-pinterest-p; }
+.#{$fa-ion-md-css-prefix}-whatsapp:before,
+.#{$fa-ion-ios-css-prefix}-whatsapp:before { @extend .ion-md:before;content: $fa-var-whatsapp; }
+.#{$fa-ion-md-css-prefix}-server:before,
+.#{$fa-ion-ios-css-prefix}-server:before { @extend .ion-md:before;content: $fa-var-server; }
+.#{$fa-ion-md-css-prefix}-user-plus:before,
+.#{$fa-ion-ios-css-prefix}-user-plus:before { @extend .ion-md:before;content: $fa-var-user-plus; }
+.#{$fa-ion-md-css-prefix}-user-times:before,
+.#{$fa-ion-ios-css-prefix}-user-times:before { @extend .ion-md:before;content: $fa-var-user-times; }
+.#{$fa-ion-md-css-prefix}-hotel:before,
+.#{$fa-ion-ios-css-prefix}-hotel:before,
+.#{$fa-ion-md-css-prefix}-bed:before,
+.#{$fa-ion-ios-css-prefix}-bed:before { @extend .ion-md:before;content: $fa-var-bed; }
+.#{$fa-ion-md-css-prefix}-viacoin:before,
+.#{$fa-ion-ios-css-prefix}-viacoin:before { @extend .ion-md:before;content: $fa-var-viacoin; }
+.#{$fa-ion-md-css-prefix}-train:before,
+.#{$fa-ion-ios-css-prefix}-train:before { @extend .ion-md:before;content: $fa-var-train; }
+.#{$fa-ion-md-css-prefix}-subway:before,
+.#{$fa-ion-ios-css-prefix}-subway:before { @extend .ion-md:before;content: $fa-var-subway; }
+.#{$fa-ion-md-css-prefix}-medium:before,
+.#{$fa-ion-ios-css-prefix}-medium:before { @extend .ion-md:before;content: $fa-var-medium; }
+.#{$fa-ion-md-css-prefix}-yc:before,
+.#{$fa-ion-ios-css-prefix}-yc:before,
+.#{$fa-ion-md-css-prefix}-y-combinator:before,
+.#{$fa-ion-ios-css-prefix}-y-combinator:before { @extend .ion-md:before;content: $fa-var-y-combinator; }
+.#{$fa-ion-md-css-prefix}-optin-monster:before,
+.#{$fa-ion-ios-css-prefix}-optin-monster:before { @extend .ion-md:before;content: $fa-var-optin-monster; }
+.#{$fa-ion-md-css-prefix}-opencart:before,
+.#{$fa-ion-ios-css-prefix}-opencart:before { @extend .ion-md:before;content: $fa-var-opencart; }
+.#{$fa-ion-md-css-prefix}-expeditedssl:before,
+.#{$fa-ion-ios-css-prefix}-expeditedssl:before { @extend .ion-md:before;content: $fa-var-expeditedssl; }
+.#{$fa-ion-md-css-prefix}-battery-4:before,
+.#{$fa-ion-ios-css-prefix}-battery-4:before,
+.#{$fa-ion-md-css-prefix}-battery:before,
+.#{$fa-ion-ios-css-prefix}-battery:before,
+.#{$fa-ion-md-css-prefix}-battery-full:before,
+.#{$fa-ion-ios-css-prefix}-battery-full:before { @extend .ion-md:before;content: $fa-var-battery-full; }
+.#{$fa-ion-md-css-prefix}-battery-3:before,
+.#{$fa-ion-ios-css-prefix}-battery-3:before,
+.#{$fa-ion-md-css-prefix}-battery-three-quarters:before,
+.#{$fa-ion-ios-css-prefix}-battery-three-quarters:before { @extend .ion-md:before;content: $fa-var-battery-three-quarters; }
+.#{$fa-ion-md-css-prefix}-battery-2:before,
+.#{$fa-ion-ios-css-prefix}-battery-2:before,
+.#{$fa-ion-md-css-prefix}-battery-half:before,
+.#{$fa-ion-ios-css-prefix}-battery-half:before { @extend .ion-md:before;content: $fa-var-battery-half; }
+.#{$fa-ion-md-css-prefix}-battery-1:before,
+.#{$fa-ion-ios-css-prefix}-battery-1:before,
+.#{$fa-ion-md-css-prefix}-battery-quarter:before,
+.#{$fa-ion-ios-css-prefix}-battery-quarter:before { @extend .ion-md:before;content: $fa-var-battery-quarter; }
+.#{$fa-ion-md-css-prefix}-battery-0:before,
+.#{$fa-ion-ios-css-prefix}-battery-0:before,
+.#{$fa-ion-md-css-prefix}-battery-empty:before,
+.#{$fa-ion-ios-css-prefix}-battery-empty:before { @extend .ion-md:before;content: $fa-var-battery-empty; }
+.#{$fa-ion-md-css-prefix}-mouse-pointer:before,
+.#{$fa-ion-ios-css-prefix}-mouse-pointer:before { @extend .ion-md:before;content: $fa-var-mouse-pointer; }
+.#{$fa-ion-md-css-prefix}-i-cursor:before,
+.#{$fa-ion-ios-css-prefix}-i-cursor:before { @extend .ion-md:before;content: $fa-var-i-cursor; }
+.#{$fa-ion-md-css-prefix}-object-group:before,
+.#{$fa-ion-ios-css-prefix}-object-group:before { @extend .ion-md:before;content: $fa-var-object-group; }
+.#{$fa-ion-md-css-prefix}-object-ungroup:before,
+.#{$fa-ion-ios-css-prefix}-object-ungroup:before { @extend .ion-md:before;content: $fa-var-object-ungroup; }
+.#{$fa-ion-md-css-prefix}-sticky-note:before,
+.#{$fa-ion-ios-css-prefix}-sticky-note:before { @extend .ion-md:before;content: $fa-var-sticky-note; }
+.#{$fa-ion-md-css-prefix}-sticky-note-o:before,
+.#{$fa-ion-ios-css-prefix}-sticky-note-o:before { @extend .ion-md:before;content: $fa-var-sticky-note-o; }
+.#{$fa-ion-md-css-prefix}-cc-jcb:before,
+.#{$fa-ion-ios-css-prefix}-cc-jcb:before { @extend .ion-md:before;content: $fa-var-cc-jcb; }
+.#{$fa-ion-md-css-prefix}-cc-diners-club:before,
+.#{$fa-ion-ios-css-prefix}-cc-diners-club:before { @extend .ion-md:before;content: $fa-var-cc-diners-club; }
+.#{$fa-ion-md-css-prefix}-clone:before,
+.#{$fa-ion-ios-css-prefix}-clone:before { @extend .ion-md:before;content: $fa-var-clone; }
+.#{$fa-ion-md-css-prefix}-balance-scale:before,
+.#{$fa-ion-ios-css-prefix}-balance-scale:before { @extend .ion-md:before;content: $fa-var-balance-scale; }
+.#{$fa-ion-md-css-prefix}-hourglass-o:before,
+.#{$fa-ion-ios-css-prefix}-hourglass-o:before { @extend .ion-md:before;content: $fa-var-hourglass-o; }
+.#{$fa-ion-md-css-prefix}-hourglass-1:before,
+.#{$fa-ion-ios-css-prefix}-hourglass-1:before,
+.#{$fa-ion-md-css-prefix}-hourglass-start:before,
+.#{$fa-ion-ios-css-prefix}-hourglass-start:before { @extend .ion-md:before;content: $fa-var-hourglass-start; }
+.#{$fa-ion-md-css-prefix}-hourglass-2:before,
+.#{$fa-ion-ios-css-prefix}-hourglass-2:before,
+.#{$fa-ion-md-css-prefix}-hourglass-half:before,
+.#{$fa-ion-ios-css-prefix}-hourglass-half:before { @extend .ion-md:before;content: $fa-var-hourglass-half; }
+.#{$fa-ion-md-css-prefix}-hourglass-3:before,
+.#{$fa-ion-ios-css-prefix}-hourglass-3:before,
+.#{$fa-ion-md-css-prefix}-hourglass-end:before,
+.#{$fa-ion-ios-css-prefix}-hourglass-end:before { @extend .ion-md:before;content: $fa-var-hourglass-end; }
+.#{$fa-ion-md-css-prefix}-hourglass:before,
+.#{$fa-ion-ios-css-prefix}-hourglass:before { @extend .ion-md:before;content: $fa-var-hourglass; }
+.#{$fa-ion-md-css-prefix}-hand-grab-o:before,
+.#{$fa-ion-ios-css-prefix}-hand-grab-o:before,
+.#{$fa-ion-md-css-prefix}-hand-rock-o:before,
+.#{$fa-ion-ios-css-prefix}-hand-rock-o:before { @extend .ion-md:before;content: $fa-var-hand-rock-o; }
+.#{$fa-ion-md-css-prefix}-hand-stop-o:before,
+.#{$fa-ion-ios-css-prefix}-hand-stop-o:before,
+.#{$fa-ion-md-css-prefix}-hand-paper-o:before,
+.#{$fa-ion-ios-css-prefix}-hand-paper-o:before { @extend .ion-md:before;content: $fa-var-hand-paper-o; }
+.#{$fa-ion-md-css-prefix}-hand-scissors-o:before,
+.#{$fa-ion-ios-css-prefix}-hand-scissors-o:before { @extend .ion-md:before;content: $fa-var-hand-scissors-o; }
+.#{$fa-ion-md-css-prefix}-hand-lizard-o:before,
+.#{$fa-ion-ios-css-prefix}-hand-lizard-o:before { @extend .ion-md:before;content: $fa-var-hand-lizard-o; }
+.#{$fa-ion-md-css-prefix}-hand-spock-o:before,
+.#{$fa-ion-ios-css-prefix}-hand-spock-o:before { @extend .ion-md:before;content: $fa-var-hand-spock-o; }
+.#{$fa-ion-md-css-prefix}-hand-pointer-o:before,
+.#{$fa-ion-ios-css-prefix}-hand-pointer-o:before { @extend .ion-md:before;content: $fa-var-hand-pointer-o; }
+.#{$fa-ion-md-css-prefix}-hand-peace-o:before,
+.#{$fa-ion-ios-css-prefix}-hand-peace-o:before { @extend .ion-md:before;content: $fa-var-hand-peace-o; }
+.#{$fa-ion-md-css-prefix}-trademark:before,
+.#{$fa-ion-ios-css-prefix}-trademark:before { @extend .ion-md:before;content: $fa-var-trademark; }
+.#{$fa-ion-md-css-prefix}-registered:before,
+.#{$fa-ion-ios-css-prefix}-registered:before { @extend .ion-md:before;content: $fa-var-registered; }
+.#{$fa-ion-md-css-prefix}-creative-commons:before,
+.#{$fa-ion-ios-css-prefix}-creative-commons:before { @extend .ion-md:before;content: $fa-var-creative-commons; }
+.#{$fa-ion-md-css-prefix}-gg:before,
+.#{$fa-ion-ios-css-prefix}-gg:before { @extend .ion-md:before;content: $fa-var-gg; }
+.#{$fa-ion-md-css-prefix}-gg-circle:before,
+.#{$fa-ion-ios-css-prefix}-gg-circle:before { @extend .ion-md:before;content: $fa-var-gg-circle; }
+.#{$fa-ion-md-css-prefix}-tripadvisor:before,
+.#{$fa-ion-ios-css-prefix}-tripadvisor:before { @extend .ion-md:before;content: $fa-var-tripadvisor; }
+.#{$fa-ion-md-css-prefix}-odnoklassniki:before,
+.#{$fa-ion-ios-css-prefix}-odnoklassniki:before { @extend .ion-md:before;content: $fa-var-odnoklassniki; }
+.#{$fa-ion-md-css-prefix}-odnoklassniki-square:before,
+.#{$fa-ion-ios-css-prefix}-odnoklassniki-square:before { @extend .ion-md:before;content: $fa-var-odnoklassniki-square; }
+.#{$fa-ion-md-css-prefix}-get-pocket:before,
+.#{$fa-ion-ios-css-prefix}-get-pocket:before { @extend .ion-md:before;content: $fa-var-get-pocket; }
+.#{$fa-ion-md-css-prefix}-wikipedia-w:before,
+.#{$fa-ion-ios-css-prefix}-wikipedia-w:before { @extend .ion-md:before;content: $fa-var-wikipedia-w; }
+.#{$fa-ion-md-css-prefix}-safari:before,
+.#{$fa-ion-ios-css-prefix}-safari:before { @extend .ion-md:before;content: $fa-var-safari; }
+.#{$fa-ion-md-css-prefix}-chrome:before,
+.#{$fa-ion-ios-css-prefix}-chrome:before { @extend .ion-md:before;content: $fa-var-chrome; }
+.#{$fa-ion-md-css-prefix}-firefox:before,
+.#{$fa-ion-ios-css-prefix}-firefox:before { @extend .ion-md:before;content: $fa-var-firefox; }
+.#{$fa-ion-md-css-prefix}-opera:before,
+.#{$fa-ion-ios-css-prefix}-opera:before { @extend .ion-md:before;content: $fa-var-opera; }
+.#{$fa-ion-md-css-prefix}-internet-explorer:before,
+.#{$fa-ion-ios-css-prefix}-internet-explorer:before { @extend .ion-md:before;content: $fa-var-internet-explorer; }
+.#{$fa-ion-md-css-prefix}-tv:before,
+.#{$fa-ion-ios-css-prefix}-tv:before,
+.#{$fa-ion-md-css-prefix}-television:before,
+.#{$fa-ion-ios-css-prefix}-television:before { @extend .ion-md:before;content: $fa-var-television; }
+.#{$fa-ion-md-css-prefix}-contao:before,
+.#{$fa-ion-ios-css-prefix}-contao:before { @extend .ion-md:before;content: $fa-var-contao; }
+.#{$fa-ion-md-css-prefix}-500px:before,
+.#{$fa-ion-ios-css-prefix}-500px:before { @extend .ion-md:before;content: $fa-var-500px; }
+.#{$fa-ion-md-css-prefix}-amazon:before,
+.#{$fa-ion-ios-css-prefix}-amazon:before { @extend .ion-md:before;content: $fa-var-amazon; }
+.#{$fa-ion-md-css-prefix}-calendar-plus-o:before,
+.#{$fa-ion-ios-css-prefix}-calendar-plus-o:before { @extend .ion-md:before;content: $fa-var-calendar-plus-o; }
+.#{$fa-ion-md-css-prefix}-calendar-minus-o:before,
+.#{$fa-ion-ios-css-prefix}-calendar-minus-o:before { @extend .ion-md:before;content: $fa-var-calendar-minus-o; }
+.#{$fa-ion-md-css-prefix}-calendar-times-o:before,
+.#{$fa-ion-ios-css-prefix}-calendar-times-o:before { @extend .ion-md:before;content: $fa-var-calendar-times-o; }
+.#{$fa-ion-md-css-prefix}-calendar-check-o:before,
+.#{$fa-ion-ios-css-prefix}-calendar-check-o:before { @extend .ion-md:before;content: $fa-var-calendar-check-o; }
+.#{$fa-ion-md-css-prefix}-industry:before,
+.#{$fa-ion-ios-css-prefix}-industry:before { @extend .ion-md:before;content: $fa-var-industry; }
+.#{$fa-ion-md-css-prefix}-map-pin:before,
+.#{$fa-ion-ios-css-prefix}-map-pin:before { @extend .ion-md:before;content: $fa-var-map-pin; }
+.#{$fa-ion-md-css-prefix}-map-signs:before,
+.#{$fa-ion-ios-css-prefix}-map-signs:before { @extend .ion-md:before;content: $fa-var-map-signs; }
+.#{$fa-ion-md-css-prefix}-map-o:before,
+.#{$fa-ion-ios-css-prefix}-map-o:before { @extend .ion-md:before;content: $fa-var-map-o; }
+.#{$fa-ion-md-css-prefix}-map:before,
+.#{$fa-ion-ios-css-prefix}-map:before { @extend .ion-md:before;content: $fa-var-map; }
+.#{$fa-ion-md-css-prefix}-commenting:before,
+.#{$fa-ion-ios-css-prefix}-commenting:before { @extend .ion-md:before;content: $fa-var-commenting; }
+.#{$fa-ion-md-css-prefix}-commenting-o:before,
+.#{$fa-ion-ios-css-prefix}-commenting-o:before { @extend .ion-md:before;content: $fa-var-commenting-o; }
+.#{$fa-ion-md-css-prefix}-houzz:before,
+.#{$fa-ion-ios-css-prefix}-houzz:before { @extend .ion-md:before;content: $fa-var-houzz; }
+.#{$fa-ion-md-css-prefix}-vimeo:before,
+.#{$fa-ion-ios-css-prefix}-vimeo:before { @extend .ion-md:before;content: $fa-var-vimeo; }
+.#{$fa-ion-md-css-prefix}-black-tie:before,
+.#{$fa-ion-ios-css-prefix}-black-tie:before { @extend .ion-md:before;content: $fa-var-black-tie; }
+.#{$fa-ion-md-css-prefix}-fonticons:before,
+.#{$fa-ion-ios-css-prefix}-fonticons:before { @extend .ion-md:before;content: $fa-var-fonticons; }
+.#{$fa-ion-md-css-prefix}-reddit-alien:before,
+.#{$fa-ion-ios-css-prefix}-reddit-alien:before { @extend .ion-md:before;content: $fa-var-reddit-alien; }
+.#{$fa-ion-md-css-prefix}-edge:before,
+.#{$fa-ion-ios-css-prefix}-edge:before { @extend .ion-md:before;content: $fa-var-edge; }
+.#{$fa-ion-md-css-prefix}-credit-card-alt:before,
+.#{$fa-ion-ios-css-prefix}-credit-card-alt:before { @extend .ion-md:before;content: $fa-var-credit-card-alt; }
+.#{$fa-ion-md-css-prefix}-codiepie:before,
+.#{$fa-ion-ios-css-prefix}-codiepie:before { @extend .ion-md:before;content: $fa-var-codiepie; }
+.#{$fa-ion-md-css-prefix}-modx:before,
+.#{$fa-ion-ios-css-prefix}-modx:before { @extend .ion-md:before;content: $fa-var-modx; }
+.#{$fa-ion-md-css-prefix}-fort-awesome:before,
+.#{$fa-ion-ios-css-prefix}-fort-awesome:before { @extend .ion-md:before;content: $fa-var-fort-awesome; }
+.#{$fa-ion-md-css-prefix}-usb:before,
+.#{$fa-ion-ios-css-prefix}-usb:before { @extend .ion-md:before;content: $fa-var-usb; }
+.#{$fa-ion-md-css-prefix}-product-hunt:before,
+.#{$fa-ion-ios-css-prefix}-product-hunt:before { @extend .ion-md:before;content: $fa-var-product-hunt; }
+.#{$fa-ion-md-css-prefix}-mixcloud:before,
+.#{$fa-ion-ios-css-prefix}-mixcloud:before { @extend .ion-md:before;content: $fa-var-mixcloud; }
+.#{$fa-ion-md-css-prefix}-scribd:before,
+.#{$fa-ion-ios-css-prefix}-scribd:before { @extend .ion-md:before;content: $fa-var-scribd; }
+.#{$fa-ion-md-css-prefix}-pause-circle:before,
+.#{$fa-ion-ios-css-prefix}-pause-circle:before { @extend .ion-md:before;content: $fa-var-pause-circle; }
+.#{$fa-ion-md-css-prefix}-pause-circle-o:before,
+.#{$fa-ion-ios-css-prefix}-pause-circle-o:before { @extend .ion-md:before;content: $fa-var-pause-circle-o; }
+.#{$fa-ion-md-css-prefix}-stop-circle:before,
+.#{$fa-ion-ios-css-prefix}-stop-circle:before { @extend .ion-md:before;content: $fa-var-stop-circle; }
+.#{$fa-ion-md-css-prefix}-stop-circle-o:before,
+.#{$fa-ion-ios-css-prefix}-stop-circle-o:before { @extend .ion-md:before;content: $fa-var-stop-circle-o; }
+.#{$fa-ion-md-css-prefix}-shopping-bag:before,
+.#{$fa-ion-ios-css-prefix}-shopping-bag:before { @extend .ion-md:before;content: $fa-var-shopping-bag; }
+.#{$fa-ion-md-css-prefix}-shopping-basket:before,
+.#{$fa-ion-ios-css-prefix}-shopping-basket:before { @extend .ion-md:before;content: $fa-var-shopping-basket; }
+.#{$fa-ion-md-css-prefix}-hashtag:before,
+.#{$fa-ion-ios-css-prefix}-hashtag:before { @extend .ion-md:before;content: $fa-var-hashtag; }
+.#{$fa-ion-md-css-prefix}-bluetooth:before,
+.#{$fa-ion-ios-css-prefix}-bluetooth:before { @extend .ion-md:before;content: $fa-var-bluetooth; }
+.#{$fa-ion-md-css-prefix}-bluetooth-b:before,
+.#{$fa-ion-ios-css-prefix}-bluetooth-b:before { @extend .ion-md:before;content: $fa-var-bluetooth-b; }
+.#{$fa-ion-md-css-prefix}-percent:before,
+.#{$fa-ion-ios-css-prefix}-percent:before { @extend .ion-md:before;content: $fa-var-percent; }
+.#{$fa-ion-md-css-prefix}-gitlab:before,
+.#{$fa-ion-ios-css-prefix}-gitlab:before { @extend .ion-md:before;content: $fa-var-gitlab; }
+.#{$fa-ion-md-css-prefix}-wpbeginner:before,
+.#{$fa-ion-ios-css-prefix}-wpbeginner:before { @extend .ion-md:before;content: $fa-var-wpbeginner; }
+.#{$fa-ion-md-css-prefix}-wpforms:before,
+.#{$fa-ion-ios-css-prefix}-wpforms:before { @extend .ion-md:before;content: $fa-var-wpforms; }
+.#{$fa-ion-md-css-prefix}-envira:before,
+.#{$fa-ion-ios-css-prefix}-envira:before { @extend .ion-md:before;content: $fa-var-envira; }
+.#{$fa-ion-md-css-prefix}-universal-access:before,
+.#{$fa-ion-ios-css-prefix}-universal-access:before { @extend .ion-md:before;content: $fa-var-universal-access; }
+.#{$fa-ion-md-css-prefix}-wheelchair-alt:before,
+.#{$fa-ion-ios-css-prefix}-wheelchair-alt:before { @extend .ion-md:before;content: $fa-var-wheelchair-alt; }
+.#{$fa-ion-md-css-prefix}-question-circle-o:before,
+.#{$fa-ion-ios-css-prefix}-question-circle-o:before { @extend .ion-md:before;content: $fa-var-question-circle-o; }
+.#{$fa-ion-md-css-prefix}-blind:before,
+.#{$fa-ion-ios-css-prefix}-blind:before { @extend .ion-md:before;content: $fa-var-blind; }
+.#{$fa-ion-md-css-prefix}-audio-description:before,
+.#{$fa-ion-ios-css-prefix}-audio-description:before { @extend .ion-md:before;content: $fa-var-audio-description; }
+.#{$fa-ion-md-css-prefix}-volume-control-phone:before,
+.#{$fa-ion-ios-css-prefix}-volume-control-phone:before { @extend .ion-md:before;content: $fa-var-volume-control-phone; }
+.#{$fa-ion-md-css-prefix}-braille:before,
+.#{$fa-ion-ios-css-prefix}-braille:before { @extend .ion-md:before;content: $fa-var-braille; }
+.#{$fa-ion-md-css-prefix}-assistive-listening-systems:before,
+.#{$fa-ion-ios-css-prefix}-assistive-listening-systems:before { @extend .ion-md:before;content: $fa-var-assistive-listening-systems; }
+.#{$fa-ion-md-css-prefix}-asl-interpreting:before,
+.#{$fa-ion-ios-css-prefix}-asl-interpreting:before,
+.#{$fa-ion-md-css-prefix}-american-sign-language-interpreting:before,
+.#{$fa-ion-ios-css-prefix}-american-sign-language-interpreting:before { @extend .ion-md:before;content: $fa-var-american-sign-language-interpreting; }
+.#{$fa-ion-md-css-prefix}-deafness:before,
+.#{$fa-ion-ios-css-prefix}-deafness:before,
+.#{$fa-ion-md-css-prefix}-hard-of-hearing:before,
+.#{$fa-ion-ios-css-prefix}-hard-of-hearing:before,
+.#{$fa-ion-md-css-prefix}-deaf:before,
+.#{$fa-ion-ios-css-prefix}-deaf:before { @extend .ion-md:before;content: $fa-var-deaf; }
+.#{$fa-ion-md-css-prefix}-glide:before,
+.#{$fa-ion-ios-css-prefix}-glide:before { @extend .ion-md:before;content: $fa-var-glide; }
+.#{$fa-ion-md-css-prefix}-glide-g:before,
+.#{$fa-ion-ios-css-prefix}-glide-g:before { @extend .ion-md:before;content: $fa-var-glide-g; }
+.#{$fa-ion-md-css-prefix}-signing:before,
+.#{$fa-ion-ios-css-prefix}-signing:before,
+.#{$fa-ion-md-css-prefix}-sign-language:before,
+.#{$fa-ion-ios-css-prefix}-sign-language:before { @extend .ion-md:before;content: $fa-var-sign-language; }
+.#{$fa-ion-md-css-prefix}-low-vision:before,
+.#{$fa-ion-ios-css-prefix}-low-vision:before { @extend .ion-md:before;content: $fa-var-low-vision; }
+.#{$fa-ion-md-css-prefix}-viadeo:before,
+.#{$fa-ion-ios-css-prefix}-viadeo:before { @extend .ion-md:before;content: $fa-var-viadeo; }
+.#{$fa-ion-md-css-prefix}-viadeo-square:before,
+.#{$fa-ion-ios-css-prefix}-viadeo-square:before { @extend .ion-md:before;content: $fa-var-viadeo-square; }
+.#{$fa-ion-md-css-prefix}-snapchat:before,
+.#{$fa-ion-ios-css-prefix}-snapchat:before { @extend .ion-md:before;content: $fa-var-snapchat; }
+.#{$fa-ion-md-css-prefix}-snapchat-ghost:before,
+.#{$fa-ion-ios-css-prefix}-snapchat-ghost:before { @extend .ion-md:before;content: $fa-var-snapchat-ghost; }
+.#{$fa-ion-md-css-prefix}-snapchat-square:before,
+.#{$fa-ion-ios-css-prefix}-snapchat-square:before { @extend .ion-md:before;content: $fa-var-snapchat-square; }
+.#{$fa-ion-md-css-prefix}-pied-piper:before,
+.#{$fa-ion-ios-css-prefix}-pied-piper:before { @extend .ion-md:before;content: $fa-var-pied-piper; }
+.#{$fa-ion-md-css-prefix}-first-order:before,
+.#{$fa-ion-ios-css-prefix}-first-order:before { @extend .ion-md:before;content: $fa-var-first-order; }
+.#{$fa-ion-md-css-prefix}-yoast:before,
+.#{$fa-ion-ios-css-prefix}-yoast:before { @extend .ion-md:before;content: $fa-var-yoast; }
+.#{$fa-ion-md-css-prefix}-themeisle:before,
+.#{$fa-ion-ios-css-prefix}-themeisle:before { @extend .ion-md:before;content: $fa-var-themeisle; }
+.#{$fa-ion-md-css-prefix}-google-plus-circle:before,
+.#{$fa-ion-ios-css-prefix}-google-plus-circle:before,
+.#{$fa-ion-md-css-prefix}-google-plus-official:before,
+.#{$fa-ion-ios-css-prefix}-google-plus-official:before { @extend .ion-md:before;content: $fa-var-google-plus-official; }
+.#{$fa-ion-md-css-prefix}-fa:before,
+.#{$fa-ion-ios-css-prefix}-fa:before,
+.#{$fa-ion-md-css-prefix}-font-awesome:before,
+.#{$fa-ion-ios-css-prefix}-font-awesome:before { @extend .ion-md:before;content: $fa-var-font-awesome; }
+.#{$fa-ion-md-css-prefix}-handshake-o:before,
+.#{$fa-ion-ios-css-prefix}-handshake-o:before { @extend .ion-md:before;content: $fa-var-handshake-o; }
+.#{$fa-ion-md-css-prefix}-envelope-open:before,
+.#{$fa-ion-ios-css-prefix}-envelope-open:before { @extend .ion-md:before;content: $fa-var-envelope-open; }
+.#{$fa-ion-md-css-prefix}-envelope-open-o:before,
+.#{$fa-ion-ios-css-prefix}-envelope-open-o:before { @extend .ion-md:before;content: $fa-var-envelope-open-o; }
+.#{$fa-ion-md-css-prefix}-linode:before,
+.#{$fa-ion-ios-css-prefix}-linode:before { @extend .ion-md:before;content: $fa-var-linode; }
+.#{$fa-ion-md-css-prefix}-address-book:before,
+.#{$fa-ion-ios-css-prefix}-address-book:before { @extend .ion-md:before;content: $fa-var-address-book; }
+.#{$fa-ion-md-css-prefix}-address-book-o:before,
+.#{$fa-ion-ios-css-prefix}-address-book-o:before { @extend .ion-md:before;content: $fa-var-address-book-o; }
+.#{$fa-ion-md-css-prefix}-vcard:before,
+.#{$fa-ion-ios-css-prefix}-vcard:before,
+.#{$fa-ion-md-css-prefix}-address-card:before,
+.#{$fa-ion-ios-css-prefix}-address-card:before { @extend .ion-md:before;content: $fa-var-address-card; }
+.#{$fa-ion-md-css-prefix}-vcard-o:before,
+.#{$fa-ion-ios-css-prefix}-vcard-o:before,
+.#{$fa-ion-md-css-prefix}-address-card-o:before,
+.#{$fa-ion-ios-css-prefix}-address-card-o:before { @extend .ion-md:before;content: $fa-var-address-card-o; }
+.#{$fa-ion-md-css-prefix}-user-circle:before,
+.#{$fa-ion-ios-css-prefix}-user-circle:before { @extend .ion-md:before;content: $fa-var-user-circle; }
+.#{$fa-ion-md-css-prefix}-user-circle-o:before,
+.#{$fa-ion-ios-css-prefix}-user-circle-o:before { @extend .ion-md:before;content: $fa-var-user-circle-o; }
+.#{$fa-ion-md-css-prefix}-user-o:before,
+.#{$fa-ion-ios-css-prefix}-user-o:before { @extend .ion-md:before;content: $fa-var-user-o; }
+.#{$fa-ion-md-css-prefix}-id-badge:before,
+.#{$fa-ion-ios-css-prefix}-id-badge:before { @extend .ion-md:before;content: $fa-var-id-badge; }
+.#{$fa-ion-md-css-prefix}-drivers-license:before,
+.#{$fa-ion-ios-css-prefix}-drivers-license:before,
+.#{$fa-ion-md-css-prefix}-id-card:before,
+.#{$fa-ion-ios-css-prefix}-id-card:before { @extend .ion-md:before;content: $fa-var-id-card; }
+.#{$fa-ion-md-css-prefix}-drivers-license-o:before,
+.#{$fa-ion-ios-css-prefix}-drivers-license-o:before,
+.#{$fa-ion-md-css-prefix}-id-card-o:before,
+.#{$fa-ion-ios-css-prefix}-id-card-o:before { @extend .ion-md:before;content: $fa-var-id-card-o; }
+.#{$fa-ion-md-css-prefix}-quora:before,
+.#{$fa-ion-ios-css-prefix}-quora:before { @extend .ion-md:before;content: $fa-var-quora; }
+.#{$fa-ion-md-css-prefix}-free-code-camp:before,
+.#{$fa-ion-ios-css-prefix}-free-code-camp:before { @extend .ion-md:before;content: $fa-var-free-code-camp; }
+.#{$fa-ion-md-css-prefix}-telegram:before,
+.#{$fa-ion-ios-css-prefix}-telegram:before { @extend .ion-md:before;content: $fa-var-telegram; }
+.#{$fa-ion-md-css-prefix}-thermometer-4:before,
+.#{$fa-ion-ios-css-prefix}-thermometer-4:before,
+.#{$fa-ion-md-css-prefix}-thermometer:before,
+.#{$fa-ion-ios-css-prefix}-thermometer:before,
+.#{$fa-ion-md-css-prefix}-thermometer-full:before,
+.#{$fa-ion-ios-css-prefix}-thermometer-full:before { @extend .ion-md:before;content: $fa-var-thermometer-full; }
+.#{$fa-ion-md-css-prefix}-thermometer-3:before,
+.#{$fa-ion-ios-css-prefix}-thermometer-3:before,
+.#{$fa-ion-md-css-prefix}-thermometer-three-quarters:before,
+.#{$fa-ion-ios-css-prefix}-thermometer-three-quarters:before { @extend .ion-md:before;content: $fa-var-thermometer-three-quarters; }
+.#{$fa-ion-md-css-prefix}-thermometer-2:before,
+.#{$fa-ion-ios-css-prefix}-thermometer-2:before,
+.#{$fa-ion-md-css-prefix}-thermometer-half:before,
+.#{$fa-ion-ios-css-prefix}-thermometer-half:before { @extend .ion-md:before;content: $fa-var-thermometer-half; }
+.#{$fa-ion-md-css-prefix}-thermometer-1:before,
+.#{$fa-ion-ios-css-prefix}-thermometer-1:before,
+.#{$fa-ion-md-css-prefix}-thermometer-quarter:before,
+.#{$fa-ion-ios-css-prefix}-thermometer-quarter:before { @extend .ion-md:before;content: $fa-var-thermometer-quarter; }
+.#{$fa-ion-md-css-prefix}-thermometer-0:before,
+.#{$fa-ion-ios-css-prefix}-thermometer-0:before,
+.#{$fa-ion-md-css-prefix}-thermometer-empty:before,
+.#{$fa-ion-ios-css-prefix}-thermometer-empty:before { @extend .ion-md:before;content: $fa-var-thermometer-empty; }
+.#{$fa-ion-md-css-prefix}-shower:before,
+.#{$fa-ion-ios-css-prefix}-shower:before { @extend .ion-md:before;content: $fa-var-shower; }
+.#{$fa-ion-md-css-prefix}-bathtub:before,
+.#{$fa-ion-ios-css-prefix}-bathtub:before,
+.#{$fa-ion-md-css-prefix}-s15:before,
+.#{$fa-ion-ios-css-prefix}-s15:before,
+.#{$fa-ion-md-css-prefix}-bath:before,
+.#{$fa-ion-ios-css-prefix}-bath:before { @extend .ion-md:before;content: $fa-var-bath; }
+.#{$fa-ion-md-css-prefix}-podcast:before,
+.#{$fa-ion-ios-css-prefix}-podcast:before { @extend .ion-md:before;content: $fa-var-podcast; }
+.#{$fa-ion-md-css-prefix}-window-maximize:before,
+.#{$fa-ion-ios-css-prefix}-window-maximize:before { @extend .ion-md:before;content: $fa-var-window-maximize; }
+.#{$fa-ion-md-css-prefix}-window-minimize:before,
+.#{$fa-ion-ios-css-prefix}-window-minimize:before { @extend .ion-md:before;content: $fa-var-window-minimize; }
+.#{$fa-ion-md-css-prefix}-window-restore:before,
+.#{$fa-ion-ios-css-prefix}-window-restore:before { @extend .ion-md:before;content: $fa-var-window-restore; }
+.#{$fa-ion-md-css-prefix}-times-rectangle:before,
+.#{$fa-ion-ios-css-prefix}-times-rectangle:before,
+.#{$fa-ion-md-css-prefix}-window-close:before,
+.#{$fa-ion-ios-css-prefix}-window-close:before { @extend .ion-md:before;content: $fa-var-window-close; }
+.#{$fa-ion-md-css-prefix}-times-rectangle-o:before,
+.#{$fa-ion-ios-css-prefix}-times-rectangle-o:before,
+.#{$fa-ion-md-css-prefix}-window-close-o:before,
+.#{$fa-ion-ios-css-prefix}-window-close-o:before { @extend .ion-md:before;content: $fa-var-window-close-o; }
+.#{$fa-ion-md-css-prefix}-bandcamp:before,
+.#{$fa-ion-ios-css-prefix}-bandcamp:before { @extend .ion-md:before;content: $fa-var-bandcamp; }
+.#{$fa-ion-md-css-prefix}-grav:before,
+.#{$fa-ion-ios-css-prefix}-grav:before { @extend .ion-md:before;content: $fa-var-grav; }
+.#{$fa-ion-md-css-prefix}-etsy:before,
+.#{$fa-ion-ios-css-prefix}-etsy:before { @extend .ion-md:before;content: $fa-var-etsy; }
+.#{$fa-ion-md-css-prefix}-imdb:before,
+.#{$fa-ion-ios-css-prefix}-imdb:before { @extend .ion-md:before;content: $fa-var-imdb; }
+.#{$fa-ion-md-css-prefix}-ravelry:before,
+.#{$fa-ion-ios-css-prefix}-ravelry:before { @extend .ion-md:before;content: $fa-var-ravelry; }
+.#{$fa-ion-md-css-prefix}-eercast:before,
+.#{$fa-ion-ios-css-prefix}-eercast:before { @extend .ion-md:before;content: $fa-var-eercast; }
+.#{$fa-ion-md-css-prefix}-microchip:before,
+.#{$fa-ion-ios-css-prefix}-microchip:before { @extend .ion-md:before;content: $fa-var-microchip; }
+.#{$fa-ion-md-css-prefix}-snowflake-o:before,
+.#{$fa-ion-ios-css-prefix}-snowflake-o:before { @extend .ion-md:before;content: $fa-var-snowflake-o; }
+.#{$fa-ion-md-css-prefix}-superpowers:before,
+.#{$fa-ion-ios-css-prefix}-superpowers:before { @extend .ion-md:before;content: $fa-var-superpowers; }
+.#{$fa-ion-md-css-prefix}-wpexplorer:before,
+.#{$fa-ion-ios-css-prefix}-wpexplorer:before { @extend .ion-md:before;content: $fa-var-wpexplorer; }
+.#{$fa-ion-md-css-prefix}-meetup:before,
+.#{$fa-ion-ios-css-prefix}-meetup:before { @extend .ion-md:before;content: $fa-var-meetup; }

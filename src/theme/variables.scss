@@ -2,6 +2,10 @@
 // http://ionicframework.com/docs/v2/theming/
 @import "ionic.globals";
 
+// Font Awesome
+$fa-font-path: $font-path;
+@import "font-awesome";
+@import "ionic-font-awesome-icons";
 
 // Shared Variables
 // --------------------------------------------------
