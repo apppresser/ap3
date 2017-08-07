@@ -1075,6 +1075,7 @@ export class MyApp {
       this.login_data = null
       this.storage.remove('user_login');
       this.events.publish( 'modal:logindata', null )
+      this.events.publish( 'user:logout', null );
 
     } else if( data.isloggedin == true && !this.login_data ) {
 
