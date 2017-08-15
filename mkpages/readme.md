@@ -21,3 +21,6 @@ Run the script using `node app [site_name] [app_id]`.  (You need to be in the sa
 # RUN (as npm)
 cd ../ (so your in the ap3 directory)
 Run the script using `npm run pages [site_name] [app_id]`.
+
+# TROUBLESHOOTING
+Note: running the node command vs the npm command gives you better error messages.

@@ -40,22 +40,24 @@ export class ContentCollector {
 				});
 			} else if(this.port == 443) {
 				req = https.request(options, (res) => {
+					let body = '';
 					res.setEncoding('utf8');
 					res.on('data', (chunk) => {
-
 						try {
-							const json = JSON.parse(chunk.toString());
-							if(json.content && json.content.rendered) {
-								resolve(json.content.rendered);
-							} else {
-								console.log('No content found for page id ' + page_id);
-								resolve('');
-							}
+							body += chunk;
 						} catch (error) {
 							console.log('page_id: ' + page_id + ' did not contain a json response');
 							reject('No content found for page id ' + page_id);
 						}
-						
+					});
+					res.on('end', () => {
+						const json = JSON.parse(body.toString());
+						if(json.content && json.content.rendered) {
+							resolve(json.content.rendered);
+						} else {
+							console.log('No content found for page id ' + page_id);
+							resolve('');
+						}
 					});
 				});
 
