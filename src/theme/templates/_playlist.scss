@@ -1,0 +1,64 @@
+.avatar-large {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 1em;
+    margin-bottom: .5em;
+}
+
+.avatar-large ion-avatar img {
+	border-radius: 50%;
+    max-width: 45%;
+    margin: 10px auto;
+}
+
+.avatar-large h2,
+.avatar-large p,
+.avatar-large button {
+    text-align: center;
+    display: block;
+    margin: 0.4rem auto;
+}
+
+.avatar-large h2 {
+    font-size: 2rem;
+    margin: 1.5rem 1rem;
+}
+
+.avatar-large .website_url {
+    margin: 1.2em 1em .5em;
+}
+
+.playlist .item-icon {
+	color: #000;
+}
+
+.playlist .list-md {
+    margin-bottom:6px
+}
+.playlist .item-md {
+   color: #333;
+}
+
+.playlist .play-title {
+    color: #000;
+}
+.playlist .play-time {
+    padding-left: .5rem;
+    color: #666;
+    font-size: 1.2rem;
+}
+.playlist .desc {
+    color: #666;
+    font-size: 85%;
+    margin-top: 4px
+}
+
+.playlist .credit-license {
+    text-align: center;
+    border-top: 1px solid #CCC;
+    padding: .5em;
+}
+.playlist .credit-license p,
+.playlist .credit-license a {
+	color: #999;
+    text-decoration: none
+}
