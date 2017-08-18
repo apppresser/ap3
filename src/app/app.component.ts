@@ -381,7 +381,7 @@ export class MyApp {
 
   // side menu link. determine which func to use
   menuLink(p) {
-    if( this.bothMenus ) {
+    if( this.bothMenus || ( p.extra_classes && p.extra_classes.indexOf('push-page') >= 0 ) ) {
       this.pushPage(p);
     } else {
       this.openPage(p);
