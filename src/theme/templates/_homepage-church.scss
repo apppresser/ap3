@@ -1,0 +1,13 @@
+.custom-page {
+	.homepage-demo {
+		ion-card-content {
+			ion-card-title {
+				color: color($colors, primary);
+			}
+		}
+
+		ion-icon {
+			color: color($colors, primary);
+		}
+	}
+}
