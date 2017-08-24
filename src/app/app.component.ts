@@ -763,6 +763,7 @@ export class MyApp {
 
       push = this.Push.init({
         android: {
+            icon: "phonegap",
             senderID: "[[gcm_sender]]"
         },
         ios: {
