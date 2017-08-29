@@ -1,6 +1,6 @@
 /* Framework */
 import {ViewChild, Component} from '@angular/core';
-import {Platform, MenuController, Nav, ToastController, ModalController, Events} from 'ionic-angular';
+import {Platform, MenuController, Nav, ToastController, ModalController, Events, Config} from 'ionic-angular';
 import {DomSanitizer} from '@angular/platform-browser';
 import {TranslateService} from '@ngx-translate/core';
 import {Http} from '@angular/http';
@@ -78,7 +78,8 @@ export class MyApp {
     private Device: Device,
     private Push: Push,
     private http: Http,
-    private Dialogs: Dialogs
+    private Dialogs: Dialogs,
+    private config: Config
   ) {
 
     this.initializeApp();
@@ -1064,6 +1065,9 @@ export class MyApp {
     this.storage.get( 'app_language' ).then( lang => {
       if( lang ) {
         this.translate.use( lang )
+
+        this.setBackBtnText();
+        
       }
     })
 
@@ -1125,6 +1129,7 @@ export class MyApp {
       console.log('set language to ' + lang);
 
       this.translate.setDefaultLang(lang);
+      this.setBackBtnText();
     });
   }
 
@@ -1151,5 +1156,14 @@ export class MyApp {
 			}
 	    });
 	}
+
+  setBackBtnText() {
+
+    this.translate.get('Back').subscribe( text => {
+      console.log('Back ' + text )
+      this.config.set('ios', 'backButtonText', text );
+    });
+
+  }
 
 }
