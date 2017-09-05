@@ -32,11 +32,13 @@ export class Posts {
 
     return new Promise( (resolve, reject) => {
 
+      var concat;
+
       // check if url already has a query param
       if( url.indexOf('?') > 0 ) {
-        var concat = '&';
+        concat = '&';
       } else {
-        var concat = '?';
+        concat = '?';
       }
 
       this.storage.get('app_language').then( lang => {

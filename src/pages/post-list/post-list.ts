@@ -244,7 +244,7 @@ export class PostList implements OnInit {
     for (let i = this.favorites.length - 1; i >= 0; i--) {
 
       if( this.favorites[i].id === item.id ) {
-        var inArray = true;
+        inArray = true;
         break;
       }
     }
