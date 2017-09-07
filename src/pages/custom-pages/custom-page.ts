@@ -106,6 +106,7 @@ export class CustomPage implements OnInit {
 		// anything that the template needs access to goes here
 		pages: this.getPages(),
 		segments: this.getSegments(),
+		platform: this.platform,
 		pushPage: (page) => {
 			this.pushPage(page);
 		},
