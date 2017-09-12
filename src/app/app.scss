@@ -373,6 +373,49 @@ display: block;
     cursor: pointer;
 }
 
-button.item-ios.divider .item-inner {
+button.item-ios.divider .item-inner, button.item-ios.submenu-parent .item-inner {
 	background: none !important;
+}
+
+/*
+ * Submenus
+ */
+
+.menu-inner .submenu-child {
+	min-height:0px;
+	height:0px;
+	border-bottom:none !important;
+	transition:all 0.2s;
+	opacity: 0;
+	background-color: rgba(0,0,0,.1) !important;
+}
+
+.menu-inner .submenu-parent::after {
+	content: "\f3d0";
+	font-family: "Ionicons";
+	margin-right: 15px;
+	transform: rotate(.5turn);
+	transition:all 0.2s;
+	font-size: 18px;
+}
+
+.menu-inner .submenu-parent.open-menu::after {
+	transform: rotate(0turn);
+}
+
+/* Sets height of .item-inner element inside closed subitems to 0. */
+.menu-inner .submenu-child .item-inner {
+	height:0px;
+	max-height:0px;
+	min-height:0px;
+	overflow-y:hidden;
+	border:none;
+	transition:all 0.2s;
+	opacity: 0;
+}
+
+.menu-inner .submenu-child.open, .menu-inner .submenu-child.open .item-inner {
+	min-height: 44px;
+	height: 44px;
+	opacity: 1;
 }

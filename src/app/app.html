@@ -18,7 +18,7 @@
         
       </ion-list-header>
 
-      <button [ngClass]="p.extra_classes" ion-item *ngFor="let p of pages" (click)="menuLink(p)">
+      <button [ngClass]="p.extra_classes" ion-item *ngFor="let p of pages" (click)="menuLink(p, $event)">
         <ion-icon *ngIf="p.class" name="{{p.class}}" item-left></ion-icon>
         {{p.title | translate}}
       </button>
