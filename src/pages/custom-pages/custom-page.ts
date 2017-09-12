@@ -324,34 +324,34 @@ export class CustomPage implements OnInit {
 	 */
 	pushPage(page) {
 
-			if(typeof page === 'string') {
-				page = this.getPage(page);
-				if(page === false)
-					return;
-			}
+		if(typeof page === 'string') {
+			page = this.getPage(page);
+			if(page === false)
+				return;
+		}
 
-			if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
-		      window.open( page.url, '_system', null );
-		      return;
-		    } else if( page.target === '_blank' ) {
-		      window.open( page.url, page.target, null );
-		      return;
-		    }
+		if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
+	      window.open( page.url, '_system', null );
+	      return;
+	    } else if( page.target === '_blank' ) {
+	      window.open( page.url, page.target, null );
+	      return;
+	    }
 
-		    let opt = {};
+	    let opt = {};
 
-		    if( this.platform.isRTL && this.platform.is('ios') )
-		      opt = { direction: 'back' }
+	    if( this.platform.isRTL && this.platform.is('ios') )
+	      opt = { direction: 'back' }
 
-			if( page.type === 'apppages' && page.page_type === 'list' ) {
-				this.nav.push( 'PostList', page, opt );
-			} else if( page.type === 'apppages' ) {
-				this.nav.push(this.getPageModuleName(page.page_id), page, opt );
-			} else if (page.url) {
-				this.nav.push('Iframe', page, opt);
-			} else {
-				this.nav.push(page.component, page.navparams, opt);
-			}
+		if( page.type === 'apppages' && page.page_type === 'list' ) {
+			this.nav.push( 'PostList', page, opt );
+		} else if( page.type === 'apppages' ) {
+			this.nav.push(this.getPageModuleName(page.page_id), page, opt );
+		} else if (page.url) {
+			this.nav.push('Iframe', page, opt);
+		} else {
+			this.nav.push(page.component, page.navparams, opt);
+		}
 	}
 
 	/**
