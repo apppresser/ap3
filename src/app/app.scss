@@ -399,6 +399,13 @@ button.item-ios.divider .item-inner, button.item-ios.submenu-parent .item-inner 
 	font-size: 18px;
 }
 
+.menu-inner .item-ios.submenu-parent::after {
+	height: 22px;
+    position: absolute;
+    right: 0;
+    top: 12px;
+}
+
 .menu-inner .submenu-parent.open-menu::after {
 	transform: rotate(0turn);
 }
