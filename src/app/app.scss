@@ -394,7 +394,7 @@ button.item-ios.divider .item-inner, button.item-ios.submenu-parent .item-inner 
 	content: "\f3d0";
 	font-family: "Ionicons";
 	margin-right: 15px;
-	transform: rotate(.5turn);
+	transform: rotate(0turn);
 	transition:all 0.2s;
 	font-size: 18px;
 }
@@ -407,7 +407,7 @@ button.item-ios.divider .item-inner, button.item-ios.submenu-parent .item-inner 
 }
 
 .menu-inner .submenu-parent.open-menu::after {
-	transform: rotate(0turn);
+	transform: rotate(.5turn);
 }
 
 /* Sets height of .item-inner element inside closed subitems to 0. */
