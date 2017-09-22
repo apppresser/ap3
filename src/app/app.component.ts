@@ -9,7 +9,8 @@ import {Http} from '@angular/http';
 import {AppCamera} from '../providers/camera/app-camera';
 import {GlobalVars} from '../providers/globalvars/globalvars';
 import {AppAds} from '../providers/appads/appads';
-import {FbConnect} from '../providers/facebook/facebook';
+import {FBConnect_App_Settings} from '../providers/facebook/fbconnect-settings';
+import {FbConnect_Iframe} from '../providers/facebook/login-iframe';
 import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
@@ -60,7 +61,8 @@ export class MyApp {
     private globalvars: GlobalVars,
     private appads: AppAds,
     private appgeo: AppGeo,
-    private fbconnect: FbConnect,
+    private fbconnectvars: FBConnect_App_Settings,
+    private fbconnectIframe: FbConnect_Iframe,
     private sanitizer: DomSanitizer,
     private pushService: PushService,
     private appwoo: AppWoo,
@@ -734,7 +736,7 @@ export class MyApp {
 
       } else if ( data.fblogin ) {
 
-        this.fbconnect.login();
+        this.fbconnectIframe.login();
 
         this.maybeSendPushId( data.ajaxurl );
 

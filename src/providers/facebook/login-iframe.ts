@@ -4,17 +4,18 @@ import 'rxjs/add/operator/map';
 
 import {Storage} from '@ionic/storage';
 import {Events} from 'ionic-angular';
-
+import {FBConnect_App_Settings} from './fbconnect-settings';
 import {Facebook} from '@ionic-native/facebook';
 
 /*
   Facebook Connect
 
+  Used when the login is in an iframe
+
   See http://ionicframework.com/docs/v2/native/facebook/
 */
 @Injectable()
-export class FbConnect {
-  fbconnectvars: any;
+export class FbConnect_Iframe {
   iframe: any;
   iframewin: any;
   iframedoc: any;
@@ -23,22 +24,10 @@ export class FbConnect {
     public http: Http,
     public storage: Storage,
     public events: Events,
+    private fbconnectvars: FBConnect_App_Settings,
     private Facebook: Facebook
     ) {
-
-    this.fbconnectvars = {
-      debug: false,
-      login_scope: [ 'email','public_profile','user_friends'],
-      l10n:{
-        login_msg:'Thanks for logging in, {{USERNAME}}!',
-        fetch_user_fail:'Sorry, login failed',
-        not_authorized:'Please log into this app.',
-        fb_not_logged_in:'Please log into Facebook.',
-        wp_login_error:'WordPress login error',
-        login_fail:'Login error, please try again.'
-      }
-    }
-
+      
   }
 
   init() {

@@ -1,3 +1,22 @@
 page-login-modal {
 
 }
+
+.appfbconnectlogin {
+	background-color: #3b5998;
+}
+
+.appfbconnectlogin:before {
+	content: '';
+	display: block;
+	width: 20px;
+	height: 20px;
+	background-image: url(../img/facebook-icon-white.png);
+	background-position: top left;
+	background-size: 100%;
+	background-repeat: no-repeat;
+	float: left;
+	margin-right: 10px;
+	margin-top: 8px;
+    position: absolute;
+}

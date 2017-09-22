@@ -29,7 +29,9 @@ import {AppCamera} from '../providers/camera/app-camera';
 import {Posts} from '../providers/posts/posts';
 import {GlobalVars} from '../providers/globalvars/globalvars';
 import {AppAds} from '../providers/appads/appads';
-import {FbConnect} from '../providers/facebook/facebook';
+import {FbConnect_Iframe} from '../providers/facebook/login-iframe';
+import {FbConnect_App} from '../providers/facebook/login-app';
+import {FBConnect_App_Settings} from '../providers/facebook/fbconnect-settings';
 import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
@@ -80,7 +82,9 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     Posts,
     GlobalVars,
     AppAds,
-    FbConnect,
+    FbConnect_Iframe,
+    FbConnect_App,
+    FBConnect_App_Settings,
     PushService,
     AppWoo,
     AppData,

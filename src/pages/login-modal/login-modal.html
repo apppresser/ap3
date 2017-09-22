@@ -17,6 +17,7 @@
 <ion-content>
 
 	<form (ngSubmit)="doLogin()" padding *ngIf="!login_data">
+
       <ion-item>
         <ion-label stacked>{{ 'Username' | translate }}</ion-label>
         <ion-input type="text" [(ngModel)]="login.user" name="user" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
@@ -27,14 +28,17 @@
       </ion-item>
       
       <div padding>
-      <button ion-button type="submit" block>{{ 'Submit' | translate }}</button>
+        <button ion-button type="submit" block>{{ 'Submit' | translate }}</button>
       </div>
 
-    </form>
-	
+      <div padding *ngIf="fb_login">
+        <button ion-button class="appfbconnectlogin" type="button" block (click)="doFBLogin()">{{ 'Login with Facebook' | translate }}</button>
+      </div>
+  </form>
+
 	<div padding *ngIf="login_data">
 		{{login_data.message}}
-    	<button ion-button block (click)="doLogout()">{{ 'Click here to logout' | translate }}</button>
-    </div>
+    <button ion-button block (click)="doLogout()">{{ 'Click here to logout' | translate }}</button>
+  </div>
 
 </ion-content>
