@@ -746,6 +746,12 @@ export class MyApp {
 
       } else if( data.loggedin ) {
 
+        console.log('message logggedin event received', data);
+
+        let fb_avatar = this.fbconnectvars.get_avatar();
+        if(fb_avatar)
+          data.avatar = fb_avatar;
+
         this.userLogin(data)
 
         this.storage.set('user_login', this.login_data )
@@ -940,7 +946,12 @@ export class MyApp {
 
   userLogin(data) {
 
-    this.login_data = data
+    let avatar = this.fbconnectvars.get_avatar();
+
+    if(avatar)
+      data.avatar = avatar;
+
+    this.login_data = data;
 
     this.maybeSendPushId();
     // tell the modal we are logged in
@@ -1083,6 +1094,11 @@ export class MyApp {
 
     this.storage.get('user_login').then( data => {
         if(data) {
+
+          let avatar = this.fbconnectvars.get_avatar();
+          if(avatar)
+            data.avatar = avatar;
+
           this.login_data = data;
           
           if( this.pages )
@@ -1115,6 +1131,16 @@ export class MyApp {
 
   }
 
+  get_avatar( avatar_url ) {
+
+    let fb_avatar = this.fbconnectvars.get_avatar();
+
+    if(fb_avatar)
+      return fb_avatar;
+    else
+      return avatar_url;
+  }
+
   syncLoginStatus( data ) {
 
     // sync login status. If WP and app doesn't match up, fix it
@@ -1131,7 +1157,7 @@ export class MyApp {
 
       // logged into WP but logged out of app: log into app
       if( data.avatar_url && data.message ) {
-        this.login_data = { loggedin: true, avatar: data.avatar_url, message: data.message }
+        this.login_data = { loggedin: true, avatar: this.get_avatar(data.avatar_url), message: data.message }
       } else {
         this.login_data = { loggedin: true }
       }

@@ -126,17 +126,22 @@ export class LoginModal {
 	}
 
 	doFBLogin() {
-		this.fbconnectApp.login();
 		this.events.subscribe('fb:login', data => {
+			console.log('captured fb login event', data);
 			this.dismiss();
+			if(data.redirect_url)
+				this.events.publish('user:login_redirect', data.redirect_url);
 		});
+		this.fbconnectApp.login();
 	}
 
 	doLogout() {
 
 		// @TODO - Do we need to logout of Facebook too?
 
-		this.showSpinner()
+		this.showSpinner();
+
+		this.fbconnectvars.loggout();
 
 		this.wplogin.logout().then( response => {
 

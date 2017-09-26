@@ -77,20 +77,28 @@ export class FbConnect_App {
     if (typeof response.name != 'undefined' && typeof response.email != 'undefined') {
 
       let login_msg = this.fbconnectvars.l10n.login_msg.replace('{{USERNAME}}', response.name);
-      let redirect_url: string;
+      let redirect_url: string|boolean;
+
+      this.fbconnectvars.set_avatar(response);
+
+      this.events.publish('fb:login', response);
       
-      this.wplogin(response.name, response.email).then(data => {
+      this.wplogin(response.name, response.email).then( (data: any) => {
+
+        console.log('After Facebook and WPLogin, wplogin response', data);
 
         // successfully logged in
-        if (data && data["redirect_url"]) {
-          redirect_url = data["redirect_url"];
+        if( data && data.redirect_url ) {
+          redirect_url = this.fbconnectvars.get_redirect_url(data.redirect_url); // add ?appp=3 or &appp=3
+          if(redirect_url) {
+            data.login_redirect = redirect_url;
+          }
         }
 
         this.storage.set('user_login', data);
 
         // hide/show menu items in main app component
         this.events.publish('user:login', data);
-        this.events.publish('fb:login');
 
       });
     } else {
@@ -109,9 +117,9 @@ export class FbConnect_App {
 
     return new Promise(resolve => {
 
-        this.http.post(ajaxurl + params, null)
-          .map(res => res.json())
-          .subscribe(
+        this.http.post(ajaxurl + params, null).map(
+          res => res.json()
+        ).subscribe(
           data => {
             resolve(data);
           },

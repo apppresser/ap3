@@ -118,7 +118,7 @@ export class FbConnect_Iframe {
   fbMe(response) {
 
     this.Facebook.api(
-      "/me?fields=" + this.iframewin.apppfb.me_fields,
+      "/me?fields=" + this.fbconnectvars.verify_me_fields(this.iframewin.apppfb.me_fields),
       null
     ).then( response => {
       this.fetchUser_Callback(response);
@@ -128,39 +128,37 @@ export class FbConnect_Iframe {
   // This function is called after a callback
   // from retreiving the user's email and fb_id
   fetchUser_Callback(response) {
+
+    let redirect_url: string|boolean = false;
     
     if( this.iframedoc.getElementById('status') ) {
       this.iframedoc.getElementById('status').innerHTML = this.fbconnectvars.l10n.login_msg.replace('{{USERNAME}}', response.name);
     }
     // Send user info to WordPress login function
     if( typeof response.name != 'undefined' && typeof response.email != 'undefined') {
-      this.wplogin( response.name, response.email ).then( data => {
+
+      this.fbconnectvars.set_avatar(response);
+
+      this.wplogin( response.name, response.email ).then( (data: any) => {
 
         // successfully logged in
         let context = this.iframewin.location.pathname.substring(0, this.iframewin.location.pathname.lastIndexOf("/"));
         let baseURL = this.iframewin.location.protocol + '//' + this.iframewin.location.hostname + (this.iframewin.location.port ? ':' + this.iframewin.location.port : '') + context;
-        let app_ver = ( this.iframewin.apppCore.ver ) ? this.iframewin.apppCore.ver : '2';
+        let app_ver = ( this.iframewin.apppCore.ver ) ? this.iframewin.apppCore.ver : '3';
 
-        if( data && data["redirect_url"] ) {
-          let redirect_url = data["redirect_url"];
-          if( redirect_url.indexOf('?') === -1 && redirect_url.indexOf('appp=') === -1 ) {
-            this.iframewin.location.href = redirect_url+ "?appp=" + app_ver;
-            return;
-          } else if( redirect_url.indexOf('appp=') === -1 ) {
-            this.iframewin.location.href = redirect_url+ "&appp=" + app_ver;
-            return;
-          } else {
-            this.iframewin.location.href = data["redirect_url"];
-            return;
-          }
+        if( data && data.redirect_url ) {
+          redirect_url = this.fbconnectvars.get_redirect_url(data.redirect_url);
+          if(redirect_url)
+            data.login_redirect = redirect_url;
         }
 
-        this.iframewin.location.href = baseURL + "?appp=" + app_ver;
-        
         this.storage.set('user_login', data );
-
+        
         // hide/show menu items in main app component
-        this.events.publish('user:login', data )
+        this.events.publish('user:login', data );
+
+        if( redirect_url === false)
+          this.iframewin.location.href = baseURL + "?appp=" + app_ver;
 
       });
     } else {
