@@ -107,6 +107,7 @@ export class CustomPage implements OnInit {
 		pages: this.getPages(),
 		segments: this.getSegments(),
 		platform: this.platform,
+		customClasses: this.customClasses,
 		pushPage: (page) => {
 			this.pushPage(page);
 		},
