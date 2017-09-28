@@ -29,16 +29,17 @@ import {AppCamera} from '../providers/camera/app-camera';
 import {Posts} from '../providers/posts/posts';
 import {GlobalVars} from '../providers/globalvars/globalvars';
 import {AppAds} from '../providers/appads/appads';
-import {FbConnect_Iframe} from '../providers/facebook/login-iframe';
-import {FbConnect_App} from '../providers/facebook/login-app';
-import {FBConnect_App_Settings} from '../providers/facebook/fbconnect-settings';
+import {FbConnect_Iframe} from '../providers/logins/facebook/login-iframe';
+import {FbConnect_App} from '../providers/logins/facebook/login-app';
+import {FBConnect_App_Settings} from '../providers/logins/facebook/fbconnect-settings';
 import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
-import {WPlogin} from '../providers/wplogin/wplogin';
+import {WPlogin} from '../providers/logins/wplogin/wplogin';
 import {HeaderLogo} from '../providers/header-logo/header-logo';
 import {VideoUtils} from "../providers/video/video-utils";
 import {AppGeo} from "../providers/appgeo/appgeo";
+import {Logins} from "../providers/logins/logins";
 
 /* Other */
 import { IonicStorageModule } from '@ionic/storage';
@@ -107,6 +108,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     Push,
     Dialogs,
     Geolocation,
+    Logins,
     VideoUtils
   ]
 })

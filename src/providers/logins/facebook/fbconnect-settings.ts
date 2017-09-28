@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {GlobalVars} from '../globalvars/globalvars';
+import {GlobalVars} from '../../globalvars/globalvars';
 import {Http} from '@angular/http';
 import { Facebook } from '@ionic-native/facebook';
 

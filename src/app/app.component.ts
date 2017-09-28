@@ -9,12 +9,12 @@ import {Http} from '@angular/http';
 import {AppCamera} from '../providers/camera/app-camera';
 import {GlobalVars} from '../providers/globalvars/globalvars';
 import {AppAds} from '../providers/appads/appads';
-import {FBConnect_App_Settings} from '../providers/facebook/fbconnect-settings';
-import {FbConnect_Iframe} from '../providers/facebook/login-iframe';
 import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
 import {AppGeo} from '../providers/appgeo/appgeo';
+import {Logins} from '../providers/logins/logins';
+import {Page} from "../pages/page/page.model";
 
 /* Native */
 import { StatusBar } from '@ionic-native/status-bar';
@@ -35,7 +35,7 @@ import {Storage} from '@ionic/storage';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  pages: any;
+  pages: Page[];
   styles: any;
   apiurl: string;
   login: boolean;
@@ -49,7 +49,8 @@ export class MyApp {
   networkState: any;
   bothMenus: boolean = false;
   myLoginModal: any;
-  showLogin: boolean = false;
+  showLoginBtn: boolean = false;
+  forceLogin: boolean = false;
   menu_side: string = "left";
   rtl: boolean = false;
   ajax_url: string;
@@ -61,8 +62,6 @@ export class MyApp {
     private globalvars: GlobalVars,
     private appads: AppAds,
     private appgeo: AppGeo,
-    private fbconnectvars: FBConnect_App_Settings,
-    private fbconnectIframe: FbConnect_Iframe,
     private sanitizer: DomSanitizer,
     private pushService: PushService,
     private appwoo: AppWoo,
@@ -72,6 +71,7 @@ export class MyApp {
     public modalCtrl: ModalController,
     public events: Events,
     public translate: TranslateService,
+    private logins: Logins,
     private Keyboard: Keyboard,
     private SplashScreen: SplashScreen,
     private StatusBar: StatusBar,
@@ -87,15 +87,19 @@ export class MyApp {
     this.initializeApp();
 
     events.subscribe('user:login', data => {
-      this.userLogin(data);
-    });
-
-    events.subscribe('user:logout', obj => {
-      this.userLogout();
-    });
+			this.userLogin(data);
+		});
+	
+		events.subscribe('user:logout', obj => {
+			this.userLogout();
+		});
 
     events.subscribe('data:update', obj => {
       this.fetchData( obj );
+    });
+
+    events.subscribe('login:force_login', () => {
+      this.openLoginModal();
     });
 
   }
@@ -173,7 +177,9 @@ export class MyApp {
     this.SplashScreen.hide();
     this.loadMenu(data);
 
-    this.showLogin = ( data.side_menu_login == "on" ) ? true : false;
+    this.showLoginBtn = ( data.side_menu_login == "on" ) ? true : false;
+
+    this.logins.set_force_login( (data.side_menu_force_login == "on") );
 
     this.menu_side = ( data.meta.menu_right == true ) ? "right" : "left";
 
@@ -250,7 +256,17 @@ export class MyApp {
       // set the home page to the proper component
       if( this.tabs ) {
 
-        this.pages.unshift( { 'title': data.tab_menu.name, 'url': '', 'component': 'TabsPage', 'navparams': this.navparams, 'class': 'home', 'extra_classes':'hide', 'is_home': true } );
+        let page = <Page>{ 
+          'title': data.tab_menu.name,
+          'url': '',
+          'component': 'TabsPage',
+          'navparams': this.navparams,
+          'class': 'home',
+          'extra_classes':'hide',
+          'is_home': true,
+        };
+
+        this.pages.unshift( page );
       } else if( !this.tabs && data.menus.items[0].type === 'apppages' ) {
 
         // used for custom logo
@@ -431,7 +447,9 @@ export class MyApp {
 
   }
 
-  openPage(page) {
+  openPage(page: any) {
+
+    page = <Page>page;
 
     // don't do anything if someone clicks a nav divider
     if( typeof( page.extra_classes ) != "undefined" && page.extra_classes.indexOf('divider') >= 0 )
@@ -460,11 +478,13 @@ export class MyApp {
 
   }
 
-  pushPage(page) {
+  pushPage(page: any) {
+
+    page = <Page>page;
 
     // don't do anything if someone clicks a nav divider
-    if( typeof( page.extra_classes ) != "undefined" && page.extra_classes.indexOf('divider') >= 0 )
-      return
+    if( page.is_nav_divider() )
+      return;
 
     // close the menu when clicking a link from the menu
     this.menu.close();
@@ -505,9 +525,9 @@ export class MyApp {
 
   /**
    * Experimental: need to get this.removeNewTab() working
-   * @param page object
+   * @param page Page
    */
-  openNewTab(page) {
+  openNewTab(page: Page) {
     this.nav.popToRoot({animate:true}).then(() => { // close any transitioned pages
       this.restoreTabs();
       this.tabs.unshift(page);
@@ -525,7 +545,7 @@ export class MyApp {
   }
 
   openMenuLink(data: {menulink}) {
-    let page: any;
+    let page: Page;
     let menu_index: number;
 
     if(typeof data.menulink.menu !== 'undefined') { // might be 0; check undefined
@@ -705,7 +725,7 @@ export class MyApp {
       if (data.url) {
 
         // push a new page
-        let page = { title: data.title, component: 'Iframe', url: data.url, classes: null };
+        let page = <Page>{ title: data.title, component: 'Iframe', url: data.url };
         this.pushPage( page );
 
       } else if (data.msg) {
@@ -736,7 +756,7 @@ export class MyApp {
 
       } else if ( data.fblogin ) {
 
-        this.fbconnectIframe.login();
+        this.logins.fb_iframe_login();
 
         this.maybeSendPushId( data.ajaxurl );
 
@@ -748,7 +768,7 @@ export class MyApp {
 
         console.log('message logggedin event received', data);
 
-        let fb_avatar = this.fbconnectvars.get_avatar();
+        let fb_avatar = this.logins.get_fb_avatar();
         if(fb_avatar)
           data.avatar = fb_avatar;
 
@@ -759,10 +779,10 @@ export class MyApp {
       } else if( typeof( data.isloggedin ) != "undefined" ) {
 
         // make sure app and WP have the same status
-        this.syncLoginStatus( data )
+        this.login_data = this.logins.syncLoginStatus( data );
 
       } else if( data.apppage ) {
-        let page = { title: data.title, component: 'Iframe', url: data.apppage.url, classes: null, page_type: null, type: null };
+        let page = <Page>{ title: data.title, component: 'Iframe', url: data.apppage.url };
         this.openPage( page );
       } else if( data.geouserpref ) {
         this.appgeo.startBeacon(data.geouserpref);
@@ -853,7 +873,7 @@ export class MyApp {
 
       // if apppush post URL
       if( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 && data.additionalData.target && data.additionalData.target == '_self' ) {
-        let page = { title: data.title, component: 'Iframe', url: data.additionalData.url, classes: null };
+        let page = <Page>{ title: data.title, component: 'Iframe', url: data.additionalData.url };
         this.pushPage( page );
         return;
       }
@@ -946,8 +966,7 @@ export class MyApp {
 
   userLogin(data) {
 
-    let avatar = this.fbconnectvars.get_avatar();
-
+    let avatar = this.logins.get_avatar(data);
     if(avatar)
       data.avatar = avatar;
 
@@ -961,7 +980,10 @@ export class MyApp {
       this.presentToast(text);
     });
     
-    this.maybeLoginRedirect(data);
+    let page: Page = this.logins.get_login_redirect(data);
+    if(page) {
+      this.pushPage(page);
+    }
 
     if( this.pages )
       this.resetSideMenu(true)
@@ -970,42 +992,6 @@ export class MyApp {
       this.resetTabs(true)
   }
 
-  /**
-   * Handle the appp_login_redirect filter from WordPress
-   * @param data Login data
-   */
-  maybeLoginRedirect(data) {
-    
-    if(data.login_redirect) {
-      console.log('redirecting to ' + data.login_redirect);
-
-      let page: object;
-
-      if(typeof data.login_redirect === 'string') {
-        page = { 
-          title: '',
-          url: data.login_redirect,
-          component: 'Iframe',
-          classes: null,
-          target: '',
-          extra_classes: '',
-        };
-      } else if(typeof data.login_redirect === 'object') {
-        page = {
-          title: data.login_redirect.title,
-          url: data.login_redirect.url,
-          component: 'Iframe',
-          classes: null,
-          target: '',
-          extra_classes: '',
-        };
-      }
-
-      if(page) {
-        this.pushPage(page);
-      }   
-    }
-  }
   userLogout() {
     // this.storage.remove('user_login').then( () => {
     //   this.presentToast('Logged out successfully.')
@@ -1025,6 +1011,12 @@ export class MyApp {
 
     this.translate.get('Logout successful').subscribe( text => {
       this.presentToast(text);
+    });
+
+    this.storage.get('force_login').then((data)=>{
+      if(data) {
+        this.openLoginModal();
+      }
     });
 
   }
@@ -1095,7 +1087,7 @@ export class MyApp {
     this.storage.get('user_login').then( data => {
         if(data) {
 
-          let avatar = this.fbconnectvars.get_avatar();
+          let avatar = this.logins.get_avatar(data);
           if(avatar)
             data.avatar = avatar;
 
@@ -1128,48 +1120,6 @@ export class MyApp {
         
       }
     })
-
-  }
-
-  get_avatar( avatar_url ) {
-
-    let fb_avatar = this.fbconnectvars.get_avatar();
-
-    if(fb_avatar)
-      return fb_avatar;
-    else
-      return avatar_url;
-  }
-
-  syncLoginStatus( data ) {
-
-    // sync login status. If WP and app doesn't match up, fix it
-
-    if( data.isloggedin == false && this.login_data ) {
-
-      // logged out of WP but still logged into app: log out of app
-      this.login_data = null
-      this.storage.remove('user_login');
-      this.events.publish( 'modal:logindata', null )
-      this.events.publish( 'user:logout', null );
-
-    } else if( data.isloggedin == true && !this.login_data ) {
-
-      // logged into WP but logged out of app: log into app
-      if( data.avatar_url && data.message ) {
-        this.login_data = { loggedin: true, avatar: this.get_avatar(data.avatar_url), message: data.message }
-      } else {
-        this.login_data = { loggedin: true }
-      }
-      
-
-      this.storage.set('user_login', this.login_data ).then( () => {
-
-        this.events.publish( 'modal:logindata', this.login_data )
-
-      })
-      
-    }
 
   }
 

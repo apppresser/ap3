@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { Events, ViewController, ToastController, LoadingController, IonicPage } from 'ionic-angular';
-import {WPlogin} from '../../providers/wplogin/wplogin';
-import {FbConnect_App} from '../../providers/facebook/login-app';
-import {FbConnect_Iframe} from '../../providers/facebook/login-iframe';
-import {FBConnect_App_Settings} from '../../providers/facebook/fbconnect-settings';
+import {WPlogin} from '../../providers/logins/wplogin/wplogin';
+import {FbConnect_App} from '../../providers/logins/facebook/login-app';
+import {FbConnect_Iframe} from '../../providers/logins/facebook/login-iframe';
+import {FBConnect_App_Settings} from '../../providers/logins/facebook/fbconnect-settings';
 import { Storage } from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {TranslateService} from '@ngx-translate/core';
@@ -19,7 +19,8 @@ export class LoginModal {
 	login_data: any
 	spinner: any
 	fb_login: boolean = false;
-	fb_login_data: any
+	fb_login_data: any;
+	force_login: any = false;
 
 	constructor(
 		public viewCtrl: ViewController,
@@ -36,7 +37,7 @@ export class LoginModal {
 		// login through postmessage sets login_data this way
 		events.subscribe('modal:logindata', data => {
 	      this.setLoginData(data);
-	    });
+		});
 
 		// get login data on first load
 		this.storage.get('user_login').then( data => {
@@ -46,6 +47,12 @@ export class LoginModal {
 			}
 
 		});
+
+		this.storage.get('force_login').then( data => {
+			if(data) {
+				this.force_login = true;
+			}
+		})
 
 		this.initFBLogin();
 
@@ -58,6 +65,11 @@ export class LoginModal {
 	 */
 	initFBLogin() {
 		this.fb_login = (this.fbconnectvars.get_nonce()) ? true : false;
+		if(this.fb_login === false) {
+			setTimeout(()=>{
+				this.fb_login = (this.fbconnectvars.get_nonce()) ? true : false;
+			}, 3000);
+		}
 	}
 
 	doLogin() {

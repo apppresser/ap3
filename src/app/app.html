@@ -23,7 +23,7 @@
         {{p.title | translate}}
       </button>
 
-      <button *ngIf="showLogin" ion-button block icon-left class="menu-login-button" (click)="openLoginModal()">
+      <button *ngIf="showLoginBtn" ion-button block icon-left class="menu-login-button" (click)="openLoginModal()">
       <ion-icon name="log-in"></ion-icon>
       <span *ngIf="login_data">{{ 'Logout' | translate }}</span><span *ngIf="!login_data">{{ 'Login' | translate }}</span></button>
 

@@ -57,6 +57,7 @@ export class CustomPage implements OnInit {
 	segments: any;
 	show_segments: boolean = false;
 	login_modal: any;
+	loggedin: boolean = false;
 	slug: string;
 	header_logo_url: string;
 	show_header_logo: boolean = false;
@@ -107,6 +108,7 @@ export class CustomPage implements OnInit {
 		pages: this.getPages(),
 		segments: this.getSegments(),
 		platform: this.platform,
+		loggedin: this.loggedin,
 		customClasses: this.customClasses,
 		pushPage: (page) => {
 			this.pushPage(page);
@@ -175,7 +177,8 @@ export class CustomPage implements OnInit {
 					window.open( event.target.href, '_blank' );
 				}
 	      }
-	    });
+		});
+		
 	}
 
 	// changes the back button transition direction if app is RTL
