@@ -64,22 +64,23 @@ export class Iframe {
 
     }
 
+    /**
+     * Use URL class to be sure hashtags stay at the end
+     */
     setupURL() {
 
-        if ( this.navParams.data.url.indexOf('?') >= 0 ) {
-            this.param = '&appp=3';
-        } else {
-            this.param = '?appp=3';
-        }
+        let url = new URL(this.navParams.data.url);
+
+        url.searchParams.append('appp', '3');
 
         this.storage.get('app_language').then( lang => {
             if( lang )
-                this.lang = '&lang=' + lang
-        })
+                url.searchParams.append('lang', lang);
+        });
 
         // Have to wait until we get language ^. Can't put this in promise or it breaks, not sure why
         setTimeout( () => {
-            this.url = this.sanitizer.bypassSecurityTrustResourceUrl( this.navParams.data.url + this.param + this.lang );
+            this.url = this.sanitizer.bypassSecurityTrustResourceUrl( url.toString() );
         }, 100)
 
     }
