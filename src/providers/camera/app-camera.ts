@@ -15,7 +15,7 @@ import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
 export class AppCamera {
 
   options: any = {
-    quality: 30,
+    quality: 50,
     destinationType: this.Camera.DestinationType.FILE_URI,
     correctOrientation: true,
     targetWidth: 1204,
