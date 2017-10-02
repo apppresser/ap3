@@ -15,6 +15,7 @@ import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
 import {AppGeo} from '../providers/appgeo/appgeo';
+import {Logins} from "../providers/logins/logins";
 
 /* Native */
 import { StatusBar } from '@ionic-native/status-bar';
@@ -67,6 +68,7 @@ export class MyApp {
     private pushService: PushService,
     private appwoo: AppWoo,
     private appdata: AppData,
+    private logins: Logins,
     public toastCtrl: ToastController,
     public storage: Storage,
     public modalCtrl: ModalController,
@@ -96,6 +98,10 @@ export class MyApp {
 
     events.subscribe('data:update', obj => {
       this.fetchData( obj );
+    });
+
+    events.subscribe('login:force_login', () => {
+      this.openLoginModal();
     });
 
   }
@@ -174,6 +180,7 @@ export class MyApp {
     this.loadMenu(data);
 
     this.showLogin = ( data.side_menu_login == "on" ) ? true : false;
+    this.logins.set_force_login( (data.side_menu_force_login == "on") );
 
     this.menu_side = ( data.meta.menu_right == true ) ? "right" : "left";
 
@@ -746,11 +753,9 @@ export class MyApp {
 
       } else if( data.loggedin ) {
 
-        console.log('message logggedin event received', data);
-
-        let fb_avatar = this.fbconnectvars.get_avatar();
-        if(fb_avatar)
-          data.avatar = fb_avatar;
+        let avatar = this.logins.get_avatar(data); // logic for FB or WP
+        if(avatar)
+          data.avatar = avatar;
 
         this.userLogin(data)
 
@@ -946,7 +951,7 @@ export class MyApp {
 
   userLogin(data) {
 
-    let avatar = this.fbconnectvars.get_avatar();
+    let avatar = this.logins.get_avatar(data);
 
     if(avatar)
       data.avatar = avatar;
@@ -1025,6 +1030,12 @@ export class MyApp {
 
     this.translate.get('Logout successful').subscribe( text => {
       this.presentToast(text);
+    });
+
+    this.storage.get('force_login').then((data)=>{
+      if(data) {
+        this.openLoginModal();
+      }
     });
 
   }
@@ -1131,16 +1142,6 @@ export class MyApp {
 
   }
 
-  get_avatar( avatar_url ) {
-
-    let fb_avatar = this.fbconnectvars.get_avatar();
-
-    if(fb_avatar)
-      return fb_avatar;
-    else
-      return avatar_url;
-  }
-
   syncLoginStatus( data ) {
 
     // sync login status. If WP and app doesn't match up, fix it
@@ -1157,7 +1158,7 @@ export class MyApp {
 
       // logged into WP but logged out of app: log into app
       if( data.avatar_url && data.message ) {
-        this.login_data = { loggedin: true, avatar: this.get_avatar(data.avatar_url), message: data.message }
+        this.login_data = { loggedin: true, avatar: this.logins.get_avatar(data.avatar_url), message: data.message }
       } else {
         this.login_data = { loggedin: true }
       }

@@ -50,29 +50,24 @@ export class FBConnect_App_Settings {
 	get_settings() {
 
 		return new Promise((resolve, reject) => {
+			let myappp: any = localStorage.getItem('myappp');
 
-			if( Facebook && Facebook.installed() ) {
-				let myappp: any = localStorage.getItem('myappp');
+			if( myappp ) {
+				myappp = JSON.parse(myappp);
+				if(myappp && myappp.wordpress_url) {
+					this.wordpress_url = myappp['wordpress_url'];
+					this.get_remote_settings().then( data => {
 
-				if( myappp ) {
-					myappp = JSON.parse(myappp);
-					if(myappp && myappp.wordpress_url) {
-						this.wordpress_url = myappp['wordpress_url'];
-						this.get_remote_settings().then( data => {
+						console.log('Facebook, we will update our settings', data);
 
-							console.log('Facebook, we will update our settings', data);
-
-							this.update_settings(data);
-							resolve();
-						});
-					} else {
-						reject('Facebook login requires your WP URL');
-					}
+						this.update_settings(data);
+						resolve();
+					});
 				} else {
-					reject('LocalStorage not set yet');
+					reject('Facebook login requires your WP URL');
 				}
 			} else {
-				reject('Facebook plugin not loaded');
+				reject('LocalStorage not set yet');
 			}
 		});
 	}
@@ -82,6 +77,9 @@ export class FBConnect_App_Settings {
 	 * @param data from WordPress API response
 	 */
 	update_settings( data: any ) {
+
+		console.log('update_settings', data);
+
 		if(data.security)
 			this.set_nonce(data.security);
 
@@ -117,16 +115,10 @@ export class FBConnect_App_Settings {
 	}
 
 	get_redirect_url(redirect_url: string) {
-
 		if(redirect_url) {
-
-			if( redirect_url.indexOf('?') === -1 && redirect_url.indexOf('appp=') === -1 ) {
-				return redirect_url+ "?appp=" + this.app_ver;
-			} else if( redirect_url.indexOf('appp=') === -1 ) {
-				return redirect_url+ "&appp=" + this.app_ver;
-			} else {
-				return redirect_url;
-			}
+			let url = new URL(redirect_url);
+			url.searchParams.append('appp', this.app_ver.toString());
+			return url.toString();
 		} else {
 			return false;
 		}
@@ -150,8 +142,14 @@ export class FBConnect_App_Settings {
 	}
 
 	loggout() {
-		this.facebook.logout();
-		localStorage.removeItem('fb_avatar');
+
+		this.facebook.getLoginStatus().then( response => {
+			if(response && response.status == 'connected') {
+				this.facebook.logout()
+			}
+		})
+
+		this.remove_avatar();
 	}
 	
 	get_nonce() {
@@ -159,6 +157,9 @@ export class FBConnect_App_Settings {
 	}
 
 	set_nonce(security) {
+
+		console.log('set_nonce', security)
+
 		if(security)
 			localStorage.setItem('fb_nonce', security);
 	}
@@ -174,5 +175,9 @@ export class FBConnect_App_Settings {
 	set_avatar(response) {
 		if(response && response.picture && response.picture.data.url)
 			localStorage.setItem('fb_avatar', response.picture.data.url);
+	}
+
+	remove_avatar() {
+		localStorage.removeItem('fb_avatar');
 	}
 }

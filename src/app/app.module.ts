@@ -29,6 +29,7 @@ import {AppCamera} from '../providers/camera/app-camera';
 import {Posts} from '../providers/posts/posts';
 import {GlobalVars} from '../providers/globalvars/globalvars';
 import {AppAds} from '../providers/appads/appads';
+import {Logins} from "../providers/logins/logins";
 import {FbConnect_Iframe} from '../providers/facebook/login-iframe';
 import {FbConnect_App} from '../providers/facebook/login-app';
 import {FBConnect_App_Settings} from '../providers/facebook/fbconnect-settings';
@@ -89,6 +90,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     AppWoo,
     AppData,
     AppGeo,
+    Logins,
     WPlogin,
     HeaderLogo,
     ActionSheet,

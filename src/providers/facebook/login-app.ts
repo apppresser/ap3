@@ -6,6 +6,8 @@ import { Storage } from '@ionic/storage';
 import { Events } from 'ionic-angular';
 import { FBConnect_App_Settings } from './fbconnect-settings';
 import { Facebook } from '@ionic-native/facebook';
+import {Device} from '@ionic-native/device';
+import {TranslateService} from '@ngx-translate/core';
 
 /*
   Facebook Connect
@@ -25,12 +27,24 @@ export class FbConnect_App {
     public storage: Storage,
     public events: Events,
     private fbconnectvars: FBConnect_App_Settings,
-    private Facebook: Facebook
+    private Facebook: Facebook,
+    private Device: Device,
+    public translate: TranslateService
   ) {}
 
   login() {
 
     console.log('this.fbconnectvars.login_scope', this.fbconnectvars.login_scope);
+
+    if( typeof this.Device.platform != 'string' && location.port != '8100') {
+      
+      this.translate.get('Please try from a device.').subscribe( text => {
+        alert(text);
+      });
+
+      return;
+
+    }
 
     this.Facebook.login(this.fbconnectvars.login_scope).then(result => {
       // we get back an auth response here, should save it or something

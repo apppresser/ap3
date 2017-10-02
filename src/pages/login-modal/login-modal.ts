@@ -18,6 +18,8 @@ export class LoginModal {
 	login:any = {}
 	login_data: any
 	spinner: any
+	force_login: any = false;
+	is_preview: boolean = false;
 	fb_login: boolean = false;
 	fb_login_data: any
 
@@ -47,7 +49,15 @@ export class LoginModal {
 
 		});
 
+		this.storage.get('force_login').then( data => {
+			if(data) {
+				this.force_login = true;
+			}
+		})
+
 		this.initFBLogin();
+
+		this.is_preview = (location.href.indexOf('myapppresser') > 0);
 
 	}
 
@@ -58,6 +68,20 @@ export class LoginModal {
 	 */
 	initFBLogin() {
 		this.fb_login = (this.fbconnectvars.get_nonce()) ? true : false;
+
+		if(this.fb_login === false) {
+			setTimeout(()=>{
+
+				this.fb_login = (this.fbconnectvars.get_nonce()) ? true : false;
+
+				if(this.fb_login === false) {
+					setTimeout(()=>{
+		
+						this.fb_login = (this.fbconnectvars.get_nonce()) ? true : false;
+					}, 5000); // iOS seems to take longer
+				}
+			}, 3000); // Slow on first app load
+		}
 	}
 
 	doLogin() {
@@ -126,6 +150,16 @@ export class LoginModal {
 	}
 
 	doFBLogin() {
+
+		if( typeof this.Device.platform != 'string' && location.port != '8100') {
+			
+			this.translate.get('Please try from a device.').subscribe( text => {
+				alert(text);
+			})
+
+			return;
+		}
+
 		this.events.subscribe('fb:login', data => {
 			console.log('captured fb login event', data);
 			this.dismiss();
