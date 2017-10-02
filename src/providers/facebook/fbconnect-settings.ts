@@ -109,6 +109,11 @@ export class FBConnect_App_Settings {
 					console.log('data from wordpress');
 					console.log(data);
 					resolve(data);
+				},
+				error => {
+					if(error.status && error.status == '404') {
+						alert('Using FB Login requires App Facebook Connect 2.6.0+ plugin on ' + this.wordpress_url);
+					}
 				}
 			);
 		});
