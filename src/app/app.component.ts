@@ -389,6 +389,18 @@ export class MyApp {
     return page_id;
   }
 
+  getPageBySlug(slug) {
+
+    let mypage: any;
+
+    this.pages.forEach(page => {
+      if(page.slug && page.slug == slug && page.page_id)
+        mypage = page;
+    });
+
+    return mypage;
+  }
+
   // side menu link. determine which func to use
   menuLink(p, e) {
 
@@ -982,33 +994,52 @@ export class MyApp {
   maybeLoginRedirect(data) {
     
     if(data.login_redirect) {
-      console.log('redirecting to ' + data.login_redirect);
+      console.log('redirecting to ', data.login_redirect);
 
-      let page: object;
+      let page: object|boolean;
+      let title = '';
+      let url = '';
+      let component: string;
 
       if(typeof data.login_redirect === 'string') {
-        page = { 
-          title: '',
-          url: data.login_redirect,
-          component: 'Iframe',
-          classes: null,
-          target: '',
-          extra_classes: '',
-        };
+        url = data.login_redirect;
       } else if(typeof data.login_redirect === 'object') {
-        page = {
-          title: data.login_redirect.title,
-          url: data.login_redirect.url,
-          component: 'Iframe',
-          classes: null,
-          target: '',
-          extra_classes: '',
-        };
+        title = data.login_redirect.title;
+        url = data.login_redirect.url;
       }
 
-      if(page) {
-        this.pushPage(page);
-      }   
+      if(!url)
+        return;
+      else if(url.indexOf('http') === -1) {
+
+        // load by page slug
+
+        let page_slug = url;
+        page = this.getPageBySlug(page_slug);
+        if(page) {
+          this.pushPage(page);
+        } else {
+          this.translate.get('Page not found').subscribe( text => {
+            this.presentToast(text);
+          });
+        }
+      } else {
+
+        // load by URL
+
+        page = { 
+          title: title,
+          url: url,
+          component: 'Iframe',
+          classes: null,
+          target: '',
+          extra_classes: '',
+        };
+
+        if(component) {
+          this.pushPage(page);
+        }
+      }  
     }
   }
   userLogout() {
