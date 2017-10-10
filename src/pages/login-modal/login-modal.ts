@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { Events, ViewController, ToastController, LoadingController, IonicPage } from 'ionic-angular';
 import {WPlogin} from '../../providers/wplogin/wplogin';
-import {FbConnect_App} from '../../providers/facebook/login-app';
-import {FbConnect_Iframe} from '../../providers/facebook/login-iframe';
-import {FBConnect_App_Settings} from '../../providers/facebook/fbconnect-settings';
 import { Storage } from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {TranslateService} from '@ngx-translate/core';
+
+import { Avatar } from "../../providers/wplogin/avatar";
 
 @IonicPage()
 @Component({
@@ -18,10 +17,6 @@ export class LoginModal {
 	login:any = {}
 	login_data: any
 	spinner: any
-	force_login: any = false;
-	is_preview: boolean = false;
-	fb_login: boolean = false;
-	fb_login_data: any
 
 	constructor(
 		public viewCtrl: ViewController,
@@ -30,8 +25,7 @@ export class LoginModal {
 		public events: Events,
 		public storage: Storage,
 		public translate: TranslateService,
-		private fbconnectApp: FbConnect_App,
-		private fbconnectvars: FBConnect_App_Settings,
+		private avatar: Avatar,
 		private Device: Device
 		) {
 
@@ -49,46 +43,12 @@ export class LoginModal {
 
 		});
 
-		this.storage.get('force_login').then( data => {
-			if(data) {
-				this.force_login = true;
-			}
-		})
-
-		this.initFBLogin();
-
-		this.is_preview = (location.href.indexOf('myapppresser') > 0);
-
-	}
-
-	/**
-	 * The FB login button will only display after settings are received
-	 * 
-	 * fb_login: true|false to show the button
-	 */
-	initFBLogin() {
-		this.fb_login = (this.fbconnectvars.get_nonce()) ? true : false;
-
-		if(this.fb_login === false) {
-			setTimeout(()=>{
-
-				this.fb_login = (this.fbconnectvars.get_nonce()) ? true : false;
-
-				if(this.fb_login === false) {
-					setTimeout(()=>{
-		
-						this.fb_login = (this.fbconnectvars.get_nonce()) ? true : false;
-					}, 5000); // iOS seems to take longer
-				}
-			}, 3000); // Slow on first app load
-		}
 	}
 
 	doLogin() {
 
 		// if in preview, Device.platform is empty object. On device it should be string like 'iOS'
-		// checking for port 8100 let's me test logins locally
-		if( typeof this.Device.platform != 'string' && location.port != '8100') {
+		if( typeof this.Device.platform != 'string' ) {
 
 			this.translate.get('Please try from a device.').subscribe( text => {
 				alert(text);
@@ -112,9 +72,13 @@ export class LoginModal {
 				return;
 			}
 
-			this.storage.set( 'user_login', (<any>response).data )
-			this.events.publish('user:login', (<any>response).data )
-			this.login_data = (<any>response).data
+			let login_data = (<any>response).data;
+			if(login_data && login_data.avatar)
+				login_data.avatar = this.avatar.fixProtocolRelativeUrl(login_data.avatar);
+
+			this.storage.set( 'user_login', login_data )
+			this.events.publish('user:login', login_data )
+			this.login_data = login_data
 			this.dismiss()
 
 			this.hideSpinner()
@@ -149,33 +113,9 @@ export class LoginModal {
 
 	}
 
-	doFBLogin() {
-
-		if( typeof this.Device.platform != 'string' && location.port != '8100') {
-			
-			this.translate.get('Please try from a device.').subscribe( text => {
-				alert(text);
-			})
-
-			return;
-		}
-
-		this.events.subscribe('fb:login', data => {
-			console.log('captured fb login event', data);
-			this.dismiss();
-			if(data.redirect_url)
-				this.events.publish('user:login_redirect', data.redirect_url);
-		});
-		this.fbconnectApp.login();
-	}
-
 	doLogout() {
 
-		// @TODO - Do we need to logout of Facebook too?
-
-		this.showSpinner();
-
-		this.fbconnectvars.loggout();
+		this.showSpinner()
 
 		this.wplogin.logout().then( response => {
 
