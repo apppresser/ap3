@@ -14,6 +14,7 @@ import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
 import {AppGeo} from '../providers/appgeo/appgeo';
+import {Avatar} from "../providers/wplogin/avatar";
 
 /* Native */
 import { StatusBar } from '@ionic-native/status-bar';
@@ -79,6 +80,7 @@ export class MyApp {
     private Push: Push,
     private http: Http,
     private Dialogs: Dialogs,
+    private avatar: Avatar,
     private config: Config
   ) {
 
@@ -1129,7 +1131,7 @@ export class MyApp {
 
       // logged into WP but logged out of app: log into app
       if( data.avatar_url && data.message ) {
-        this.login_data = { loggedin: true, avatar: data.avatar_url, message: data.message }
+        this.login_data = { loggedin: true, avatar: this.avatar.fixProtocolRelativeUrl(data.avatar_url), message: data.message }
       } else {
         this.login_data = { loggedin: true }
       }

@@ -5,6 +5,8 @@ import { Storage } from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {TranslateService} from '@ngx-translate/core';
 
+import { Avatar } from "../../providers/wplogin/avatar";
+
 @IonicPage()
 @Component({
   selector: 'page-login-modal',
@@ -23,6 +25,7 @@ export class LoginModal {
 		public events: Events,
 		public storage: Storage,
 		public translate: TranslateService,
+		private avatar: Avatar,
 		private Device: Device
 		) {
 
@@ -69,9 +72,13 @@ export class LoginModal {
 				return;
 			}
 
-			this.storage.set( 'user_login', (<any>response).data )
-			this.events.publish('user:login', (<any>response).data )
-			this.login_data = (<any>response).data
+			let login_data = (<any>response).data;
+			if(login_data && login_data.avatar)
+				login_data.avatar = this.avatar.fixProtocolRelativeUrl(login_data.avatar);
+
+			this.storage.set( 'user_login', login_data )
+			this.events.publish('user:login', login_data )
+			this.login_data = login_data
 			this.dismiss()
 
 			this.hideSpinner()
