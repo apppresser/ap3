@@ -32,6 +32,7 @@ export class Iframe {
     showCartLink: boolean = false;
     header_logo_url: string;
     show_header_logo: boolean = false;
+    hide_share_icon: boolean = false;
 
     constructor(
         public navParams: NavParams,
@@ -61,6 +62,15 @@ export class Iframe {
 
         // Show error message if in preview and not using https
         this.previewAlert( navParams.data.url );
+
+        let myappp: any = localStorage.getItem('myappp');
+        if(myappp) {
+            if(typeof myappp == 'string')
+                myappp = JSON.parse(myappp);
+        
+            if(myappp && myappp.meta && myappp.meta.share && myappp.meta.share.icon && myappp.meta.share.icon.hide)
+                this.hide_share_icon = myappp.meta.share.icon.hide;
+        }
 
     }
 
@@ -210,6 +220,7 @@ export class Iframe {
             } else if ( parsed.post_url && parsed.post_url != 'none' ) {
                 this.shareUrl = parsed.post_url
                 this.changeTitle( parsed.post_title )
+                if(!this.hide_share_icon)
                 this.showShare = true
             } else if( parsed.post_url && parsed.post_url === 'none' ) {
                 // part of the hack to clear page titles when going back
