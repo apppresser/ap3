@@ -5,7 +5,7 @@
     <ion-title>{{ 'Login' | translate }}</ion-title>
 
     <ion-buttons end>
-      <button ion-button (click)="dismiss()">
+      <button ion-button *ngIf="!force_login && !login_data || login_data || (is_preview && force_login)" (click)="dismiss()">
         <ion-icon name="close"></ion-icon>
       </button>
     </ion-buttons>
@@ -17,6 +17,7 @@
 <ion-content>
 
 	<form (ngSubmit)="doLogin()" padding *ngIf="!login_data">
+
       <ion-item>
         <ion-label stacked>{{ 'Username' | translate }}</ion-label>
         <ion-input type="text" [(ngModel)]="login.user" name="user" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
@@ -30,8 +31,21 @@
       <button ion-button type="submit" block>{{ 'Submit' | translate }}</button>
       </div>
 
+      <div *ngIf="fb_login">
+
+          <div class="login-div-wrap">
+            <div><div class="login-div"></div><div class="login-div-text">or</div><div class="login-div"></div></div>
+          </div>
+
+          <div class="appfbconnectlogin">
+            <button href="#" type="button" (click)="doFBLogin()">
+              <span class="fb-icon"></span>
+              <span class="fb-login-text">{{ 'Login with Facebook' | translate }}</span>
+            </button>
+          </div>
+      </div>
     </form>
-	
+
 	<div padding *ngIf="login_data">
 		{{login_data.message}}
     	<button ion-button block (click)="doLogout()">{{ 'Click here to logout' | translate }}</button>

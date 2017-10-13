@@ -29,7 +29,10 @@ import {AppCamera} from '../providers/camera/app-camera';
 import {Posts} from '../providers/posts/posts';
 import {GlobalVars} from '../providers/globalvars/globalvars';
 import {AppAds} from '../providers/appads/appads';
-import {FbConnect} from '../providers/facebook/facebook';
+import {Logins} from "../providers/logins/logins";
+import {FbConnectIframe} from '../providers/facebook/login-iframe';
+import {FbConnectApp} from '../providers/facebook/login-app';
+import {FBConnectAppSettings} from '../providers/facebook/fbconnect-settings';
 import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
@@ -37,7 +40,6 @@ import {WPlogin} from '../providers/wplogin/wplogin';
 import {HeaderLogo} from '../providers/header-logo/header-logo';
 import {VideoUtils} from "../providers/video/video-utils";
 import {AppGeo} from "../providers/appgeo/appgeo";
-import {Avatar} from "../providers/wplogin/avatar";
 
 /* Other */
 import { IonicStorageModule } from '@ionic/storage';
@@ -81,11 +83,14 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     Posts,
     GlobalVars,
     AppAds,
-    FbConnect,
+    FbConnectIframe,
+    FbConnectApp,
+    FBConnectAppSettings,
     PushService,
     AppWoo,
     AppData,
     AppGeo,
+    Logins,
     WPlogin,
     HeaderLogo,
     ActionSheet,
@@ -104,7 +109,6 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     Push,
     Dialogs,
     Geolocation,
-    Avatar,
     VideoUtils
   ]
 })

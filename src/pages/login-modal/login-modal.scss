@@ -1,3 +1,90 @@
-page-login-modal {
+.appfbconnectlogin {
 
+	button {
+		background-color: transparent;
+	}
+
+	margin-right: 8px;
+	text-align: center;
+}
+
+.fb-icon {
+	position: relative;
+	display: inline-block;
+    top: 4px;
+	width: 20px;
+	height: 20px;
+	background-image: url(../img/facebook.png);
+	background-position: top left;
+	background-size: 100%;
+	background-repeat: no-repeat;
+	margin-right: 9px;
+	padding: 0;
+    border: 0;
+}
+
+.fb-login-text {
+	color: #385185;
+	font-size: 16px;
+}
+
+.login-div-wrap div {
+	-webkit-box-align: stretch;
+	-webkit-align-items: stretch;
+	-ms-flex-align: stretch;
+	align-items: stretch;
+	border: 0 solid #000;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-webkit-flex-direction: column;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	-webkit-flex-shrink: 0;
+	-ms-flex-negative: 0;
+	flex-shrink: 0;
+	margin: 0;
+	padding: 0;
+	position: relative;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    margin: 6px 10px 9px;
+}
+
+.login-div {
+	-webkit-box-flex: 1;
+    -webkit-flex-grow: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    -webkit-flex-shrink: 1;
+    -ms-flex-negative: 1;
+    flex-shrink: 1;
+    background-color: #c7c7c7;
+    height: 1px;
+    position: relative;
+    top: .45em;
+}
+
+.login-div-text {
+	color: #999;
+    -webkit-box-flex: 0;
+    -webkit-flex-grow: 0;
+    -ms-flex-positive: 0;
+    flex-grow: 0;
+    -webkit-flex-shrink: 0;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 15px;
+    margin: 0 18px;
+    text-transform: uppercase;
 }

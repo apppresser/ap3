@@ -9,12 +9,13 @@ import {Http} from '@angular/http';
 import {AppCamera} from '../providers/camera/app-camera';
 import {GlobalVars} from '../providers/globalvars/globalvars';
 import {AppAds} from '../providers/appads/appads';
-import {FbConnect} from '../providers/facebook/facebook';
+import {FBConnectAppSettings} from '../providers/facebook/fbconnect-settings';
+import {FbConnectIframe} from '../providers/facebook/login-iframe';
 import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
 import {AppGeo} from '../providers/appgeo/appgeo';
-import {Avatar} from "../providers/wplogin/avatar";
+import {Logins} from "../providers/logins/logins";
 
 /* Native */
 import { StatusBar } from '@ionic-native/status-bar';
@@ -61,11 +62,13 @@ export class MyApp {
     private globalvars: GlobalVars,
     private appads: AppAds,
     private appgeo: AppGeo,
-    private fbconnect: FbConnect,
+    private fbconnectvars: FBConnectAppSettings,
+    private fbconnectIframe: FbConnectIframe,
     private sanitizer: DomSanitizer,
     private pushService: PushService,
     private appwoo: AppWoo,
     private appdata: AppData,
+    private logins: Logins,
     public toastCtrl: ToastController,
     public storage: Storage,
     public modalCtrl: ModalController,
@@ -80,7 +83,6 @@ export class MyApp {
     private Push: Push,
     private http: Http,
     private Dialogs: Dialogs,
-    private avatar: Avatar,
     private config: Config
   ) {
 
@@ -96,6 +98,10 @@ export class MyApp {
 
     events.subscribe('data:update', obj => {
       this.fetchData( obj );
+    });
+
+    events.subscribe('login:force_login', () => {
+      this.openLoginModal();
     });
 
   }
@@ -174,6 +180,7 @@ export class MyApp {
     this.loadMenu(data);
 
     this.showLogin = ( data.side_menu_login == "on" ) ? true : false;
+    this.logins.set_force_login( (data.side_menu_force_login == "on") );
 
     this.menu_side = ( data.meta.menu_right == true ) ? "right" : "left";
 
@@ -380,6 +387,18 @@ export class MyApp {
     });
 
     return page_id;
+  }
+
+  getPageBySlug(slug) {
+
+    let mypage: any;
+
+    this.pages.forEach(page => {
+      if(page.slug && page.slug == slug && page.page_id)
+        mypage = page;
+    });
+
+    return mypage;
   }
 
   // side menu link. determine which func to use
@@ -736,7 +755,7 @@ export class MyApp {
 
       } else if ( data.fblogin ) {
 
-        this.fbconnect.login();
+        this.fbconnectIframe.login();
 
         this.maybeSendPushId( data.ajaxurl );
 
@@ -745,6 +764,10 @@ export class MyApp {
         this.appwoo.paypal( data.paypal_url, data.redirect );
 
       } else if( data.loggedin ) {
+
+        let avatar = this.logins.get_avatar(data); // logic for FB or WP
+        if(avatar)
+          data.avatar = avatar;
 
         this.userLogin(data)
 
@@ -940,7 +963,12 @@ export class MyApp {
 
   userLogin(data) {
 
-    this.login_data = data
+    let avatar = this.logins.get_avatar(data);
+
+    if(avatar)
+      data.avatar = avatar;
+
+    this.login_data = data;
 
     this.maybeSendPushId();
     // tell the modal we are logged in
@@ -966,32 +994,51 @@ export class MyApp {
   maybeLoginRedirect(data) {
     
     if(data.login_redirect) {
-      console.log('redirecting to ' + data.login_redirect);
+      console.log('redirecting to ', data.login_redirect);
 
-      let page: object;
+      let page: object|boolean;
+      let title = '';
+      let url = '';
+      let component: string;
 
       if(typeof data.login_redirect === 'string') {
-        page = { 
-          title: '',
-          url: data.login_redirect,
-          component: 'Iframe',
-          classes: null,
-          target: '',
-          extra_classes: '',
-        };
+        url = data.login_redirect;
       } else if(typeof data.login_redirect === 'object') {
-        page = {
-          title: data.login_redirect.title,
-          url: data.login_redirect.url,
-          component: 'Iframe',
-          classes: null,
-          target: '',
-          extra_classes: '',
-        };
+        title = data.login_redirect.title;
+        url = data.login_redirect.url;
       }
 
-      if(page) {
-        this.pushPage(page);
+      if(!url)
+        return;
+      else if(url.indexOf('http') === -1) {
+
+        // load by page slug
+
+        let page_slug = url;
+        page = this.getPageBySlug(page_slug);
+        if(page) {
+          this.pushPage(page);
+        } else {
+          this.translate.get('Page not found').subscribe( text => {
+            this.presentToast(text);
+          });
+        }
+      } else {
+
+        // load by URL
+
+        page = { 
+          title: title,
+          url: url,
+          component: 'Iframe',
+          classes: null,
+          target: '',
+          extra_classes: '',
+        };
+
+        if(component) {
+           this.pushPage(page);
+        }
       }   
     }
   }
@@ -1014,6 +1061,12 @@ export class MyApp {
 
     this.translate.get('Logout successful').subscribe( text => {
       this.presentToast(text);
+    });
+
+    this.storage.get('force_login').then((data)=>{
+      if(data) {
+        this.openLoginModal();
+      }
     });
 
   }
@@ -1083,6 +1136,11 @@ export class MyApp {
 
     this.storage.get('user_login').then( data => {
         if(data) {
+
+          let avatar = this.fbconnectvars.get_avatar();
+          if(avatar)
+            data.avatar = avatar;
+
           this.login_data = data;
           
           if( this.pages )
@@ -1131,7 +1189,7 @@ export class MyApp {
 
       // logged into WP but logged out of app: log into app
       if( data.avatar_url && data.message ) {
-        this.login_data = { loggedin: true, avatar: this.avatar.fixProtocolRelativeUrl(data.avatar_url), message: data.message }
+        this.login_data = { loggedin: true, avatar: this.logins.get_avatar(data.avatar_url), message: data.message }
       } else {
         this.login_data = { loggedin: true }
       }
