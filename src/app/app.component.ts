@@ -92,8 +92,8 @@ export class MyApp {
       this.userLogin(data);
     });
 
-    events.subscribe('user:logout', obj => {
-      this.userLogout();
+    events.subscribe('user:logout', data => {
+      this.userLogout(data);
     });
 
     events.subscribe('data:update', obj => {
@@ -978,7 +978,7 @@ export class MyApp {
       this.presentToast(text);
     });
     
-    this.maybeLoginRedirect(data);
+    this.maybeLogInOutRedirect(data);
 
     if( this.pages )
       this.resetSideMenu(true)
@@ -991,21 +991,27 @@ export class MyApp {
    * Handle the appp_login_redirect filter from WordPress
    * @param data Login data
    */
-  maybeLoginRedirect(data) {
+  maybeLogInOutRedirect(data) {
+
+    let redirect: any;
+
+    if(data.login_redirect)
+      redirect = data.login_redirect;
+    else if(data.logout_redirect)
+      redirect = data.logout_redirect;
     
-    if(data.login_redirect) {
-      console.log('redirecting to ', data.login_redirect);
+    if(redirect) {
+      console.log('redirecting to ', redirect);
 
       let page: object|boolean;
       let title = '';
       let url = '';
-      let component: string;
 
-      if(typeof data.login_redirect === 'string') {
-        url = data.login_redirect;
-      } else if(typeof data.login_redirect === 'object') {
-        title = data.login_redirect.title;
-        url = data.login_redirect.url;
+      if(typeof redirect === 'string') {
+        url = redirect;
+      } else if(typeof redirect === 'object') {
+        title = redirect.title;
+        url = redirect.url;
       }
 
       if(!url)
@@ -1035,14 +1041,12 @@ export class MyApp {
           target: '',
           extra_classes: '',
         };
-
-        if(component) {
-           this.pushPage(page);
-        }
+        
+        this.pushPage(page);
       }   
     }
   }
-  userLogout() {
+  userLogout(logout_response?) {
     // this.storage.remove('user_login').then( () => {
     //   this.presentToast('Logged out successfully.')
     // })
@@ -1066,6 +1070,8 @@ export class MyApp {
     this.storage.get('force_login').then((data)=>{
       if(data) {
         this.openLoginModal();
+      } else if(logout_response.data && logout_response.data.logout_redirect) {
+        this.maybeLogInOutRedirect(logout_response.data);
       }
     });
 

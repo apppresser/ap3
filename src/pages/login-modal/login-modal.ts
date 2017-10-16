@@ -186,7 +186,7 @@ export class LoginModal {
 		this.wplogin.logout().then( response => {
 
 			this.storage.remove( 'user_login' )
-			this.events.publish('user:logout' )
+			this.events.publish('user:logout', response )
 			this.login_data = null
 			this.dismiss()
 			this.hideSpinner()
