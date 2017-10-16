@@ -3,7 +3,7 @@ import { Http, Headers, RequestOptions } from '@angular/http';
 import 'rxjs/add/operator/map';
 
 import { Storage } from '@ionic/storage';
-import { Events } from 'ionic-angular';
+import { Events, ToastController } from 'ionic-angular';
 import { FBConnectAppSettings } from './fbconnect-settings';
 import { Facebook } from '@ionic-native/facebook';
 import {Device} from '@ionic-native/device';
@@ -29,6 +29,7 @@ export class FbConnectApp {
     private fbconnectvars: FBConnectAppSettings,
     private Facebook: Facebook,
     private Device: Device,
+    private toastCtrl: ToastController,
     public translate: TranslateService
   ) {}
 
@@ -99,6 +100,19 @@ export class FbConnectApp {
       
       this.wplogin(response.name, response.email).then( (data: any) => {
 
+        if(typeof(data) == 'number') {
+
+          // WP login failure
+
+          console.warn('WPLogin response was ' + data.toString() + '.  AppFBConnect plugin might not be active');
+          this.fbconnectvars.loggout();
+
+          this.translate.get('Login failed').subscribe( text => {
+            this.presentToast(text);
+          });
+          return false;
+        }
+
         console.log('After Facebook and WPLogin, wplogin response', data);
 
         this.storage.set('user_login', data);
@@ -132,5 +146,17 @@ export class FbConnectApp {
           error => alert(this.fbconnectvars.l10n.wp_login_error)
           );
         });
+  }
+
+  presentToast(msg) {
+    
+    let toast = this.toastCtrl.create({
+      message: msg,
+      duration: 5000,
+      position: 'bottom'
+    });
+
+    toast.present();
+
   }
 }
