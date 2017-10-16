@@ -101,14 +101,6 @@ export class FbConnectApp {
 
         console.log('After Facebook and WPLogin, wplogin response', data);
 
-        // successfully logged in
-        if( data && data.redirect_url ) {
-          redirect_url = this.fbconnectvars.get_redirect_url(data.redirect_url); // add ?appp=3 or &appp=3
-          if(redirect_url) {
-            data.login_redirect = redirect_url;
-          }
-        }
-
         this.storage.set('user_login', data);
 
         // hide/show menu items in main app component
