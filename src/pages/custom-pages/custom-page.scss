@@ -6,6 +6,11 @@
     background-color: #fff;
   }
 
+  .platform-android & .fixed-content,
+  .platform-android & .scroll-content {
+    margin-top: 57px;
+  }
+
   .menu-card {
 
     position: relative;
