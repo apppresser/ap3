@@ -105,7 +105,10 @@ export class FbConnectApp {
           // WP login failure
 
           console.warn('WPLogin response was ' + data.toString() + '.  AppFBConnect plugin might not be active');
-          this.fbconnectvars.loggout();
+          this.fbconnectvars.loggout().then(fb_logout_response => {
+            console.log(fb_logout_response);
+            console.warn('Since WPLogin failed, loggedout() of Facebook now occurred');
+          });
 
           this.translate.get('Login failed').subscribe( text => {
             this.presentToast(text);
@@ -135,17 +138,27 @@ export class FbConnectApp {
     
     let params = '?appp=3&action=appp_wp_fblogin&user_email=' + email + '&full_name=' + nameStripped + '&security=' + fb_security;
 
-    return new Promise(resolve => {
+    return new Promise( (resolve, reject) => {
 
-        this.http.post(ajaxurl + params, null).map(
-          res => res.json()
-        ).subscribe(
-          data => {
-            resolve(data);
-          },
-          error => alert(this.fbconnectvars.l10n.wp_login_error)
-          );
+      console.log('attempt wplogin using fb_nonce: %s', ajaxurl + params);
+
+      this.http.post(ajaxurl + params, null).map(
+        res => res.json()
+      ).subscribe(
+        data => {
+          resolve(data);
+        },
+        error => {
+          // WPLogin failed, let's try to logout, just in case
+          console.log('wplogin failed; try to logout, just in case', error);
+          let url = ajaxurl + '?action=apppajaxlogout';
+          this.http.get( url )
+                  .map(res => res.json())
+                  .subscribe(data => console.log('wplogout successful', data));
+          alert(this.fbconnectvars.l10n.wp_login_error);
+          reject(error);
         });
+      });
   }
 
   presentToast(msg) {

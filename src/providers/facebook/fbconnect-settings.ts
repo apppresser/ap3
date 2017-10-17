@@ -158,13 +158,20 @@ export class FBConnectAppSettings {
 
 	loggout() {
 
-		this.facebook.getLoginStatus().then( response => {
-			if(response && response.status == 'connected') {
-				this.facebook.logout()
-			}
-		})
+		return new Promise((resolve, reject) => {
+			this.facebook.getLoginStatus().then( response => {
+				if(response && response.status == 'connected') {
+					this.facebook.logout()
+				}
+				resolve(response);
+			});
 
-		this.remove_avatar();
+			this.remove_avatar();
+		});
+
+		
+
+		
 	}
 	
 	get_nonce() {
