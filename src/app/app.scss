@@ -282,53 +282,55 @@ iframe {
 
 /* Moved over from custom-page.scss */
 
-ion-slides {
-margin-bottom: 20px;
-padding-bottom: 20px;
-background-color: #fff;
-}
+.custom-page {
 
-.menu-card {
-
-	position: relative;
-	text-align: center;
-	min-height: 100px;
-	min-height: 30vw;
-	background-color: #387ef5;
-	color: #fff;
-
-	.card-title {
-	  position: absolute;
-	  top: 20%;
-	  font-size: 3em;
-	  font-size: 10vw;
-	  width: 100%;
-	  font-weight: bold;
-	  opacity: .7;
+	ion-slides {
+		margin-bottom: 20px;
+		padding-bottom: 20px;
+		background-color: #fff;
 	}
 
-	.card-subtitle {
-	  font-size: 1em;
-	  font-size: 3vw;
-	  position: absolute;
-	  top: 70%;
-	  width: 100%;
+	.menu-card {
+		position: relative;
+		text-align: center;
+		min-height: 100px;
+		min-height: 30vw;
+		background-color: #387ef5;
+		color: #fff;
+	
+		.card-title {
+			position: absolute;
+			top: 20%;
+			font-size: 3em;
+			font-size: 10vw;
+			width: 100%;
+			font-weight: bold;
+			opacity: .7;
+		}
+
+		.card-subtitle {
+			font-size: 1em;
+			font-size: 3vw;
+			position: absolute;
+			top: 70%;
+			width: 100%;
+		}
+
 	}
 
+	ion-col {
+		padding: 0;
+	}
 }
-
-ion-col {
-padding: 0;
-}
-
+	
 .swiper-container-horizontal > .swiper-pagination {
-bottom: 0;
+	bottom: 0;
 }
 
 .custom-logo {
-padding: 20px;
-margin: 0 auto;
-display: block;
+	padding: 20px;
+	margin: 0 auto;
+	display: block;
 }
 
 .dark-content {
