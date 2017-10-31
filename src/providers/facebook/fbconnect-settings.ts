@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {GlobalVars} from '../globalvars/globalvars';
 import {Http} from '@angular/http';
 import { Facebook } from '@ionic-native/facebook';
+import { Platform } from 'ionic-angular';
 
 @Injectable()
 export class FBConnectAppSettings {
@@ -17,7 +18,8 @@ export class FBConnectAppSettings {
 	constructor(
 		private globalvars: GlobalVars,
 		private http: Http,
-		private facebook: Facebook
+		private facebook: Facebook,
+		private platform: Platform
 	) {
 		this.debug = false;
 		this.login_scope = ['email','public_profile','user_friends'];
@@ -31,20 +33,26 @@ export class FBConnectAppSettings {
 				login_fail:'Login error, please try again.'
 		};
 
-		this.get_settings().then(
-			() => {
-				console.log('fb settings should be stored now');
-			},
-			(error) => {
-				console.log(error);
-				if(error == 'LocalStorage not set yet') {
-					setTimeout(() => {
-						this.get_settings()
-					}, 3000); // let's try again in 3 seconds
-					console.log('let\'s try again in 3 seconds')
-				}
+		this.platform.ready().then(platform => {
+			if('object' === typeof window['facebookConnectPlugin']) {
+				this.get_settings().then(
+					() => {
+						console.log('fb settings should be stored now');
+					},
+					(error) => {
+						console.log(error);
+						if(error == 'LocalStorage not set yet') {
+							setTimeout(() => {
+								this.get_settings()
+							}, 3000); // let's try again in 3 seconds
+							console.log('let\'s try again in 3 seconds')
+						}
+					}
+				);
+			} else {
+				console.warn('cordova FacebookConnectPlugin is not installed');
 			}
-		);
+		});
 	}
 
 	get_settings() {
