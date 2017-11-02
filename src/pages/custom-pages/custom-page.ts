@@ -6,6 +6,7 @@ import {Storage} from '@ionic/storage';
 import {IonicModule, ToastController} from 'ionic-angular';
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
+import {IAP} from '../../providers/inapppurchase/inapppurchase';
 
 
 /**
@@ -62,6 +63,7 @@ export class CustomPage implements OnInit {
 	show_header_logo: boolean = false;
 	customClasses: string;
 	pages: any;
+	products: any;
 	menus: {
 		side: any,
 		tabs: any
@@ -80,7 +82,8 @@ export class CustomPage implements OnInit {
 		public events: Events,
 		public toastCtrl: ToastController,
 		private globalvars: GlobalVars,
-		private headerLogoService: HeaderLogo
+		private headerLogoService: HeaderLogo,
+		public iap: IAP
         ) {
 		this.pagetitle = navParams.data.title;
 
@@ -134,6 +137,15 @@ export class CustomPage implements OnInit {
 		},
 		loginModal: () => {
 			this.loginModal();
+		},
+		getProducts: () => {
+			this.products = this.iap.getProducts();
+		},
+		buyProduct: ( id ) => {
+			this.iap.buy( id );
+		},
+		restore: () => {
+			this.iap.restore();
 		}
 	}
 	/** Development mode only -- END */
@@ -144,8 +156,8 @@ export class CustomPage implements OnInit {
 		this.slug = slug;
 
 		/** Development mode only -- START */
-		// this.templateUrl = 'custom.html'
-		this.templateUrl = 'build/' + slug + '.html?' + this.random(1, 999);
+		this.templateUrl = 'custom.html'
+		//this.templateUrl = 'build/' + slug + '.html?' + this.random(1, 999);
 		/** Development mode only -- END */
 
 		this.customClasses = 'custom-page page-' + this.slug
@@ -454,6 +466,10 @@ export class CustomPage implements OnInit {
 			return 'Page'+page_id;
 		else
 			return 'CustomPage';
+	}
+
+	getProducts() {
+		this.products = this.iap.getProducts();
 	}
 
 }
