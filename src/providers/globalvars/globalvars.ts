@@ -20,7 +20,6 @@ export class GlobalVars {
   // apiurl: string = '[[myappp_url]]'
   // endpoint: string = 'wp-json/ap3/v1/app/[[appp_app_id]]';
   api: string = this.apiurl + this.endpoint;
-  productId: 'com.artofmanliness.artofmanliness.1';
 
   constructor( public http: Http ) {}
 
@@ -34,10 +33,6 @@ export class GlobalVars {
 
   getAppId() {
     return this.appid;
-  }
-
-  getProductId() {
-    return this.productId;
   }
 
 }

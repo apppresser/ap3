@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
-import {GlobalVars} from '../globalvars/globalvars';
 import {Device} from '@ionic-native/device';
 import {InAppPurchase} from '@ionic-native/in-app-purchase';
+
+import {AppAds} from '../appads/appads';
 
 /*
   In App Purchases
@@ -16,29 +17,30 @@ export class IAP {
 
   constructor( 
     private iap: InAppPurchase,
-    public globalvars: GlobalVars
+    public appads: AppAds
     ) {
   }
 
-  // Subscribe for push through our API service
-  getProducts() {
+  // Get products
+  // getProducts() {
 
-    this.productId = this.globalvars.getProductId();
+  //   this.productId = this.globalvars.getProductId();
 
-    console.log('getting products for ' + this.productId )
+  //   console.log('getting products for ' + this.productId )
 
-    return new Promise(resolve => {
+  //   return new Promise(resolve => {
 
-      this.iap.getProducts( [ this.productId ] ).then( products => {
-        console.log('got products', products)
-        resolve(products)
-      })
-      .catch( err => {
-        console.log(err)
-      })
-    });
-  }
+  //     this.iap.getProducts( [ this.productId ] ).then( products => {
+  //       console.log('got products', products)
+  //       resolve(products)
+  //     })
+  //     .catch( err => {
+  //       console.log(err)
+  //     })
+  //   });
+  // }
 
+  // buy a product, requires ID that looks like this: com.artofmanliness.artofmanliness.noadssubscription
   buy( id ) {
 
     console.log('buying ' + id)
@@ -47,7 +49,10 @@ export class IAP {
 
       this.iap.buy( id ).then( result => {
         console.log('bought ', result)
-        alert("Purchase successful! Remove ads now...")
+        alert("Purchase successful, thank you!")
+
+        this.appads.hideAll();
+
         resolve(result)
       })
       .catch( err => {
@@ -63,7 +68,10 @@ export class IAP {
 
       this.iap.restorePurchases().then( result => {
         console.log('restored ', result)
-        alert("Restored! Make sure ads are removed...")
+        alert("Purchase restored, thank you!")
+
+        this.appads.hideAll();
+
         resolve(result)
       })
       .catch( err => {

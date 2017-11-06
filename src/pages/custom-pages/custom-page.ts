@@ -9,7 +9,6 @@ import {HeaderLogo} from '../../providers/header-logo/header-logo';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {IAP} from '../../providers/inapppurchase/inapppurchase';
 
-
 /**
  * Any changes done to this file needs to be copied over to
  * mkpages/templates/custom-html-template/ for the production
