@@ -1,5 +1,5 @@
 /* Framework */
-import {ViewChild, Component} from '@angular/core';
+import {ViewChild, Component, isDevMode} from '@angular/core';
 import {Platform, MenuController, Nav, ToastController, ModalController, Events, Config} from 'ionic-angular';
 import {DomSanitizer} from '@angular/platform-browser';
 import {TranslateService} from '@ngx-translate/core';
@@ -594,7 +594,7 @@ export class MyApp {
   }
 
   getPageModuleName(page_id) {
-    if(this.globalvars.isInProductionMode)
+    if(!isDevMode())
       return 'Page'+page_id;
     else
       return 'CustomPage';
