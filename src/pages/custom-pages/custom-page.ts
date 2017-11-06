@@ -138,9 +138,6 @@ export class CustomPage implements OnInit {
 		loginModal: () => {
 			this.loginModal();
 		},
-		getProducts: () => {
-			this.products = this.iap.getProducts();
-		},
 		buyProduct: ( id ) => {
 			this.iap.buy( id );
 		},
@@ -466,10 +463,6 @@ export class CustomPage implements OnInit {
 			return 'Page'+page_id;
 		else
 			return 'CustomPage';
-	}
-
-	getProducts() {
-		this.products = this.iap.getProducts();
 	}
 
 }

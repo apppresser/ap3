@@ -42,7 +42,7 @@
     "@ngx-translate/core": "7.0.0",
     "@ngx-translate/http-loader": "0.1.0",
     "angular2-dynamic-component": "0.1.2",
-    "cordova-ios": "~4.5.2",
+    "cordova-ios": "^4.5.3",
     "cordova-plugin-device": "~1.1.3",
     "cordova-plugin-facebook4": "~1.7.4",
     "cordova-plugin-inapppurchase": "^1.1.0",
