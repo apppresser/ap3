@@ -1,11 +1,10 @@
-import {Component, Renderer, ElementRef, OnInit, Input} from '@angular/core';
+import {Component, Renderer, ElementRef, OnInit, Input, isDevMode} from '@angular/core';
 import {Nav, NavParams, ModalController, Platform, ViewController, Events, IonicPage} from 'ionic-angular';
 import {TranslateService, TranslateModule} from '@ngx-translate/core';
 import {Storage} from '@ionic/storage';
 
 import {IonicModule, ToastController} from 'ionic-angular';
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
-import {GlobalVars} from '../../providers/globalvars/globalvars';
 
 
 /**
@@ -79,7 +78,6 @@ export class CustomPage implements OnInit {
 		public storage: Storage,
 		public events: Events,
 		public toastCtrl: ToastController,
-		private globalvars: GlobalVars,
 		private headerLogoService: HeaderLogo
         ) {
 		this.pagetitle = navParams.data.title;
@@ -450,7 +448,7 @@ export class CustomPage implements OnInit {
 	}
 
 	getPageModuleName(page_id) {
-		if(this.globalvars.isInProductionMode)
+		if(!isDevMode())
 			return 'Page'+page_id;
 		else
 			return 'CustomPage';
