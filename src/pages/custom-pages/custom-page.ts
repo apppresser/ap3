@@ -141,6 +141,9 @@ export class CustomPage implements OnInit {
 		buyProduct: ( id ) => {
 			this.iap.buy( id );
 		},
+		subscribe: ( id ) => {
+			this.iap.subscribe( id );
+		},
 		restore: () => {
 			this.iap.restore();
 		}

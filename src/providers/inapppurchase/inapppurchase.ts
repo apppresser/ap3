@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Device} from '@ionic-native/device';
 import {InAppPurchase} from '@ionic-native/in-app-purchase';
-
+import {Storage} from '@ionic/storage';
 import {AppAds} from '../appads/appads';
 
 /*
@@ -17,14 +17,13 @@ export class IAP {
 
   constructor( 
     private iap: InAppPurchase,
-    public appads: AppAds
+    public appads: AppAds,
+    public storage: Storage
     ) {
   }
 
   // Get products
-  // getProducts() {
-
-  //   this.productId = this.globalvars.getProductId();
+  // getProducts( id ) {
 
   //   console.log('getting products for ' + this.productId )
 
@@ -43,24 +42,84 @@ export class IAP {
   // buy a product, requires ID that looks like this: com.artofmanliness.artofmanliness.noadssubscription
   buy( id ) {
 
-    console.log('buying ' + id)
+    // we have to get products before we can buy
+    this.iap.getProducts( [ id ] ).then( products => {
 
-    return new Promise(resolve => {
-
+      // after we get product, buy it
       this.iap.buy( id ).then( result => {
-        console.log('bought ', result)
-        alert("Purchase successful, thank you!")
+
+        this.storage.set('purchases', id )
 
         this.appads.hideAll();
 
-        resolve(result)
+        alert("Purchase successful, thank you!")
+
       })
       .catch( err => {
+        alert(err)
         console.log(err)
       })
-    });
+
+    })
+    .catch( err => {
+      alert(err)
+      console.log(err)
+    })
 
   }
+
+  // buy a product, requires ID that looks like this: com.artofmanliness.artofmanliness.noadssubscription
+  subscribe( id ) {
+
+    // we have to get products before we can buy
+    this.iap.getProducts( [ id ] ).then( products => {
+
+      console.log('got products', products)
+
+      // after we get product, buy it
+      this.iap.subscribe( id ).then( result => {
+
+        this.storage.set('purchased_ad_removal', true )
+
+        this.appads.hideAll();
+
+        alert("Purchase successful, thank you!")
+
+      })
+      .catch( err => {
+        alert(err)
+        console.log(err)
+      })
+
+    })
+    .catch( err => {
+      alert(err)
+      console.log(err)
+    })
+
+  }
+
+  // buy a product, requires ID that looks like this: com.artofmanliness.artofmanliness.noadssubscription
+  // buyProduct( id ) {
+
+  //   console.log('buying ' + id)
+
+  //   return new Promise(resolve => {
+
+  //     this.iap.buy( id ).then( result => {
+  //       console.log('bought ', result)
+  //       alert("Purchase successful, thank you!")
+
+  //       this.appads.hideAll();
+
+  //       resolve(result)
+  //     })
+  //     .catch( err => {
+  //       console.log(err)
+  //     })
+  //   });
+
+  // }
 
   restore() {
 
@@ -68,9 +127,12 @@ export class IAP {
 
       this.iap.restorePurchases().then( result => {
         console.log('restored ', result)
-        alert("Purchase restored, thank you!")
+
+        this.storage.set('purchases', result )
 
         this.appads.hideAll();
+
+        alert("Purchase restored, thank you!")
 
         resolve(result)
       })

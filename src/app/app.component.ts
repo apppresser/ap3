@@ -192,12 +192,20 @@ export class MyApp {
       this.platform.setDir('rtl', true)
 
     this.loadStyles(data);
-    this.maybeDoAds(data);
+    
     this.doStatusBar(data);
     this.getSetLang(data);
     this.getSetLogin();
 
     this.apptitle = data.title;
+
+    this.storage.get( 'purchases' ).then( res => {
+
+      if( !res ) {
+        this.maybeDoAds(data);
+      }
+
+    })
 
   }
 
@@ -798,6 +806,8 @@ export class MyApp {
   }
 
   maybeDoAds(data) {
+
+    console.log('ads')
 
     // only show ads on a device
     if( !this.Device.platform ) 
