@@ -26,3 +26,25 @@ endpoint: string = 'wp-json/ap3/v1/app/12';
 3. Run `ionic serve` to preview the app in your browser
 
 Consult the [Ionic documentation](http://ionicframework.com/docs/v2/cli/) for cli commands, custom components, and more.
+
+## Update notes after updating Ionic
+
+delete node_modules folder
+
+npm install ionic-angular@latest --save
+npm install @ionic/app-scripts@latest --save-dev
+npm install -g cordova
+
+npm install
+
+cordova platform rm ios
+ionic cordova platform add ios
+ionic cordova plugin remove cordova-plugin-console
+ionic cordova plugin rm cordova-plugin-statusbar
+ionic cordova plugin add https://github.com/apache/cordova-plugin-statusbar.git
+
+## Possible issues
+
+If cordova and/or ionic is not updated properly, you will get build errors.
+
+Also, prod builds might see issues because of a webpack update https://github.com/ionic-team/ionic-app-scripts/releases/tag/v3.0.0
