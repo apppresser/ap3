@@ -1024,9 +1024,9 @@ export class MyApp {
         url = redirect.url;
       }
 
-      if(!url)
+      if(!url) {
         return;
-      else if(url.indexOf('http') === -1) {
+      } else if(url.indexOf('http') === -1) {
 
         // load by page slug
 
