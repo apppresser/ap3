@@ -12,6 +12,7 @@ export class FBConnectAppSettings {
 	public me_fields: string;
 	public l10n: any;
 	public wordpress_url: string;
+	public wp_site_addr: string;
 	public nonce: string;
 	public app_ver = 3;
 
@@ -64,6 +65,7 @@ export class FBConnectAppSettings {
 				myappp = JSON.parse(myappp);
 				if(myappp && myappp.wordpress_url) {
 					this.wordpress_url = myappp['wordpress_url'];
+					this.wp_site_addr = (myappp['wp_site_addr']) ? myappp['wp_site_addr'] : '';
 					this.get_remote_settings().then( 
 						data => {
 							console.log('Facebook, we will update our settings', data);
@@ -77,7 +79,7 @@ export class FBConnectAppSettings {
 						}
 					);
 				} else {
-					reject('Facebook login requires your WP URL');
+					reject('Skipping remote login setup: no WP URL');
 				}
 			} else {
 				reject('LocalStorage not set yet');
@@ -111,11 +113,11 @@ export class FBConnectAppSettings {
 		const params = 'wp-json/ap3/v1/appfbconnect/settings';
 		const data = {id: this.globalvars.getAppId()};
 
-		console.log('wordpress_url', this.wordpress_url);
+		const wp_json_url = (this.wp_site_addr) ? this.wp_site_addr : this.wordpress_url;
 
 		return new Promise((resolve, reject) => {
 			
-			this.http.post(this.wordpress_url + params, data).map(
+			this.http.post(wp_json_url + params, data).map(
 				res => res.json()
 			).subscribe(
 				data => {
