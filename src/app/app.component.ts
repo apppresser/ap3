@@ -199,7 +199,7 @@ export class MyApp {
 
     this.apptitle = data.title;
 
-    this.storage.get( 'purchases' ).then( res => {
+    this.storage.get( 'purchased_ad_removal' ).then( res => {
 
       if( !res ) {
         this.maybeDoAds(data);

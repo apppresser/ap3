@@ -109,4 +109,5 @@
     </plugin>
     <plugin name="cordova-plugin-statusbar" spec="git+https://github.com/apache/cordova-plugin-statusbar.git" />
     <plugin name="cordova-plugin-inapppurchase" spec="^1.1.0" />
+    <plugin name="cordova-plugin-admobpro" spec="^2.29.28" />
 </widget>

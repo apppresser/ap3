@@ -141,11 +141,11 @@ export class CustomPage implements OnInit {
 		buyProduct: ( id ) => {
 			this.iap.buy( id );
 		},
-		subscribe: ( id ) => {
-			this.iap.subscribe( id );
+		subscribeNoAds: ( id ) => {
+			this.iap.subscribeNoAds( id );
 		},
-		restore: () => {
-			this.iap.restore();
+		restoreNoAds: () => {
+			this.iap.restoreNoAds();
 		}
 	}
 	/** Development mode only -- END */
@@ -156,8 +156,8 @@ export class CustomPage implements OnInit {
 		this.slug = slug;
 
 		/** Development mode only -- START */
-		this.templateUrl = 'custom.html'
-		//this.templateUrl = 'build/' + slug + '.html?' + this.random(1, 999);
+		// this.templateUrl = 'custom.html'
+		this.templateUrl = 'build/' + slug + '.html?' + this.random(1, 999);
 		/** Development mode only -- END */
 
 		this.customClasses = 'custom-page page-' + this.slug
@@ -466,6 +466,18 @@ export class CustomPage implements OnInit {
 			return 'Page'+page_id;
 		else
 			return 'CustomPage';
+	}
+
+	buyProduct( id ) {
+		this.iap.buy( id );
+	}
+
+	subscribeNoAds( id ) {
+		this.iap.subscribeNoAds( id );
+	}
+
+	restoreNoAds() {
+		this.iap.restoreNoAds();
 	}
 
 }

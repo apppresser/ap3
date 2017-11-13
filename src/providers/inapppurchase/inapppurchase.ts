@@ -52,8 +52,6 @@ export class IAP {
 
         this.appads.hideAll();
 
-        alert("Purchase successful, thank you!")
-
       })
       .catch( err => {
         alert(err)
@@ -74,6 +72,31 @@ export class IAP {
     // we have to get products before we can buy
     this.iap.getProducts( [ id ] ).then( products => {
 
+      // after we get product, buy it
+      this.iap.subscribe( id ).then( result => {
+
+        this.storage.set('purchased_' + id, true )
+
+      })
+      .catch( err => {
+        alert(err)
+        console.log(err)
+      })
+
+    })
+    .catch( err => {
+      alert(err)
+      console.log(err)
+    })
+
+  }
+
+  // buy a product, then remove ads
+  subscribeNoAds( id ) {
+
+    // we have to get products before we can buy
+    this.iap.getProducts( [ id ] ).then( products => {
+
       console.log('got products', products)
 
       // after we get product, buy it
@@ -82,8 +105,6 @@ export class IAP {
         this.storage.set('purchased_ad_removal', true )
 
         this.appads.hideAll();
-
-        alert("Purchase successful, thank you!")
 
       })
       .catch( err => {
@@ -121,14 +142,14 @@ export class IAP {
 
   // }
 
-  restore() {
+  restoreNoAds() {
 
     return new Promise(resolve => {
 
       this.iap.restorePurchases().then( result => {
         console.log('restored ', result)
 
-        this.storage.set('purchases', result )
+        this.storage.set('purchased_ad_removal', true )
 
         this.appads.hideAll();
 
