@@ -142,18 +142,30 @@ export class IAP {
 
   // }
 
-  restoreNoAds() {
+  restoreNoAds( id ) {
 
     return new Promise(resolve => {
 
       this.iap.restorePurchases().then( result => {
-        console.log('restored ', result)
+        // console.log('restored ', result)
 
-        this.storage.set('purchased_ad_removal', true )
+        for (var i = 0; i < length; ++i) {
 
-        this.appads.hideAll();
+          // TODO: check result[i].state for cancelled or refunded
 
-        alert("Purchase restored, thank you!")
+          if( result[i].productId = id ) {
+
+            this.storage.set('purchased_ad_removal', true )
+
+            this.appads.hideAll();
+
+            alert("Purchase restored, thank you!")
+
+            return;
+
+          }
+
+        }
 
         resolve(result)
       })

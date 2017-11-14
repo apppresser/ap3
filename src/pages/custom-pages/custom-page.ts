@@ -144,8 +144,8 @@ export class CustomPage implements OnInit {
 		subscribeNoAds: ( id ) => {
 			this.iap.subscribeNoAds( id );
 		},
-		restoreNoAds: () => {
-			this.iap.restoreNoAds();
+		restoreNoAds: ( id ) => {
+			this.iap.restoreNoAds( id );
 		}
 	}
 	/** Development mode only -- END */
@@ -476,8 +476,8 @@ export class CustomPage implements OnInit {
 		this.iap.subscribeNoAds( id );
 	}
 
-	restoreNoAds() {
-		this.iap.restoreNoAds();
+	restoreNoAds( id ) {
+		this.iap.restoreNoAds( id );
 	}
 
 }
