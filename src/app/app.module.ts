@@ -23,6 +23,7 @@ import { SocialSharing } from "@ionic-native/social-sharing";
 import { Push } from "@ionic-native/push";
 import { Dialogs } from "@ionic-native/dialogs";
 import { Geolocation } from "@ionic-native/geolocation";
+import { InAppPurchase } from '@ionic-native/in-app-purchase';
 
 /* Providers */
 import {AppCamera} from '../providers/camera/app-camera';
@@ -40,6 +41,7 @@ import {WPlogin} from '../providers/wplogin/wplogin';
 import {HeaderLogo} from '../providers/header-logo/header-logo';
 import {VideoUtils} from "../providers/video/video-utils";
 import {AppGeo} from "../providers/appgeo/appgeo";
+import {IAP} from "../providers/inapppurchase/inapppurchase";
 
 /* Other */
 import { IonicStorageModule } from '@ionic/storage';
@@ -109,7 +111,9 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     Push,
     Dialogs,
     Geolocation,
-    VideoUtils
+    VideoUtils,
+    IAP,
+    InAppPurchase
   ]
 })
 export class AppModule {}

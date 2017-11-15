@@ -55,4 +55,12 @@ export class AppAds {
 
   }
 
+  hideAll() {
+
+    console.log('hiding ads')
+
+    this.AdMob.hideBanner();
+    
+  }
+
 }

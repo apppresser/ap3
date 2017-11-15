@@ -6,6 +6,8 @@ import {Storage} from '@ionic/storage';
 import {IonicModule, ToastController} from 'ionic-angular';
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
 
+import {GlobalVars} from '../../providers/globalvars/globalvars';
+import {IAP} from '../../providers/inapppurchase/inapppurchase';
 
 /**
  * Any changes done to this file needs to be copied over to
@@ -62,6 +64,7 @@ export class CustomPage implements OnInit {
 	show_header_logo: boolean = false;
 	customClasses: string;
 	pages: any;
+	products: any;
 	menus: {
 		side: any,
 		tabs: any
@@ -79,7 +82,9 @@ export class CustomPage implements OnInit {
 		public storage: Storage,
 		public events: Events,
 		public toastCtrl: ToastController,
-		private headerLogoService: HeaderLogo
+		private globalvars: GlobalVars,
+		private headerLogoService: HeaderLogo,
+		public iap: IAP
         ) {
 		this.pagetitle = navParams.data.title;
 
@@ -133,6 +138,15 @@ export class CustomPage implements OnInit {
 		},
 		loginModal: () => {
 			this.loginModal();
+		},
+		buyProduct: ( id ) => {
+			this.iap.buy( id );
+		},
+		subscribeNoAds: ( id ) => {
+			this.iap.subscribeNoAds( id );
+		},
+		restoreNoAds: ( id ) => {
+			this.iap.restoreNoAds( id );
 		}
 	}
 	/** Development mode only -- END */
@@ -458,6 +472,18 @@ export class CustomPage implements OnInit {
 			return 'Page'+page_id;
 		else
 			return 'CustomPage';
+	}
+
+	buyProduct( id ) {
+		this.iap.buy( id );
+	}
+
+	subscribeNoAds( id ) {
+		this.iap.subscribeNoAds( id );
+	}
+
+	restoreNoAds( id ) {
+		this.iap.restoreNoAds( id );
 	}
 
 }

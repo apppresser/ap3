@@ -25,8 +25,11 @@ plugins/android.json
 plugins/ios.json
 www/
 $RECYCLE.BIN/
+/.sourcemaps/
 
 .DS_Store
 Thumbs.db
 UserInterfaceState.xcuserstate
 /main-copy.sh
+/.sourcemaps/1.js.map
+/.sourcemaps/main.js.map
