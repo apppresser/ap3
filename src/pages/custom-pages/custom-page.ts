@@ -19,6 +19,7 @@ import {HeaderLogo} from '../../providers/header-logo/header-logo';
 
 /** Development mode only -- START */
 import {IComponentInputData} from 'angular2-dynamic-component/index';
+import { setTimeout } from 'timers';
 
 /*
  * Uses dynamic component creation, see https://github.com/apoterenko/angular2-dynamic-component
@@ -366,7 +367,12 @@ export class CustomPage implements OnInit {
 				return;
 		}
 
-		if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
+		if( page.extra_classes.indexOf('desktoptheme') >= 0 ) {
+			let url = new URL(page.url);
+			url.searchParams.append('appp_bypass', 'true');
+			let iab: any = window.open(url.toString(), '_blank');
+			return;
+		} else if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
 			window.open( page.url, '_system', null );
 			return;
 		} else if( page.target === '_blank' ) {
