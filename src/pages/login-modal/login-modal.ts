@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { Events, ViewController, ToastController, LoadingController, IonicPage } from 'ionic-angular';
+import { Events, ViewController, LoadingController, IonicPage } from 'ionic-angular';
 import {WPlogin} from '../../providers/wplogin/wplogin';
 import {Logins} from "../../providers/logins/logins";
 import {FbConnectApp} from '../../providers/facebook/login-app';
 import {FbConnectIframe} from '../../providers/facebook/login-iframe';
 import {FBConnectAppSettings} from '../../providers/facebook/fbconnect-settings';
-import { Storage } from '@ionic/storage';
+import {Storage} from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {TranslateService} from '@ngx-translate/core';
 
@@ -23,6 +23,7 @@ export class LoginModal {
 	is_preview: boolean = false;
 	fb_login: boolean = false;
 	fb_login_data: any
+	register_link: string = ''
 
 	constructor(
 		public viewCtrl: ViewController,
@@ -54,6 +55,12 @@ export class LoginModal {
 		this.storage.get('force_login').then( data => {
 			if(data) {
 				this.force_login = true;
+			}
+		})
+
+		this.storage.get('registration_url').then( data => {
+			if(data) {
+				this.register_link = data;
 			}
 		})
 
@@ -221,6 +228,16 @@ export class LoginModal {
 	setLoginData( data ) {
 		this.login_data = data
 		console.log('setLoginData', this.login_data)
+	}
+
+	register( e ) {
+
+		let title = e.target.innerText
+
+		this.dismiss()
+
+		this.events.publish('pushpage', { url: this.register_link, title: title } )
+
 	}
 
 	dismiss() {

@@ -104,6 +104,10 @@ export class MyApp {
       this.openLoginModal();
     });
 
+    events.subscribe('pushpage', page => {
+      this.pushPage( page );
+    });
+
   }
 
   initializeApp() {
@@ -206,6 +210,10 @@ export class MyApp {
       }
 
     })
+
+    if( data.show_registration_link === 'on' && data.registration_url ) {
+      this.storage.set( 'registration_url', data.registration_url );
+    }
 
   }
 

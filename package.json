@@ -6,7 +6,8 @@
   "scripts": {
     "build": "ionic-app-scripts build",
     "serve": "ionic-app-scripts serve",
-    "pages": "cd mkpages && node app"
+    "pages": "cd mkpages && node app",
+    "ios": "ionic-app-scripts build && cordova build ios"
   },
   "dependencies": {
     "@angular/animations": "4.1.0",
@@ -46,6 +47,7 @@
     "cordova-ios": "^4.5.3",
     "cordova-plugin-device": "~1.1.3",
     "cordova-plugin-facebook4": "~1.7.4",
+    "cordova-plugin-inappbrowser": "^1.7.2",
     "cordova-plugin-inapppurchase": "^1.1.0",
     "cordova-plugin-splashscreen": "~4.0.0",
     "cordova-plugin-statusbar": "git+https://github.com/apache/cordova-plugin-statusbar.git",
@@ -97,7 +99,8 @@
         "APP_NAME": "AppPresser"
       },
       "cordova-plugin-statusbar": {},
-      "cordova-plugin-inapppurchase": {}
+      "cordova-plugin-inapppurchase": {},
+      "cordova-plugin-inappbrowser": {}
     },
     "platforms": [
       "ios"

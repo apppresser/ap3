@@ -43,6 +43,13 @@
               <span class="fb-login-text">{{ 'Login with Facebook' | translate }}</span>
             </button>
           </div>
+
+      </div>
+
+      <div *ngIf="register_link">
+
+        <span class="register-link" (touchend)="register( $event )">{{ 'Register' | translate }}</span>
+
       </div>
     </form>
 
