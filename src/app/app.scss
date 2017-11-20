@@ -431,7 +431,15 @@ button.item-ios.divider .item-inner, button.item-ios.submenu-parent .item-inner 
 
 .register-link {
 	display: block;
-	margin: 10px auto;
-	text-align: center;
-	min-height: 44px;
+    margin-left: -15px;
+    text-align: center;
+    font-size: 16px;
+    padding: 20px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid #eee;
+    color: #999;
+    font-weight: bold;
+    background-color: #fafafa;
 }
