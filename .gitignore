@@ -35,3 +35,7 @@ UserInterfaceState.xcuserstate
 /.sourcemaps/main.js.map
 /.sourcemaps/0.js.map
 *.map
+/testing-hold
+/testing-fb-login
+/save
+/build.json
