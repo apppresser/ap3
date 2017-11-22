@@ -97,8 +97,6 @@ export class IAP {
     // we have to get products before we can buy
     this.iap.getProducts( [ id ] ).then( products => {
 
-      console.log('got products', products)
-
       // after we get product, buy it
       this.iap.subscribe( id ).then( result => {
 
