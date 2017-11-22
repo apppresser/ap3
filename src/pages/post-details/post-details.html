@@ -16,7 +16,7 @@
 		<ion-title><span [innerHTML]="selectedItem.title.rendered"></span></ion-title>
 
 		<ion-buttons end>
-			<button ion-button (click)="share()">
+			<button *ngIf="showShare" ion-button (click)="share()">
 				<ion-icon name="share"></ion-icon>
 			</button>
 		</ion-buttons>

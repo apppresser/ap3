@@ -1,5 +1,5 @@
 import {NavController, NavParams, ModalController, Platform, ViewController, IonicPage} from 'ionic-angular';
-import {Component, Renderer, ElementRef} from '@angular/core';
+import {Component, Renderer, ElementRef, OnInit} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SocialSharing} from '@ionic-native/social-sharing';
 
@@ -10,11 +10,12 @@ import { VideoUtils } from "../../providers/video/video-utils";
 @Component({
   templateUrl: 'post-details.html'
 })
-export class PostDetailsPage {
+export class PostDetailsPage implements OnInit {
   selectedItem: any;
   content: any;
   listenFunc: Function;
   rtlBack: boolean = false;
+  showShare: boolean = true;
 
   constructor(
     public nav: NavController, 
@@ -44,6 +45,17 @@ export class PostDetailsPage {
       this.videoUtils.killVideos(this.elementRef);
     }
 
+  }
+
+  ngOnInit() {
+    let myappp: any = localStorage.getItem('myappp');
+    if(myappp) {
+        if(typeof myappp == 'string')
+            myappp = JSON.parse(myappp);
+    
+        if(myappp && myappp.meta && myappp.meta.share && myappp.meta.share.icon && myappp.meta.share.icon.hide)
+            this.showShare = (myappp.meta.share.icon.hide) ? false : true;
+    }
   }
 
   iabLinks( el ) {
