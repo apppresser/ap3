@@ -33,6 +33,7 @@ export class PostList implements OnInit {
   networkState: any;
   header_logo_url: string;
   show_header_logo: boolean = false;
+  customClasses: string = '';
 
   constructor(
     public nav: NavController, 
@@ -73,6 +74,8 @@ export class PostList implements OnInit {
     }
 
     this.previewAlert(this.route);
+
+    this.customClasses = 'post-list' + ((navParams.data.slug) ? ' page-' + navParams.data.slug : '');
     
   }
 

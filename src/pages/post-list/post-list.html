@@ -44,7 +44,7 @@
 
 </ion-header>
 
-<ion-content class="post-list">
+<ion-content [ngClass]="customClasses">
   <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
