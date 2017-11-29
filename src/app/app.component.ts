@@ -16,6 +16,7 @@ import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
 import {AppGeo} from '../providers/appgeo/appgeo';
 import {Logins} from "../providers/logins/logins";
+import { ApppNetworkService } from "../providers/shared/network.service";
 
 /* Native */
 import { StatusBar } from '@ionic-native/status-bar';
@@ -83,6 +84,7 @@ export class MyApp {
     private Push: Push,
     private http: Http,
     private Dialogs: Dialogs,
+    private networkservice: ApppNetworkService,
     private config: Config
   ) {
 
@@ -522,7 +524,14 @@ export class MyApp {
     } else if( page.type === 'apppages' ) {
       this.nav.push(this.getPageModuleName(page.page_id), page, opt );
     } else if (page.url) {
-      this.nav.push('Iframe', page, opt);
+      if(this.networkservice.maybeNotConnected({
+        // lang translated
+        message: 'You are trying to reach a page online, but you are not connected to the internet.',
+        title: 'Offline',
+        btnText: 'Done'
+      })) {
+        this.nav.push('Iframe', page, opt);
+      }
     } else {
       this.nav.push(page.component, page.navparams, opt);
     }
