@@ -59,8 +59,11 @@ export class LoginModal {
 		})
 
 		this.storage.get('registration_url').then( data => {
+
 			if(data) {
 				this.register_link = data;
+			} else {
+				this.register_link = null
 			}
 		})
 
@@ -238,6 +241,18 @@ export class LoginModal {
 
 		this.events.publish('pushpage', { url: this.register_link, title: title } )
 
+	}
+
+	lostpw( e ) {
+
+		let title = e.target.innerText
+
+		this.dismiss()
+
+		let item = window.localStorage.getItem( 'myappp' );
+    	let url = JSON.parse( item ).wordpress_url;
+
+		this.events.publish('pushpage', { url: url + 'wp-login.php?action=lostpassword', title: title } )
 	}
 
 	dismiss() {

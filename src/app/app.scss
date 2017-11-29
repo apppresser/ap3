@@ -429,17 +429,24 @@ button.item-ios.divider .item-inner, button.item-ios.submenu-parent .item-inner 
 	opacity: 1;
 }
 
-.register-link {
+.modal-footer {
 	display: block;
     margin-left: -15px;
-    text-align: center;
-    font-size: 16px;
-    padding: 20px;
     position: absolute;
     bottom: 0;
     width: 100%;
-    border-top: 1px solid #eee;
-    color: #999;
-    font-weight: bold;
-    background-color: #fafafa;
+}
+
+.modal-footer.grid, .modal-footer .col {
+	padding: 0;
+}
+
+.modal-footer .button {
+	box-shadow: none;
+	margin: 0;
+	color: #555;
+}
+
+.modal-footer .col:nth-child(2) .button {
+	border-left: 1px solid #ccc;
 }
