@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { Platform } from "ionic-angular";
 import { Dialogs } from '@ionic-native/dialogs';
 import {TranslateService} from '@ngx-translate/core';
+import { GlobalVars } from "../globalvars/globalvars";
 
 declare var navigator: any;
 declare var Connection: any;
@@ -11,6 +12,7 @@ export class ApppNetworkService {
 	constructor(
 		private platform: Platform,
 		private Dialogs: Dialogs,
+		private globalvars: GlobalVars,
 		private translate: TranslateService
 	) {}
 
@@ -18,18 +20,28 @@ export class ApppNetworkService {
 		return (navigator.connection.type != 'none');
 	}
 
-	maybeNotConnected(dialog: {message, title, btnText}) {
-		if(this.isConnected()) {
-			return true;
-		} else {
-			this.Dialogs.alert(
-				this.translate.instant(dialog.message),
-				this.translate.instant(dialog.title),
-				this.translate.instant(dialog.btnText)
-			);
-			return false;
+	maybeNotConnected(dialog?: {message, title, btnText}) {
+
+		if(!dialog) {
+			dialog = {
+				message: this.globalvars.offline.dialog.message,
+				title: this.globalvars.offline.dialog.message,
+				btnText: this.globalvars.offline.dialog.message
+			}
 		}
 
+		return new Promise((resolve, reject) => {
+			if(this.isConnected()) {
+				resolve(true);
+			} else {
+				this.Dialogs.alert(
+					this.translate.instant(dialog.message),
+					this.translate.instant(dialog.title),
+					this.translate.instant(dialog.btnText)
+				);
+				resolve(false);
+			}
+		});
 	}
 	
 	getConnectionType() {

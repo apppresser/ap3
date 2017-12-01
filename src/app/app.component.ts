@@ -295,7 +295,11 @@ export class MyApp {
         data.menus.items[0].is_home = true;
 
         // anything else uses Iframe component
-        this.nav.setRoot( 'Iframe', data.menus.items[0] );
+        this.networkservice.maybeNotConnected().then(online => {
+          if(online) {
+            this.nav.setRoot( 'Iframe', data.menus.items[0] );
+          }
+        });
 
       }
 
@@ -490,7 +494,11 @@ export class MyApp {
     } else if( page.type === 'apppages' ) {
       this.nav.setRoot(this.getPageModuleName(page.page_id), page );
     } else if (page.url) {
-      this.nav.setRoot('Iframe', page);
+      this.networkservice.maybeNotConnected().then(online => {
+        if(online) {
+          this.nav.setRoot('Iframe', page);
+        }
+      });
     } else {
       this.nav.setRoot(page.component, page.navparams);
     }
@@ -524,14 +532,11 @@ export class MyApp {
     } else if( page.type === 'apppages' ) {
       this.nav.push(this.getPageModuleName(page.page_id), page, opt );
     } else if (page.url) {
-      if(this.networkservice.maybeNotConnected({
-        // lang translated
-        message: 'You are trying to reach a page online, but you are not connected to the internet.',
-        title: 'Offline',
-        btnText: 'Done'
-      })) {
-        this.nav.push('Iframe', page, opt);
-      }
+      this.networkservice.maybeNotConnected().then(online => {
+        if(online) {
+          this.nav.push('Iframe', page, opt);
+        }
+      });
     } else {
       this.nav.push(page.component, page.navparams, opt);
     }
