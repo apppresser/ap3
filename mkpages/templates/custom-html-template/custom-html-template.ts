@@ -6,6 +6,10 @@ import {Storage} from '@ionic/storage';
 import {IonicModule, ToastController} from 'ionic-angular';
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
 
+import {GlobalVars} from '../../providers/globalvars/globalvars';
+import {IAP} from '../../providers/inapppurchase/inapppurchase';
+import { ApppNetworkService } from "../../providers/shared/network.service";
+
 /*
  * Template for creating custom HTML pages
  */
@@ -31,6 +35,7 @@ export class CustomHtmlTemplate implements OnInit {
 	show_header_logo: boolean = false;
 	customClasses: string;
 	pages: any;
+	products: any;
 	menus: {
 		side: any,
 		tabs: any
@@ -48,7 +53,10 @@ export class CustomHtmlTemplate implements OnInit {
 		public storage: Storage,
 		public events: Events,
 		public toastCtrl: ToastController,
-		private headerLogoService: HeaderLogo
+		private globalvars: GlobalVars,
+		private headerLogoService: HeaderLogo,
+		private networkservice: ApppNetworkService,
+		public iap: IAP
         ) {
 		this.pagetitle = navParams.data.title;
 
@@ -100,7 +108,6 @@ export class CustomHtmlTemplate implements OnInit {
 					} else {
 	        window.open( event.target.href, '_blank' );
 	      }
-
 	      }
 	    });
 	}
@@ -215,6 +222,11 @@ export class CustomHtmlTemplate implements OnInit {
     	return menu_index;
 	}
 	
+	/**
+	 * Search both menus for a page
+	 * 
+	 * @param page_slug
+	 */
 	getPage(page_slug: string) {
 
 		let menu_index: number;
@@ -240,6 +252,11 @@ export class CustomHtmlTemplate implements OnInit {
 		return false;
 	}
 
+	/**
+	 * Adds a view on top of root view (w/ backbutton)
+	 * 
+	 * @param page 
+	 */
 	pushPage(page) {
 
 			if(typeof page === 'string') {
@@ -266,26 +283,35 @@ export class CustomHtmlTemplate implements OnInit {
 		} else if( page.type === 'apppages' ) {
 			this.nav.push(this.getPageModuleName(page.page_id), page, opt );
 		} else if (page.url) {
+			this.networkservice.maybeNotConnected().then(online => {
+				if(online) {
 			this.nav.push('Iframe', page, opt);
+				}
+			});
 		} else {
 			this.nav.push(page.component, page.navparams, opt);
 		}
 	}
 
+	/**
+	 * Set a root view
+	 * 
+	 * @param page 
+	 */
 	openPage(page) {
-
-		console.log('openPage', page);
 
 		if(typeof page === 'string') {
 			page = this.getPage(page);
-			console.log('openPage after getPage', page);
 			if(page === false)
 				return;
 		}
 
-		console.log('openPage before setRoot', page);
-
-		if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
+		if( page.extra_classes.indexOf('desktoptheme') >= 0 ) {
+			let url = new URL(page.url);
+			url.searchParams.append('appp_bypass', 'true');
+			let iab: any = window.open(url.toString(), '_blank');
+			return;
+		} else if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
 	      window.open( page.url, '_system', null );
 	      return;
 	    } else if( page.target === '_blank' ) {
@@ -298,7 +324,11 @@ export class CustomHtmlTemplate implements OnInit {
 		} else if( page.type === 'apppages' ) {
 			this.nav.setRoot(this.getPageModuleName(page.page_id), page );
 		} else if (page.url) {
+			this.networkservice.maybeNotConnected().then(online => {
+				if(online) {
 			this.nav.setRoot('Iframe', page);
+				}
+			});
 		} else {
 			this.nav.setRoot(page.component, page.navparams);
 		}
@@ -371,6 +401,18 @@ export class CustomHtmlTemplate implements OnInit {
 			return 'Page'+page_id;
 		else
 			return 'CustomPage';
+	}
+
+	buyProduct( id ) {
+		this.iap.buy( id );
+	}
+
+	subscribeNoAds( id ) {
+		this.iap.subscribeNoAds( id );
+	}
+
+	restoreNoAds( id ) {
+		this.iap.restoreNoAds( id );
 	}
 
 }
