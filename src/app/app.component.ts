@@ -83,7 +83,6 @@ export class MyApp {
     private Push: Push,
     private http: Http,
     private Dialogs: Dialogs,
-    private networkservice: ApppNetworkService,
     private config: Config
   ) {
 
