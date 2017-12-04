@@ -21,14 +21,6 @@ export class GlobalVars {
   endpoint: string = 'wp-json/ap3/v1/app/[[appp_app_id]]';
   api: string = this.apiurl + this.endpoint;
 
-  offline = {
-    dialog: {
-      message: 'You are trying to reach a page online, but you are not connected to the internet.',
-      title:   'Offline',
-      btnText: 'Done'
-    }
-  }
-
   constructor( public http: Http ) {}
 
   getApi() {

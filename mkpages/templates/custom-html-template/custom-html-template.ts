@@ -8,7 +8,6 @@ import {HeaderLogo} from '../../providers/header-logo/header-logo';
 
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {IAP} from '../../providers/inapppurchase/inapppurchase';
-import { ApppNetworkService } from "../../providers/shared/network.service";
 
 /*
  * Template for creating custom HTML pages
@@ -55,7 +54,6 @@ export class CustomHtmlTemplate implements OnInit {
 		public toastCtrl: ToastController,
 		private globalvars: GlobalVars,
 		private headerLogoService: HeaderLogo,
-		private networkservice: ApppNetworkService,
 		public iap: IAP
         ) {
 		this.pagetitle = navParams.data.title;
@@ -283,11 +281,7 @@ export class CustomHtmlTemplate implements OnInit {
 		} else if( page.type === 'apppages' ) {
 			this.nav.push(this.getPageModuleName(page.page_id), page, opt );
 		} else if (page.url) {
-			this.networkservice.maybeNotConnected().then(online => {
-				if(online) {
 			this.nav.push('Iframe', page, opt);
-				}
-			});
 		} else {
 			this.nav.push(page.component, page.navparams, opt);
 		}
@@ -324,11 +318,7 @@ export class CustomHtmlTemplate implements OnInit {
 		} else if( page.type === 'apppages' ) {
 			this.nav.setRoot(this.getPageModuleName(page.page_id), page );
 		} else if (page.url) {
-			this.networkservice.maybeNotConnected().then(online => {
-				if(online) {
 			this.nav.setRoot('Iframe', page);
-				}
-			});
 		} else {
 			this.nav.setRoot(page.component, page.navparams);
 		}

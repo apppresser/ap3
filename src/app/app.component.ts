@@ -16,7 +16,6 @@ import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
 import {AppGeo} from '../providers/appgeo/appgeo';
 import {Logins} from "../providers/logins/logins";
-import { ApppNetworkService } from "../providers/shared/network.service";
 
 /* Native */
 import { StatusBar } from '@ionic-native/status-bar';
@@ -295,11 +294,7 @@ export class MyApp {
         data.menus.items[0].is_home = true;
 
         // anything else uses Iframe component
-        this.networkservice.maybeNotConnected().then(online => {
-          if(online) {
-            this.nav.setRoot( 'Iframe', data.menus.items[0] );
-          }
-        });
+        this.nav.setRoot( 'Iframe', data.menus.items[0] );
 
       }
 
@@ -494,11 +489,7 @@ export class MyApp {
     } else if( page.type === 'apppages' ) {
       this.nav.setRoot(this.getPageModuleName(page.page_id), page );
     } else if (page.url) {
-      this.networkservice.maybeNotConnected().then(online => {
-        if(online) {
-          this.nav.setRoot('Iframe', page);
-        }
-      });
+      this.nav.setRoot('Iframe', page);
     } else {
       this.nav.setRoot(page.component, page.navparams);
     }
@@ -532,11 +523,7 @@ export class MyApp {
     } else if( page.type === 'apppages' ) {
       this.nav.push(this.getPageModuleName(page.page_id), page, opt );
     } else if (page.url) {
-      this.networkservice.maybeNotConnected().then(online => {
-        if(online) {
-          this.nav.push('Iframe', page, opt);
-        }
-      });
+      this.nav.push('Iframe', page, opt);
     } else {
       this.nav.push(page.component, page.navparams, opt);
     }
