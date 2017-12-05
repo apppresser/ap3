@@ -79,13 +79,13 @@ export class IAP {
 
       })
       .catch( err => {
-        alert(err)
+        alert(err.errorMessage)
         console.log(err)
       })
 
     })
     .catch( err => {
-      alert(err)
+      alert(err.errorMessage)
       console.log(err)
     })
 
