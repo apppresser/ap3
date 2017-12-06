@@ -133,7 +133,7 @@ export class MyApp {
 
       // check for API updates on resume and on initial load
       this.platform.resume.subscribe(() => {
-          console.log('App resumed');
+
           this.appdata.checkForUpdates( this.apiurl );
       });
 
@@ -874,13 +874,24 @@ export class MyApp {
 
       this.storage.set('deviceToken', data.registrationId)
 
-      // kick off aws stuff
-      this.pushService.subscribeDevice(data.registrationId).then( (result:string) => {
-        var newresult = JSON.parse( result );
+      this.storage.get('endpointArn').then( res => {
 
-        this.storage.set('endpointArn', newresult.endpointArn )
+        let update: string = window.localStorage.getItem( 'myappp_update' );
 
-      });
+        // If already subscribed, don't hit API again. Updating API version bypasses so everyone resubscribes.
+        if( res && update != 'true' ) {
+          return;
+        }
+
+        // Subscribe through myapppresser.com api
+        this.pushService.subscribeDevice(data.registrationId).then( (result:string) => {
+          var newresult = JSON.parse( result );
+
+          this.storage.set('endpointArn', newresult.endpointArn )
+
+        });
+
+      } );
 
     });
 

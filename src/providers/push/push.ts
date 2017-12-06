@@ -40,8 +40,6 @@ export class PushService {
 
     let params = '?token=' + token + '&platform=' + this.platform + '&id=' + this.appid;
 
-    console.debug('subscribeDevice', this.api + params);
-
     return new Promise(resolve => {
 
       this.http.post( this.api + params, null, null )
