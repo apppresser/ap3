@@ -54,6 +54,7 @@ export class MyApp {
   menu_side: string = "left";
   rtl: boolean = false;
   ajax_url: string;
+  regId: any;
 
   constructor(
     private platform: Platform,
@@ -874,6 +875,8 @@ export class MyApp {
 
       this.storage.set('deviceToken', data.registrationId)
 
+      this.regId = data.registrationId;
+
       this.storage.get('endpointArn').then( res => {
 
         let update: string = window.localStorage.getItem( 'myappp_update' );
@@ -884,7 +887,8 @@ export class MyApp {
         }
 
         // Subscribe through myapppresser.com api
-        this.pushService.subscribeDevice(data.registrationId).then( (result:string) => {
+        this.pushService.subscribeDevice( this.regId ).then( (result:string) => {
+
           var newresult = JSON.parse( result );
 
           this.storage.set('endpointArn', newresult.endpointArn )
