@@ -106,13 +106,13 @@ export class IAP {
 
       })
       .catch( err => {
-        alert(err)
+        alert( JSON.stringify(err) )
         console.log(err)
       })
 
     })
     .catch( err => {
-      alert(err)
+      alert( JSON.stringify(err) )
       console.log(err)
     })
 
@@ -168,6 +168,7 @@ export class IAP {
         resolve(result)
       })
       .catch( err => {
+        alert( JSON.stringify(err) )
         console.log(err)
       })
     });
