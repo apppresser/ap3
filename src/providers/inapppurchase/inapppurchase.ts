@@ -106,19 +106,19 @@ export class IAP {
 
       })
       .catch( err => {
-        alert( JSON.stringify(err) )
+        alert( JSON.stringify(err.message) )
         console.log(err)
       })
 
     })
     .catch( err => {
-      alert( JSON.stringify(err) )
+      alert( JSON.stringify(err.message) )
       console.log(err)
     })
 
   }
 
-  // buy a product, requires ID that looks like this: com.artofmanliness.artofmanliness.noadssubscription
+  // buy a product, requires ID from iTunes or Gplay
   // buyProduct( id ) {
 
   //   console.log('buying ' + id)
@@ -142,16 +142,17 @@ export class IAP {
 
   restoreNoAds( id ) {
 
+    this.productId = id;
+
     return new Promise(resolve => {
 
       this.iap.restorePurchases().then( result => {
-        // console.log('restored ', result)
 
-        for (var i = 0; i < length; ++i) {
+        for (var i = 0; i < result.length; ++i) {
 
           // TODO: check result[i].state for cancelled or refunded
 
-          if( result[i].productId = id ) {
+          if( result[i].productId == this.productId ) {
 
             this.storage.set('purchased_ad_removal', true )
 
@@ -168,7 +169,7 @@ export class IAP {
         resolve(result)
       })
       .catch( err => {
-        alert( JSON.stringify(err) )
+        alert( JSON.stringify( err.message ) )
         console.log(err)
       })
     });
