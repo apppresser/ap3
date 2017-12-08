@@ -106,13 +106,30 @@ export class IAP {
 
       })
       .catch( err => {
-        alert( JSON.stringify(err.message) )
+        let error = 'Error, please try again.';
+
+        if( err && err.message ) {
+          error = err.message
+        } else if( err && err.errorMessage ) {
+          error = err.errorMessage
+        }
+
+        alert( error )
         console.log(err)
       })
 
     })
     .catch( err => {
-      alert( JSON.stringify(err.message) )
+
+      let error = 'Error, please try again.';
+
+      if( err && err.message ) {
+        error = err.message
+      } else if( err && err.errorMessage ) {
+        error = err.errorMessage
+      }
+
+      alert( error )
       console.log(err)
     })
 
@@ -160,16 +177,29 @@ export class IAP {
 
             alert("Purchase restored, thank you!")
 
+            resolve(result)
+
             return;
 
           }
 
         }
 
+        alert('No purchases found to restore.')
+
         resolve(result)
+        
       })
       .catch( err => {
-        alert( JSON.stringify( err.message ) )
+        let error = 'Error, please try again.';
+
+        if( err && err.message ) {
+          error = err.message
+        } else if( err && err.errorMessage ) {
+          error = err.errorMessage
+        }
+
+        alert( error )
         console.log(err)
       })
     });

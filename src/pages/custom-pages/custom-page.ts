@@ -1,5 +1,5 @@
 import {Component, Renderer, ElementRef, OnInit, Input, isDevMode} from '@angular/core';
-import {Nav, NavParams, ModalController, Platform, ViewController, Events, IonicPage} from 'ionic-angular';
+import {Nav, NavParams, ModalController, Platform, ViewController, Events, IonicPage, LoadingController} from 'ionic-angular';
 import {TranslateService, TranslateModule} from '@ngx-translate/core';
 import {Storage} from '@ionic/storage';
 
@@ -65,6 +65,7 @@ export class CustomPage implements OnInit {
 	customClasses: string;
 	pages: any;
 	products: any;
+	spinner: any;
 	menus: {
 		side: any,
 		tabs: any
@@ -83,7 +84,8 @@ export class CustomPage implements OnInit {
 		public events: Events,
 		public toastCtrl: ToastController,
 		private headerLogoService: HeaderLogo,
-		public iap: IAP
+		public iap: IAP,
+		public loadingCtrl: LoadingController
         ) {
 		this.pagetitle = navParams.data.title;
 
@@ -478,11 +480,33 @@ export class CustomPage implements OnInit {
 	}
 
 	subscribeNoAds( id ) {
+
+		this.showSpinner();
+
 		this.iap.subscribeNoAds( id );
+
+		// TODO: convert this to promise, get rid of timeout
+		setTimeout(() => {
+		    this.hideSpinner();
+		  }, 3000);
 	}
 
 	restoreNoAds( id ) {
-		this.iap.restoreNoAds( id );
+		this.showSpinner();
+		this.iap.restoreNoAds( id ).then( res => {
+			console.log(res)
+			this.hideSpinner();
+		});
+	}
+
+	showSpinner() {
+		this.spinner = this.loadingCtrl.create();
+
+		this.spinner.present();
+	}
+
+	hideSpinner() {
+		this.spinner.dismiss();
 	}
 
 }
