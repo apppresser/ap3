@@ -237,7 +237,7 @@ class AppBuilder {
 				{key: 'Content goes here', value: content}
 			]);
 		}).catch((error) => {
-			if(error.indexOf('json response') > 0) {
+			if(error !== false || error.indexOf('json response') > 0) {
 				this.continue_processing = false;
 			}
 			console.error(error);

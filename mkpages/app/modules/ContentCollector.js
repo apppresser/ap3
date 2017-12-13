@@ -47,7 +47,17 @@ class ContentCollector {
                             reject('No content found for page id ' + page_id);
                         }
                     });
+                    res.on('error', (err) => {
+                        console.error('oops an err', err.message, err.stack);
+                    });
                     res.on('end', () => {
+                        if (body.toString().indexOf('{') != 0 && body.toString().indexOf('Rate Limited.') > 0) {
+                            reject('Too many requests have been detected from this IP in the last minute.');
+                        }
+                        else if (body.toString().indexOf('{') != 0) {
+                            console.log(options, body.toString());
+                            reject(false);
+                        }
                         const json = JSON.parse(body.toString());
                         if (json.content && json.content.rendered) {
                             resolve(json.content.rendered);
