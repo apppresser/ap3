@@ -13,6 +13,7 @@ export class AppData {
   data: any = null;
   local: any = false;
   updateNeeded: boolean = false;
+  notAuthorized: boolean = false;
 
   constructor(public http: Http, private Device: Device) {
   }
@@ -67,6 +68,10 @@ export class AppData {
         })
         .catch( (err) => {
           // API is down, or bad url, so we need to get app-data.json file. Send back to app.component.ts line 78
+          if(err.status == 401) { // 401 not authorized
+            // membership expired
+            this.notAuthorized = true;
+          }
           reject(err);
         }
         );
@@ -103,6 +108,10 @@ export class AppData {
    * When you click "go live" in the app builder, it increments the update version, and this function tells the app to get new data on the next load.
    */
   checkForUpdates( apiurl ) {
+
+    // if api failed once no need to try it again
+    if(this.notAuthorized)
+      return; // membership expired
 
     let item = window.localStorage.getItem( 'myappp' );
     this.local = JSON.parse( item );
