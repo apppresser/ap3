@@ -1,5 +1,6 @@
 import {NavParams, Nav, LoadingController, ModalController, Platform, ViewController, IonicPage} from 'ionic-angular';
 import {Component, HostListener, ElementRef, OnInit, Input, NgZone} from '@angular/core';
+import { HttpParams } from '@angular/common/http';
 import {DomSanitizer} from '@angular/platform-browser';
 import { Geolocation } from '@ionic-native/geolocation';
 import { Device } from '@ionic-native/device';
@@ -79,19 +80,25 @@ export class Iframe {
      */
     setupURL() {
 
-        let url = new URL(this.navParams.data.url);
+        let url = this.navParams.data.url;
 
-        url.searchParams.append('appp', '3');
+        let params = new HttpParams({
+            fromString: 'appp=3'
+        });
+        
+        params = params.append('lang', 'en');
 
         this.storage.get('app_language').then( lang => {
             if( lang )
-                url.searchParams.append('lang', lang);
+                params = params.append('lang', lang);
         });
 
+        url += '?' + params.toString();
+        
         // Have to wait until we get language ^. Can't put this in promise or it breaks, not sure why
         setTimeout( () => {
-            this.url = this.sanitizer.bypassSecurityTrustResourceUrl( url.toString() );
-        }, 100)
+            this.url = this.sanitizer.bypassSecurityTrustResourceUrl( url );
+        }, 100);
 
     }
 
