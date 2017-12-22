@@ -76,24 +76,39 @@ export class Iframe {
     }
 
     /**
-     * Use URL class to be sure hashtags stay at the end
+     * Adds the appp=3 to the URL, but makes sure hashtags stay at the end 
+     * and we don't end up with more than one ?.
      */
     setupURL() {
 
         let url = this.navParams.data.url;
 
+        // console.log('starting url', url);
+
+        // gather any #
+        let url_parts = url.split('#');
+        let hash = (url_parts[1]) ? '#'+url_parts[1]:'';
+
+        // gather any ?
+        url_parts = url_parts[0].split('?');
+        let base_url = url_parts[0];
+        let query = url_parts[1];
+
+        // add the appp=3
         let params = new HttpParams({
-            fromString: 'appp=3'
+            fromString: (query) ? query+'&appp=3':'appp=3'
         });
         
-        params = params.append('lang', 'en');
-
+        // add the lang=X
         this.storage.get('app_language').then( lang => {
             if( lang )
                 params = params.append('lang', lang);
         });
 
-        url += '?' + params.toString();
+        // put it all together
+        url = base_url + '?' + params.toString() + hash;
+
+        // console.log('ending url', url)
         
         // Have to wait until we get language ^. Can't put this in promise or it breaks, not sure why
         setTimeout( () => {
