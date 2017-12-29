@@ -3,6 +3,7 @@ import {GlobalVars} from '../globalvars/globalvars';
 import {Http} from '@angular/http';
 import { Facebook } from '@ionic-native/facebook';
 import { Platform } from 'ionic-angular';
+import { LoginService } from '../logins/login.service';
 
 @Injectable()
 export class FBConnectAppSettings {
@@ -20,6 +21,7 @@ export class FBConnectAppSettings {
 		private globalvars: GlobalVars,
 		private http: Http,
 		private facebook: Facebook,
+		private loginservice: LoginService,
 		private platform: Platform
 	) {
 		this.debug = false;

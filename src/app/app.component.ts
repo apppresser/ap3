@@ -28,6 +28,8 @@ import { Dialogs } from '@ionic-native/dialogs';
 import { Network } from '@ionic-native/network';
 import { Keyboard } from '@ionic-native/keyboard';
 import {Storage} from '@ionic/storage';
+import { User } from '../models/user.model';
+import { LoginService } from '../providers/logins/login.service';
 
 @Component({
   templateUrl: 'app.html'
@@ -38,12 +40,14 @@ export class MyApp {
 
   pages: any;
   styles: any;
+  bodyTag: any;
   apiurl: string;
   login: boolean;
   navparams: any = [];
   tabs: any;
   originalTabs: any;
   login_data: any;
+  user: User;
   showmenu: boolean = false;
   apptitle: string;
   introshown: any;
@@ -65,6 +69,7 @@ export class MyApp {
     private appgeo: AppGeo,
     private fbconnectvars: FBConnectAppSettings,
     private fbconnectIframe: FbConnectIframe,
+    private loginservice: LoginService,
     private sanitizer: DomSanitizer,
     private pushService: PushService,
     private appwoo: AppWoo,
@@ -112,6 +117,17 @@ export class MyApp {
   }
 
   initializeApp() {
+
+    // Login status
+    this.bodyTag = document.getElementsByTagName('body')[0];
+    this.loginservice.loginStatus().subscribe(user => {
+      this.user = user
+      if(user) {
+        this.bodyTag.classList.add('loggedin')
+      } else {
+        this.bodyTag.classList.remove('loggedin')
+      }
+    });
 
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
@@ -1003,6 +1019,8 @@ export class MyApp {
 
     this.login_data = data;
 
+    this.loginservice.setLoginStatus(new User(data));
+
     this.maybeSendPushId();
     // tell the modal we are logged in
     this.events.publish('modal:logindata', data )
@@ -1085,6 +1103,7 @@ export class MyApp {
     // })
 
     this.login_data = null;
+    this.loginservice.removeLoginStatus();
 
     if( this.tabs && this.pages ) {
       this.resetTabs(false)
@@ -1103,7 +1122,7 @@ export class MyApp {
     this.storage.get('force_login').then((data)=>{
       if(data) {
         this.openLoginModal();
-      } else if(logout_response.data && logout_response.data.logout_redirect) {
+      } else if(logout_response && logout_response.data && logout_response.data.logout_redirect) {
         this.maybeLogInOutRedirect(logout_response.data);
       }
     });
@@ -1181,6 +1200,8 @@ export class MyApp {
             data.avatar = avatar;
 
           this.login_data = data;
+
+          this.loginservice.setLoginStatus(new User(data))
           
           if( this.pages )
             this.resetSideMenu(true)
@@ -1221,6 +1242,7 @@ export class MyApp {
       // logged out of WP but still logged into app: log out of app
       this.login_data = null
       this.storage.remove('user_login');
+      this.loginservice.removeLoginStatus();
       this.events.publish( 'modal:logindata', null )
       this.events.publish( 'user:logout', null );
 
@@ -1228,14 +1250,15 @@ export class MyApp {
 
       // logged into WP but logged out of app: log into app
       if( data.avatar_url && data.message ) {
-        this.login_data = { loggedin: true, avatar: this.logins.get_avatar(data.avatar_url), message: data.message }
+        this.login_data = { loggedin: true, avatar: this.logins.get_avatar(data.avatar_url), message: data.message, username: '' }
       } else {
-        this.login_data = { loggedin: true }
+        this.login_data = { loggedin: true, username: '' }
       }
       
 
       this.storage.set('user_login', this.login_data ).then( () => {
 
+        this.loginservice.setLoginStatus(new User(this.login_data))
         this.events.publish( 'modal:logindata', this.login_data )
 
       })

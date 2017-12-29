@@ -6,6 +6,8 @@ import {Storage} from '@ionic/storage';
 import {Events} from 'ionic-angular';
 import {FBConnectAppSettings} from './fbconnect-settings';
 import {Facebook} from '@ionic-native/facebook';
+import { LoginService } from '../logins/login.service';
+import { User } from "../../models/user.model";
 
 /*
   Facebook Connect
@@ -25,6 +27,7 @@ export class FbConnectIframe {
     public storage: Storage,
     public events: Events,
     private fbconnectvars: FBConnectAppSettings,
+    private loginservice: LoginService,
     private Facebook: Facebook
     ) {
       
@@ -151,6 +154,8 @@ export class FbConnectIframe {
           if(redirect_url)
             data.login_redirect = redirect_url;
         }
+
+        this.loginservice.setLoginStatus(new User(data));
 
         this.storage.set('user_login', data );
         

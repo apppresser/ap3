@@ -8,6 +8,8 @@ import {HeaderLogo} from '../../providers/header-logo/header-logo';
 
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {IAP} from '../../providers/inapppurchase/inapppurchase';
+import {User} from '../../models/user.model';
+import { LoginService } from "../../providers/logins/login.service";
 
 /*
  * Template for creating custom HTML pages
@@ -21,6 +23,7 @@ import {IAP} from '../../providers/inapppurchase/inapppurchase';
 export class CustomHtmlTemplate implements OnInit {
 
 	pagetitle: string;
+	user: User;
 	listenFunc: Function;
 	rtlBack: boolean = false;
 	language: any;
@@ -35,6 +38,7 @@ export class CustomHtmlTemplate implements OnInit {
 	customClasses: string;
 	pages: any;
 	products: any;
+	subscriptions: any = [];
 	menus: {
 		side: any,
 		tabs: any
@@ -54,6 +58,7 @@ export class CustomHtmlTemplate implements OnInit {
 		public toastCtrl: ToastController,
 		private globalvars: GlobalVars,
 		private headerLogoService: HeaderLogo,
+		private loginservice: LoginService,
 		public iap: IAP
         ) {
 		this.pagetitle = navParams.data.title;
@@ -76,6 +81,8 @@ export class CustomHtmlTemplate implements OnInit {
 	}
 
 	ngOnInit() {
+
+		this.subscriptions.push(this.loginservice.loginStatus().subscribe(user => this.user = user));
 
 		let slug = this.navParams.data.slug;
 		this.slug = slug;
@@ -403,6 +410,12 @@ export class CustomHtmlTemplate implements OnInit {
 
 	restoreNoAds( id ) {
 		this.iap.restoreNoAds( id );
+	}
+
+	ngOnDestroy() {
+		this.subscriptions.forEach(subscription => {
+			subscription.unsubscribe();
+		});
 	}
 
 }

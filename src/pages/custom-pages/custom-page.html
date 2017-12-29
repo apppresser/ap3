@@ -1,30 +1,32 @@
 <ion-header>
 
-  <ion-navbar>
+	<ion-navbar>
 
-	<ion-buttons start>
-		<button *ngIf="rtlBack" (click)="backRtlTransition()" ion-button class="custom-back-button">
-			<ion-icon name="arrow-back"></ion-icon>
-			{{'Back' | translate }}
-		</button>
-		<button ion-button menuToggle>
-			<ion-icon name="menu"></ion-icon>
-		</button>
+		<ion-buttons start>
+			<button *ngIf="rtlBack" (click)="backRtlTransition()" ion-button class="custom-back-button">
+				<ion-icon name="arrow-back"></ion-icon>
+				{{'Back' | translate }}
+			</button>
+			<button ion-button menuToggle>
+				<ion-icon name="menu"></ion-icon>
+			</button>
 
-	</ion-buttons>
+		</ion-buttons>
 
-	<img class="header-logo" *ngIf="show_header_logo" [src]="header_logo_url" />
+		<img class="header-logo" *ngIf="show_header_logo" [src]="header_logo_url" />
 
-    <ion-title *ngIf="!show_header_logo">{{pagetitle | translate}}</ion-title>
+		<ion-title *ngIf="!show_header_logo">{{pagetitle | translate}}</ion-title>
 
-  </ion-navbar>
+	</ion-navbar>
 </ion-header>
 
 <ion-content [ngClass]="customClasses">
 
-<DynamicComponent 
+	<DynamicComponent *ngIf="templateUrl"
     [componentTemplateUrl]="templateUrl" 
     [componentModules]="extraModules"
-    [componentInputData]="inputData"></DynamicComponent>
+		[componentInputData]="inputData"></DynamicComponent>
+
+	<div *ngIf="!templateUrl">Missing templateUrl</div>
 
 </ion-content>
