@@ -15,7 +15,7 @@ import {HeaderLogo} from "../../providers/header-logo/header-logo";
 @Component({
     templateUrl: 'iframe.html'
 })
-export class Iframe {
+export class Iframe implements OnInit {
 
     title: string;
     url: any;
@@ -51,28 +51,29 @@ export class Iframe {
         private Geolocation: Geolocation,
         private SocialSharing: SocialSharing,
         public zone: NgZone
-        ) {
-        
-        if(navParams.data.is_home == true) {
-          this.doLogo()
-        }
+        ) {}
 
-        this.setupURL();
+    ngOnInit() {
 
-        let dataurl = navParams.data.url;
-
-        // Show error message if in preview and not using https
-        this.previewAlert( navParams.data.url );
-
-        let myappp: any = localStorage.getItem('myappp');
-        if(myappp) {
-            if(typeof myappp == 'string')
-                myappp = JSON.parse(myappp);
-        
-            if(myappp && myappp.meta && myappp.meta.share && myappp.meta.share.icon && myappp.meta.share.icon.hide)
-                this.hide_share_icon = myappp.meta.share.icon.hide;
-        }
-
+        if(this.navParams.data.is_home == true) {
+            this.doLogo()
+          }
+  
+          this.setupURL();
+  
+          let dataurl = this.navParams.data.url;
+  
+          // Show error message if in preview and not using https
+          this.previewAlert( this.navParams.data.url );
+  
+          let myappp: any = localStorage.getItem('myappp');
+          if(myappp) {
+              if(typeof myappp == 'string')
+                  myappp = JSON.parse(myappp);
+          
+              if(myappp && myappp.meta && myappp.meta.share && myappp.meta.share.icon && myappp.meta.share.icon.hide)
+                  this.hide_share_icon = myappp.meta.share.icon.hide;
+          }
     }
 
     /**
@@ -360,7 +361,7 @@ export class Iframe {
     // Show alert in preview if not using https
     previewAlert(url) {
 
-        if( this.Device.platform != 'iOS' && this.Device.platform != 'Android' && url.indexOf('http://') >= 0 ) {
+        if( this.Device.platform != 'iOS' && this.Device.platform != 'Android' && url.indexOf('http://') >= 0 && location.port != '8100' ) {
 
           alert('Cannot display http pages in browser preview. Please build app for device or use https.');
 

@@ -86,25 +86,7 @@ export class CustomPage implements OnInit {
 		private headerLogoService: HeaderLogo,
 		public iap: IAP,
 		public loadingCtrl: LoadingController
-        ) {
-		this.pagetitle = navParams.data.title;
-
-		if(navParams.data.is_home == true) {
-			this.doLogo()
-		}
-
-		// kill vids on android
-		if( platform.is('android') ) {
-			this.killVideos()
-		}
-
-		this.pages = this.getPages(); // not just pages: this is the whole myappp data
-		this.menus = {
-			side: this.getSideMenu(),
-			tabs: this.getTabs()
-		};
-		this.segments = this.getSegments();
-	}
+        ) {}
 
 	/** Development mode only -- START */
 	inputData: IComponentInputData = {
@@ -153,6 +135,29 @@ export class CustomPage implements OnInit {
 	/** Development mode only -- END */
 
 	ngOnInit() {
+
+		this.pagetitle = this.navParams.data.title;
+
+		if(this.navParams.data.is_home == true) {
+			this.doLogo()
+		}
+
+		// kill vids on android
+		if( this.platform.is('android') ) {
+			this.killVideos()
+		}
+
+		this.pages = this.getPages(); // not just pages: this is the whole myappp data
+		this.menus = {
+			side: this.getSideMenu(),
+			tabs: this.getTabs()
+		};
+		this.segments = this.getSegments();
+
+		if(typeof this.navParams.data.slug === 'undefined') {
+			let tabs = this.getTabs();
+			this.navParams.data = tabs[0];
+		}
 
 		let slug = this.navParams.data.slug;
 		this.slug = slug;

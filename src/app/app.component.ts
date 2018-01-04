@@ -1103,7 +1103,7 @@ export class MyApp {
     this.storage.get('force_login').then((data)=>{
       if(data) {
         this.openLoginModal();
-      } else if(logout_response.data && logout_response.data.logout_redirect) {
+      } else if(logout_response && logout_response.data && logout_response.data.logout_redirect) {
         this.maybeLogInOutRedirect(logout_response.data);
       }
     });
