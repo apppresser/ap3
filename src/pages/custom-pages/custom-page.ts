@@ -91,25 +91,7 @@ export class CustomPage implements OnInit, OnDestroy {
 		public loginservice: LoginService,
 		public iap: IAP,
 		public loadingCtrl: LoadingController
-        ) {
-		this.pagetitle = navParams.data.title;
-
-		if(navParams.data.is_home == true) {
-			this.doLogo()
-		}
-
-		// kill vids on android
-		if( platform.is('android') ) {
-			this.killVideos()
-		}
-
-		this.pages = this.getPages(); // not just pages: this is the whole myappp data
-		this.menus = {
-			side: this.getSideMenu(),
-			tabs: this.getTabs()
-		};
-		this.segments = this.getSegments();
-	}
+        ) {}
 
 	/** Development mode only -- START */
 	inputData: IComponentInputData = {
@@ -167,19 +149,33 @@ export class CustomPage implements OnInit, OnDestroy {
 			/** Development mode only -- END */
 		}));
 
+		this.pagetitle = this.navParams.data.title;
+
+		if(this.navParams.data.is_home == true) {
+			this.doLogo()
+		}
+
+		// kill vids on android
+		if( this.platform.is('android') ) {
+			this.killVideos()
+		}
+
+		this.pages = this.getPages(); // not just pages: this is the whole myappp data
+		this.menus = {
+			side: this.getSideMenu(),
+			tabs: this.getTabs()
+		};
+		this.segments = this.getSegments();
+
 		let slug = this.navParams.data.slug;
 		this.slug = slug;
 
 		/** Development mode only -- START */
 		// this.templateUrl = 'custom.html'
-		if(this.slug) {
-			this.templateUrl = 'build/' + slug + '.html?' + this.random(1, 999);
-		}
+		this.templateUrl = 'build/' + slug + '.html?' + this.random(1, 999);
 		/** Development mode only -- END */
 
-		if(this.slug) {
-			this.customClasses = 'custom-page page-' + this.slug
-		}
+		this.customClasses = 'custom-page page-' + this.slug
 
 		this.listener();
 

@@ -1,19 +1,23 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {NavParams, IonicPage} from 'ionic-angular';
 
 @IonicPage()
 @Component({
   templateUrl: 'tabs.html'
 })
-export class TabsPage {
+export class TabsPage implements OnInit {
   tabs: Array<any> = [];
   mySelectedIndex: number;
 
-  constructor(navParams: NavParams) {
-    this.mySelectedIndex = navParams.data.tabIndex || 0;
+  constructor(
+    private navParams: NavParams
+  ) {}
+
+  ngOnInit() {
+    this.mySelectedIndex = this.navParams.data.tabIndex || 0;
 
     // root=null if opening in the IAB
-    for(let tab of navParams.data) {
+    for(let tab of this.navParams.data) {
       let target = this.maybeOpenIAB(tab);
       if(target) {
         tab.root = null;
