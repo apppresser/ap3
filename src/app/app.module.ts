@@ -38,6 +38,7 @@ import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
 import {WPlogin} from '../providers/wplogin/wplogin';
+import { LoginService } from "../providers/logins/login.service";
 import {HeaderLogo} from '../providers/header-logo/header-logo';
 import {VideoUtils} from "../providers/video/video-utils";
 import {AppGeo} from "../providers/appgeo/appgeo";
@@ -92,6 +93,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     AppWoo,
     AppData,
     AppGeo,
+    LoginService,
     Logins,
     WPlogin,
     HeaderLogo,

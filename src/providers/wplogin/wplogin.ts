@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import 'rxjs/add/operator/map';
+import { LoginService } from '../logins/login.service';
+import { User } from "../../models/user.model";
 
 /* 
  * Login to WordPress from the app
@@ -10,7 +12,10 @@ export class WPlogin {
   data: any = null;
   url: any;
 
-  constructor(private http: Http) {
+  constructor(
+    private loginservice: LoginService,
+    private http: Http
+  ) {
 
     let item = window.localStorage.getItem( 'myappp' );
     this.url = JSON.parse( item ).wordpress_url;
@@ -42,9 +47,19 @@ export class WPlogin {
       var request = new XMLHttpRequest();
       request.open("POST", url);
       request.send(formData);
-      request.onload = function (e) {
+      request.onload = (e) => {
         if (request.readyState === 4) {
           if (request.status === 200) {
+
+            try {
+              let login_data = (<any>JSON.parse(request.responseText)).data;
+              if(typeof login_data.username !== 'undefined') {
+                this.loginservice.setLoginStatus(new User(login_data));
+              }
+            } catch (error) {
+              console.log(error)
+            }
+
             resolve(JSON.parse(request.responseText));
           } else {
             reject(JSON.parse(request.statusText));

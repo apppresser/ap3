@@ -1,4 +1,4 @@
-import {Component, Renderer, ElementRef, OnInit, Input, isDevMode} from '@angular/core';
+import {Component, Renderer, ElementRef, OnInit, AfterViewInit, Input, isDevMode, OnDestroy} from '@angular/core';
 import {Nav, NavParams, ModalController, Platform, ViewController, Events, IonicPage, LoadingController} from 'ionic-angular';
 import {TranslateService, TranslateModule} from '@ngx-translate/core';
 import {Storage} from '@ionic/storage';
@@ -22,6 +22,8 @@ import {IAP} from '../../providers/inapppurchase/inapppurchase';
 /** Development mode only -- START */
 import {IComponentInputData} from 'angular2-dynamic-component/index';
 import { setTimeout } from 'timers';
+import { User } from '../../models/user.model';
+import { LoginService } from '../../providers/logins/login.service';
 
 /*
  * Uses dynamic component creation, see https://github.com/apoterenko/angular2-dynamic-component
@@ -47,9 +49,11 @@ class DynamicContext {
 @Component({
   templateUrl: "custom-page.html"
 })
-export class CustomPage implements OnInit {
+export class CustomPage implements OnInit, OnDestroy {
 
 	pagetitle: string;
+	user: User;
+	subscriptions = [];
 	listenFunc: Function;
 	rtlBack: boolean = false;
 	language: any;
@@ -84,6 +88,7 @@ export class CustomPage implements OnInit {
 		public events: Events,
 		public toastCtrl: ToastController,
 		private headerLogoService: HeaderLogo,
+		public loginservice: LoginService,
 		public iap: IAP,
 		public loadingCtrl: LoadingController
         ) {}
@@ -91,6 +96,7 @@ export class CustomPage implements OnInit {
 	/** Development mode only -- START */
 	inputData: IComponentInputData = {
 		// anything that the template needs access to goes here
+		user: this.loginservice.user,
 		pages: this.getPages(),
 		segments: this.getSegments(),
 		platform: this.platform,
@@ -136,6 +142,13 @@ export class CustomPage implements OnInit {
 
 	ngOnInit() {
 
+		this.subscriptions.push(this.loginservice.loginStatus().subscribe(user => {
+			this.user = user
+			/** Development mode only -- START */
+			this.inputData.user = user;
+			/** Development mode only -- END */
+		}));
+
 		this.pagetitle = this.navParams.data.title;
 
 		if(this.navParams.data.is_home == true) {
@@ -153,11 +166,6 @@ export class CustomPage implements OnInit {
 			tabs: this.getTabs()
 		};
 		this.segments = this.getSegments();
-
-		if(typeof this.navParams.data.slug === 'undefined') {
-			let tabs = this.getTabs();
-			this.navParams.data = tabs[0];
-		}
 
 		let slug = this.navParams.data.slug;
 		this.slug = slug;
@@ -512,6 +520,12 @@ export class CustomPage implements OnInit {
 
 	hideSpinner() {
 		this.spinner.dismiss();
+	}
+
+	ngOnDestroy() {
+		this.subscriptions.forEach(subscription => {
+			subscription.unsubscribe();
+		});
 	}
 
 }

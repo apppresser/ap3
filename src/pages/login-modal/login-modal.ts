@@ -8,6 +8,7 @@ import {FBConnectAppSettings} from '../../providers/facebook/fbconnect-settings'
 import {Storage} from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {TranslateService} from '@ngx-translate/core';
+import { LoginService } from '../../providers/logins/login.service';
 
 @IonicPage()
 @Component({
@@ -36,6 +37,7 @@ export class LoginModal {
 		private fbconnectApp: FbConnectApp,
 		private fbconnectvars: FBConnectAppSettings,
 		private toastCtrl: ToastController,
+		private loginservice: LoginService,
 		private Device: Device
 		) {
 
@@ -188,11 +190,10 @@ export class LoginModal {
 
 	doLogout() {
 
-		// @TODO - Do we need to logout of Facebook too?
-
 		this.showSpinner();
 
 		this.fbconnectvars.loggout();
+		this.loginservice.removeLoginStatus();
 
 		this.wplogin.logout().then( response => {
 

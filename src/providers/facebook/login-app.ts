@@ -8,6 +8,8 @@ import { FBConnectAppSettings } from './fbconnect-settings';
 import { Facebook } from '@ionic-native/facebook';
 import {Device} from '@ionic-native/device';
 import {TranslateService} from '@ngx-translate/core';
+import { LoginService } from '../logins/login.service';
+import { User } from "../../models/user.model";
 
 /*
   Facebook Connect
@@ -30,6 +32,7 @@ export class FbConnectApp {
     private Facebook: Facebook,
     private Device: Device,
     private toastCtrl: ToastController,
+    private loginservice: LoginService,
     public translate: TranslateService
   ) {}
 
@@ -115,6 +118,8 @@ export class FbConnectApp {
           });
           return false;
         }
+
+        this.loginservice.setLoginStatus(new User(data));
 
         console.log('After Facebook and WPLogin, wplogin response', data);
 
