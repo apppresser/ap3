@@ -16,12 +16,26 @@ export class Logins {
 	) {}
 
 	set_force_login(status:boolean) {
-		if(status)
-			this.storage.set('force_login', true).then(() => {
-				this.events.publish('login:force_login');
+
+		if(status) {
+			this.storage.get('user_login').then(data => {
+
+				// only show the login modal when logged out
+
+				if(data) {
+					console.log('do not show logout modal');
+				} else {
+					this.events.publish('login:force_login');
+				}
 			});
-		else
+	
+	
+			this.storage.set('force_login', true).then(() => {
+				// nothing
+			});
+		} else {
 			this.storage.remove('force_login');
+		}
 	}
 
 	/**
