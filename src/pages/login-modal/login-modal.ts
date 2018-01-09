@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Events, ViewController, LoadingController, IonicPage } from 'ionic-angular';
+import { Events, ViewController, LoadingController, IonicPage, ToastController } from 'ionic-angular';
 import {WPlogin} from '../../providers/wplogin/wplogin';
 import {Logins} from "../../providers/logins/logins";
 import {FbConnectApp} from '../../providers/facebook/login-app';
@@ -35,6 +35,7 @@ export class LoginModal {
 		public translate: TranslateService,
 		private fbconnectApp: FbConnectApp,
 		private fbconnectvars: FBConnectAppSettings,
+		private toastCtrl: ToastController,
 		private Device: Device
 		) {
 
@@ -103,7 +104,7 @@ export class LoginModal {
 		if( typeof this.Device.platform != 'string' && location.port != '8100') {
 
 			this.translate.get('Please try from a device.').subscribe( text => {
-				alert(text);
+				this.presentToast(text);
 			})
 
 			return;
@@ -112,7 +113,7 @@ export class LoginModal {
 
 		this.translate.get('Please enter a valid login.').subscribe( text => {
 			if( !this.login )
-				alert(text)
+				this.presentToast(text);
 		})
 
 		this.showSpinner()
@@ -143,7 +144,7 @@ export class LoginModal {
 			console.warn(e)
 			this.hideSpinner()
 			this.translate.get('There was a problem connecting to the server.').subscribe( text => {
-				alert(text);
+				this.presentToast(text);
 			});
 		})
 	}
@@ -160,7 +161,7 @@ export class LoginModal {
 			if( err.data && err.data.message )
 				msg += ' ' + err.data.message
 
-			alert( msg )
+			this.presentToast(msg);
 		});
 
 	}
@@ -170,7 +171,7 @@ export class LoginModal {
 		if( typeof this.Device.platform != 'string' && location.port != '8100') {
 			
 			this.translate.get('Please try from a device.').subscribe( text => {
-				alert(text);
+				this.presentToast(text);
 			})
 
 			return;
@@ -216,13 +217,13 @@ export class LoginModal {
 				if( err.data && err.data.message )
 					msg += ' ' + err.data.message
 
-				alert( msg )
+				this.presentToast(msg);
 			})
 		}).catch( e => {
 			console.warn(e)
 			this.hideSpinner()
 			this.translate.get('There was a problem connecting to the server.').subscribe( text => {
-				alert(text)
+				this.presentToast(text);
 			})
 		})
 
@@ -267,6 +268,18 @@ export class LoginModal {
 
 	hideSpinner() {
 		this.spinner.dismiss();
+	}
+
+	presentToast(msg) {
+
+	    let toast = this.toastCtrl.create({
+	      message: msg,
+	      duration: 5000,
+	      position: 'bottom'
+	    });
+
+	    toast.present();
+
 	}
 
 }

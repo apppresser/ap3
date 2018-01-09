@@ -169,12 +169,17 @@ export class FBConnectAppSettings {
 	loggout() {
 
 		return new Promise((resolve, reject) => {
-			this.facebook.getLoginStatus().then( response => {
-				if(response && response.status == 'connected') {
-					this.facebook.logout()
-				}
-				resolve(response);
-			});
+
+			if('object' === typeof window['facebookConnectPlugin']) {
+				this.facebook.getLoginStatus().then( response => {
+					if(response && response.status == 'connected') {
+						this.facebook.logout()
+					}
+					resolve(response);
+				});
+			} else {
+				console.warn('cordova FacebookConnectPlugin is not installed');
+			}
 
 			this.remove_avatar();
 		});
