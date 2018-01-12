@@ -3,13 +3,29 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const AppConfig_1 = require("../AppConfig");
 const https = require("https");
 const http = require("http");
+const fs = require("fs");
 class ContentCollector {
     constructor(site_name) {
         this.site_name = site_name;
         this.hostname = AppConfig_1.AppConfig.api.server.hostname;
         this.port = AppConfig_1.AppConfig.api.server.port;
     }
-    get_page_content(page_id) {
+    get_page_content_from_zip(page_id, page_slug, zip_folder_path) {
+        let template_file = zip_folder_path.replace('mkpages/', '') + '/build/' + page_slug + '.html';
+        console.log('open template_file', template_file);
+        return new Promise((resolve, reject) => {
+            fs.readFile(template_file, 'utf8', (err, content) => {
+                if (err) {
+                    console.log('read file err', err.message);
+                    reject('');
+                }
+                else {
+                    resolve(content);
+                }
+            });
+        });
+    }
+    get_page_content_from_api(page_id) {
         return new Promise((resolve, reject) => {
             let req;
             const options = {
@@ -58,13 +74,19 @@ class ContentCollector {
                             console.log(options, body.toString());
                             reject(false);
                         }
-                        const json = JSON.parse(body.toString());
-                        if (json.content && json.content.rendered) {
-                            resolve(json.content.rendered);
+                        try {
+                            const json = JSON.parse(body.toString());
+                            if (json.content && json.content.rendered) {
+                                resolve(json.content.rendered);
+                            }
+                            else {
+                                console.log('No content found for page id ' + page_id);
+                                resolve('');
+                            }
                         }
-                        else {
-                            console.log('No content found for page id ' + page_id);
-                            resolve('');
+                        catch (error) {
+                            console.log('ERROR getting page content', options.hostname + options.path);
+                            reject(false);
                         }
                     });
                 });

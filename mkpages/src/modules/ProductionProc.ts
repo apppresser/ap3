@@ -93,7 +93,13 @@ export class ProductionProc {
 				// just a little time to read the output of the npm run build
 				setTimeout(() => {
 					this.move_final_files();
-				}, 2000);
+					setTimeout(()=>{
+						this.zip_production_files();
+						setTimeout(()=>{
+							this.post_build_cleanup();
+						}, 5000);
+					}, 5000);
+				}, 10000);
 			}
 		});
 		
@@ -109,6 +115,40 @@ export class ProductionProc {
 		
 		let commands = [
 			'cd ../ && mv www/build/* mkpages/builds/'+app_dir+'/'+zip_basename+'/build/',
+			// 'cd builds/'+app_dir+'/ && zip -r production-'+zip_basename+'.zip '+zip_basename+' && echo "Your production app is ready!" && echo "Cleaning up . . ."'
+		];
+
+		commands.forEach(cmd => {
+
+			if(!fail) {
+				exec(cmd, (error, stdout, stderr) => {
+					if(error) {
+						console.log(error);
+						fail = true;
+					}
+					
+					if(stdout) {
+						console.log(stdout);
+					}
+
+					if(stderr) {
+						console.log(stderr);
+					}
+				});
+			}
+
+		});
+	}
+
+	zip_production_files() {
+		var fail = false;
+		const exec = require('child_process').exec;
+		const site_name = this.cli_params.site_name;
+		const app_id = this.cli_params.app_id;
+		const zip_basename = this.zip_basename;
+		const app_dir = 'app_'+site_name+'_'+app_id;
+		
+		let commands = [
 			'cd builds/'+app_dir+'/ && zip -r production-'+zip_basename+'.zip '+zip_basename+' && echo "Your production app is ready!" && echo "Cleaning up . . ."'
 		];
 
@@ -132,9 +172,5 @@ export class ProductionProc {
 			}
 
 		});
-
-		setTimeout(() => {
-			this.post_build_cleanup();
-		}, 3000);
 	}
 }

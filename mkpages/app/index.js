@@ -4,6 +4,7 @@ const AppConfig_1 = require("./AppConfig");
 const AppSettings_1 = require("./modules/AppSettings");
 const TemplateMaker_1 = require("./modules/TemplateMaker");
 const ContentCollector_1 = require("./modules/ContentCollector");
+const ProductionProc_1 = require("./modules/ProductionProc");
 const AppZip_1 = require("./modules/AppZip");
 const fs = require("fs"); // nodejs filesystem
 const path = require("path"); // nodejs directory utilities
@@ -13,6 +14,7 @@ class AppBuilder {
         this.build_dir = __dirname + '/builds';
         this.intro_page_id = 0;
         this.continue_processing = true;
+        this.ran_once = false;
     }
     run() {
         // we need our cli params, or bail
@@ -47,7 +49,24 @@ class AppBuilder {
                     this.set_IntroPage();
                 }
                 this.make_backup_copies();
-                this.make_components();
+                this.set_globalvars();
+                const zip = new AppZip_1.AppZip(this.myappp_settings, this.cli_params);
+                zip.get_app_zip().then((zip_filename) => {
+                    setTimeout(() => {
+                        if (zip_filename) {
+                            this.zip_basename = zip_filename.toString().replace('.zip', '');
+                            this.make_components(zip_filename.toString()).then(done => {
+                                setTimeout(() => {
+                                    // @TODO instead of a long timeout, trigger an event when ready to continue, if all the pages were created, currently this happends too quickly if there is an error getting page content
+                                    if (this.continue_processing)
+                                        this.all_pages_downloaded();
+                                    else
+                                        console.log('Unable to continue');
+                                }, 20000);
+                            });
+                        }
+                    }, 10000);
+                });
             }
             else {
                 console.log(json);
@@ -58,9 +77,22 @@ class AppBuilder {
     }
     // @TODO connect this into an event listener
     all_pages_downloaded() {
-        this.set_globalvars();
-        const zip = new AppZip_1.AppZip(this.myappp_settings, this.cli_params);
-        zip.get_app_zip();
+        console.log('this.zip_basename', this.zip_basename);
+        if (this.zip_basename) {
+            // setTimeout(() => {
+            const prod = new ProductionProc_1.ProductionProc(this.cli_params, this.zip_basename);
+            if (this.ran_once === false) {
+                console.log('move_production_files');
+                prod.move_production_files();
+                this.ran_once = true;
+            }
+            // }, 3000);
+            // const zip = new AppZip(this.myappp_settings, this.cli_params);
+            // zip.get_app_zip();
+        }
+        else {
+            this.continue_processing = false;
+        }
     }
     /**
      * We need to restore some files to their original state after compiling
@@ -74,24 +106,35 @@ class AppBuilder {
         exec('cp ../src/app/app.component.ts builds/' + app_dir + '/bak/app.component.ts', () => { });
         exec('cp ../src/providers/globalvars/globalvars.ts builds/' + app_dir + '/bak/globalvars.ts', () => { });
     }
-    make_components() {
+    make_components(zip_filename) {
         let menu_items = this.get_menu_items();
-        menu_items.forEach(element => {
-            if (this.continue_processing) {
-                if (element.page_type == 'html' || element.page_id == this.intro_page_id) {
-                    console.log('processing page: (' + element.page_id + ') ' + element.title);
-                    this.make_page_html_component(element);
+        var itemsProcessed = 0;
+        return new Promise((resolve, reject) => {
+            menu_items.forEach(element => {
+                if (this.continue_processing) {
+                    if (element.page_type == 'html' || element.page_id == this.intro_page_id) {
+                        console.log('processing page: (' + element.page_id + ') ' + element.title);
+                        if (zip_filename) {
+                            this.make_page_html_component(element, zip_filename);
+                        }
+                        else {
+                            this.make_page_html_component(element, '');
+                        }
+                    }
+                    itemsProcessed++;
+                    if (itemsProcessed === menu_items.length) {
+                        resolve();
+                    }
                 }
-            }
+            });
         });
-        console.log('done!');
-        setTimeout(() => {
-            // @TODO instead of a long timeout, trigger an event when ready to continue, if all the pages were created, currently this happends too quickly if there is an error getting page content
-            if (this.continue_processing)
-                this.all_pages_downloaded();
-            else
-                console.log('Unable to continue');
-        }, 10000);
+        // setTimeout(() => {
+        // 	// @TODO instead of a long timeout, trigger an event when ready to continue, if all the pages were created, currently this happends too quickly if there is an error getting page content
+        // 	if(this.continue_processing)
+        // 		this.all_pages_downloaded();
+        // 	else
+        // 		console.log('Unable to continue');
+        // }, 10000);
     }
     get_menu_items() {
         let menu_items = this.myappp_settings.menus.items;
@@ -151,7 +194,7 @@ class AppBuilder {
      *
      * @param page
      */
-    make_page_html_component(page) {
+    make_page_html_component(page, zip_filename) {
         const page_id = page.page_id;
         let file_name;
         const src_folder = 'templates/custom-html-template';
@@ -159,8 +202,13 @@ class AppBuilder {
         const dest_dir = 'builds/app_' + this.cli_params.site_name + '_' + this.cli_params.app_id;
         const root_folder = path.resolve('./') + '/';
         const componentMaker = new TemplateMaker_1.TemplateMaker(src_folder, new_folder, dest_dir, root_folder);
-        // html from api
-        this.get_page_content(componentMaker, file_name, page_id);
+        if (zip_filename) {
+            this.get_page_content(componentMaker, file_name, page_id, page.slug, zip_filename);
+        }
+        else {
+            // html from api
+            this.get_page_content(componentMaker, file_name, page_id, page.slug, '');
+        }
         // module
         file_name = 'page-' + page_id + '.module.ts';
         componentMaker.build_template('custom-html-template.module.ts', file_name, [
@@ -183,19 +231,35 @@ class AppBuilder {
      * @param file_name New file name
      * @param page_id page ID
      */
-    get_page_content(componentMaker, file_name, page_id) {
+    get_page_content(componentMaker, file_name, page_id, page_slug, zip_filename) {
+        const dest_dir = 'mkpages/builds/app_' + this.cli_params.site_name + '_' + this.cli_params.app_id;
         const contentCollector = new ContentCollector_1.ContentCollector(this.cli_params.site_name);
         file_name = 'page-' + page_id + '.html';
-        contentCollector.get_page_content(page_id).then((content) => {
-            componentMaker.build_template('custom-html-template.html', file_name, [
-                { key: 'Content goes here', value: content }
-            ]);
-        }).catch((error) => {
-            if (error !== false || error.indexOf('json response') > 0) {
-                this.continue_processing = false;
-            }
-            console.error(error);
-        });
+        if (zip_filename) {
+            let zip_folder_path = dest_dir + '/' + zip_filename.replace('.zip', '');
+            contentCollector.get_page_content_from_zip(page_id, page_slug, zip_folder_path).then(content => {
+                componentMaker.build_template('custom-html-template.html', file_name, [
+                    { key: 'Content goes here', value: content }
+                ]);
+            }).catch((error) => {
+                if (error !== false || error.indexOf('json response') > 0) {
+                    this.continue_processing = false;
+                }
+                console.error(error);
+            });
+        }
+        else {
+            contentCollector.get_page_content_from_api(page_id).then((content) => {
+                componentMaker.build_template('custom-html-template.html', file_name, [
+                    { key: 'Content goes here', value: content }
+                ]);
+            }).catch((error) => {
+                if (error !== false || error.indexOf('json response') > 0) {
+                    this.continue_processing = false;
+                }
+                console.error(error);
+            });
+        }
     }
     /**
      * Verify that the proper parameters have been supplied to the cli
