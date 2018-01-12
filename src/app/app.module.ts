@@ -43,6 +43,7 @@ import {HeaderLogo} from '../providers/header-logo/header-logo';
 import {VideoUtils} from "../providers/video/video-utils";
 import {AppGeo} from "../providers/appgeo/appgeo";
 import {IAP} from "../providers/inapppurchase/inapppurchase";
+import { FooterNavComponent } from "../providers/footer-nav/footer-nav.component";
 
 /* Other */
 import { IonicStorageModule } from '@ionic/storage';
@@ -60,7 +61,8 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
 
 @NgModule({
   declarations: [ // pages, custom components, pipes, etc
-    MyApp
+    MyApp,
+    FooterNavComponent
   ],
   imports: [
     IonicModule.forRoot(MyApp),

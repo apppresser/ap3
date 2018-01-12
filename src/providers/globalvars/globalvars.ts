@@ -13,12 +13,12 @@ export class GlobalVars {
 
   data: any = null;
   // url should be WP site with AP installed, dynamically changes based on build form
-  // appid: string = '17';
-  // apiurl: string = 'https://myapppresser.com/artofmanliness/'
-  // endpoint: string = 'wp-json/ap3/v1/app/17';
-  appid: string = '[[appp_app_id]]';
-  apiurl: string = '[[myappp_url]]'
-  endpoint: string = 'wp-json/ap3/v1/app/[[appp_app_id]]';
+  appid: string = '156';
+  apiurl: string = 'https://myapppresser.com/winkwebdev/'
+  endpoint: string = 'wp-json/ap3/v1/app/156';
+  // appid: string = '[[appp_app_id]]';
+  // apiurl: string = '[[myappp_url]]'
+  // endpoint: string = 'wp-json/ap3/v1/app/[[appp_app_id]]';
   api: string = this.apiurl + this.endpoint;
 
   constructor( public http: Http ) {}
