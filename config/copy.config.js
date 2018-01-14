@@ -7,5 +7,9 @@ module.exports = {
   copyFontAwesomeCss: {
     src: ['{{ROOT}}/node_modules/font-awesome/css/font-awesome.min.css'],
     dest: '{{WWW}}/assets/css'
+  },
+  copyVideogular2Fonts: {
+    src: ['{{ROOT}}/videogular2/fonts/*'],
+    dest: '{{WWW}}/assets/css'
   }
 };

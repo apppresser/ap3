@@ -43,6 +43,9 @@ import {HeaderLogo} from '../providers/header-logo/header-logo';
 import {VideoUtils} from "../providers/video/video-utils";
 import {AppGeo} from "../providers/appgeo/appgeo";
 import {IAP} from "../providers/inapppurchase/inapppurchase";
+import { VideoItemService } from "../pages/video-playlist/video-item.service";
+
+/* Components */
 import { FooterNavComponent } from "../providers/footer-nav/footer-nav.component";
 
 /* Other */
@@ -96,6 +99,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     AppData,
     AppGeo,
     LoginService,
+    VideoItemService,
     Logins,
     WPlogin,
     HeaderLogo,

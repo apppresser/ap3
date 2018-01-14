@@ -8,6 +8,7 @@ import {HeaderLogo} from '../../providers/header-logo/header-logo';
 
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {IAP} from '../../providers/inapppurchase/inapppurchase';
+import { VideoPlaylistModule } from "../../pages/video-playlist/video-playlist.module";
 
 /**
  * Any changes done to this file needs to be copied over to
@@ -58,7 +59,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	rtlBack: boolean = false;
 	language: any;
 	templateUrl: string;
-	extraModules = [IonicModule, TranslateModule];
+	extraModules = [IonicModule, TranslateModule, VideoPlaylistModule];
 	langs: any;
 	segments: any;
 	show_segments: boolean = false;

@@ -1,0 +1,36 @@
+media-player {
+	vg-overlay-play {
+		height: 100%;
+	    width: 100%;
+	    position: absolute;
+	    background-repeat: no-repeat;
+	    background-size: 100%;
+	}
+	vg-player video {
+		width: 100%;
+	}
+	.content-md, .content-ios {
+		background: #000;
+	}
+
+	.vg-icon-play_arrow, .vg-icon-pause, .vg-icon-fullscreen, .vg-icon-fullscreen_exit {
+		font-family: Ionicons;
+	    font-size: 3rem;
+	}
+
+	.vg-icon-play_arrow:before {
+	    content: "\f488";
+	}
+
+	.vg-icon-pause:before {
+	    content: "\f478";
+	}
+
+	.vg-icon-fullscreen:before {
+	    content: "\f178";
+	}
+
+	.vg-icon-fullscreen_exit:before {
+	    content: "\f162";
+	}
+}
