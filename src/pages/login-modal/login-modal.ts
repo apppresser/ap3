@@ -122,7 +122,7 @@ export class LoginModal {
 
 		this.wplogin.login( this.login ).then( response => {
 
-			if( (<any>response).success === false ) {
+			if( !response || (<any>response).success === false ) {
 				this.loginErr( response )
 				return;
 			}
