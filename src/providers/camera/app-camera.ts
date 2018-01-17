@@ -306,6 +306,11 @@ export class AppCamera {
 
     // console.log('upload win', r);
 
+    // If the nonce fails, this could be a cookie issue. If cookie is not set, nonce will fail.
+    if( r.response === 'Nonce Failed') {
+      alert("Upload unsuccessful, nonce failed.")
+    }
+
     this.findIframe();
 
     this.iframedoc = this.iframe.contentWindow.document;
