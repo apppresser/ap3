@@ -7,6 +7,7 @@ import { Device } from '@ionic-native/device';
 import { Keyboard } from '@ionic-native/keyboard';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import {Storage} from '@ionic/storage';
+import {Events} from 'ionic-angular';
 
 import {MediaPlayer} from '../media-player/media-player';
 import {HeaderLogo} from "../../providers/header-logo/header-logo";
@@ -34,6 +35,7 @@ export class Iframe implements OnInit {
     header_logo_url: string;
     show_header_logo: boolean = false;
     hide_share_icon: boolean = false;
+    is_registration_page: boolean = false;
 
     constructor(
         public navParams: NavParams,
@@ -50,6 +52,7 @@ export class Iframe implements OnInit {
         private Device: Device,
         private Geolocation: Geolocation,
         private SocialSharing: SocialSharing,
+        private events: Events,
         public zone: NgZone
         ) {}
 
@@ -126,15 +129,18 @@ export class Iframe implements OnInit {
 
         this.iframeLoading();
 
-        if( this.platform.isRTL && this.viewCtrl.enableBack() ) {
+        if(this.navParams.get('is_register_page') === true) {
+            console.log('yes, is_register_page');
+            if(this.viewCtrl.enableBack())
+                this.viewCtrl.showBackButton(false)
+            this.rtlBack = false
+            this.is_registration_page = true;
+        } else if( this.platform.isRTL && this.viewCtrl.enableBack() ) {
             this.viewCtrl.showBackButton(false)
             this.rtlBack = true
+            this.is_registration_page = false;
         }
 
-        // show or hide the back button/arrow (hide on registration page)
-        if(this.navParams.get('backbtn') === false) {
-            this.viewCtrl.showBackButton(false);
-        }
     }
 
     ionViewWillLeave() {
@@ -428,6 +434,9 @@ export class Iframe implements OnInit {
           obj = {direction: 'forward'}
 
         this.nav.pop( obj )
+
+        if(this.is_registration_page)
+            this.events.publish('login:force_login');
     }
 
     share() {

@@ -3,10 +3,10 @@
 	<ion-navbar>
 		
 		<ion-buttons start>
-		<button *ngIf="rtlBack" (click)="backRtlTransition()" ion-button class="custom-back-button">
+		<button *ngIf="rtlBack||is_registration_page" (click)="backRtlTransition()" ion-button class="custom-back-button">
 		    <ion-icon name="arrow-back"></ion-icon>
 		    {{ 'Back' | translate }}
-	    </button>
+		</button>
 
 		<button ion-button menuToggle>
 			<ion-icon name="menu"></ion-icon>
