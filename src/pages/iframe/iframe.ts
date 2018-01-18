@@ -130,7 +130,11 @@ export class Iframe implements OnInit {
             this.viewCtrl.showBackButton(false)
             this.rtlBack = true
         }
-   
+
+        // show or hide the back button/arrow (hide on registration page)
+        if(this.navParams.get('backbtn') === false) {
+            this.viewCtrl.showBackButton(false);
+        }
     }
 
     ionViewWillLeave() {
