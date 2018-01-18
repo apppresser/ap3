@@ -241,7 +241,7 @@ export class LoginModal {
 
 		this.dismiss()
 
-		this.events.publish('pushpage', { url: this.register_link, title: title } )
+		this.events.publish('pushpage', { url: this.register_link, title: title, backbtn: false } )
 
 	}
 
