@@ -3,7 +3,8 @@ import { IonicPageModule } from 'ionic-angular';
 import { LanguageSettings } from './language-settings';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import {Http} from '@angular/http';
+import {BrowserModule} from '@angular/platform-browser';
+import {HttpClientModule, HttpClient} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,7 @@ import {Http} from '@angular/http';
       loader: {
         provide: TranslateLoader,
         useFactory: (createTranslateLoader),
-        deps: [Http]
+        deps: [HttpClient]
       }
     })
   ],
@@ -26,6 +27,6 @@ import {Http} from '@angular/http';
 export class LanguageSettingsModule {}
 
 // required for ng translate, tells it to look in assets folder for trans files
-export function createTranslateLoader(http: Http) {
+export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
 }

@@ -1,7 +1,7 @@
 import {BrowserModule} from '@angular/platform-browser';
 import { NgModule, ErrorHandler } from '@angular/core';
-import {Http} from '@angular/http';
-import { HttpModule } from '@angular/http';
+import { Http, HttpModule } from '@angular/http';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { TranslateModule, TranslateLoader, MissingTranslationHandler, MissingTranslationHandlerParams } from '@ngx-translate/core';
@@ -49,7 +49,7 @@ import {IAP} from "../providers/inapppurchase/inapppurchase";
 import { IonicStorageModule } from '@ionic/storage';
 
 // required for ng translate, tells it to look in assets folder for trans files
-export function createTranslateLoader(http: Http) {
+export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
 }
  
@@ -68,11 +68,12 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     IonicStorageModule.forRoot(),
     BrowserModule,
     HttpModule,
+    HttpClientModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: (createTranslateLoader),
-        deps: [Http]
+        useFactory: (HttpLoaderFactory),
+        deps: [HttpClient]
       }
     })
   ],

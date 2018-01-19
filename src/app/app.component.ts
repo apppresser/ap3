@@ -832,8 +832,6 @@ export class MyApp {
 
   maybeDoAds(data) {
 
-    console.log('ads')
-
     // only show ads on a device
     if( !this.Device.platform ) 
       return;
