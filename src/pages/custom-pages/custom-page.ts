@@ -21,7 +21,6 @@ import {IAP} from '../../providers/inapppurchase/inapppurchase';
 
 /** Development mode only -- START */
 import {IComponentInputData} from 'angular2-dynamic-component/index';
-import { setTimeout } from 'timers';
 import { User } from '../../models/user.model';
 import { LoginService } from '../../providers/logins/login.service';
 
