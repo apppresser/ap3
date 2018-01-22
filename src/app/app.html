@@ -1,6 +1,6 @@
 <div [innerHTML]="styles"></div>
 
-<ion-menu side="{{menu_side}}" *ngIf="pages" [content]="content" swipeEnabled="false" (ionOpen)="menuOpened()" (ionClose)="menuClosed()">
+<ion-menu class="{{customClasses}}" side="{{menu_side}}" *ngIf="pages" [content]="content" swipeEnabled="false" (ionOpen)="menuOpened()" (ionClose)="menuClosed()">
 
   <ion-header>
     <ion-toolbar>
@@ -33,4 +33,4 @@
 
 </ion-menu>
 
-<ion-nav id="nav" #content swipeBackEnabled="false"></ion-nav>
+<ion-nav id="nav" #content swipeBackEnabled="false" class="{{customClasses}}"></ion-nav>

@@ -59,6 +59,7 @@ export class MyApp {
   rtl: boolean = false;
   ajax_url: string;
   regId: any;
+  customClasses: string;
 
   constructor(
     private platform: Platform,
@@ -157,6 +158,21 @@ export class MyApp {
       setTimeout( () => {
         this.appdata.checkForUpdates( this.apiurl );
       }, 5000 );
+
+      // hack for iphonex status bar
+      if( this.Device && this.Device.model ) {
+        let model = this.Device.model.toLowerCase();
+
+        if( model.indexOf('iphone10') >= 0 ) {
+          console.log('is iphone 10')
+          if( this.platform.isLandscape() ) {
+            this.customClasses = 'iphoneX-landscape'
+          } else {
+            this.customClasses = 'iphoneX-portrait'
+          }
+          
+        }
+      }
 
     });
 
@@ -821,6 +837,17 @@ export class MyApp {
       }
 
     }, false); // end eventListener
+
+
+    // css hacks for iphone x status bar
+    window.addEventListener( "orientationchange", () => { 
+      console.log( window.orientation )
+      if( !window.orientation && window.orientation == 0 ) {
+        this.customClasses = 'iphoneX-portrait'
+      } else if( window.orientation && window.orientation === -90 ) {
+        this.customClasses = 'iphoneX-landscape'
+      }
+    }, false );
 
   }
 
