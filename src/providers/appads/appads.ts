@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import { AdMob, AdMobOptions, AdSize, AdExtras } from '@ionic-native/admob';
+import { AdMobPro, AdMobOptions, AdSize, AdExtras } from '@ionic-native/admob-pro';
 
 /*
   Admob
@@ -10,19 +10,19 @@ import { AdMob, AdMobOptions, AdSize, AdExtras } from '@ionic-native/admob';
 @Injectable()
 export class AppAds {
 
-  constructor(private AdMob: AdMob) {
+  constructor(private admob: AdMobPro) {
   }
 
   setOptions() {
 
-  	if( !AdMob )
+  	if( !this.admob )
   		return;
 
   	let isTesting = false;
   	// set position to top (2) or bottom (8) https://github.com/floatinghotpot/cordova-admob-pro/wiki/1.2-Method:-AdMob.setOptions()
   	let pos = 8;
 
-  	this.AdMob.setOptions( {
+  	this.admob.setOptions( {
       position: pos,
       isTesting: isTesting // receiving test ad
     });
@@ -32,10 +32,10 @@ export class AppAds {
 
     console.log('create banner ' + id);
 
-  	if( !this.AdMob )
+  	if( !this.admob )
       return;
 
-  	this.AdMob.createBanner({
+  	this.admob.createBanner({
   	  adId: id,
   	  autoShow: true
   	});
@@ -44,10 +44,10 @@ export class AppAds {
 
   interstitial( id ) {
 
-  	if( !this.AdMob )
+  	if( !this.admob )
       return;
 
-  	this.AdMob.prepareInterstitial({
+  	this.admob.prepareInterstitial({
   		adId: id, 
   		autoShow: true,
   		adSize: 'SMART_BANNER'
@@ -59,7 +59,7 @@ export class AppAds {
 
     console.log('hiding ads')
 
-    this.AdMob.hideBanner();
+    this.admob.hideBanner();
     
   }
 

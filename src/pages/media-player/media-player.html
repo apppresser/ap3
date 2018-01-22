@@ -40,7 +40,7 @@
             <vg-fullscreen></vg-fullscreen>
         </vg-controls>
 
-        <video vgMedia preload="auto" crossorigin autoplay>
+        <video [vgMedia]="media" #media preload="auto" crossorigin autoplay>
             <source [src]="source">
         </video>
     </vg-player>

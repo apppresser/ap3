@@ -832,8 +832,6 @@ export class MyApp {
 
   maybeDoAds(data) {
 
-    console.log('ads')
-
     // only show ads on a device
     if( !this.Device.platform ) 
       return;
@@ -1119,12 +1117,14 @@ export class MyApp {
       this.presentToast(text);
     });
 
-    this.storage.get('force_login').then((data)=>{
+    this.storage.get('force_login').then( data => {
       if(data) {
         this.openLoginModal();
       } else if(logout_response && logout_response.data && logout_response.data.logout_redirect) {
         this.maybeLogInOutRedirect(logout_response.data);
       }
+    }).catch( e => {
+      console.warn(e)
     });
 
   }

@@ -1,7 +1,7 @@
 import {BrowserModule} from '@angular/platform-browser';
 import { NgModule, ErrorHandler } from '@angular/core';
-import {Http} from '@angular/http';
-import { HttpModule } from '@angular/http';
+import { Http, HttpModule } from '@angular/http';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { TranslateModule, TranslateLoader, MissingTranslationHandler, MissingTranslationHandlerParams } from '@ngx-translate/core';
@@ -13,6 +13,7 @@ import { Device } from "@ionic-native/device";
 import { Transfer } from "@ionic-native/transfer";
 import { File } from "@ionic-native/file";
 import { AdMob } from "@ionic-native/admob";
+import { AdMobPro } from "@ionic-native/admob-pro";
 import { Facebook } from "@ionic-native/facebook";
 import { InAppBrowser } from "@ionic-native/in-app-browser";
 import { Keyboard } from "@ionic-native/keyboard";
@@ -52,7 +53,7 @@ import { FooterNavComponent } from "../providers/footer-nav/footer-nav.component
 import { IonicStorageModule } from '@ionic/storage';
 
 // required for ng translate, tells it to look in assets folder for trans files
-export function createTranslateLoader(http: Http) {
+export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
 }
  
@@ -72,11 +73,12 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     IonicStorageModule.forRoot(),
     BrowserModule,
     HttpModule,
+    HttpClientModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: (createTranslateLoader),
-        deps: [Http]
+        useFactory: (HttpLoaderFactory),
+        deps: [HttpClient]
       }
     })
   ],
@@ -109,6 +111,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     Transfer,
     File,
     AdMob,
+    AdMobPro,
     Facebook,
     InAppBrowser,
     Keyboard,

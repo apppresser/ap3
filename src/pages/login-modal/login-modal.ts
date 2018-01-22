@@ -122,7 +122,7 @@ export class LoginModal {
 
 		this.wplogin.login( this.login ).then( response => {
 
-			if( (<any>response).success === false ) {
+			if( !response || (<any>response).success === false ) {
 				this.loginErr( response )
 				return;
 			}
@@ -241,7 +241,7 @@ export class LoginModal {
 
 		this.dismiss()
 
-		this.events.publish('pushpage', { url: this.register_link, title: title } )
+		this.events.publish('pushpage', { url: this.register_link, title: title, is_register_page: true } )
 
 	}
 
