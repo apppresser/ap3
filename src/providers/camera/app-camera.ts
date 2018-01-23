@@ -1,9 +1,11 @@
 import {Injectable} from '@angular/core';
 import {Camera} from '@ionic-native/camera';
-import { Transfer, FileUploadOptions, TransferObject } from '@ionic-native/transfer';
+import { Transfer, FileUploadOptions, TransferObject, FileUploadResult } from '@ionic-native/transfer';
 import { File } from '@ionic-native/file';
 import { Device } from "@ionic-native/device";
 import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
+
+declare var window;
 
 /*
   Generated class for the Menus provider.
@@ -130,7 +132,20 @@ export class AppCamera {
 
   }
 
-  uploadPhoto(imageURI) {
+  uploadPhoto(camImage) {
+
+    console.log('app-camera.ts AppCamera.uploadPhoto camImage', camImage);
+
+    let imageURI = '';
+
+    console.log('typeof camImage', typeof camImage, camImage);
+
+    if(camImage.indexOf('{') === 0) { // from cordova-plugin-camera-with-exif
+      let img = JSON.parse(camImage);
+      imageURI = img.filename;
+    } else { // from cordova-plugin-camera
+      imageURI = camImage;
+    }
 
     const fileTransfer: TransferObject = this.Transfer.create();
 
@@ -216,11 +231,9 @@ export class AppCamera {
 
       fileTransfer.upload(imageURI, ajaxurl, options, true).then((msg) => {
         this.attachWin(msg);
-      }).catch((e) => {
-        console.warn(e);
-        this.appbuddy = false;
-
-        this.hideProgress();
+      }).catch((FileTransferError) => {
+        this.appbuddy = false
+        this.uploadErr(FileTransferError);
       });
 
     } else {
@@ -229,13 +242,17 @@ export class AppCamera {
       this.iframedoc.getElementById('appp_cam_post_title').value = '';
       options.params = params;
 
+      // console.log('uploadPhoto options', options);
+      // console.log('fileTransfer.upload(imageURI, encodeURI(ajaxurl), options)', imageURI, encodeURI(ajaxurl), options);
+      // console.log('ajaxurl', ajaxurl);
+
       fileTransfer.upload(imageURI, encodeURI(ajaxurl), options, true).then( r => {
 
         this.uploadWin(r);
 
-      }).catch( e => {
+      }).catch( FileTransferError => {
 
-        this.uploadErr(e);
+        this.uploadErr(FileTransferError);
 
       });
 
@@ -302,9 +319,9 @@ export class AppCamera {
 
   }
 
-  uploadWin(r) {
+  uploadWin(r: FileUploadResult) {
 
-    // console.log('upload win', r);
+    // console.log('uploadWin', r);
 
     // If the nonce fails, this could be a cookie issue. If cookie is not set, nonce will fail.
     if( r.response === 'Nonce Failed') {
@@ -314,6 +331,11 @@ export class AppCamera {
     this.findIframe();
 
     this.iframedoc = this.iframe.contentWindow.document;
+
+    if(r && r.response) {
+      let event = new CustomEvent('appcamera-uploadwin', {'detail': {response: r.response, iframe: this.iframe.contentWindow}});
+      window.document.dispatchEvent(event);
+    }
 
     let appcamera = this.iframe.contentWindow.window.appcamera;
     let msg = appcamera.msg.moderation;
@@ -334,8 +356,30 @@ export class AppCamera {
 
   }
 
-  uploadErr(e) {
-    console.warn(e);
+  uploadErr(FileTransferError) {
+    console.warn(FileTransferError);
+    console.log("download error source " + FileTransferError.source);
+    console.log("download error target " + FileTransferError.target);
+    console.log("upload error code " + FileTransferError.code);
+
+    switch(FileTransferError.code) {
+      case FileTransferError.FILE_NOT_FOUND_ERR:
+        console.warn('Transfer error: File not found');
+        break;
+      case FileTransferError.INVALID_URL_ERR:
+        console.warn('Transfer error: invalid URL');
+        break;
+      case FileTransferError.CONNECTION_ERR:
+        console.warn('Transfer error: connection');
+        break;
+      case FileTransferError.ABORT_ERR:
+        console.warn('Transfer error: abort');
+        break;
+      case FileTransferError.NOT_MODIFIED_ERR:
+        console.warn('Transfer error: not modified');
+        break;
+    }
+
     this.hideProgress();
   }
 
