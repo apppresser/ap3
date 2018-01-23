@@ -30,13 +30,17 @@ $border-color: rgba(0,0,0,.1);
 	padding-top: 44px !important;
 }
 
-.iphoneX-portrait .menu-inner > .toolbar.statusbar-padding:first-child {
+.iphoneX-portrait .menu-inner .toolbar.statusbar-padding:first-child {
 	min-height: 80px !important;
 }
 
 .iphoneX-portrait .toolbar.statusbar-padding:first-child ion-title { 
 	padding-top: 44px !important; 
 	height: 80px !important;
+}
+
+.iphoneX-portrait ion-content.statusbar-padding .fixed-content, .iphoneX-portrait ion-content.statusbar-padding .scroll-content {
+	margin-top: 80px !important;
 }
 
 .iphoneX-landscape .toolbar.statusbar-padding:first-child ion-title, .iphoneX-landscape .toolbar.statusbar-padding:first-child {
