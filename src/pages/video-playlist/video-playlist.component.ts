@@ -22,10 +22,19 @@ export class VideoPlaylistComponent implements OnInit {
   ngOnInit() {
     this.videoitemservice.getData().then(data => {
 
-      console.log('playlist data', data);
-      
-      this.playlist = <VideoItem[]>data;
-      this.currentItem = this.playlist[0];
+      let posts = <any[]>data;
+
+      for(var i=0;i<posts.length;i++) {
+
+        let video = new VideoItem(posts[i]);
+        if(video.src) {
+          this.playlist.push(video);
+        }
+      }
+
+      if(this.playlist.length) {
+        this.currentItem = this.playlist[0];
+      }
       
     });
   }
@@ -62,6 +71,9 @@ export class VideoPlaylistComponent implements OnInit {
 
   onClickPlaylistItem($event, item: VideoItem, index: number) {
     console.log('change video', item.src);
+    if(item.src == this.currentItem.src) {
+      console.log('Already playing this video');
+    }
     this.currentIndex = index;
     this.currentItem = item;
   }

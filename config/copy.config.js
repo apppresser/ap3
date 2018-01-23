@@ -9,7 +9,7 @@ module.exports = {
     dest: '{{WWW}}/assets/css'
   },
   copyVideogular2Fonts: {
-    src: ['{{ROOT}}/videogular2/fonts/*'],
+    src: ['{{ROOT}}/node_modules/videogular2/fonts/*'],
     dest: '{{WWW}}/assets/css'
   }
 };
