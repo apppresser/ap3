@@ -1,6 +1,6 @@
-import {Component, Renderer, ElementRef, OnInit, Input, isDevMode} from '@angular/core';
-import {Nav, NavParams, ModalController, Platform, ViewController, Events, IonicPage} from 'ionic-angular';
-import {TranslateService} from '@ngx-translate/core';
+import {Component, Renderer, ElementRef, OnInit, AfterViewInit, Input, isDevMode, OnDestroy} from '@angular/core';
+import {Nav, NavParams, ModalController, Platform, ViewController, Events, IonicPage, LoadingController} from 'ionic-angular';
+import {TranslateService, TranslateModule} from '@ngx-translate/core';
 import {Storage} from '@ionic/storage';
 
 import {IonicModule, ToastController} from 'ionic-angular';
@@ -20,10 +20,11 @@ import { LoginService } from "../../providers/logins/login.service";
 @Component({
   templateUrl: "custom-html-template.html"
 })
-export class CustomHtmlTemplate implements OnInit {
+export class CustomHtmlTemplate implements OnInit, OnDestroy {
 
 	pagetitle: string;
 	user: User;
+	subscriptions = [];
 	listenFunc: Function;
 	rtlBack: boolean = false;
 	language: any;
@@ -38,7 +39,7 @@ export class CustomHtmlTemplate implements OnInit {
 	customClasses: string;
 	pages: any;
 	products: any;
-	subscriptions: any = [];
+	spinner: any;
 	menus: {
 		side: any,
 		tabs: any
@@ -56,33 +57,31 @@ export class CustomHtmlTemplate implements OnInit {
 		public storage: Storage,
 		public events: Events,
 		public toastCtrl: ToastController,
-		private globalvars: GlobalVars,
 		private headerLogoService: HeaderLogo,
-		private loginservice: LoginService,
-		public iap: IAP
-        ) {
-		this.pagetitle = navParams.data.title;
-
-		if(navParams.data.is_home == true) {
-	      this.doLogo()
-	    }
-
-		// kill vids on android
-		if( platform.is('android') ) {
-	      this.killVideos()
-	    }
-
-		this.pages = this.getPages(); // not just pages: this is the whole myappp data
-		this.menus = {
-			side: this.getSideMenu(),
-			tabs: this.getTabs()
-		};
-		this.segments = this.getSegments();
-	}
+		public loginservice: LoginService,
+		public iap: IAP,
+		public loadingCtrl: LoadingController
+        ) {}
 
 	ngOnInit() {
 
 		this.subscriptions.push(this.loginservice.loginStatus().subscribe(user => this.user = user));
+
+		if(this.navParams.data.is_home == true) {
+			this.doLogo()
+		  }
+  
+		  // kill vids on android
+		  if( this.platform.is('android') ) {
+			this.killVideos()
+		  }
+  
+		  this.pages = this.getPages(); // not just pages: this is the whole myappp data
+		  this.menus = {
+			  side: this.getSideMenu(),
+			  tabs: this.getTabs()
+		  };
+		  this.segments = this.getSegments();
 
 		let slug = this.navParams.data.slug;
 		this.slug = slug;
@@ -405,11 +404,33 @@ export class CustomHtmlTemplate implements OnInit {
 	}
 
 	subscribeNoAds( id ) {
+
+		this.showSpinner();
+
 		this.iap.subscribeNoAds( id );
+
+		// TODO: convert this to promise, get rid of timeout
+		setTimeout(() => {
+		    this.hideSpinner();
+		  }, 3000);
 	}
 
 	restoreNoAds( id ) {
-		this.iap.restoreNoAds( id );
+		this.showSpinner();
+		this.iap.restoreNoAds( id ).then( res => {
+			console.log(res)
+			this.hideSpinner();
+		});
+	}
+
+	showSpinner() {
+		this.spinner = this.loadingCtrl.create();
+
+		this.spinner.present();
+	}
+
+	hideSpinner() {
+		this.spinner.dismiss();
 	}
 
 	ngOnDestroy() {
