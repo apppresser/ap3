@@ -60,6 +60,7 @@ export class MyApp {
   ajax_url: string;
   regId: any;
   customClasses: string;
+  iphoneX: boolean = false;
 
   constructor(
     private platform: Platform,
@@ -135,6 +136,8 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
 
       this.apiurl = this.globalvars.getApi();
+
+      this.doIphoneX();
       
       this.fetchData( false );
 
@@ -158,21 +161,6 @@ export class MyApp {
       setTimeout( () => {
         this.appdata.checkForUpdates( this.apiurl );
       }, 5000 );
-
-      // hack for iphonex status bar
-      if( this.Device && this.Device.model ) {
-        let model = this.Device.model.toLowerCase();
-
-        if( model.indexOf('iphone10') >= 0 ) {
-          console.log('is iphone 10')
-          if( this.platform.isLandscape() ) {
-            this.customClasses = 'iphoneX-landscape'
-          } else {
-            this.customClasses = 'iphoneX-portrait'
-          }
-          
-        }
-      }
 
     });
 
@@ -463,6 +451,27 @@ export class MyApp {
     } else {
       this.openPage(p);
     }
+  }
+
+  doIphoneX() {
+
+    // hack for iphonex status bar
+    if( this.Device && this.Device.model ) {
+      let model = this.Device.model.toLowerCase();
+
+      if( model.indexOf('iphone10') >= 0 ) {
+
+        this.iphoneX = true;
+
+        if( this.platform.isLandscape() ) {
+          this.customClasses = 'iphoneX-landscape'
+        } else {
+          this.customClasses = 'iphoneX-portrait'
+        }
+        
+      }
+    }
+
   }
 
   // Handles opening and closing submenus
@@ -838,16 +847,20 @@ export class MyApp {
 
     }, false); // end eventListener
 
+    if( this.iphoneX ) {
 
-    // css hacks for iphone x status bar
-    window.addEventListener( "orientationchange", () => { 
-      console.log( window.orientation )
-      if( !window.orientation && window.orientation == 0 ) {
-        this.customClasses = 'iphoneX-portrait'
-      } else if( window.orientation && window.orientation === -90 ) {
-        this.customClasses = 'iphoneX-landscape'
-      }
-    }, false );
+      // css hacks for iphone x status bar
+      window.addEventListener( "orientationchange", () => { 
+        
+        if( !window.orientation && window.orientation == 0 ) {
+          this.customClasses = 'iphoneX-portrait'
+        } else if( window.orientation && window.orientation === -90 ) {
+          this.customClasses = 'iphoneX-landscape'
+        }
+
+      }, false );
+
+    }
 
   }
 
