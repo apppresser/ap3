@@ -5,6 +5,7 @@ export class VideoItem {
 	public excerpt: {rendered:any};
 	public type: string;
 	public src: string;
+	public category: string;
 
 	public constructor(
 		item?: {
@@ -17,7 +18,8 @@ export class VideoItem {
 			app?: Appp,
 			video_clip?: any,
 			src?: string,
-			media_type?: string
+			media_type?: string,
+			category?: string
 		}
 	) {
 		this.featured_image_urls = item.featured_image_urls

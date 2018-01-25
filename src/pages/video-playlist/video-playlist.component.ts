@@ -26,7 +26,10 @@ export class VideoPlaylistComponent implements OnInit {
 
       for(var i=0;i<posts.length;i++) {
 
+        console.log(posts[i]);
+
         let video = new VideoItem(posts[i]);
+        console.log(video, video.src);
         if(video.src) {
           this.playlist.push(video);
         }

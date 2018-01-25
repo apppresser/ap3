@@ -11,8 +11,8 @@ export class VideoItemService {
 		private postService: Posts, 
 	) {
 
-		// this.feed = 'https://www.winknews.com/wp-json/wp/v2/posts?categories=16947,17358,16948,16949,16950,17347,17387,17388';
-		this.feed = 'https://www.winknews.com/wp-json/wp/v2/posts';
+		this.feed = 'https://www.winknews.com/wp-json/wp/v2/posts?categories=16947,17358,16948,16949,16950,17347,17387,17388';
+		// this.feed = 'http://home.thiessen.us/wink.json.php';
 
 		// this.data = [
 		// 	new VideoItem(

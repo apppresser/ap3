@@ -22,7 +22,7 @@ export class Posts {
 
     // set pagination
     if( !page ) {
-      let page = '1';
+      page = '1';
     }
       
     // if (this.data) {
