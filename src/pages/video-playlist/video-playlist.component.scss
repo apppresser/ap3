@@ -1,36 +1,22 @@
-media-player {
-	vg-overlay-play {
-		height: 100%;
-	    width: 100%;
-	    position: absolute;
-	    background-repeat: no-repeat;
-	    background-size: 100%;
-	}
-	vg-player video {
-		width: 100%;
-	}
-	.content-md, .content-ios {
-		background: #000;
-	}
+.video-category {
 
-	.vg-icon-play_arrow, .vg-icon-pause, .vg-icon-fullscreen, .vg-icon-fullscreen_exit {
-		font-family: Ionicons;
-	    font-size: 3rem;
-	}
+	margin-top:20px;
+	border-bottom: 1px solid #DDD;
 
-	.vg-icon-play_arrow:before {
-	    content: "\f488";
+	h2 {
+		text-align: center;
+		text-transform: uppercase;
+		margin: 10px 0 5px;
+		font-weight: 600;
+    	color: #333;
 	}
+}
 
-	.vg-icon-pause:before {
-	    content: "\f478";
-	}
+.video-slide-content {
 
-	.vg-icon-fullscreen:before {
-	    content: "\f178";
-	}
-
-	.vg-icon-fullscreen_exit:before {
-	    content: "\f162";
+	h3 {
+		margin: 0px;
+		font-size: 1.2em;
+		line-height: 1.15em;
 	}
 }

@@ -11,5 +11,9 @@ module.exports = {
   copyVideogular2Fonts: {
     src: ['{{ROOT}}/node_modules/videogular2/fonts/*'],
     dest: '{{WWW}}/assets/css'
+  },
+  copyVideogular2Js: {
+    src: ["{{ROOT}}/node_modules/dashjs/dist/dash.all.min.js","{{ROOT}}/node_modules/hls.js/dist/hls.min.js"],
+    dest: '{{WWW}}/assets/js'
   }
 };

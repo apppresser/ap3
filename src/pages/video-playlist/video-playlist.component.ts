@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { VgAPI } from 'videogular2/core';
 import { VideoItem } from "./video-item.model";
 import { VideoItemService } from "./video-item.service";
+import { VideoFeed } from './video-feed.model';
 
 @Component({
   selector: 'app-video-playlist',
@@ -10,44 +11,80 @@ import { VideoItemService } from "./video-item.service";
 })
 export class VideoPlaylistComponent implements OnInit {
 
-  public playlist: Array<VideoItem> = [];
   private api: VgAPI;
   public currentIndex = 0;
+  public currentCatFeed: VideoFeed;
   public currentItem: VideoItem;
+  public livestream = false;
+  public currentStream = '';
+  public categories: Array<VideoFeed>;
 
   constructor(
     private videoitemservice: VideoItemService
   ) { }
 
   ngOnInit() {
-    this.videoitemservice.getData().then(data => {
 
-      let posts = <any[]>data;
+    this.categories = this.videoitemservice.feeds;
 
-      for(var i=0;i<posts.length;i++) {
+    this.currentStream = ''; //"'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'";
 
-        console.log(posts[i]);
+    console.log('is it defined?', this.categories);
 
-        let video = new VideoItem(posts[i]);
-        console.log(video, video.src);
-        if(video.src) {
-          this.playlist.push(video);
+    let loopCount = 0;
+
+    this.categories.forEach(feed => {
+      console.log('go get this feed', feed);
+
+      this.videoitemservice.getVideoCategoryData(feed).then(data => {
+
+        let posts = <any[]>data;
+  
+        for(var i=0;i<posts.length;i++) {
+  
+          let video = new VideoItem(posts[i]);
+          console.log(video, video.src);
+          if(video.src) {
+            feed.videos.push(video);
+          }
         }
-      }
+  
+        if(loopCount === 0) {
+          this.currentItem = feed.videos[0];
+          this.currentCatFeed = feed;
+        }
 
-      if(this.playlist.length) {
-        this.currentItem = this.playlist[0];
-      }
-      
-    });
+        loopCount++;
+        
+      });
+    })
+  }
+
+  addLiveStream() {
+    // live stream
+    // this.playlist.push(new VideoItem({
+    //   featured_image_urls: {
+    //     thumbnail: ''
+    //   },
+    //   // appp: undefinded,
+    //   title: {rendered:'Livestream'},
+    //   excerpt: {rendered:'Livestreaming now'},
+    //   // app: Appp,
+    //   video_clip: 'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8',
+    //   category: 'live'
+    // }));
   }
 
   onPlayerReady(api:VgAPI) {
     // Documentation: http://videogular.github.io/videogular2/docs/getting-started/using-the-api.html
     this.api = api;
 
+    // Auto play
     this.api.getDefaultMedia().subscriptions.loadedMetadata.subscribe(this.playVideo.bind(this));
+
+    // Auto next
     this.api.getDefaultMedia().subscriptions.ended.subscribe(this.nextVideo.bind(this));
+    
   }
 
   doRefresh($event) {
@@ -59,25 +96,39 @@ export class VideoPlaylistComponent implements OnInit {
   }
 
   nextVideo() {
+
+    console.log('play the next video');
     this.currentIndex++;
 
-    if (this.currentIndex === this.playlist.length) {
+    if (this.currentIndex === this.currentCatFeed.videos.length) {
       this.currentIndex = 0;
     }
 
-    this.currentItem = this.playlist[this.currentIndex];
+    this.currentItem = this.currentCatFeed.videos[this.currentIndex];
   }
 
   playVideo() {
     this.api.play();
   }
 
-  onClickPlaylistItem($event, item: VideoItem, index: number) {
+  stopVideo() {
+    this.api.pause();
+  }
+
+  onClickPlaylistItem($event, item: VideoItem, videoFeed: VideoFeed, index: number) {
+
+    console.log('videoFeed', videoFeed);
+    console.log('index', index);
+
+    // this.livestream = false;
+
     console.log('change video', item.src);
     if(item.src == this.currentItem.src) {
       console.log('Already playing this video');
+      return;
     }
-    this.currentIndex = index;
+
+    this.currentCatFeed = videoFeed;
     this.currentItem = item;
   }
 

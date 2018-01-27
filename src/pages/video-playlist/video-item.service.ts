@@ -1,176 +1,45 @@
 import { Injectable } from "@angular/core";
 import { VideoItem } from "./video-item.model";
 import {Posts} from '../../providers/posts/posts';
+import { VideoFeed } from "./video-feed.model";
+
 
 @Injectable()
 export class VideoItemService {
 	// public data: any;
-	public feed: any;
+	public feeds: Array<VideoFeed>;
+	public cat_url: string;
 
-	public constructor(
+	constructor(
 		private postService: Posts, 
 	) {
 
-		this.feed = 'https://www.winknews.com/wp-json/wp/v2/posts?categories=16947,17358,16948,16949,16950,17347,17387,17388';
-		// this.feed = 'http://home.thiessen.us/wink.json.php';
+		this.cat_url  = 'https://www.winknews.com/wp-json/wp/v2/posts?categories=';
 
-		// this.data = [
-		// 	new VideoItem(
-		// 		{
-		// 			featured_image_urls: {
-		// 				thumbnail: 'https://faithbible.breezechms.com/files/5a34348052150/ConvesationPeaceArtwork_1.JPG'
-		// 			},
-		// 			title: {rendered: 'Learn How to Thrive When Your World is Shaken Up'},
-		// 			appp: {
-		// 				post_list: {
-		// 					below_title: 'When life doesn\'t go as planned, it\''
-		// 				}
-		// 			},
-		// 			src: '/video/FBC20180107full.mp4',
-		// 			type: "type: 'video/mp4'"
-		// 		}
-		// 	),
-		
-		// 	new VideoItem(
-		// 		{
-		// 			featured_image_urls: {
-		// 				thumbnail: 'https://faithbible.breezechms.com/files/5a34348052150/ConvesationPeaceArtwork_1.JPG'
-		// 			},
-		// 			title: {rendered: 'Learn How to Thrive When Your World is Shaken Up'},
-		// 			appp: {
-		// 				post_list: {
-		// 					below_title: 'When life doesn\'t go as planned, it\''
-		// 				}
-		// 			},
-		// 			src: '/video/FBC20171217full.mp4',
-		// 			type: "type: 'video/mp4'"
-		// 		}
-		// 	),
-		// 	new VideoItem(
-		// 		{
-		// 			featured_image_urls: {
-		// 				thumbnail: 'https://faithbible.breezechms.com/files/5a34348052150/ConvesationPeaceArtwork_1.JPG'
-		// 			},
-		// 			title: {rendered: 'Learn How to Thrive When Your World is Shaken Up'},
-		// 			appp: {
-		// 				post_list: {
-		// 					below_title: 'When life doesn\'t go as planned, it\''
-		// 				}
-		// 			},
-		// 			src: '/video/FBC20180107full.mp4',
-		// 			type: "type: 'video/mp4'"
-		// 		}
-		// 	),
-		// 	new VideoItem(
-		// 		{
-		// 			featured_image_urls: {
-		// 				thumbnail: 'https://faithbible.breezechms.com/files/5a34348052150/ConvesationPeaceArtwork_1.JPG'
-		// 			},
-		// 			title: {rendered: '(Audio mp3) Learn How to Thrive When Your World is Shaken Up'},
-		// 			appp: {
-		// 				post_list: {
-		// 					below_title: 'When life doesn\'t go as planned, it\''
-		// 				}
-		// 			},
-		// 			src: '/audio/fbc20180107b-making-much-of-jesus.mp3',
-		// 			type: "type: 'video/mp3'"
-		// 		}
-		// 	),
-		// 	new VideoItem(
-		// 		{
-		// 			featured_image_urls: {
-		// 				thumbnail: 'https://faithbible.breezechms.com/files/5a34348052150/ConvesationPeaceArtwork_1.JPG'
-		// 			},
-		// 			title: {rendered: 'Learn How to Thrive When Your World is Shaken Up'},
-		// 			appp: {
-		// 				post_list: {
-		// 					below_title: 'When life doesn\'t go as planned, it\''
-		// 				}
-		// 			},
-		// 			src: '/video/FBC20180107full.mp4',
-		// 			type: "type: 'video/mp4'"
-		// 		}
-		// 	),
-		// 	new VideoItem(
-		// 		{
-		// 			featured_image_urls: {
-		// 				thumbnail: 'https://faithbible.breezechms.com/files/5a34348052150/ConvesationPeaceArtwork_1.JPG'
-		// 			},
-		// 			title: {rendered: 'Learn How to Thrive When Your World is Shaken Up'},
-		// 			appp: {
-		// 				post_list: {
-		// 					below_title: 'When life doesn\'t go as planned, it\''
-		// 				}
-		// 			},
-		// 			src: '/video/FBC20180107full.mp4',
-		// 			type: "type: 'video/mp4'"
-		// 		}
-		// 	),
-		// 	new VideoItem(
-		// 		{
-		// 			featured_image_urls: {
-		// 				thumbnail: 'https://faithbible.breezechms.com/files/5a34348052150/ConvesationPeaceArtwork_1.JPG'
-		// 			},
-		// 			title: {rendered: 'Learn How to Thrive When Your World is Shaken Up'},
-		// 			appp: {
-		// 				post_list: {
-		// 					below_title: 'When life doesn\'t go as planned, it\''
-		// 				}
-		// 			},
-		// 			src: '/video/FBC20180107full.mp4',
-		// 			type: "type: 'video/mp4'"
-		// 		}
-		// 	),
-		// 	new VideoItem(
-		// 		{
-		// 			featured_image_urls: {
-		// 				thumbnail: 'https://faithbible.breezechms.com/files/5a34348052150/ConvesationPeaceArtwork_1.JPG'
-		// 			},
-		// 			title: {rendered: 'Learn How to Thrive When Your World is Shaken Up'},
-		// 			appp: {
-		// 				post_list: {
-		// 					below_title: 'When life doesn\'t go as planned, it\''
-		// 				}
-		// 			},
-		// 			src: '/video/FBC20180107full.mp4',
-		// 			type: "type: 'video/mp4'"
-		// 		}
-		// 	),
-		// 	new VideoItem(
-		// 		{
-		// 			featured_image_urls: {
-		// 				thumbnail: 'https://faithbible.breezechms.com/files/5a34348052150/ConvesationPeaceArtwork_1.JPG'
-		// 			},
-		// 			title: {rendered: 'Learn How to Thrive When Your World is Shaken Up'},
-		// 			appp: {
-		// 				post_list: {
-		// 					below_title: 'When life doesn\'t go as planned, it\''
-		// 				}
-		// 			},
-		// 			src: '/video/FBC20180107full.mp4',
-		// 			type: "type: 'video/mp4'"
-		// 		}
-		// 	)
-		// ];
-
-		
+		this.feeds = [
+			new VideoFeed(16947, 'latest-news', 'Latest Videos'),
+			new VideoFeed(17347, 'your-health-now', 'Your Health Now'),
+			new VideoFeed(16949, 'fitness-friday', 'Fitness Friday'),
+			new VideoFeed(16950, 'golf-doctor', 'Golf Doctor'),
+			new VideoFeed(16948, 'pet-pals', 'Pet Pals'),
+			new VideoFeed(17358, 'wheres-wink', 'Where\'s WINK'),
+			new VideoFeed(17387, 'lets-eat', 'Let\'s Eat'),
+			new VideoFeed(17388, 'healthy-kids', 'Healthy Kids'),
+		];
 	}
 
-	public getData() {
-		// return new Promise((resolve, reject)=>{
-
-		// 	setTimeout(()=> {
-		// 		resolve(this.data);
-		// 	}, 4000)
-		// });
-
-
+	public getVideoCategoryData( feed: VideoFeed ) {
 		return new Promise((resolve, reject) => {
-			this.postService.load(this.feed, '').then(data => {
+
+			let url = this.cat_url + feed.id;
+
+			this.postService.load(url, '').then(data => {
+
+				console.log('the video feed for ' + feed.name, data);
+
 				resolve(data);
 			});
 		});
-
 	}
 
 }

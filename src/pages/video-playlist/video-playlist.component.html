@@ -1,71 +1,70 @@
 <ion-content [ngClass]="customClasses">
 
+	<!-- <iframe *ngIf="livestream" style="height:300px" id="ls_embed_1481737354" src="https://livestream.com/accounts/6142119/events/2549588/player?&amp;enableInfoAndActivity=false&amp;defaultDrawer=&amp;autoPlay=true&amp;mute=false" frameborder="0" scrolling="no" allowfullscreen=""></iframe> -->
+	<!-- <div *ngIf="livestream" style="height:300px;width:100%;background-color:lightgray">
+		livestreaming...
+	</div> -->
+
 	<div style="height:300px;width:100%" *ngIf="currentItem">
-			<vg-player (onPlayerReady)="onPlayerReady($event)">
-					<vg-buffering></vg-buffering>
-				
-					<vg-controls>
-						<vg-play-pause></vg-play-pause>
-						<vg-playback-button></vg-playback-button>
-				
-						<vg-time-display vgProperty="current" vgFormat="mm:ss"></vg-time-display>
-				
-						<vg-scrub-bar>
-							<vg-scrub-bar-current-time></vg-scrub-bar-current-time>
-							<vg-scrub-bar-buffering-time></vg-scrub-bar-buffering-time>
-						</vg-scrub-bar>
-				
-						<vg-time-display vgProperty="total" vgFormat="mm:ss"></vg-time-display>
-				
-						<vg-mute></vg-mute>
-						<vg-volume></vg-volume>
-				
-						<vg-fullscreen></vg-fullscreen>
-					</vg-controls>
-				
-					<video #media
-						   [vgMedia]="media"
-						   [src]="currentItem.src"
-						   id="singleVideo"
-						   preload="auto"
-						   crossorigin>
-					</video>
-				</vg-player>
+		<vg-player (onPlayerReady)="onPlayerReady($event)">
+			<vg-buffering></vg-buffering>
+		
+			<vg-controls>
+				<vg-play-pause></vg-play-pause>
+				<vg-playback-button></vg-playback-button>
+		
+				<vg-time-display vgProperty="current" vgFormat="mm:ss"></vg-time-display>
+		
+				<vg-scrub-bar>
+					<vg-scrub-bar-current-time></vg-scrub-bar-current-time>
+					<vg-scrub-bar-buffering-time></vg-scrub-bar-buffering-time>
+				</vg-scrub-bar>
+		
+				<vg-time-display vgProperty="total" vgFormat="mm:ss"></vg-time-display>
+		
+				<vg-mute></vg-mute>
+				<vg-volume></vg-volume>
+		
+				<vg-fullscreen></vg-fullscreen>
+			</vg-controls>
+			
+			<video #media
+					[vgMedia]="media"
+					[src]="currentItem.src"
+					id="singleVideo"
+					preload="auto"
+					crossorigin>
+			</video>
+		</vg-player>
 	</div>
-
-
 
 
 	<ion-refresher (ionRefresh)="doRefresh($event)">
 		<ion-refresher-content></ion-refresher-content>
 	</ion-refresher>
 
-	<ion-list>
+	<!-- <ion-list> -->
 
-		<ion-item-sliding *ngFor="let item of playlist; let $index = index;" #slidingItem>
-			<button ion-item (click)="onClickPlaylistItem($event, item, $index)">
+		<div *ngFor="let videoFeed of categories" class="video-category">
+			<h2>{{ videoFeed.name }}</h2>
+			<ion-slides pager loop slidesPerView="2">
+				<ion-slide *ngFor="let item of videoFeed.videos; let $j = index;" #slidingItem>
+					<button (click)="onClickPlaylistItem($event, item, videoFeed, $i)" class="card-background-page">
+							<div class="video-slide-item">
+								<img *ngIf="item.featured_image_urls && item.featured_image_urls.medium" src="{{item.featured_image_urls.medium}}">
+								<img *ngIf="!item.featured_image_urls || !item.featured_image_urls.medium" src="assets/default.png">
+								<div class="video-slide-content">
+									<h3 *ngIf="item.title && item.title.rendered" [innerHTML]="item.title.rendered"></h3>
+									<p *ngIf="item.excerpt && item.excerpt.rendered" [innerHTML]="item.excerpt.rendered"></p>
+								</div>
+							</div>
+					</button>
+				</ion-slide>
+			</ion-slides>
+		</div>
 
-				<ion-avatar item-left *ngIf="item.featured_image_urls">
-					<img *ngIf="item.featured_image_urls && item.featured_image_urls.thumbnail" src="{{item.featured_image_urls.thumbnail}}">
-					<img *ngIf="!item.featured_image_urls || !item.featured_image_urls.thumbnail" src="assets/default.png">
-				</ion-avatar>
 
-				<div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_title" [innerHTML]="item.appp.post_list.above_title"></div>
-
-				<h2 *ngIf="item.title && item.title.rendered" [innerHTML]="item.title.rendered"></h2>
-
-				<div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_title" [innerHTML]="item.appp.post_list.below_title"></div>
-
-				<p *ngIf="item.excerpt && item.excerpt.rendered" [innerHTML]="item.excerpt.rendered"></p>
-
-				<div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_content" [innerHTML]="item.appp.post_list.below_content"></div>
-
-			</button>
-
-			
-		</ion-item-sliding>
-
-	</ion-list>
+	<!-- </ion-list> -->
 
 	<ion-infinite-scroll (ionInfinite)="loadMore($event)">
 		<ion-infinite-scroll-content></ion-infinite-scroll-content>

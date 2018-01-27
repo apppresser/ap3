@@ -7,27 +7,29 @@ export class VideoItem {
 	public src: string;
 	public category: string;
 
-	public constructor(
+	constructor(
 		item?: {
 			featured_image_urls?: {
-				thumbnail?: string
+				thumbnail?: string,
+				medium?: string,
 			},
 			appp?: any,
 			title?: {rendered:any},
 			excerpt?: {rendered:any},
 			app?: Appp,
 			video_clip?: any,
-			src?: string,
 			media_type?: string,
 			category?: string
 		}
 	) {
-		this.featured_image_urls = item.featured_image_urls
-		this.appp = item.appp;
-		this.title = item.title;
-		this.excerpt = item.excerpt;
-		this.src = this.getVideo(item.video_clip);
-		this.type = (typeof item.media_type === 'undefined') ? this.getType() : item.media_type;
+		if(item) {
+			this.featured_image_urls = item.featured_image_urls
+			this.appp = item.appp;
+			this.title = item.title;
+			this.excerpt = item.excerpt;
+			this.src = this.getVideo(item.video_clip);
+			this.type = (typeof item.media_type === 'undefined') ? this.getType() : item.media_type;
+		}
 	}
 
 	private getVideo(video) {
@@ -51,6 +53,10 @@ export class VideoItem {
 
 			if(this.src.indexOf('.mp3') > 0) {
 				return 'type: \'video/mp3\'';
+			}
+
+			if(this.src.indexOf('.m3u8')) {
+				return 'type: \'video/m3u8\'';
 			}
 		}
 
