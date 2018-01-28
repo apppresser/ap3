@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Events } from 'ionic-angular';
 import { NgForm } from '@angular/forms';
 
 @Component({
@@ -12,7 +13,9 @@ export class FooterNavComponent implements OnInit {
   public searchTerm: any;
 
 
-  constructor() { }
+  constructor(
+    public events: Events,
+  ) { }
 
   ngOnInit() {
 
@@ -35,9 +38,10 @@ export class FooterNavComponent implements OnInit {
         link.addEventListener('click', event => {
             event.preventDefault();
 
-            // @TODO - openPage({url: e.target.href});
             let url = (event.target as HTMLElement).getAttribute('href');
-            console.log('go to ', url);
+            if( url ) {
+              this.openPage({url: url});
+            }
         });
     }
   }
@@ -45,7 +49,7 @@ export class FooterNavComponent implements OnInit {
   onSubmit(searchForm: NgForm) {
     var url = 'http://www.winknews.com/?s=' + encodeURIComponent(this.searchTerm);
 
-    console.log('@TODO - openPage({url: url});', url);
+    this.openPage({url: url});
 
     this.closeFooterMenu();
     searchForm.reset();
@@ -71,6 +75,22 @@ export class FooterNavComponent implements OnInit {
   openFooterMenu() {
     this.bodyTag.classList.add('td-menu-mob-open-menu');
     this.menuOpen = true;
+  }
+
+  openPage(page) {
+    this.events.publish('pushpage', page );
+  }
+
+  goToVideos() {
+
+    this.openPage('video-playlist-template');
+
+    // this.openPage({ 
+    //   url: '',
+    //   title: "Video",
+    //   type: 'apppages',
+    //   show_slider: "false"
+    // });
   }
 
 }

@@ -489,6 +489,8 @@ export class MyApp {
     if( typeof( page.extra_classes ) != "undefined" && page.extra_classes.indexOf('divider') >= 0 )
       return
 
+    this.events.publish('videostop', null);
+
     // close the menu when clicking a link from the menu
     this.menu.close();
 
@@ -513,6 +515,8 @@ export class MyApp {
   }
 
   pushPage(page) {
+
+    this.events.publish('videostop', null);
 
     // don't do anything if someone clicks a nav divider
     if( typeof( page.extra_classes ) != "undefined" && page.extra_classes.indexOf('divider') >= 0 )

@@ -1,17 +1,21 @@
 import { Injectable } from "@angular/core";
+import { Events } from 'ionic-angular';
 import { VideoItem } from "./video-item.model";
 import {Posts} from '../../providers/posts/posts';
 import { VideoFeed } from "./video-feed.model";
+import { VgAPI } from "videogular2/core";
 
 
 @Injectable()
 export class VideoItemService {
-	// public data: any;
+	public api: VgAPI;
 	public feeds: Array<VideoFeed>;
 	public cat_url: string;
+	public data: any;
 
 	constructor(
 		private postService: Posts, 
+		public events: Events
 	) {
 
 		this.cat_url  = 'https://www.winknews.com/wp-json/wp/v2/posts?categories=';
@@ -28,6 +32,13 @@ export class VideoItemService {
 		];
 	}
 
+	public setApi(api: VgAPI) {
+		this.api = api;
+		this.events.subscribe('videostop', (event) => {
+			this.api.pause();
+		});
+	}
+
 	public getVideoCategoryData( feed: VideoFeed ) {
 		return new Promise((resolve, reject) => {
 
@@ -35,7 +46,7 @@ export class VideoItemService {
 
 			this.postService.load(url, '').then(data => {
 
-				console.log('the video feed for ' + feed.name, data);
+				// console.log('the video feed for ' + feed.name, data);
 
 				resolve(data);
 			});

@@ -11,7 +11,6 @@ import { VideoFeed } from './video-feed.model';
 })
 export class VideoPlaylistComponent implements OnInit {
 
-  private api: VgAPI;
   public currentIndex = 0;
   public currentCatFeed: VideoFeed;
   public currentItem: VideoItem;
@@ -25,16 +24,27 @@ export class VideoPlaylistComponent implements OnInit {
 
   ngOnInit() {
 
+    if(this.videoitemservice.feeds[0].videos.length === 0) {
+      this.getVideoFeed();
+    } else if( !this.categories ) {
+      this.categories = this.videoitemservice.feeds;
+      this.currentItem = this.categories[0].videos[0];
+      this.currentCatFeed = this.categories[0];
+      this.playVideo();
+    }
+  }
+
+  getVideoFeed() {
     this.categories = this.videoitemservice.feeds;
 
     this.currentStream = ''; //"'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'";
 
-    console.log('is it defined?', this.categories);
+    // console.log('is it defined?', this.categories);
 
     let loopCount = 0;
 
     this.categories.forEach(feed => {
-      console.log('go get this feed', feed);
+      // console.log('go get this feed', feed);
 
       this.videoitemservice.getVideoCategoryData(feed).then(data => {
 
@@ -43,7 +53,7 @@ export class VideoPlaylistComponent implements OnInit {
         for(var i=0;i<posts.length;i++) {
   
           let video = new VideoItem(posts[i]);
-          console.log(video, video.src);
+          // console.log(video, video.src);
           if(video.src) {
             feed.videos.push(video);
           }
@@ -77,27 +87,27 @@ export class VideoPlaylistComponent implements OnInit {
 
   onPlayerReady(api:VgAPI) {
     // Documentation: http://videogular.github.io/videogular2/docs/getting-started/using-the-api.html
-    this.api = api;
+    this.videoitemservice.setApi(api);
 
     // Auto play
-    this.api.getDefaultMedia().subscriptions.loadedMetadata.subscribe(this.playVideo.bind(this));
+    this.videoitemservice.api.getDefaultMedia().subscriptions.loadedMetadata.subscribe(this.playVideo.bind(this));
 
     // Auto next
-    this.api.getDefaultMedia().subscriptions.ended.subscribe(this.nextVideo.bind(this));
+    this.videoitemservice.api.getDefaultMedia().subscriptions.ended.subscribe(this.nextVideo.bind(this));
     
   }
 
   doRefresh($event) {
-
+    this.getVideoFeed();
   }
 
   loadMore($event) {
-
+    this.getVideoFeed();
   }
 
   nextVideo() {
 
-    console.log('play the next video');
+    // console.log('play the next video');
     this.currentIndex++;
 
     if (this.currentIndex === this.currentCatFeed.videos.length) {
@@ -108,11 +118,18 @@ export class VideoPlaylistComponent implements OnInit {
   }
 
   playVideo() {
-    this.api.play();
+    if(this && this.videoitemservice.api && this.videoitemservice.api.play) {
+      this.videoitemservice.api.play();
+    }
   }
 
   stopVideo() {
-    this.api.pause();
+
+    console.log('stopVideo');
+
+    if(this && this.videoitemservice.api && this.videoitemservice.api.pause) {
+      this.videoitemservice.api.pause();
+    }
   }
 
   onClickPlaylistItem($event, item: VideoItem, videoFeed: VideoFeed, index: number) {
