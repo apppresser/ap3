@@ -83,14 +83,25 @@ export class FooterNavComponent implements OnInit {
 
   goToVideos() {
 
-    this.openPage('video-playlist-template');
+    this.openPage({
+      "title":"Winknews Videos",
+      "page_id":"4968",
+      "page_type":"html",
+      "list_route":null,
+      "list_display":null,
+      "favorites":null,
+      "show_slider":"false",
+      "slide_route":null,
+      "slug":"video-playlist-template",
+      "type":"apppages",
+      "url":"http:\/\/myapppresser.local.thiessen.us\/green\/apppages\/video-playlist-template\/",
+      "extra_classes":"",
+      "target":"",
+      "class":"",
+      "parent_id":"0"
+    });
 
-    // this.openPage({ 
-    //   url: '',
-    //   title: "Video",
-    //   type: 'apppages',
-    //   show_slider: "false"
-    // });
+
   }
 
 }
