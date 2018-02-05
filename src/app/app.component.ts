@@ -11,7 +11,7 @@ import {GlobalVars} from '../providers/globalvars/globalvars';
 import {AppAds} from '../providers/appads/appads';
 import {FBConnectAppSettings} from '../providers/facebook/fbconnect-settings';
 import {FbConnectIframe} from '../providers/facebook/login-iframe';
-import {PushService} from '../providers/push/push';
+// import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
 import {AppGeo} from '../providers/appgeo/appgeo';
@@ -30,6 +30,7 @@ import { Keyboard } from '@ionic-native/keyboard';
 import {Storage} from '@ionic/storage';
 import { User } from '../models/user.model';
 import { LoginService } from '../providers/logins/login.service';
+import { PushwooshService } from "../providers/pushwoosh.service";
 
 @Component({
   templateUrl: 'app.html'
@@ -71,7 +72,8 @@ export class MyApp {
     private fbconnectIframe: FbConnectIframe,
     private loginservice: LoginService,
     private sanitizer: DomSanitizer,
-    private pushService: PushService,
+    // private pushService: PushService,
+    private pushwoosh: PushwooshService,
     private appwoo: AppWoo,
     private appdata: AppData,
     private logins: Logins,
@@ -904,14 +906,18 @@ export class MyApp {
           return;
         }
 
+        /**
+         * WINK news uses Pushwoosh instead
+         */
+
         // Subscribe through myapppresser.com api
-        this.pushService.subscribeDevice( this.regId ).then( (result:string) => {
+        // this.pushService.subscribeDevice( this.regId ).then( (result:string) => {
 
-          var newresult = JSON.parse( result );
+        //   var newresult = JSON.parse( result );
 
-          this.storage.set('endpointArn', newresult.endpointArn )
+        //   this.storage.set('endpointArn', newresult.endpointArn )
 
-        });
+        // });
 
       } );
 
@@ -971,16 +977,22 @@ export class MyApp {
       return;
     }
 
-    this.storage.get('endpointArn').then( id => {
 
-      if( id ) {
-        // ajax call to save this to user meta
-        this.pushService.sendDeviceToWp(id, ajaxurl).then( result => {
-          console.log(result);
-        });
-      }
+    /**
+     * WINK news uses Pushwoosh instead
+     * 
+     */
 
-    })
+    // this.storage.get('endpointArn').then( id => {
+
+    //   if( id ) {
+    //     // ajax call to save this to user meta
+    //     this.pushService.sendDeviceToWp(id, ajaxurl).then( result => {
+    //       console.log(result);
+    //     });
+    //   }
+
+    // })
 
   }
 

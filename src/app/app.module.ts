@@ -35,7 +35,7 @@ import {Logins} from "../providers/logins/logins";
 import {FbConnectIframe} from '../providers/facebook/login-iframe';
 import {FbConnectApp} from '../providers/facebook/login-app';
 import {FBConnectAppSettings} from '../providers/facebook/fbconnect-settings';
-import {PushService} from '../providers/push/push';
+// import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
 import {WPlogin} from '../providers/wplogin/wplogin';
@@ -45,6 +45,7 @@ import {VideoUtils} from "../providers/video/video-utils";
 import {AppGeo} from "../providers/appgeo/appgeo";
 import {IAP} from "../providers/inapppurchase/inapppurchase";
 import { VideoItemService } from "../pages/video-playlist/video-item.service";
+import { PushwooshService } from "../providers/pushwoosh.service";
 
 /* Components */
 import { FooterNavComponent } from "../providers/footer-nav/footer-nav.component";
@@ -96,12 +97,13 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     FbConnectIframe,
     FbConnectApp,
     FBConnectAppSettings,
-    PushService,
+    // PushService,
     AppWoo,
     AppData,
     AppGeo,
     LoginService,
     VideoItemService,
+    PushwooshService,
     Logins,
     WPlogin,
     HeaderLogo,
