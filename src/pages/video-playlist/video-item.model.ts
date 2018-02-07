@@ -19,6 +19,7 @@ export class VideoItem {
 			app?: Appp,
 			video_clip?: any,
 			media_type?: string,
+			src?: string,
 			category?: string
 		}
 	) {
@@ -27,7 +28,10 @@ export class VideoItem {
 			this.appp = item.appp;
 			this.title = item.title;
 			this.excerpt = item.excerpt;
-			this.src = this.getVideo(item.video_clip);
+			this.src = item.src;
+			if(item.video_clip) {
+				this.src = this.getVideo(item.video_clip);
+			}
 			this.type = (typeof item.media_type === 'undefined') ? this.getType() : item.media_type;
 		}
 	}

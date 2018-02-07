@@ -1,11 +1,8 @@
 <ion-content [ngClass]="customClasses">
 
-	<!-- <iframe *ngIf="livestream" style="height:300px" id="ls_embed_1481737354" src="https://livestream.com/accounts/6142119/events/2549588/player?&amp;enableInfoAndActivity=false&amp;defaultDrawer=&amp;autoPlay=true&amp;mute=false" frameborder="0" scrolling="no" allowfullscreen=""></iframe> -->
-	<!-- <div *ngIf="livestream" style="height:300px;width:100%;background-color:lightgray">
-		livestreaming...
-	</div> -->
+	<iframe *ngIf="livestream" style="height:300px" id="ls_embed_1481737354" src="https://livestream.com/accounts/6142119/events/2549588/player?&amp;enableInfoAndActivity=false&amp;defaultDrawer=&amp;autoPlay=true&amp;mute=false" frameborder="0" scrolling="no" allowfullscreen=""></iframe>
 
-	<div style="height:300px;width:100%" *ngIf="currentItem">
+	<div style="height:300px;width:100%" *ngIf="currentItem&&!livestream">
 		<vg-player (onPlayerReady)="onPlayerReady($event)">
 			<vg-buffering></vg-buffering>
 		
@@ -39,11 +36,13 @@
 	</div>
 
 
-	<ion-refresher (ionRefresh)="doRefresh($event)">
+	<!-- <ion-refresher (ionRefresh)="doRefresh($event)">
 		<ion-refresher-content></ion-refresher-content>
-	</ion-refresher>
+	</ion-refresher> -->
 
 	<!-- <ion-list> -->
+
+		<button *ngIf="!livestream" class="livestream-btn" (click)="showLivestream($event)">Watch Now: WINK News Live</button>
 
 		<div *ngFor="let videoFeed of categories" class="video-category">
 			<h2>{{ videoFeed.name }}</h2>

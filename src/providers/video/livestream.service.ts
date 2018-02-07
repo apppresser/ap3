@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as crypto from 'crypto-js';
 
-const API_SECRET = 'f86kgY2JY9V9QHhJOjMfP4b2YT7skHSo';
+const API_SECRET = '';
 const CLIENT_ID = 6142119; //5348;
 const SCOPE = 'all';
 const LIVESTREAM_EVENT = '2549588';
@@ -14,10 +14,12 @@ export class LiveStreamService {
 		private http: HttpClient
 	) {
 		// console.log('LiveStreamService');
-		let token = this.getToken();
+		// let token = this.getToken();
 		// console.log('token', token.toString());
 
 		// this.getAccount( token.toString() );
+
+		console.log('@TODO - set livestream API Key');
 		
 	}
 

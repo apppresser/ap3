@@ -15,8 +15,8 @@ export class VideoPlaylistComponent implements OnInit {
   public currentIndex = 0;
   public currentCatFeed: VideoFeed;
   public currentItem: VideoItem;
-  public livestream = false;
-  public currentStream = '';
+  public livestream = true;
+  public currentStream: VideoItem;
   public categories: Array<VideoFeed>;
 
   constructor(
@@ -39,11 +39,24 @@ export class VideoPlaylistComponent implements OnInit {
   getVideoFeed() {
     this.categories = this.videoitemservice.feeds;
 
-    this.livestreamservice.getLiveStream().then(video_m3u8 => {
-      this.currentStream = video_m3u8;
+    // this.livestreamservice.getLiveStream().then(video_m3u8 => {
+    //   this.livestream = new VideoItem({
+    //     featured_image_urls: {
+    //       thumbnail: ''
+    //     },
+    //     // appp: undefinded,
+    //     title: {rendered:'Livestream'},
+    //     excerpt: {rendered:'Livestreaming now'},
+    //     // app: Appp,
+    //     video_clip: video_m3u8,
+    //     src: video_m3u8,
+    //     category: 'live'
+    //   })
 
-      console.log('livestream url', this.currentStream);
-    }); //"'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'";
+      
+
+    //   console.log('livestream url', this.currentStream);
+    // }); //"'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'";
 
     // console.log('is it defined?', this.categories);
 
@@ -78,17 +91,7 @@ export class VideoPlaylistComponent implements OnInit {
 
   addLiveStream() {
     // live stream
-    // this.playlist.push(new VideoItem({
-    //   featured_image_urls: {
-    //     thumbnail: ''
-    //   },
-    //   // appp: undefinded,
-    //   title: {rendered:'Livestream'},
-    //   excerpt: {rendered:'Livestreaming now'},
-    //   // app: Appp,
-    //   video_clip: 'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8',
-    //   category: 'live'
-    // }));
+    // this.playlist.push();
   }
 
   onPlayerReady(api:VgAPI) {
@@ -109,6 +112,11 @@ export class VideoPlaylistComponent implements OnInit {
 
   loadMore($event) {
     this.getVideoFeed();
+  }
+
+  showLivestream() {
+    this.stopVideo();
+    this.livestream = true;
   }
 
   nextVideo() {
@@ -143,7 +151,7 @@ export class VideoPlaylistComponent implements OnInit {
     console.log('videoFeed', videoFeed);
     console.log('index', index);
 
-    // this.livestream = false;
+    this.livestream = false;
 
     console.log('change video', item.src);
     if(item.src == this.currentItem.src) {
