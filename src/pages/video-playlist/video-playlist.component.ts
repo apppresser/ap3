@@ -3,6 +3,7 @@ import { VgAPI } from 'videogular2/core';
 import { VideoItem } from "./video-item.model";
 import { VideoItemService } from "./video-item.service";
 import { VideoFeed } from './video-feed.model';
+import { LiveStreamService } from "../../providers/video/livestream.service";
 
 @Component({
   selector: 'app-video-playlist',
@@ -19,7 +20,8 @@ export class VideoPlaylistComponent implements OnInit {
   public categories: Array<VideoFeed>;
 
   constructor(
-    private videoitemservice: VideoItemService
+    private videoitemservice: VideoItemService,
+    private livestreamservice: LiveStreamService
   ) { }
 
   ngOnInit() {
@@ -37,7 +39,11 @@ export class VideoPlaylistComponent implements OnInit {
   getVideoFeed() {
     this.categories = this.videoitemservice.feeds;
 
-    this.currentStream = ''; //"'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'";
+    this.livestreamservice.getLiveStream().then(video_m3u8 => {
+      this.currentStream = video_m3u8;
+
+      console.log('livestream url', this.currentStream);
+    }); //"'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'";
 
     // console.log('is it defined?', this.categories);
 

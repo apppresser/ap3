@@ -45,6 +45,7 @@ import {VideoUtils} from "../providers/video/video-utils";
 import {AppGeo} from "../providers/appgeo/appgeo";
 import {IAP} from "../providers/inapppurchase/inapppurchase";
 import { VideoItemService } from "../pages/video-playlist/video-item.service";
+import { LiveStreamService } from "../providers/video/livestream.service";
 import { PushwooshService } from "../providers/pushwoosh.service";
 
 /* Components */
@@ -103,6 +104,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     AppGeo,
     LoginService,
     VideoItemService,
+    LiveStreamService,
     PushwooshService,
     Logins,
     WPlogin,
