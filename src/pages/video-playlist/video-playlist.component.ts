@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { VgAPI } from 'videogular2/core';
 import { VideoItem } from "./video-item.model";
 import { VideoItemService } from "./video-item.service";
 import { VideoFeed } from './video-feed.model';
 import { LiveStreamService } from "../../providers/video/livestream.service";
+import * as Hls from "hls.js";
 
 @Component({
   selector: 'app-video-playlist',
@@ -11,6 +12,8 @@ import { LiveStreamService } from "../../providers/video/livestream.service";
   // https://github.com/videogular/videogular2-showroom/blob/master/src/app/smart-playlist/smart-playlist.component.html
 })
 export class VideoPlaylistComponent implements OnInit {
+
+  @ViewChild('videoPlayer') videoplayer: any;
 
   public currentIndex = 0;
   public currentCatFeed: VideoFeed;
@@ -26,6 +29,8 @@ export class VideoPlaylistComponent implements OnInit {
 
   ngOnInit() {
 
+    // this.loadLivestream();
+
     if(this.videoitemservice.feeds[0].videos.length === 0) {
       this.getVideoFeed();
     } else if( !this.categories ) {
@@ -36,27 +41,50 @@ export class VideoPlaylistComponent implements OnInit {
     }
   }
 
+  // loadLivestream() {
+
+  //   let video_m3u8 = 'https://mnmedias.api.telequebec.tv/m3u8/29880.m3u8';
+    
+  //   this.currentStream = new VideoItem({
+  //     featured_image_urls: {
+  //       thumbnail: ''
+  //     },
+  //     title: {rendered:'Livestream'},
+  //     excerpt: {rendered:'Livestreaming now'},
+  //     src: video_m3u8,
+  //     category: 'live'
+  //   });
+
+  //   this.livestream = true;
+  // }
+
   getVideoFeed() {
     this.categories = this.videoitemservice.feeds;
 
-    // this.livestreamservice.getLiveStream().then(video_m3u8 => {
-    //   this.livestream = new VideoItem({
-    //     featured_image_urls: {
-    //       thumbnail: ''
-    //     },
-    //     // appp: undefinded,
-    //     title: {rendered:'Livestream'},
-    //     excerpt: {rendered:'Livestreaming now'},
-    //     // app: Appp,
-    //     video_clip: video_m3u8,
-    //     src: video_m3u8,
-    //     category: 'live'
-    //   })
+    this.livestreamservice.getLiveStream().then( video => {
 
-      
+      console.log('livestreamservice.getLiveStream video', video);
 
-    //   console.log('livestream url', this.currentStream);
-    // }); //"'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'";
+      if( video && video.m3u8 ) {
+        this.currentStream = new VideoItem({
+          featured_image_urls: {
+            thumbnail: (video.thumbnailUrl) ? video.thumbnailUrl : ''
+          },
+          // appp: undefinded,
+          title: {rendered:'Livestream'},
+          excerpt: {rendered:'Livestreaming now'},
+          // app: Appp,
+          // video_clip: video_m3u8,
+          src: video.m3u8 + this.livestreamservice.getTokenUrlParams(),
+          category: 'live'
+        });
+
+        this.livestream = true;
+      }
+
+
+      console.log('livestream url', this.currentStream);
+    }); //"'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'";
 
     // console.log('is it defined?', this.categories);
 

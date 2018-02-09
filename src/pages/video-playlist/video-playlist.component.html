@@ -1,6 +1,9 @@
 <ion-content [ngClass]="customClasses">
 
-	<iframe *ngIf="livestream" style="height:300px" id="ls_embed_1481737354" src="https://livestream.com/accounts/6142119/events/2549588/player?&amp;enableInfoAndActivity=false&amp;defaultDrawer=&amp;autoPlay=true&amp;mute=false" frameborder="0" scrolling="no" allowfullscreen=""></iframe>
+	<video *ngIf="livestream" #videoPlayer width="100%" controls autoplay>
+        <source src="{{currentStream.src}}" type="application/x-mpegURL">
+    </video>
+	<!--<iframe  style="height:300px" id="ls_embed_1481737354" src="https://livestream.com/accounts/6142119/events/2549588/player?&amp;enableInfoAndActivity=false&amp;defaultDrawer=&amp;autoPlay=true&amp;mute=false" frameborder="0" scrolling="no" allowfullscreen=""></iframe>-->
 
 	<div style="height:300px;width:100%" *ngIf="currentItem&&!livestream">
 		<vg-player (onPlayerReady)="onPlayerReady($event)">
