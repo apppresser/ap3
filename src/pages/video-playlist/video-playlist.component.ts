@@ -61,11 +61,14 @@ export class VideoPlaylistComponent implements OnInit {
   getVideoFeed() {
     this.categories = this.videoitemservice.feeds;
 
-    this.livestreamservice.getLiveStream().then( video => {
-
-      console.log('livestreamservice.getLiveStream video', video);
+    this.livestreamservice.getLiveStreamFile().then( video => {
 
       if( video && video.m3u8 ) {
+
+        let video_src = video.m3u8 + this.livestreamservice.getTokenUrlParams();
+
+        console.log('livestreamservice.getLiveStream video src', video_src);
+
         this.currentStream = new VideoItem({
           featured_image_urls: {
             thumbnail: (video.thumbnailUrl) ? video.thumbnailUrl : ''
@@ -75,7 +78,7 @@ export class VideoPlaylistComponent implements OnInit {
           excerpt: {rendered:'Livestreaming now'},
           // app: Appp,
           // video_clip: video_m3u8,
-          src: video.m3u8 + this.livestreamservice.getTokenUrlParams(),
+          src: video_src,
           category: 'live'
         });
 

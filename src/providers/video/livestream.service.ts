@@ -14,13 +14,9 @@ export class LiveStreamService {
 	constructor(
 		private http: HttpClient
 	) {
-		// console.log('LiveStreamService');
-		// let token = this.getToken();
-		// console.log('token', token.toString());
-
-		// this.getAccount( token.toString() );
-
-		console.log('@TODO - set livestream API Key');
+		if(!API_SECRET) {
+			console.log('@TODO - set livestream API Key');
+		}
 		
 	}
 
