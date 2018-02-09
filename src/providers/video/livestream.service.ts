@@ -44,6 +44,18 @@ export class LiveStreamService {
 
 		return `?timestamp=${timestamp}&clientId=${CLIENT_ID}&token=${token}`;
 	}
+
+	getLiveStreamFile() {
+		return new Promise<any>((resolve, reject) => {
+
+			let video = {
+				thumbnailUrl: '',
+				m3u8: 'https://api.new.livestream.com/accounts/6142119/events/2549588/live.m3u8'
+			}
+
+			resolve(video);
+		});
+	}
 	
 	getLiveStream() {
 		return this.getVideo(LIVESTREAM_EVENT);
