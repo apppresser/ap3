@@ -22,7 +22,7 @@
     "@angular/platform-server": "5.0.3",
     "@ionic-native/action-sheet": "4.3.2",
     "@ionic-native/admob": "^3.12.1",
-    "@ionic-native/admob-pro": "^4.3.2",
+    "@ionic-native/admob-pro": "^4.5.3",
     "@ionic-native/camera": "4.3.2",
     "@ionic-native/core": "4.3.2",
     "@ionic-native/device": "^4.3.2",
