@@ -1,10 +1,10 @@
 <ion-content [ngClass]="customClasses">
 
-	<video *ngIf="livestream" #videoPlayer width="100%" controls autoplay>
+	<video *ngIf="livestream" #videoPlayer style="width:100%;height:auto;" controls autoplay>
         <source src="{{currentStream.src}}" type="application/x-mpegURL">
     </video>
 
-	<div style="height:300px;width:100%" *ngIf="currentItem&&!livestream">
+	<div style="width:100%;height:auto;" *ngIf="currentItem&&!livestream">
 		<vg-player (onPlayerReady)="onPlayerReady($event)">
 			<vg-buffering></vg-buffering>
 		
