@@ -42,6 +42,8 @@ export class FooterNavComponent implements OnInit {
             if( url ) {
               this.openPage({url: url});
             }
+
+            this.closeFooterMenu();
         });
     }
   }
@@ -83,9 +85,11 @@ export class FooterNavComponent implements OnInit {
 
   goToVideos() {
 
+    this.closeFooterMenu();
+
     this.openPage({
       "title":"Winknews Videos",
-      "page_id":"4968",
+      "page_id":"4853",
       "page_type":"html",
       "list_route":null,
       "list_display":null,
@@ -94,7 +98,7 @@ export class FooterNavComponent implements OnInit {
       "slide_route":null,
       "slug":"video-playlist-template",
       "type":"apppages",
-      "url":"http:\/\/myapppresser.local.thiessen.us\/green\/apppages\/video-playlist-template\/",
+      "url":"https:\/\/myapppresser.com\/winkwebdev\/apppages\/video-playlist-template\/",
       "extra_classes":"",
       "target":"",
       "class":"",
