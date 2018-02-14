@@ -14,9 +14,9 @@ export class GlobalVars {
   data: any = null;
   isInProductionMode = true;
   // url should be WP site with AP installed, dynamically changes based on build form
-  // appid: string = '163';
-  // apiurl: string = 'http://staging.myapppresser.com/test/'
-  // endpoint: string = 'wp-json/ap3/v1/app/163';
+  // appid: string = '156';
+  // apiurl: string = 'https://myapppresser.com/winkwebdev/'
+  // endpoint: string = 'wp-json/ap3/v1/app/156';
   appid: string = '[[appp_app_id]]';
   apiurl: string = '[[myappp_url]]'
   endpoint: string = 'wp-json/ap3/v1/app/[[appp_app_id]]';

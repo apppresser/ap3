@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { CustomHtmlTemplate } from './custom-html-template';
+import { VideoPlaylistModule } from "../video-playlist/video-playlist.module";
 
 @NgModule({
   declarations: [
@@ -9,7 +10,8 @@ import { CustomHtmlTemplate } from './custom-html-template';
   ],
   imports: [
     IonicPageModule.forChild(CustomHtmlTemplate),
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
+    VideoPlaylistModule
   ],
   entryComponents: [
     CustomHtmlTemplate

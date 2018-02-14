@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import {DynamicComponentModule} from 'angular2-dynamic-component/index';
+import { DynamicComponentModule } from 'angular2-dynamic-component/index';
 import { CustomPage } from './custom-page';
 import { VideoPlaylistModule } from "../video-playlist/video-playlist.module";
 

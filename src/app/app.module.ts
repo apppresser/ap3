@@ -49,7 +49,9 @@ import { LiveStreamService } from "../providers/video/livestream.service";
 import { PushwooshService } from "../providers/pushwoosh.service";
 
 /* Components */
-import { FooterNavComponent } from "../providers/footer-nav/footer-nav.component";
+// import { FooterNavComponent } from "../providers/footer-nav/footer-nav.component";
+import { FooterNavModule } from "../providers/footer-nav/footer-nav.module";
+import { VideoPlaylistModule } from "../pages/video-playlist/video-playlist.module";
 
 /* Other */
 import { IonicStorageModule } from '@ionic/storage';
@@ -68,7 +70,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
 @NgModule({
   declarations: [ // pages, custom components, pipes, etc
     MyApp,
-    FooterNavComponent
+    // FooterNavComponent
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -76,6 +78,8 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     BrowserModule,
     HttpModule,
     HttpClientModule,
+    FooterNavModule,
+    // VideoPlaylistModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

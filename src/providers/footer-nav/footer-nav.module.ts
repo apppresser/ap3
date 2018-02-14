@@ -15,4 +15,4 @@ import { FooterNavComponent } from './footer-nav.component';
     FooterNavComponent
   ]
 })
-export class VideoPlaylistModule {}
+export class FooterNavModule {}

@@ -21,7 +21,7 @@ import {VgBufferingModule} from 'videogular2/buffering';
     VgBufferingModule,
   ],
   entryComponents: [
-    
+    VideoPlaylistComponent
   ],
   exports: [
     VideoPlaylistComponent
