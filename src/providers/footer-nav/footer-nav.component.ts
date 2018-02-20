@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Events } from 'ionic-angular';
 import { NgForm } from '@angular/forms';
 
@@ -11,7 +11,9 @@ export class FooterNavComponent implements OnInit {
   private bodyTag: any;
   private menuOpen = false;
   public searchTerm: any;
+  public videoPage: any[];
 
+  @Input() menu;
 
   constructor(
     public events: Events,
@@ -28,7 +30,10 @@ export class FooterNavComponent implements OnInit {
     searchForm.addEventListener('submit',  event =>{
       console.log('FooterNavComponent searchForm submit event', event);
       event.preventDefault();
-    } )
+    } );
+
+    console.log('footer menu', this.menu);
+    this.setVideoPage(this.menu);
 
 
     // Add click listener to all links
@@ -45,6 +50,22 @@ export class FooterNavComponent implements OnInit {
 
             this.closeFooterMenu();
         });
+    }
+  }
+
+  /**
+   * Loops through the pages to find a slug containing 'video' and assumes
+   * that is the video page we are looking for
+   * 
+   * @param menuItems pages from the side menu set from myapppresser.com
+   */
+  setVideoPage(menuItems) {
+    if(menuItems) {
+      menuItems.forEach(element => {
+        if(element.slug && element.slug.indexOf('video') >= 0) {
+          this.videoPage = element;
+        }
+      });
     }
   }
 
@@ -87,23 +108,8 @@ export class FooterNavComponent implements OnInit {
 
     this.closeFooterMenu();
 
-    this.openPage({
-      "title":"Winknews Videos",
-      "page_id":"4853",
-      "page_type":"html",
-      "list_route":null,
-      "list_display":null,
-      "favorites":null,
-      "show_slider":"false",
-      "slide_route":null,
-      "slug":"video-playlist-template",
-      "type":"apppages",
-      "url":"https:\/\/myapppresser.com\/winkwebdev\/apppages\/video-playlist-template\/",
-      "extra_classes":"",
-      "target":"",
-      "class":"",
-      "parent_id":"0"
-    });
+    if(this.videoPage)
+      this.openPage(this.videoPage);
 
 
   }

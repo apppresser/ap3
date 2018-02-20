@@ -88,6 +88,8 @@ export class Iframe implements OnInit {
         let url = this.navParams.data.url;
 
         // console.log('starting url', url);
+        if(typeof url === 'undefined')
+            return '';
 
         // gather any #
         let url_parts = url.split('#');
@@ -370,6 +372,9 @@ export class Iframe implements OnInit {
 
     // Show alert in preview if not using https
     previewAlert(url) {
+
+        if(typeof url === 'undefined')
+            return;
 
         if( this.Device.platform != 'iOS' && this.Device.platform != 'Android' && url.indexOf('http://') >= 0 && location.port != '8100' ) {
 
