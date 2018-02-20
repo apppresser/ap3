@@ -4978,7 +4978,8 @@ body {
 		  font-size: 16px;
 		  line-height: 55px;
 		  font-weight: 600;
-		  text-transform: uppercase;
+			text-transform: uppercase;
+			font-family: 'Montserrat', sans-serif;
 	  }
 	  .mobile-menu-wrap {
 		  position: fixed;
@@ -6606,7 +6607,8 @@ body {
 	-ms-user-select: none;
 	user-select: none;
   }
-  .td-mobile-content li a {
+	.td-mobile-content li a,
+	.td-mobile-content li button {
 	display: block;
 	line-height: 21px;
 	font-size: 18px;
@@ -6614,9 +6616,12 @@ body {
 	margin-left: 0;
 	padding: 8px 10px;
 	font-weight: bold;
+	background-color:#191919;
+	font-family: 'Montserrat', sans-serif;
   }
   @media (max-width:500px) {
-	  .td-mobile-content li a {
+	  .td-mobile-content li a,
+		.td-mobile-content li button {
 		  font-size: 15px;
 	  }
   }
