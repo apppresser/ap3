@@ -3,6 +3,14 @@
 	margin-top:20px;
 	border-bottom: 1px solid #DDD;
 
+	.swiper-slide {
+		margin-top: 12px;
+	}
+
+	.swiper-pagination-progress .swiper-pagination-progressbar {
+		background-color: #000;
+	}
+
 	.card-background-page {
 		background-color: #FFFFFF;
 	}
@@ -20,8 +28,13 @@
 
 	h3 {
 		margin: 0px;
-		font-size: 1.2em;
+		font-size: 1em;
 		line-height: 1.15em;
+	}
+	
+	p {
+		font-size: 12px;
+		color: #666;
 	}
 }
 

@@ -165,6 +165,7 @@ export class VideoPlaylistComponent implements OnInit {
   playVideo() {
     if(this && this.videoitemservice.api && this.videoitemservice.api.play) {
       this.videoitemservice.api.play();
+      window.scrollTo(0, 0);
     }
   }
 
