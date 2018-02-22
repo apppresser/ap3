@@ -1,6 +1,6 @@
 <ion-content [ngClass]="customClasses">
 
-	<video *ngIf="livestream" #videoPlayer style="width:100%;max-width:100%;height:auto;" controls autoplay>
+	<video *ngIf="livestream&&currentStream" #videoPlayer style="width:100%;max-width:100%;height:auto;" controls autoplay>
         <source src="{{currentStream.src}}" type="application/x-mpegURL">
     </video>
 

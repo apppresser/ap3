@@ -101,6 +101,7 @@ export class FooterNavComponent implements OnInit {
   }
 
   openPage(page) {
+    this.closeFooterMenu();
     this.events.publish('pushpage', page );
   }
 
@@ -110,8 +111,6 @@ export class FooterNavComponent implements OnInit {
 
     if(this.videoPage)
       this.openPage(this.videoPage);
-
-
   }
 
 }
