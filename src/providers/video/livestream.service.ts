@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as crypto from 'crypto-js';
 
-const API_SECRET = '';
+const API_SECRET = 'f86kgY2JY9V9QHhJOjMfP4b2YT7skHSo';
 const ACCOUNT_ID = 6142119;
 const CLIENT_ID = 5348;
 const SCOPE = 'all';

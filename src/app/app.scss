@@ -270,6 +270,10 @@ iframe {
 	display: block;
 	width: auto;
 	height: 30px;
+
+	.platform-android & {
+		margin-left: 12px;
+	}
 }
 
 .toolbar-content-ios {
@@ -287,8 +291,8 @@ iframe {
 .custom-page {
 
 	ion-slides {
-		margin-bottom: 20px;
-		padding-bottom: 20px;
+		margin-bottom: 8px;
+		padding-bottom: 0;
 		background-color: #fff;
 	}
 

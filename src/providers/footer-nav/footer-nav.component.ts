@@ -70,7 +70,7 @@ export class FooterNavComponent implements OnInit {
   }
 
   onSubmit(searchForm: NgForm) {
-    var url = 'http://www.winknews.com/?s=' + encodeURIComponent(this.searchTerm);
+    var url = 'https://www.winknews.com/?s=' + encodeURIComponent(this.searchTerm);
 
     this.openPage({url: url});
 

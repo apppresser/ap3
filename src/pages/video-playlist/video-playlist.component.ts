@@ -21,6 +21,8 @@ export class VideoPlaylistComponent implements OnInit {
   public livestream = true;
   public currentStream: VideoItem;
   public categories: Array<VideoFeed>;
+  public TIMER_SCROLL;
+  public scroll_element;
 
   constructor(
     private videoitemservice: VideoItemService,
@@ -178,6 +180,27 @@ export class VideoPlaylistComponent implements OnInit {
     }
   }
 
+  // Smooth scrolling
+  scrollTopContent(elem, distance, delay) {
+
+    document.querySelector(elem).scrollTop = 0;
+
+    // if(!this.scroll_element)
+    // this.scroll_element = document.querySelector(elem);
+
+    // // stop when you reach the top
+    // if(this.scroll_element.scrollTop === 0)
+    //   return;
+
+    // // Scroll the element.
+    // this.scroll_element.scrollTop -= distance;
+    // // Perform a delay before recursing this function again.
+    // this.TIMER_SCROLL = setTimeout(() => {
+    //   this.scrollTopContent(elem, distance, delay);
+    // },
+    // delay);
+ }
+
   onClickPlaylistItem($event, item: VideoItem, videoFeed: VideoFeed, index: number) {
 
     console.log('videoFeed', videoFeed);
@@ -191,6 +214,7 @@ export class VideoPlaylistComponent implements OnInit {
       return;
     }
 
+    this.scrollTopContent('#videoPlaylist .scroll-content', 3, 1);
     this.currentCatFeed = videoFeed;
     this.currentItem = item;
   }

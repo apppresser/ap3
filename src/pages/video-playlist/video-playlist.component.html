@@ -1,4 +1,4 @@
-<ion-content [ngClass]="customClasses">
+<ion-content id="videoPlaylist" [ngClass]="customClasses">
 
 	<video *ngIf="livestream&&currentStream" #videoPlayer style="width:100%;max-width:100%;height:auto;" controls autoplay>
         <source src="{{currentStream.src}}" type="application/x-mpegURL">
@@ -68,8 +68,8 @@
 
 	<!-- </ion-list> -->
 
-	<ion-infinite-scroll (ionInfinite)="loadMore($event)">
+	<!-- <ion-infinite-scroll (ionInfinite)="loadMore($event)">
 		<ion-infinite-scroll-content></ion-infinite-scroll-content>
-	</ion-infinite-scroll>
+	</ion-infinite-scroll> -->
 
 </ion-content>
