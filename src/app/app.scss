@@ -463,3 +463,9 @@ video {max-width: 100% !important;}
 .bar-button-menutoggle {
 	display: none;
 }
+
+.platform-android {
+	ion-nav#nav, .ion-page, app-footer-nav { 
+		contain: none !important;
+	}
+}
