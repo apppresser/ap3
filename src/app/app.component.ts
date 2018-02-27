@@ -1067,8 +1067,6 @@ export class MyApp {
 
   openLoginModal() {
 
-    console.log('openLoginModal');
-
     if(!this.myLoginModal) {
       this.myLoginModal = this.modalCtrl.create( 'LoginModal' );
     }
