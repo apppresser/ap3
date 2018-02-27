@@ -70,6 +70,7 @@ export class FooterNavComponent implements OnInit {
   }
 
   onSubmit(searchForm: NgForm) {
+    this.stopAllVideos();
     var url = 'https://www.winknews.com/?s=' + encodeURIComponent(this.searchTerm);
 
     this.openPage({url: url});
@@ -101,16 +102,27 @@ export class FooterNavComponent implements OnInit {
   }
 
   openPage(page) {
+    this.stopAllVideos();
     this.closeFooterMenu();
     this.events.publish('pushpage', page );
   }
 
   goToVideos() {
-
+    this.stopAllVideos();
     this.closeFooterMenu();
 
     if(this.videoPage)
       this.openPage(this.videoPage);
+  }
+
+  goToNews() {
+    this.stopAllVideos();
+    this.closeFooterMenu();
+    this.openPage({url:'https://www.winknews.com/', extra_classes:''});
+  }
+
+  stopAllVideos() {
+    this.events.publish('videostop', null);
   }
 
 }

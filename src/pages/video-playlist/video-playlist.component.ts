@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import {Events} from 'ionic-angular';
 import { VgAPI } from 'videogular2/core';
 import { VideoItem } from "./video-item.model";
 import { VideoItemService } from "./video-item.service";
@@ -25,9 +26,15 @@ export class VideoPlaylistComponent implements OnInit {
   public scroll_element;
 
   constructor(
+    private events: Events,
     private videoitemservice: VideoItemService,
     private livestreamservice: LiveStreamService
-  ) { }
+  ) { 
+    events.subscribe('videostop', data => {
+      this.stopVideo();
+      this.stopLivestream();
+    });
+  }
 
   ngOnInit() {
 
@@ -63,33 +70,7 @@ export class VideoPlaylistComponent implements OnInit {
   getVideoFeed() {
     this.categories = this.videoitemservice.feeds;
 
-    this.livestreamservice.getLiveStreamFile().then( video => {
-
-      if( video && video.m3u8 ) {
-
-        let video_src = video.m3u8 + this.livestreamservice.getTokenUrlParams();
-
-        console.log('livestreamservice.getLiveStream video src', video_src);
-
-        this.currentStream = new VideoItem({
-          featured_image_urls: {
-            thumbnail: (video.thumbnailUrl) ? video.thumbnailUrl : ''
-          },
-          // appp: undefinded,
-          title: {rendered:'Livestream'},
-          excerpt: {rendered:'Livestreaming now'},
-          // app: Appp,
-          // video_clip: video_m3u8,
-          src: video_src,
-          category: 'live'
-        });
-
-        this.livestream = true;
-      }
-
-
-      console.log('livestream url', this.currentStream);
-    }); //"'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'";
+    this.addLiveStream();
 
     // console.log('is it defined?', this.categories);
 
@@ -124,7 +105,33 @@ export class VideoPlaylistComponent implements OnInit {
 
   addLiveStream() {
     // live stream
-    // this.playlist.push();
+    this.livestreamservice.getLiveStreamFile().then( video => {
+
+      if( video && video.m3u8 ) {
+
+        let video_src = video.m3u8 + this.livestreamservice.getTokenUrlParams();
+
+        console.log('livestreamservice.getLiveStream video src', video_src);
+
+        this.currentStream = new VideoItem({
+          featured_image_urls: {
+            thumbnail: (video.thumbnailUrl) ? video.thumbnailUrl : ''
+          },
+          // appp: undefinded,
+          title: {rendered:'Livestream'},
+          excerpt: {rendered:'Livestreaming now'},
+          // app: Appp,
+          // video_clip: video_m3u8,
+          src: video_src,
+          category: 'live'
+        });
+
+        this.livestream = true;
+      }
+
+
+      console.log('livestream url', this.currentStream);
+    }); //"'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8'";
   }
 
   onPlayerReady(api:VgAPI) {
@@ -149,7 +156,11 @@ export class VideoPlaylistComponent implements OnInit {
 
   showLivestream() {
     this.stopVideo();
-    this.livestream = true;
+    this.addLiveStream();
+  }
+
+  stopLivestream() {
+    this.currentStream = null;
   }
 
   nextVideo() {
