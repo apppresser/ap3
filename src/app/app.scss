@@ -460,8 +460,8 @@ button.item-ios.divider .item-inner, button.item-ios.submenu-parent .item-inner 
 video {max-width: 100% !important;}
 
 /* hide side menu icon */
-.bar-button-menutoggle {
-	display: none;
+#nav .bar-button-menutoggle {
+	display: none !important;
 }
 
 .platform-android {
