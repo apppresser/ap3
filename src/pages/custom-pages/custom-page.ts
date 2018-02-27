@@ -62,6 +62,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	segments: any;
 	show_segments: boolean = false;
 	login_modal: any;
+	login_modal_open = false;
 	slug: string;
 	header_logo_url: string;
 	show_header_logo: boolean = false;
@@ -141,6 +142,11 @@ export class CustomPage implements OnInit, OnDestroy {
 
 	ngOnInit() {
 
+		// Initial user settings
+		this.user = this.loginservice.user;
+		this.inputData.user = this.loginservice.user;
+
+		// Updates to user settings
 		this.subscriptions.push(this.loginservice.loginStatus().subscribe(user => {
 			this.user = user
 			/** Development mode only -- START */
@@ -357,6 +363,9 @@ export class CustomPage implements OnInit, OnDestroy {
 				return;
 		}
 
+		if(page && page.extra_classes && this.yieldLogin(page.extra_classes))
+			return;
+
 		if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
 	      window.open( page.url, '_system', null );
 	      return;
@@ -393,6 +402,9 @@ export class CustomPage implements OnInit, OnDestroy {
 			if(page === false)
 				return;
 		}
+
+		if(page && page.extra_classes && this.yieldLogin(page.extra_classes))
+			return;
 
 		if( page.extra_classes.indexOf('desktoptheme') >= 0 ) {
 			let url = new URL(page.url);
@@ -453,9 +465,38 @@ export class CustomPage implements OnInit, OnDestroy {
 	}
 
 	loginModal() {
-		this.login_modal = this.modalCtrl.create( 'LoginModal' );
-		this.login_modal.present();
+
+		if(!this.login_modal) {
+			this.login_modal = this.modalCtrl.create( 'LoginModal' );
+		}
+
+		this.login_modal.onDidDismiss(data => {
+			this.login_modal_open = false;
+		});
+
+		if( this.login_modal_open === false) {
+			this.login_modal_open = true;
+			this.login_modal.present();
+		}
 	}
+
+	/**
+   * Open the login modal if the menu item's extra_classes contains 'yieldlogin'
+   * @param extra_classes 
+   */
+  yieldLogin(extra_classes) {
+
+	if(extra_classes && extra_classes.indexOf('yieldlogin') >= 0) {
+      if(this.user) { // logged in
+        return false;
+      } else { // logged out, show login modal
+        this.loginModal();
+        return true;
+      }
+    }
+
+    return false;
+  }
 
 	getPages() {
 		if(!this.pages) {

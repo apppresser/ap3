@@ -54,6 +54,7 @@ export class MyApp {
   networkState: any;
   bothMenus: boolean = false;
   myLoginModal: any;
+  myLoginModal_open = false;
   showLogin: boolean = false;
   menu_side: string = "left";
   rtl: boolean = false;
@@ -508,10 +509,31 @@ export class MyApp {
 
   }
 
+  /**
+   * Open the login modal if the menu item's extra_classes contains 'yieldlogin'
+   * @param extra_classes 
+   */
+  yieldLogin(extra_classes) {
+
+    if(extra_classes && extra_classes.indexOf('yieldlogin') >= 0) {
+      if(this.user) { // logged in
+        return false;
+      } else { // logged out, show login modal
+        this.openLoginModal();
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   openPage(page) {
 
     // don't do anything if someone clicks a nav divider
     if( typeof( page.extra_classes ) != "undefined" && page.extra_classes.indexOf('divider') >= 0 )
+      return
+
+    if(this.yieldLogin(page.extra_classes))
       return
 
     // close the menu when clicking a link from the menu
@@ -541,6 +563,9 @@ export class MyApp {
 
     // don't do anything if someone clicks a nav divider
     if( typeof( page.extra_classes ) != "undefined" && page.extra_classes.indexOf('divider') >= 0 )
+      return
+
+    if(this.yieldLogin(page.extra_classes))
       return
 
     // close the menu when clicking a link from the menu
@@ -1042,9 +1067,20 @@ export class MyApp {
 
   openLoginModal() {
 
-    this.myLoginModal = this.modalCtrl.create( 'LoginModal' );
-    
-    this.myLoginModal.present();
+    console.log('openLoginModal');
+
+    if(!this.myLoginModal) {
+      this.myLoginModal = this.modalCtrl.create( 'LoginModal' );
+    }
+
+    this.myLoginModal.onDidDismiss(data => {
+			this.myLoginModal_open = false;
+		});
+
+		if( this.myLoginModal_open === false) {
+      this.myLoginModal_open = true;
+			this.myLoginModal.present();
+		}
 
   }
 
@@ -1294,7 +1330,7 @@ export class MyApp {
       } else {
         this.login_data = { loggedin: true, username: '' }
       }
-      
+
 
       this.storage.set('user_login', this.login_data ).then( () => {
 
