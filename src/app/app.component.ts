@@ -116,6 +116,10 @@ export class MyApp {
       this.pushPage( page );
     });
 
+    events.subscribe('openpage', page => {
+      this.openPage( page );
+    });
+
   }
 
   initializeApp() {

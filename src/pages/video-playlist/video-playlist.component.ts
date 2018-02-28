@@ -46,7 +46,8 @@ export class VideoPlaylistComponent implements OnInit {
       this.categories = this.videoitemservice.feeds;
       this.currentItem = this.categories[0].videos[0];
       this.currentCatFeed = this.categories[0];
-      this.playVideo();
+      // this.playVideo();
+      this.addLiveStream();
     }
   }
 

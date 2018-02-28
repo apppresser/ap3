@@ -104,7 +104,7 @@ export class FooterNavComponent implements OnInit {
   openPage(page) {
     this.stopAllVideos();
     this.closeFooterMenu();
-    this.events.publish('pushpage', page );
+    this.events.publish('openpage', page );
   }
 
   goToVideos() {
