@@ -25,6 +25,7 @@ plugins/android.json
 plugins/ios.json
 www/
 www-*
+/*-todo.txt
 $RECYCLE.BIN/
 /.sourcemaps/
 
