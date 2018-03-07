@@ -980,39 +980,41 @@ export class MyApp {
 
     push.on('notification').subscribe((data: any) => {
 
-      // if apppush post URL
-      if( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 && data.additionalData.target && data.additionalData.target == '_self' ) {
-        let page = { title: data.title, component: 'Iframe', url: data.additionalData.url, classes: null };
-        this.pushPage( page );
-        return;
-      }
-
-      // if there's an external url from apppush custom url field, open in IAB
-      if( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 ) {
-        this.openIab( data.additionalData.url, '_blank' );
-        return;
-      }
-
-      // if there's an app page, open it
-      if( data.additionalData && (<any>data).additionalData.page ) {
-
-        let page = (<any>data).additionalData.page;
-
-        // if page is external, fire the in app browser
-        if( page.target === '_blank' ) {
-          this.openIab( page.url, page.target );
-          return;
-        }
-
-        // if they included an app page, load the page
-        this.pushPage( (<any>data).additionalData.page );
-      }
-
       this.Dialogs.alert(
         data.message,  // message
         data.title,            // title
         this.translate.instant('Done')  // buttonName
-      );
+      ).then(() => {
+
+        // if apppush post URL
+        if( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 && data.additionalData.target && data.additionalData.target == '_self' ) {
+          let page = { title: data.title, component: 'Iframe', url: data.additionalData.url, classes: null };
+          this.pushPage( page );
+          return;
+        }
+
+        // if there's an external url from apppush custom url field, open in IAB
+        if( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 ) {
+          this.openIab( data.additionalData.url, '_blank' );
+          return;
+        }
+
+        // if there's an app page, open it
+        if( data.additionalData && (<any>data).additionalData.page ) {
+
+          let page = (<any>data).additionalData.page;
+
+          // if page is external, fire the in app browser
+          if( page.target === '_blank' ) {
+            this.openIab( page.url, page.target );
+            return;
+          }
+
+          // if they included an app page, load the page
+          this.pushPage( (<any>data).additionalData.page );
+        }
+
+      }); // then
 
     });
 
