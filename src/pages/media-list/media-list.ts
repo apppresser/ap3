@@ -1,4 +1,4 @@
-import {NavController, NavParams, LoadingController, ToastController, ItemSliding, Platform, ViewController, Content, IonicPage} from 'ionic-angular';
+import {NavController, NavParams, LoadingController, ToastController, ItemSliding, Platform, ViewController, Content, IonicPage, ModalController} from 'ionic-angular';
 import {Component, ViewChild, OnInit, Input} from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
@@ -6,8 +6,10 @@ import {HeaderLogo} from '../../providers/header-logo/header-logo';
 import {Storage} from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {Network} from '@ionic-native/network';
-import {MediaPlayer} from '../media-player/media-player';
 import {Download} from '../../providers/download/download';
+import {File} from '@ionic-native/file';
+
+declare var cordova:any;
 
 @IonicPage()
 @Component({
@@ -27,8 +29,8 @@ export class MediaList implements OnInit {
   title: string;
   defaultlist: boolean = false
   cardlist: boolean = false;
-  favorites: any = [];
-  doFavorites: boolean = false;
+  downloads: any = [];
+  doDownloads: boolean = false;
   showSlider: boolean = false;
   showSearch: boolean = false;
   rtlBack: boolean = false;
@@ -50,7 +52,9 @@ export class MediaList implements OnInit {
     private headerLogoService: HeaderLogo,
     private Network: Network,
     private Device: Device,
-    public download: Download
+    public download: Download,
+    public modalCtrl: ModalController,
+    public file: File
   ) {
 
     this.route = navParams.data.list_route;
@@ -61,9 +65,9 @@ export class MediaList implements OnInit {
       this.doLogo()
     }
 
-    if( navParams.data.favorites && navParams.data.favorites === "true" ) {
-      this.doFavorites = true;
-    }
+    // if( navParams.data.downloads && navParams.data.downloads === "true" ) {
+      this.doDownloads = true;
+    // }
 
     this.previewAlert(this.route);
 
@@ -91,9 +95,9 @@ export class MediaList implements OnInit {
         this.rtlBack = true
     }
 
-    this.storage.get( this.route.substr(-10, 10) + '_favorites' ).then( (favorites) => {
-      if( favorites )
-        this.favorites = favorites
+    this.storage.get( this.route.substr(-10, 10) + '_downloads' ).then( (downloads) => {
+      if( downloads )
+        this.downloads = downloads
     })
  
   }
@@ -147,7 +151,6 @@ export class MediaList implements OnInit {
 
   doRefresh(refresh) {
     this.loadPosts( this.route );
-    this.loadSlides( this.navParams.data.slide_route );
     // refresh.complete should happen when posts are loaded, not timeout
     setTimeout( ()=> refresh.complete(), 500);
   }
@@ -220,13 +223,16 @@ export class MediaList implements OnInit {
 
   }
 
-  addFav(slidingItem: ItemSliding, item) {
+  // add or remove download to storage and download or delete file
+  addDownload(slidingItem: ItemSliding, item) {
+
+    console.log('add download', item)
 
     var inArray = false;
 
-    for (let i = this.favorites.length - 1; i >= 0; i--) {
+    for (let i = this.downloads.length - 1; i >= 0; i--) {
 
-      if( this.favorites[i].id === item.id ) {
+      if( this.downloads[i].id === item.id ) {
         inArray = true;
         break;
       }
@@ -235,31 +241,67 @@ export class MediaList implements OnInit {
     // Don't add duplicate favs
     if( inArray === false ) {
 
-      this.favorites.push(item);
+      // download the file
+      this.download.downloadFile( item.appp.media_url ).then( downloadUrl => {
 
-      this.storage.set( this.route.substr(-10, 10) + '_favorites', this.favorites);
+        console.log(downloadUrl)
 
-      this.presentToast('Favorite Added');
+        if(downloadUrl) {
+
+          item.appp.media_url = downloadUrl
+
+          this.downloads.push(item);
+
+          this.storage.set( this.route.substr(-10, 10) + '_downloads', this.downloads);
+
+          this.presentToast('Favorite Added.');
+
+        } else {
+
+          this.presentToast('Problem downloading file.');
+
+        }
+
+      })
+      .catch( e => {
+        console.log('file download error', e)
+      })
 
     } else {
 
-      for (let i = this.favorites.length - 1; i >= 0; i--) {
-        if( this.favorites[i].id === item.id ) {
-          this.favorites.splice(i, 1);
-          break;
+      let path = cordova.file.dataDirectory + '/media';
+      let fileName = item.appp.media_url.replace(/^.*[\\\/]/, '');
+
+      console.log('remove file ' + path + fileName )
+
+      this.file.removeFile( path, fileName ).then( msg => {
+
+        console.log(msg)
+
+        // remove from downloads and delete file
+        for (let i = this.downloads.length - 1; i >= 0; i--) {
+          if( this.downloads[i].id === item.id ) {
+            this.downloads.splice(i, 1);
+            break;
+          }
         }
-      }
 
-      this.storage.set( this.route.substr(-10, 10) + '_favorites', this.favorites);
+        this.storage.set( this.route.substr(-10, 10) + '_downloads', this.downloads);
 
-      // refresh the list
-      if( this.favorites.length ) {
-        this.items = this.favorites;
-      } else {
-        this.showAll();
-      }
+        // refresh the list
+        if( this.downloads.length ) {
+          this.items = this.downloads;
+        } else {
+          this.showAll();
+        }
 
-      this.presentToast('Favorite Removed');
+        this.presentToast('Download Removed');
+
+        }, (error) => {
+        
+          console.warn(error)
+
+      })
 
     }
 
@@ -283,20 +325,20 @@ export class MediaList implements OnInit {
 
   }
 
-  showFavorites() {
+  showDownloads() {
 
-    this.storage.get( this.route.substr(-10, 10) + '_favorites' ).then( (favorites) => {
+    this.storage.get( this.route.substr(-10, 10) + '_downloads' ).then( (downloads) => {
 
-      if( favorites && favorites.length) {
+      if( downloads && downloads.length) {
 
-        this.favorites = favorites;
+        this.downloads = downloads;
 
-        this.items = favorites;
+        this.items = downloads;
 
         this.showSlider = false;
 
       } else {
-        this.presentToast('No Favorites to show');
+        this.presentToast('No downloads to show');
       }
 
     });
@@ -307,10 +349,6 @@ export class MediaList implements OnInit {
     this.storage.get( this.route.substr(-10, 10) + '_posts' ).then((items) => {
       this.items = items;
     });
-
-    if( this.navParams.data.show_slider && this.navParams.data.show_slider === "true" ) {
-      this.showSlider = true;
-    }
   }
 
   // Show alert in preview if not using https
@@ -349,18 +387,10 @@ export class MediaList implements OnInit {
 
   mediaModal( item ) {
 
-    let modal = this.modalCtrl.create(MediaPlayer, {source: src, image: img});
+    console.log(item)
+
+    let modal = this.modalCtrl.create('MediaPlayer', {source: item.appp.media_url});
     modal.present();
-
-  }
-
-  downloadFile( filePath ) {
-
-    console.log(filePath)
-
-    this.download.downloadFile( filePath ).then( response => {
-      console.log(response)
-    })
 
   }
 

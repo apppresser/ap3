@@ -30,14 +30,14 @@
       <ion-searchbar placeholder="{{'Search' | translate }}" debounce="1000" (ionInput)="search($event)" (ionClear)="clearSearch()"></ion-searchbar>
     </ion-toolbar>
 
-    <ion-toolbar *ngIf="doFavorites" id="favorites-toolbar">
+    <ion-toolbar *ngIf="doDownloads" id="favorites-toolbar">
 
       <button ion-button clear (click)="showAll()">
         {{ 'All' | translate }}
       </button>
 
-      <button ion-button clear (click)="showFavorites()">
-        {{ 'Favorites' | translate }}
+      <button ion-button clear (click)="showDownloads()">
+        {{ 'Downloads' | translate }}
       </button>
 
     </ion-toolbar>
@@ -71,8 +71,8 @@
 
       </button>
 
-      <ion-item-options side="right" *ngIf="doFavorites">
-        <button ion-button color="primary" (click)="downloadFile(item.appp.media_url)">
+      <ion-item-options side="right" *ngIf="doDownloads">
+        <button ion-button color="primary" (click)="addDownload(slidingItem, item)">
           <ion-icon name="star-outline"></ion-icon>
           {{ 'Download' | translate }}
         </button>

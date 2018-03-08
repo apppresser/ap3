@@ -11,6 +11,7 @@ import { ActionSheet } from "@ionic-native/action-sheet";
 import { Camera } from "@ionic-native/camera";
 import { Device } from "@ionic-native/device";
 import { Transfer } from "@ionic-native/transfer";
+import { FileTransfer } from "@ionic-native/file-transfer";
 import { File } from "@ionic-native/file";
 import { AdMob } from "@ionic-native/admob";
 import { AdMobPro } from "@ionic-native/admob-pro";
@@ -61,7 +62,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
 }
 
 @NgModule({
-  declarations: [ // pages, custom components, pipes, etc
+  declarations: [
     MyApp
   ],
   imports: [
@@ -79,7 +80,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     })
   ],
   bootstrap: [IonicApp],
-  entryComponents: [ // pages go here
+  entryComponents: [
     MyApp
   ],
   providers: [
@@ -105,6 +106,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     Device,
     Transfer,
     File,
+    FileTransfer,
     AdMob,
     AdMobPro,
     Facebook,

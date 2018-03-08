@@ -29,6 +29,7 @@
     "@ionic-native/dialogs": "4.3.2",
     "@ionic-native/facebook": "4.3.2",
     "@ionic-native/file": "4.3.2",
+    "@ionic-native/file-transfer": "^4.5.3",
     "@ionic-native/geolocation": "4.3.2",
     "@ionic-native/in-app-browser": "4.3.2",
     "@ionic-native/in-app-purchase": "4.3.2",
@@ -100,7 +101,8 @@
       },
       "cordova-plugin-statusbar": {},
       "cordova-plugin-inapppurchase": {},
-      "cordova-plugin-inappbrowser": {}
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-file-transfer": {}
     },
     "platforms": [
       "ios"

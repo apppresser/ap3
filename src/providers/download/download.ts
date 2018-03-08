@@ -34,19 +34,15 @@ export class Download {
 
 	  	const fileTransfer: FileTransferObject = this.transfer.create();
 
-  		fileTransfer.download( filePath, cordova.file.dataDirectory ).then((entry) => {
+      let filename = filePath.replace(/^.*[\\\/]/, '')
+
+  		fileTransfer.download( filePath, cordova.file.dataDirectory + '/media/' + filename ).then((entry) => {
 
         console.log('file download success', entry)
 
-  			let obj: any = {}
-  			obj.entry = entry;
-  			obj.id = id;
-
-        console.log( obj )
-
   			this.events.publish('load:progress', 80);
 
-  			resolve(obj);
+  			resolve( entry.toURL() );
 
   		}, (error) => {
         console.log(error)

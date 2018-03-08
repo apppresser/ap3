@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { MediaList } from './post-list';
+import { MediaList } from './media-list';
 
 @NgModule({
   declarations: [
