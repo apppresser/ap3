@@ -1,0 +1,88 @@
+<ion-header>
+  
+  <ion-navbar no-border-bottom>
+
+    <ion-buttons start>
+      <button *ngIf="rtlBack" (click)="backRtlTransition()" ion-button class="custom-back-button">
+          <ion-icon name="arrow-back"></ion-icon>
+          {{'Back' | translate }}
+      </button>
+
+      <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+
+    </ion-buttons>
+
+    <img class="header-logo" *ngIf="show_header_logo" [src]="header_logo_url" />
+
+    <ion-title *ngIf="!show_header_logo">{{title | translate}}</ion-title>
+
+    <ion-buttons end>
+    <button ion-button class="search-button-header" (click)="toggleSearchBar()">
+        <ion-icon name="search"></ion-icon>
+      </button>
+    </ion-buttons>
+
+    </ion-navbar>
+
+    <ion-toolbar *ngIf="showSearch">
+      <ion-searchbar placeholder="{{'Search' | translate }}" debounce="1000" (ionInput)="search($event)" (ionClear)="clearSearch()"></ion-searchbar>
+    </ion-toolbar>
+
+    <ion-toolbar *ngIf="doFavorites" id="favorites-toolbar">
+
+      <button ion-button clear (click)="showAll()">
+        {{ 'All' | translate }}
+      </button>
+
+      <button ion-button clear (click)="showFavorites()">
+        {{ 'Favorites' | translate }}
+      </button>
+
+    </ion-toolbar>
+
+</ion-header>
+
+<ion-content [ngClass]="customClasses">
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  
+  <ion-list>
+
+    <ion-item-sliding *ngFor="let item of items" #slidingItem>
+      <button ion-item (click)="mediaModal(item)">
+
+      <ion-avatar item-left *ngIf="item.featured_image_urls">
+        <img *ngIf="item.featured_image_urls && item.featured_image_urls.thumbnail" src="{{item.featured_image_urls.thumbnail}}">
+        <img *ngIf="!item.featured_image_urls || !item.featured_image_urls.thumbnail" src="assets/default.png">
+      </ion-avatar>
+
+      <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_title" [innerHTML]="item.appp.post_list.above_title"></div>
+
+      <h2 *ngIf="item.title && item.title.rendered" [innerHTML]="item.title.rendered"></h2>
+
+      <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_title" [innerHTML]="item.appp.post_list.below_title"></div>
+
+      <p *ngIf="item.excerpt && item.excerpt.rendered" [innerHTML]="item.excerpt.rendered"></p>
+
+      <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_content" [innerHTML]="item.appp.post_list.below_content"></div>
+
+      </button>
+
+      <ion-item-options side="right" *ngIf="doFavorites">
+        <button ion-button color="primary" (click)="downloadFile(item.appp.media_url)">
+          <ion-icon name="star-outline"></ion-icon>
+          {{ 'Download' | translate }}
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+
+  </ion-list>
+
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+   <ion-infinite-scroll-content></ion-infinite-scroll-content>
+ </ion-infinite-scroll>
+
+</ion-content>

@@ -44,6 +44,7 @@ import {HeaderLogo} from '../providers/header-logo/header-logo';
 import {VideoUtils} from "../providers/video/video-utils";
 import {AppGeo} from "../providers/appgeo/appgeo";
 import {IAP} from "../providers/inapppurchase/inapppurchase";
+import {Download} from "../providers/download/download";
 
 /* Other */
 import { IonicStorageModule } from '@ionic/storage';
@@ -118,7 +119,8 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     Geolocation,
     VideoUtils,
     IAP,
-    InAppPurchase
+    InAppPurchase,
+    Download
   ]
 })
 export class AppModule {}
