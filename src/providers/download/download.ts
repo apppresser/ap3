@@ -12,6 +12,8 @@ declare var cordova: any;
 @Injectable()
 export class Download {
 
+  percent: number;
+
   constructor(
   	public http: Http,
   	public events: Events,
@@ -26,20 +28,29 @@ export class Download {
   	// simulate progress
   	this.events.publish('load:progress', 10);
 
-  	setTimeout( () => {
-  		this.events.publish('load:progress', 30);
-  	}, 300);
+  	const fileTransfer: FileTransferObject = this.transfer.create();
+
+    fileTransfer.onProgress( progressEvent => {
+
+      let percent = progressEvent.loaded / progressEvent.total * 100
+      percent = Math.round( percent )
+
+      // only send progress event when number changes
+      if( percent === this.percent ) {
+        return;
+      }
+
+      this.percent = percent
+
+      console.log(percent)
+      
+      if( percent > 10 ) {
+        this.events.publish('load:progress', percent );
+      }
+
+    })
 
   	return new Promise( (resolve, reject) => {
-
-	  	const fileTransfer: FileTransferObject = this.transfer.create();
-
-      fileTransfer.onProgress( progressEvent => {
-
-        if( progressEvent.loaded < 71 )
-          this.events.publish('load:progress', progressEvent.loaded + 30 );
-
-      })
 
       let filename = filePath.replace(/^.*[\\\/]/, '')
 
@@ -52,7 +63,7 @@ export class Download {
   			resolve( entry.toURL() );
 
   		}, (error) => {
-        console.log(error)
+        console.log('file download err', error)
   			reject( JSON.stringify( error ) );
   			this.events.publish('load:progress', 0);
   		});

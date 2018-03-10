@@ -264,6 +264,8 @@ export class MediaList implements OnInit {
 
         if(downloadUrl) {
 
+          this.loadProgress = 0
+
           item.download_url = downloadUrl
 
           item.downloaded = true
