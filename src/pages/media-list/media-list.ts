@@ -1,4 +1,4 @@
-import {NavController, NavParams, LoadingController, ToastController, ItemSliding, Platform, ViewController, Content, IonicPage, ModalController} from 'ionic-angular';
+import {NavController, NavParams, LoadingController, ToastController, Platform, ViewController, Content, IonicPage, ModalController, Events} from 'ionic-angular';
 import {Component, ViewChild, OnInit, Input} from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
@@ -24,7 +24,6 @@ export class MediaList implements OnInit {
   selectedItem: any;
   icons: string[];
   items: any = [];
-  slides: any;
   page: number = 1;
   siteurl: string;
   route: string;
@@ -33,7 +32,6 @@ export class MediaList implements OnInit {
   cardlist: boolean = false;
   downloads: any = [];
   doDownloads: boolean = false;
-  showSlider: boolean = false;
   showSearch: boolean = false;
   rtlBack: boolean = false;
   networkState: any;
@@ -58,7 +56,8 @@ export class MediaList implements OnInit {
     public download: Download,
     public modalCtrl: ModalController,
     public file: File,
-    public translate: TranslateService
+    public translate: TranslateService,
+    public events: Events
   ) {
 
     events.subscribe('load:progress', (progress) => {
@@ -138,7 +137,7 @@ export class MediaList implements OnInit {
     this.postService.load( route, this.page ).then(items => {
 
       // only add if we have a media url
-      for (var i = 0; i < items.length; ++i) {
+      for (var i = 0; i < (<any>items).length; ++i) {
         if( items[i].appp.media_url) {
           this.items.push(items[i])
         }
@@ -331,8 +330,6 @@ export class MediaList implements OnInit {
 
     }
 
-    slidingItem.close();
-
   }
 
   presentToast(msg) {
@@ -360,8 +357,6 @@ export class MediaList implements OnInit {
         this.downloads = downloads;
 
         this.items = downloads;
-
-        this.showSlider = false;
 
       } else {
         this.translate.get('Click the download icon to download an item.').subscribe( text => {

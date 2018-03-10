@@ -76,11 +76,15 @@
    <ion-infinite-scroll-content></ion-infinite-scroll-content>
  </ion-infinite-scroll>
 
-</ion-content>
-
-<ion-footer *ngIf="loadProgress > 0">
+ <ion-footer *ngIf="loadProgress > 0">
   <ion-toolbar color="light">
   <p align="center">Downloading...</p>
-  <progress-bar [progress]="loadProgress"></progress-bar>
+  <div class="progress-outer">
+      <div class="progress-inner" [style.width]="loadProgress + '%'">
+          {{loadProgress}}%
+      </div>
+  </div>
   </ion-toolbar>
 </ion-footer>
+
+</ion-content>

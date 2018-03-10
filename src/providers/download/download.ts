@@ -34,7 +34,7 @@ export class Download {
 
 	  	const fileTransfer: FileTransferObject = this.transfer.create();
 
-      fileTransfer.onProgress( data => {
+      fileTransfer.onProgress( progressEvent => {
 
         if( progressEvent.loaded < 71 )
           this.events.publish('load:progress', progressEvent.loaded + 30 );
