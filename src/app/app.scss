@@ -23,6 +23,8 @@
 @import "../pages/media-player/media-player";
 @import "../theme/templates";
 
+@import "../pages/progress-bar/progress-bar";
+
 $border-color: rgba(0,0,0,.1);
 
 // hack for iphonex status bar. Should be deprecated eventually.
@@ -473,4 +475,16 @@ button.item-ios.divider .item-inner, button.item-ios.submenu-parent .item-inner 
 
 .modal-footer .col:nth-child(2) .button {
 	border-left: 1px solid #ccc;
+}
+
+.media-list ion-icon[item-end] {
+	color: #ccc;
+}
+
+.media-list ion-icon.downloaded-icon {
+	color: green;
+}
+
+.media-list .item-ios[detail-push] .item-inner, .media-list button.item-ios:not([detail-none]) .item-inner, .media-list a.item-ios:not([detail-none]) .item-inner {
+	background: none;
 }

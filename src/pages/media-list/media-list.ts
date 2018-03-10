@@ -8,6 +8,7 @@ import {Device} from '@ionic-native/device';
 import {Network} from '@ionic-native/network';
 import {Download} from '../../providers/download/download';
 import {File} from '@ionic-native/file';
+import {TranslateService} from '@ngx-translate/core';
 
 declare var cordova:any;
 
@@ -18,10 +19,11 @@ declare var cordova:any;
 export class MediaList implements OnInit {
 
   @ViewChild(Content) content: Content;
+  @Input('progress') progress;
 
   selectedItem: any;
   icons: string[];
-  items: any;
+  items: any = [];
   slides: any;
   page: number = 1;
   siteurl: string;
@@ -38,6 +40,7 @@ export class MediaList implements OnInit {
   header_logo_url: string;
   show_header_logo: boolean = false;
   customClasses: string = '';
+  loadProgress: any = 0
 
   constructor(
     public nav: NavController, 
@@ -54,8 +57,13 @@ export class MediaList implements OnInit {
     private Device: Device,
     public download: Download,
     public modalCtrl: ModalController,
-    public file: File
+    public file: File,
+    public translate: TranslateService
   ) {
+
+    events.subscribe('load:progress', (progress) => {
+      this.doProgress(progress);
+    });
 
     this.route = navParams.data.list_route;
 
@@ -129,8 +137,12 @@ export class MediaList implements OnInit {
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
     this.postService.load( route, this.page ).then(items => {
 
-      // Loads posts from WordPress API
-      this.items = items;
+      // only add if we have a media url
+      for (var i = 0; i < items.length; ++i) {
+        if( items[i].appp.media_url) {
+          this.items.push(items[i])
+        }
+      }
 
       this.storage.set( route.substr(-10, 10) + '_posts', items);
 
@@ -224,9 +236,14 @@ export class MediaList implements OnInit {
   }
 
   // add or remove download to storage and download or delete file
-  addDownload(slidingItem: ItemSliding, item) {
+  addDownload(item) {
 
     console.log('add download', item)
+
+    if( typeof this.Device.platform != 'string' ) {
+      this.presentToast("Please try from a device.")
+      return;
+    }
 
     var inArray = false;
 
@@ -248,7 +265,11 @@ export class MediaList implements OnInit {
 
         if(downloadUrl) {
 
-          item.appp.media_url = downloadUrl
+          item.download_url = downloadUrl
+
+          item.downloaded = true
+
+          // TODO: push these item changes to this.items so they show up. Loop through items to get array index, update item, then push to this.items and save in storage
 
           this.downloads.push(item);
 
@@ -270,7 +291,12 @@ export class MediaList implements OnInit {
     } else {
 
       let path = cordova.file.dataDirectory + '/media';
-      let fileName = item.appp.media_url.replace(/^.*[\\\/]/, '');
+      let fileName = item.download_url.replace(/^.*[\\\/]/, '');
+
+      item.download_url = ''
+      item.downloaded = false
+
+      // TODO: push these item changes to this.items so they show up. Loop through items to get array index, update item, then push to this.items and save in storage
 
       console.log('remove file ' + path + fileName )
 
@@ -338,7 +364,9 @@ export class MediaList implements OnInit {
         this.showSlider = false;
 
       } else {
-        this.presentToast('No downloads to show');
+        this.translate.get('Click the download icon to download an item.').subscribe( text => {
+          this.presentToast(text);
+        })
       }
 
     });
@@ -389,9 +417,21 @@ export class MediaList implements OnInit {
 
     console.log(item)
 
-    let modal = this.modalCtrl.create('MediaPlayer', {source: item.appp.media_url});
+    let url = ''
+
+    if( item.downloaded && item.download_url ) {
+      url = item.download_url
+    } else {
+      url = item.appp.media_url
+    }
+
+    let modal = this.modalCtrl.create('MediaPlayer', {source: url });
     modal.present();
 
+  }
+
+  doProgress(progress) {
+    this.loadProgress = progress;
   }
 
 }

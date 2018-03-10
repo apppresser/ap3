@@ -37,7 +37,7 @@
       </button>
 
       <button ion-button clear (click)="showDownloads()">
-        {{ 'Downloads' | translate }}
+        {{ 'Downloaded' | translate }}
       </button>
 
     </ion-toolbar>
@@ -49,35 +49,26 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
   
-  <ion-list>
+  <ion-list class="media-list">
 
-    <ion-item-sliding *ngFor="let item of items" #slidingItem>
-      <button ion-item (click)="mediaModal(item)">
+      <ion-item *ngFor="let item of items">
+        
+        <div (click)="mediaModal(item)">
+          <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_title" [innerHTML]="item.appp.post_list.above_title"></div>
 
-      <ion-avatar item-left *ngIf="item.featured_image_urls">
-        <img *ngIf="item.featured_image_urls && item.featured_image_urls.thumbnail" src="{{item.featured_image_urls.thumbnail}}">
-        <img *ngIf="!item.featured_image_urls || !item.featured_image_urls.thumbnail" src="assets/default.png">
-      </ion-avatar>
+          <h2 *ngIf="item.title && item.title.rendered" [innerHTML]="item.title.rendered"></h2>
 
-      <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_title" [innerHTML]="item.appp.post_list.above_title"></div>
+          <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_title" [innerHTML]="item.appp.post_list.below_title"></div>
 
-      <h2 *ngIf="item.title && item.title.rendered" [innerHTML]="item.title.rendered"></h2>
+          <p *ngIf="item.excerpt && item.excerpt.rendered" [innerHTML]="item.excerpt.rendered"></p>
 
-      <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_title" [innerHTML]="item.appp.post_list.below_title"></div>
+          <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_content" [innerHTML]="item.appp.post_list.below_content"></div>
 
-      <p *ngIf="item.excerpt && item.excerpt.rendered" [innerHTML]="item.excerpt.rendered"></p>
+        </div>
 
-      <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_content" [innerHTML]="item.appp.post_list.below_content"></div>
+        <ion-icon (click)="addDownload(item)" item-end [ngClass]="{ 'downloaded-icon': item.downloaded }" name="download"></ion-icon>
 
-      </button>
-
-      <ion-item-options side="right" *ngIf="doDownloads">
-        <button ion-button color="primary" (click)="addDownload(slidingItem, item)">
-          <ion-icon name="star-outline"></ion-icon>
-          {{ 'Download' | translate }}
-        </button>
-      </ion-item-options>
-    </ion-item-sliding>
+      </ion-item>
 
   </ion-list>
 
@@ -86,3 +77,10 @@
  </ion-infinite-scroll>
 
 </ion-content>
+
+<ion-footer *ngIf="loadProgress > 0">
+  <ion-toolbar color="light">
+  <p align="center">Downloading...</p>
+  <progress-bar [progress]="loadProgress"></progress-bar>
+  </ion-toolbar>
+</ion-footer>

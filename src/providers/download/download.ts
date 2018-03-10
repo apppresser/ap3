@@ -27,12 +27,19 @@ export class Download {
   	this.events.publish('load:progress', 10);
 
   	setTimeout( () => {
-  		this.events.publish('load:progress', 40);
+  		this.events.publish('load:progress', 30);
   	}, 300);
 
   	return new Promise( (resolve, reject) => {
 
 	  	const fileTransfer: FileTransferObject = this.transfer.create();
+
+      fileTransfer.onProgress( data => {
+
+        if( progressEvent.loaded < 71 )
+          this.events.publish('load:progress', progressEvent.loaded + 30 );
+
+      })
 
       let filename = filePath.replace(/^.*[\\\/]/, '')
 

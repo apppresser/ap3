@@ -49,6 +49,7 @@ import {Download} from "../providers/download/download";
 
 /* Other */
 import { IonicStorageModule } from '@ionic/storage';
+import {ProgressBarComponent} from '../pages/progress-bar/progress-bar';
 
 // required for ng translate, tells it to look in assets folder for trans files
 export function HttpLoaderFactory(http: HttpClient) {
@@ -71,6 +72,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     BrowserModule,
     HttpModule,
     HttpClientModule,
+    ProgressBarComponent,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
