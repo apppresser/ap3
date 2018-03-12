@@ -1,5 +1,5 @@
 import {NavController, NavParams, LoadingController, ToastController, Platform, ViewController, Content, IonicPage, ModalController, Events} from 'ionic-angular';
-import {Component, ViewChild, OnInit, Input} from '@angular/core';
+import {Component, ViewChild, OnInit, Input, NgZone} from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
@@ -57,7 +57,8 @@ export class MediaList implements OnInit {
     public modalCtrl: ModalController,
     public file: File,
     public translate: TranslateService,
-    public events: Events
+    public events: Events,
+    public zone: NgZone
   ) {
 
     events.subscribe('load:progress', (progress) => {
@@ -79,6 +80,8 @@ export class MediaList implements OnInit {
     this.previewAlert(this.route);
 
     this.customClasses = 'post-list' + ((navParams.data.slug) ? ' page-' + navParams.data.slug : '');
+
+    this.zone = new NgZone({ enableLongStackTrace: false });
     
   }
 
@@ -144,6 +147,8 @@ export class MediaList implements OnInit {
           this.items.push(items[i])
         }
       }
+
+      this.mergeDownloadData()
 
       this.storage.set( route.substr(-10, 10) + '_posts', items);
 
@@ -239,8 +244,6 @@ export class MediaList implements OnInit {
   // add or remove download to storage and download or delete file
   addDownload(item) {
 
-    console.log('add download', item)
-
     if( typeof this.Device.platform != 'string' ) {
       this.presentToast("Please try from a device.")
       return;
@@ -272,13 +275,11 @@ export class MediaList implements OnInit {
 
           item.downloaded = true
 
-          // TODO: push these item changes to this.items so they show up. Loop through items to get array index, update item, then push to this.items and save in storage
-
           this.downloads.push(item);
 
           this.storage.set( this.route.substr(-10, 10) + '_downloads', this.downloads);
 
-          this.presentToast('Favorite Added.');
+          this.presentToast('Downloaded!');
 
         } else {
 
@@ -299,13 +300,13 @@ export class MediaList implements OnInit {
       item.download_url = ''
       item.downloaded = false
 
-      // TODO: push these item changes to this.items so they show up. Loop through items to get array index, update item, then push to this.items and save in storage
-
-      console.log('remove file ' + path + fileName )
+      // console.log('remove file ' + path + fileName )
 
       this.file.removeFile( path, fileName ).then( msg => {
 
-        console.log(msg)
+        this.removeDownloadData( item.id )
+
+        // console.log(msg)
 
         // remove from downloads and delete file
         for (let i = this.downloads.length - 1; i >= 0; i--) {
@@ -317,13 +318,6 @@ export class MediaList implements OnInit {
 
         this.storage.set( this.route.substr(-10, 10) + '_downloads', this.downloads);
 
-        // refresh the list
-        if( this.downloads.length ) {
-          this.items = this.downloads;
-        } else {
-          this.showAll();
-        }
-
         this.presentToast('Download Removed');
 
         }, (error) => {
@@ -333,6 +327,64 @@ export class MediaList implements OnInit {
       })
 
     }
+
+  }
+
+  // if an item is downloaded already, merge that data with this.items after a refresh
+  mergeDownloadData() {
+
+    // loop through downloads and for each one, search this.items for a match. If there's a match, replace it and update this.items and storage
+
+    this.storage.get( this.route.substr(-10, 10) + '_downloads').then( downloaded => {
+
+      if( !downloaded )
+        return
+
+      this.downloads = downloaded
+
+      // add download data to existing post objects
+      for (let i = downloaded.length - 1; i >= 0; i--) {
+        this.replaceItem( i )
+      }
+
+      this.storage.set( this.route.substr(-10, 10) + '_posts', this.items);
+
+    })
+
+  }
+
+  // loop through this.items and replace with downloaded item so we can show green download icon
+  replaceItem( download_key ) {
+
+    for (var i = 0; i < this.items.length; ++i) {
+      if( this.downloads[download_key].id === this.items[i].id ) {
+        console.log( this.items[i] )
+        this.items[i] = this.downloads[download_key]
+      }
+    }
+
+  }
+
+  // set this.downloaded to false in item storage after deleting download
+  removeDownloadData( item_id ) {
+
+    this.storage.get( this.route.substr(-10, 10) + '_posts' ).then( posts => {
+
+      if( !posts )
+        return;
+
+      for (var i = 0; i < posts.length; ++i) {
+        if( posts[i].id === item_id ) {
+          posts[i].downloaded = false
+          posts[i].download_url = ''
+        }
+      }
+
+      this.items = posts
+
+      this.storage.set( this.route.substr(-10, 10) + '_posts', posts )
+    })
+
 
   }
 
@@ -375,6 +427,7 @@ export class MediaList implements OnInit {
   showAll() {
     this.storage.get( this.route.substr(-10, 10) + '_posts' ).then((items) => {
       this.items = items;
+      this.mergeDownloadData()
     });
   }
 
@@ -430,7 +483,12 @@ export class MediaList implements OnInit {
   }
 
   doProgress(progress) {
-    this.loadProgress = progress;
+
+    // progress doesn't update unless in a zone
+    this.zone.run(() => {
+      this.loadProgress = progress;
+    })
+    
   }
 
 }
