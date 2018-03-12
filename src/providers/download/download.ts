@@ -28,10 +28,6 @@ export class Download {
   	// simulate progress
   	this.events.publish('load:progress', 10);
 
-    setTimeout( () => {
-      this.events.publish('load:progress', 20);
-    }, 1000 )
-
   	const fileTransfer: FileTransferObject = this.transfer.create();
 
     fileTransfer.onProgress( progressEvent => {
@@ -46,9 +42,9 @@ export class Download {
 
       this.percent = percent
 
-      console.log(percent)
+      // console.log(percent)
       
-      if( percent > 20 ) {
+      if( percent > 10 ) {
         this.events.publish('load:progress', percent );
       }
 

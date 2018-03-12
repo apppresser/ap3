@@ -304,29 +304,38 @@ export class MediaList implements OnInit {
 
       this.file.removeFile( path, fileName ).then( msg => {
 
-        this.removeDownloadData( item.id )
-
-        // console.log(msg)
-
-        // remove from downloads and delete file
-        for (let i = this.downloads.length - 1; i >= 0; i--) {
-          if( this.downloads[i].id === item.id ) {
-            this.downloads.splice(i, 1);
-            break;
-          }
-        }
-
-        this.storage.set( this.route.substr(-10, 10) + '_downloads', this.downloads);
-
-        this.presentToast('Download Removed');
+        this.removeDownloadSuccess( item.id )
 
         }, (error) => {
-        
+
           console.warn(error)
+
+          // still remove data if file not found
+          if( error.code == 1 ) {
+            this.removeDownloadSuccess( item.id )
+          }
 
       })
 
     }
+
+  }
+
+  removeDownloadSuccess( id ) {
+
+    this.removeDownloadData( id )
+
+    // remove from downloads and delete file
+    for (let i = this.downloads.length - 1; i >= 0; i--) {
+      if( this.downloads[i].id === id ) {
+        this.downloads.splice(i, 1);
+        break;
+      }
+    }
+
+    this.storage.set( this.route.substr(-10, 10) + '_downloads', this.downloads );
+
+    this.presentToast('Download Removed');
 
   }
 
@@ -425,10 +434,18 @@ export class MediaList implements OnInit {
   }
 
   showAll() {
+
     this.storage.get( this.route.substr(-10, 10) + '_posts' ).then((items) => {
-      this.items = items;
-      this.mergeDownloadData()
+
+      if( items ) {
+        this.items = items;
+        this.mergeDownloadData()
+      } else {
+        this.loadPosts( this.route )
+      }
+
     });
+
   }
 
   // Show alert in preview if not using https
@@ -488,7 +505,7 @@ export class MediaList implements OnInit {
     this.zone.run(() => {
       this.loadProgress = progress;
     })
-    
+
   }
 
 }
