@@ -479,6 +479,11 @@ button.item-ios.divider .item-inner, button.item-ios.submenu-parent .item-inner 
 	color: #ccc;
 }
 
+.media-list ion-icon[item-start] {
+	float:left;
+	min-width: 24px;
+}
+
 .media-list ion-icon.downloaded-icon {
 	color: green;
 }

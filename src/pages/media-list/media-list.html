@@ -54,6 +54,9 @@
       <ion-item *ngFor="let item of items">
         
         <div (click)="mediaModal(item)">
+
+          <ion-icon item-start name="play"></ion-icon>
+
           <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_title" [innerHTML]="item.appp.post_list.above_title"></div>
 
           <h2 *ngIf="item.title && item.title.rendered" [innerHTML]="item.title.rendered"></h2>

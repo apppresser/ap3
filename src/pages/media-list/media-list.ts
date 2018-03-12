@@ -136,6 +136,8 @@ export class MediaList implements OnInit {
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
     this.postService.load( route, this.page ).then(items => {
 
+      this.items = []
+
       // only add if we have a media url
       for (var i = 0; i < (<any>items).length; ++i) {
         if( items[i].appp.media_url) {
