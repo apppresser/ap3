@@ -45,6 +45,13 @@ export class PostDetailsPage implements OnInit {
       this.videoUtils.killVideos(this.elementRef);
     }
 
+    // allow vids and other HTML in template hooks
+    if( this.selectedItem.appp && this.selectedItem.appp.post_detail ) {
+      for ( let prop in this.selectedItem.appp.post_detail ) {
+        this.selectedItem.appp.post_detail[prop] = sanitizer.bypassSecurityTrustHtml( this.selectedItem.appp.post_detail[prop] );
+      }
+    }
+
   }
 
   ngOnInit() {
