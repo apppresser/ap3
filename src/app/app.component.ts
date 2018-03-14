@@ -248,7 +248,7 @@ export class MyApp {
     if( data.tab_menu.items ) {
 
       // Add pages manually here, can use different components like this... (then use the slug name to create your page, etc. www/build/custom.html)
-      // let e = { 'title': "Custom Page", 'type': 'apppages', 'class': "information-circle", slug: 'custom', extra_classes: '' };
+      // let e = { 'title': "Downloads", 'type': 'apppages', 'page_type' : 'media-list', 'class': "information-circle", 'slug': 'custom', 'extra_classes': '', 'allow_downloads': '', 'list_route': 'http://appdev.local/wp-json/wp/v2/posts' };
 
       // data.tab_menu.items.push( e );
 
@@ -259,6 +259,8 @@ export class MyApp {
 
         if( item.type === 'apppages' && item.page_type === 'list' ) {
           root = 'PostList';
+        } else if( item.type === 'apppages' && item.page_type === 'media-list' ) {
+          root = 'MediaList';
         } else if( item.type === 'apppages' ) {
           root = this.getPageModuleName(item.page_id);
         }
@@ -304,6 +306,8 @@ export class MyApp {
         // if it's a list page, use PostList component
         if( data.menus.items[0].page_type === 'list' ) {
           this.nav.setRoot( 'PostList', data.menus.items[0] );
+        } else if( data.menus.items[0].page_type === 'media-list' ) {
+          this.nav.setRoot( 'MediaList', data.menus.items[0] );
         } else {
           // otherwise use CustomPage
           this.nav.setRoot( this.getPageModuleName(data.menus.items[0].page_id), data.menus.items[0] );
@@ -346,6 +350,7 @@ export class MyApp {
       'list_route': item.list_route,
       'list_display': item.list_display,
       'favorites': item.favorites,
+      'allow_downloads': item.allow_downloads,
       'extra_classes': item.extra_classes,
       'show' : item.show,
       'show_slider': item.show_slider,
@@ -549,6 +554,8 @@ export class MyApp {
 
     if( page.type === 'apppages' && page.page_type === 'list' ) {
       this.nav.setRoot( 'PostList', page );
+    } else if( page.type === 'apppages' && page.page_type === 'media-list' ) {
+      this.nav.setRoot( 'MediaList', page );
     } else if( page.type === 'apppages' ) {
       this.nav.setRoot(this.getPageModuleName(page.page_id), page );
     } else if (page.url) {
@@ -586,7 +593,9 @@ export class MyApp {
 
     if( page.type === 'apppages' && page.page_type === 'list' ) {
       this.nav.push( 'PostList', page, opt );
-    } else if( page.type === 'apppages' ) {
+    } else if( page.type === 'apppages' && page.page_type === 'media-list' ) {
+      this.nav.setRoot( 'MediaList', page, opt );
+    }else if( page.type === 'apppages' ) {
       this.nav.push(this.getPageModuleName(page.page_id), page, opt );
     } else if (page.url) {
       this.nav.push('Iframe', page, opt);
@@ -1234,6 +1243,8 @@ export class MyApp {
 
       if( item.type === 'apppages' && item.page_type === 'list' ) {
         root = 'PostList';
+      } else if( item.type === 'apppages' && item.page_type === 'media-list' ) {
+          root = 'MediaList';
       } else if( item.type === 'apppages' ) {
         root = this.getPageModuleName(item.page_id);
       }

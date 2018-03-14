@@ -73,9 +73,9 @@ export class MediaList implements OnInit {
       this.doLogo()
     }
 
-    // if( navParams.data.downloads && navParams.data.downloads === "true" ) {
+    if( navParams.data.allow_downloads && navParams.data.allow_downloads === "true" ) {
       this.doDownloads = true;
-    // }
+    }
 
     this.previewAlert(this.route);
 
@@ -143,9 +143,15 @@ export class MediaList implements OnInit {
 
       // only add if we have a media url
       for (var i = 0; i < (<any>items).length; ++i) {
-        if( items[i].appp.media_url) {
+        if( items[i].appp && items[i].appp.media_url) {
           this.items.push(items[i])
         }
+      }
+
+      if( !this.items.length ) {
+        this.presentToast('No media urls are defined.')
+        console.log("Please add media urls according to the AppPresser documentation.")
+        return;
       }
 
       this.mergeDownloadData()

@@ -61,6 +61,8 @@
 
           <h2 *ngIf="item.title && item.title.rendered" [innerHTML]="item.title.rendered"></h2>
 
+          <p class="downloaded-text" *ngIf="item.downloaded">Downloaded</p>
+
           <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_title" [innerHTML]="item.appp.post_list.below_title"></div>
 
           <p *ngIf="item.excerpt && item.excerpt.rendered" [innerHTML]="item.excerpt.rendered"></p>
@@ -69,7 +71,8 @@
 
         </div>
 
-        <ion-icon (click)="addDownload(item)" item-end [ngClass]="{ 'downloaded-icon': item.downloaded }" name="download"></ion-icon>
+        <ion-icon (click)="addDownload(item)" *ngIf="!item.downloaded && doDownloads" item-end name="download"></ion-icon>
+        <ion-icon (click)="addDownload(item)" *ngIf="item.downloaded" item-end name="remove-circle"></ion-icon>
 
       </ion-item>
 
