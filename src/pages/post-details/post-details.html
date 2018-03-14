@@ -27,11 +27,11 @@
 <ion-content>
  <div *ngIf="selectedItem" class="selection">
 
- 	<div *ngIf="selectedItem.appp && selectedItem.appp.post_detail && selectedItem.appp.post_detail.above_title" [innerHTML]="selectedItem.appp.post_detail.above_title"></div>
+ 	<div *ngIf="selectedItem.appp && selectedItem.appp.post_detail && selectedItem.appp.post_detail.above_title" [innerHTML]="selectedItem.appp.post_detail.above_title | sanitizeHtml"></div>
 
     <h2 [innerHTML]="selectedItem.title.rendered"></h2>
 
-    <div *ngIf="selectedItem.appp && selectedItem.appp.post_detail && selectedItem.appp.post_detail.below_title" [innerHTML]="selectedItem.appp.post_detail.below_title"></div>
+    <div *ngIf="selectedItem.appp && selectedItem.appp.post_detail && selectedItem.appp.post_detail.below_title" [innerHTML]="selectedItem.appp.post_detail.below_title | sanitizeHtml"></div>
 
     <div *ngIf="content" [innerHTML]="content"></div>
 
