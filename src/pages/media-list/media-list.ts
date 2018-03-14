@@ -143,7 +143,7 @@ export class MediaList implements OnInit {
 
       // only add if we have a media url
       for (var i = 0; i < (<any>items).length; ++i) {
-        if( items[i].appp && items[i].appp.media_url) {
+        if( items[i].appp_media && items[i].appp_media.media_url ) {
           this.items.push(items[i])
         }
       }
@@ -269,7 +269,7 @@ export class MediaList implements OnInit {
     if( inArray === false ) {
 
       // download the file
-      this.download.downloadFile( item.appp.media_url ).then( downloadUrl => {
+      this.download.downloadFile( item.appp_media.media_url ).then( downloadUrl => {
 
         console.log(downloadUrl)
 
@@ -497,7 +497,7 @@ export class MediaList implements OnInit {
     if( item.downloaded && item.download_url ) {
       url = item.download_url
     } else {
-      url = item.appp.media_url
+      url = item.appp_media.media_url
     }
 
     let modal = this.modalCtrl.create('MediaPlayer', {source: url });
