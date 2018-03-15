@@ -227,8 +227,11 @@ export class MediaList implements OnInit {
         return;
       }
 
+      // only add if we have a media url
       for (var i = 0; i < length; ++i) {
-        this.items.push( items[i] );
+        if( items[i].appp_media && items[i].appp_media.media_url ) {
+          this.items.push(items[i])
+        }
       }
 
       this.storage.set( this.route.substr(-10, 10) + '_posts', this.items);
