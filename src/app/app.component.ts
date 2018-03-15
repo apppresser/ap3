@@ -137,8 +137,6 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
 
       this.apiurl = this.globalvars.getApi();
-
-      this.doIphoneX();
       
       this.fetchData( false );
 
@@ -457,27 +455,6 @@ export class MyApp {
     } else {
       this.openPage(p);
     }
-  }
-
-  doIphoneX() {
-
-    // hack for iphonex status bar
-    if( this.Device && this.Device.model ) {
-      let model = this.Device.model.toLowerCase();
-
-      if( model.indexOf('iphone10') >= 0 ) {
-
-        this.iphoneX = true;
-
-        if( this.platform.isLandscape() ) {
-          this.customClasses = 'iphoneX-landscape'
-        } else {
-          this.customClasses = 'iphoneX-portrait'
-        }
-        
-      }
-    }
-
   }
 
   // Handles opening and closing submenus
