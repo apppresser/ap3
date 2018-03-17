@@ -24,7 +24,21 @@ body {
 	  body {
 		  background-image: url(https://cdn.winknews.com/wp-content/uploads/2017/12/twinkle_back-2560x1560.png) !important;
 	  }
-  }
+	}
+	.td-mobile-main-menu {
+		
+		li {
+
+			&:nth-child(odd) {
+				clear:both;
+			}
+
+			button {
+				text-align: left;
+			}
+		}
+
+	} 
   /*  ----------------------------------------------------------------------------
 	  responsive settings
   */
@@ -5920,8 +5934,12 @@ body {
 	  top: 0;
 	  margin-top: 0;
 	}
-  }
+	}
+	#td-header-search-top {
+		float:left;
+	}
   #td-header-search {
+		float:left;
 	width: 235px;
 	height: 32px;
 	margin: 0;
@@ -5963,11 +5981,14 @@ body {
 	  }
 	  .td-mobile-search .td-mobile-form-search-wrap input[type=submit] {
 		  width: 30%;
-		  padding: 8px 15px 5px 15px;
+		  padding: 6px 15px 7px 15px;
 		  margin-bottom: 4px;
 		  background-color: #046acc;
 		  border-radius: 0 2px 2px 0;
-	  }
+		}
+		.platform-android .td-mobile-search .td-mobile-form-search-wrap input[type=submit] {
+			padding: 8px 15px 5px 15px
+		}
 	  .td-mobile-search input
 	.header-search-wrap #td-header-search-button {
 	  display: none;
@@ -14193,7 +14214,7 @@ body {
 	margin-right: 0;
   }
   .td-main-page-wrap .td-container > .td-pb-row:first-child .td_block_trending_now:first-child,
-  .td-main-page-wrap .tdc-row:first-child .wpb_wrapper >  .td_block_trending_now:first-child,
+  .td-main-page-wrap .tdc-row:first-child .wpb_wrapper > .td_block_trending_now:first-child,
   .td-main-page-wrap .tdc-row:first-of-type .tdc-element:first-of-type .td_block_trending_now:first-child {
 	position: relative;
 	margin: -24px 0 24px;
@@ -14202,7 +14223,7 @@ body {
   }
   @media (max-width: 767px) {
 	.td-main-page-wrap .td-container > .td-pb-row:first-child .td_block_trending_now:first-child,
-	.td-main-page-wrap .tdc-row:first-child .wpb_wrapper >  .td_block_trending_now:first-child,
+	.td-main-page-wrap .tdc-row:first-child .wpb_wrapper > .td_block_trending_now:first-child,
 	.td-main-page-wrap .tdc-row:first-of-type .tdc-element:first-of-type .td_block_trending_now:first-child {
 	  margin-bottom: 0;
 	  padding: 4px 0 12px;
@@ -14212,14 +14233,14 @@ body {
 	  }
   }
   .td-main-page-wrap .td-container > .td-pb-row:first-child > .td-trending-style2,
-  .td-main-page-wrap .tdc-row:first-child .wpb_wrapper >  > .td-trending-style2,
+  .td-main-page-wrap .tdc-row:first-child .wpb_wrapper > .td-trending-style2,
   .td-main-page-wrap .tdc-row:first-of-type .tdc-element:first-of-type > .td-trending-style2 {
 	padding-bottom: 20px;
 	/* responsive portrait phone */
   }
   @media (max-width: 767px) {
 	.td-main-page-wrap .td-container > .td-pb-row:first-child > .td-trending-style2,
-	.td-main-page-wrap .tdc-row:first-child .wpb_wrapper >  > .td-trending-style2,
+	.td-main-page-wrap .tdc-row:first-child .wpb_wrapper > .td-trending-style2,
 	.td-main-page-wrap .tdc-row:first-of-type .tdc-element:first-of-type > .td-trending-style2 {
 	  padding: 4px 2px 12px;
 	}

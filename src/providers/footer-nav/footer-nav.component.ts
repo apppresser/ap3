@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Events } from 'ionic-angular';
+import { Events, LoadingController } from 'ionic-angular';
 import { NgForm } from '@angular/forms';
 
 @Component({
@@ -12,10 +12,12 @@ export class FooterNavComponent implements OnInit {
   private menuOpen = false;
   public searchTerm: any;
   public videoPage: any[];
+  public loading: any;
 
   @Input() menu;
 
   constructor(
+    public loadingController: LoadingController,
     public events: Events,
   ) { }
 
@@ -26,13 +28,13 @@ export class FooterNavComponent implements OnInit {
 
     // Add submit listener to search form
     var searchForm = document.querySelector('.td-search-form');
-    console.log(searchForm)
+    // console.log(searchForm)
     searchForm.addEventListener('submit',  event =>{
-      console.log('FooterNavComponent searchForm submit event', event);
+      // console.log('FooterNavComponent searchForm submit event', event);
       event.preventDefault();
     } );
 
-    console.log('footer menu', this.menu);
+    // console.log('footer menu', this.menu);
     this.setVideoPage(this.menu);
 
 
@@ -70,6 +72,7 @@ export class FooterNavComponent implements OnInit {
   }
 
   onSubmit(searchForm: NgForm) {
+    this.showSpinner();
     this.stopAllVideos();
     var url = 'https://www.winknews.com/?s=' + encodeURIComponent(this.searchTerm);
 
@@ -102,12 +105,14 @@ export class FooterNavComponent implements OnInit {
   }
 
   openPage(page) {
+    this.showSpinner();
     this.stopAllVideos();
     this.closeFooterMenu();
     this.events.publish('openpage', page );
   }
 
   goToVideos() {
+    this.showSpinner();
     this.stopAllVideos();
     this.closeFooterMenu();
 
@@ -116,13 +121,29 @@ export class FooterNavComponent implements OnInit {
   }
 
   goToNews() {
+    this.showSpinner();
     this.stopAllVideos();
     this.closeFooterMenu();
-    this.openPage({url:'https://www.winknews.com/', extra_classes:''});
+    this.openPage({url:'https://www.winknews.com/wink-app-home/', extra_classes:''});
   }
 
   stopAllVideos() {
     this.events.publish('videostop', null);
   }
+
+  showSpinner() {
+    if(!this.loading) {
+      this.loading = this.loadingController.create({
+          showBackdrop: false,
+          dismissOnPageChange: false
+      });
+    }
+
+    this.loading.present();
+
+    setTimeout(() => {
+        this.loading.dismiss();
+    }, 2000);
+}
 
 }

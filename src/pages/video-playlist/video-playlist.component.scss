@@ -1,6 +1,6 @@
 .video-category {
 
-	margin-top:20px;
+	margin-top:0;
 	border-bottom: 1px solid #DDD;
 
 	.swiper-slide {
@@ -20,7 +20,13 @@
 		text-transform: uppercase;
 		margin: 10px 0 5px;
 		font-weight: 600;
-    	color: #333;
+		color: #FFF;
+		font-family: 'Montserrat', sans-serif;
+	}
+
+	h2:first-child {
+		margin: 0 0 5px;
+		background-color:#191919;
 	}
 }
 
