@@ -49,7 +49,7 @@
 
 		<div *ngFor="let videoFeed of categories" class="video-category">
 			<h2>{{ videoFeed.name }}</h2>
-			<ion-slides pager loop slidesPerView="2.15" paginationType="progress">
+			<ion-slides pager loop slidesPerView="1.5" paginationType="progress">
 				<ion-slide *ngFor="let item of videoFeed.videos; let $j = index;" #slidingItem>
 					<button (click)="onClickPlaylistItem($event, item, videoFeed, $i)" class="card-background-page">
 							<div class="video-slide-item">
