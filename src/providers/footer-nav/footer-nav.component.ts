@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Events, LoadingController } from 'ionic-angular';
 import { NgForm } from '@angular/forms';
 
+declare let jQuery;
+
 @Component({
   selector: 'app-footer-nav',
   templateUrl: './footer-nav.component.html'
@@ -13,6 +15,7 @@ export class FooterNavComponent implements OnInit {
   public searchTerm: any;
   public videoPage: any[];
   public loading: any;
+  public filteredMenu: any[];
 
   @Input() menu;
 
@@ -22,6 +25,8 @@ export class FooterNavComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+
+    this.setFooterMenuItems();
 
     // to add/remove body.class
     this.bodyTag = document.getElementsByTagName('body')[0];
@@ -52,6 +57,21 @@ export class FooterNavComponent implements OnInit {
 
             this.closeFooterMenu();
         });
+    }
+  }
+
+  /**
+   * Hide the Home and News items in the footer
+   */
+  setFooterMenuItems() {
+    this.filteredMenu = [];
+
+    for(let i=0;i<this.menu.length;i++) {
+
+      if(this.menu[i].title != 'Home' && this.menu[i].title != 'News') {
+        this.filteredMenu.push(this.menu[i]);
+      }
+
     }
   }
 
@@ -95,13 +115,35 @@ export class FooterNavComponent implements OnInit {
   }
 
   closeFooterMenu() {
-    this.bodyTag.classList.remove('td-menu-mob-open-menu');
+    // this.bodyTag.classList.remove('td-menu-mob-open-menu');
+    if(this.menuOpen) {
+      this.slide();
+    }
     this.menuOpen = false;
   }
 
   openFooterMenu() {
-    this.bodyTag.classList.add('td-menu-mob-open-menu');
+
+    // jQuery(this.bodyTag).addClass('td-menu-mob-open-menu');
+
+    // this.bodyTag.classList.add('td-menu-mob-open-menu');
+    this.slide();
     this.menuOpen = true;
+  }
+
+  slide() {
+
+    let $ = jQuery;
+
+    var el = $('.mobile-menu-wrap'),
+    curHeight = el.height(),
+    autoHeight = el.css('height', 'auto').height(),
+    finHeight = $('.mobile-menu-wrap').data('open') == 'true' ? "55px" : autoHeight;
+
+    let status = el.data('open') == 'true' ? 'false' : 'true';
+
+    el.data('open', status);
+    el.height(curHeight).animate({height: finHeight}).css('overflow', '');
   }
 
   openPage(page) {
@@ -120,7 +162,7 @@ export class FooterNavComponent implements OnInit {
       this.openPage(this.videoPage);
   }
 
-  goToNews() {
+  goToHome() {
     this.showSpinner();
     this.stopAllVideos();
     this.closeFooterMenu();
