@@ -38,7 +38,8 @@ export class MediaList implements OnInit {
   header_logo_url: string;
   show_header_logo: boolean = false;
   customClasses: string = '';
-  loadProgress: any = 0
+  loadProgress: any = 0;
+  showFeaturedImage: boolean = false;
 
   constructor(
     public nav: NavController, 
@@ -65,6 +66,8 @@ export class MediaList implements OnInit {
       this.doProgress(progress);
     });
 
+    this.selectedItem = navParams.data;
+
     this.route = navParams.data.list_route;
 
     this.title = navParams.data.title;
@@ -75,6 +78,10 @@ export class MediaList implements OnInit {
 
     if( navParams.data.allow_downloads && navParams.data.allow_downloads === "true" ) {
       this.doDownloads = true;
+    }
+
+    if( navParams.data.download_list_image && navParams.data.download_list_image === "image" ) {
+      this.showFeaturedImage = true;
     }
 
     this.previewAlert(this.route);
@@ -147,6 +154,8 @@ export class MediaList implements OnInit {
           this.items.push(items[i])
         }
       }
+
+      // console.log(this.items)
 
       if( !this.items.length ) {
         this.presentToast('No media urls are defined.')

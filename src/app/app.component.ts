@@ -356,7 +356,10 @@ export class MyApp {
       'type': item.type,
       'page_type': item.page_type,
       'page_id': item.page_id,
-      'is_home': true
+      'is_home': true,
+      'download_list_image': item.download_list_image,
+      'download_left_icon': item.download_left_icon,
+      'download_right_icon': item.download_right_icon
     } );
 
   }

@@ -465,6 +465,17 @@ button.item-ios.divider .item-inner, button.item-ios.submenu-parent .item-inner 
 	color: red
 }
 
+.media-list .label {
+	margin: 0;
+}
+
+.media-list .media-click-area {
+    min-height: 3rem;
+    overflow: hidden;
+    width: auto;
+    padding: 13px 8px 13px 0;
+}
+
 .media-list .downloaded-text {
 	background-color: green;
 	font-size: 10px;

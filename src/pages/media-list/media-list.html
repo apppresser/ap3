@@ -52,10 +52,14 @@
   <ion-list class="media-list">
 
       <ion-item *ngFor="let item of items">
-        
-        <div (click)="mediaModal(item)">
 
-          <ion-icon item-start name="play"></ion-icon>
+        <ion-avatar item-left *ngIf="showFeaturedImage">
+          <img *ngIf="item.featured_image_urls && item.featured_image_urls.thumbnail" src="{{item.featured_image_urls.thumbnail}}">
+        </ion-avatar>
+        
+        <div (click)="mediaModal(item)" class="media-click-area">
+
+          <ion-icon item-start name="{{selectedItem.download_left_icon}}" *ngIf="!showFeaturedImage"></ion-icon>
 
           <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_title" [innerHTML]="item.appp.post_list.above_title"></div>
 
@@ -71,7 +75,7 @@
 
         </div>
 
-        <ion-icon (click)="addDownload(item)" *ngIf="!item.downloaded && doDownloads" item-end name="download"></ion-icon>
+        <ion-icon (click)="addDownload(item)" *ngIf="!item.downloaded && doDownloads" item-end name="{{selectedItem.download_right_icon}}"></ion-icon>
         <ion-icon (click)="addDownload(item)" *ngIf="item.downloaded" item-end name="remove-circle"></ion-icon>
 
       </ion-item>
