@@ -4990,7 +4990,7 @@ body {
 		.td-header-style-13 .mobile-short-nav > li > a,
 		.td-header-style-13 .mobile-short-nav > li > button {
 		  color: #fff;
-		  font-size: 16px;
+		  font-size: 1.3em;
 		  line-height: 55px;
 		  font-weight: 600;
 			text-transform: uppercase;
@@ -6645,11 +6645,11 @@ body {
 	.td-mobile-content li a,
 	.td-mobile-content li button {
 	display: block;
-	line-height: 21px;
-	font-size: 20px;
+	line-height: 1.35em;
+	font-size: 1.2em;
 	color: #fff;
 	margin-left: 0;
-	padding: 8px 10px;
+	padding: .3em .4em;
 	font-weight: bold;
 	background-color:#191919;
 	font-family: 'Montserrat', sans-serif;
@@ -6657,7 +6657,7 @@ body {
   @media (max-width:500px) {
 	  .td-mobile-content li a,
 		.td-mobile-content li button {
-		  font-size: 15px;
+		  font-size: 1.2em;
 	  }
   }
   .td-mobile-content .td-icon-menu-right {
