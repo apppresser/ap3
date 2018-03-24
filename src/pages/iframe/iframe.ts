@@ -11,6 +11,7 @@ import {Events} from 'ionic-angular';
 
 import {MediaPlayer} from '../media-player/media-player';
 import {HeaderLogo} from "../../providers/header-logo/header-logo";
+import { LanguageService } from "../../providers/language/language.service";
 
 @IonicPage()
 @Component({
@@ -48,6 +49,7 @@ export class Iframe implements OnInit {
         public storage: Storage,
         public el: ElementRef,
         private headerLogoService: HeaderLogo,
+        private languageservice: LanguageService,
         private Keyboard: Keyboard,
         private Device: Device,
         private Geolocation: Geolocation,
@@ -84,41 +86,9 @@ export class Iframe implements OnInit {
      * and we don't end up with more than one ?.
      */
     setupURL() {
-
         let url = this.navParams.data.url;
-
-        // console.log('starting url', url);
-
-        // gather any #
-        let url_parts = url.split('#');
-        let hash = (url_parts[1]) ? '#'+url_parts[1]:'';
-
-        // gather any ?
-        url_parts = url_parts[0].split('?');
-        let base_url = url_parts[0];
-        let query = url_parts[1];
-
-        // add the appp=3
-        let params = new HttpParams({
-            fromString: (query) ? query+'&appp=3':'appp=3'
-        });
-        
-        // add the lang=X
-        this.storage.get('app_language').then( lang => {
-            if( lang )
-                params = params.append('lang', lang);
-        });
-
-        // put it all together
-        url = base_url + '?' + params.toString() + hash;
-
-        // console.log('ending url', url)
-        
-        // Have to wait until we get language ^. Can't put this in promise or it breaks, not sure why
-        setTimeout( () => {
-            this.url = this.sanitizer.bypassSecurityTrustResourceUrl( url );
-        }, 100);
-
+        url = this.languageservice.appendUrlLang(url);
+        this.url = this.sanitizer.bypassSecurityTrustResourceUrl( url );
     }
 
     ionViewWillEnter() {

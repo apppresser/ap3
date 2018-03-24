@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {ViewController, ToastController, IonicPage} from 'ionic-angular';
 import {Storage} from '@ionic/storage';
 import {TranslateService} from '@ngx-translate/core';
+import { LanguageService } from "../../providers/language/language.service";
 
 @IonicPage()
 @Component({
@@ -16,6 +17,7 @@ export class LanguageSettings {
     public storage: Storage,
     public viewCtrl: ViewController,
     public toastCtrl: ToastController,
+    private languageservice: LanguageService,
     public translate: TranslateService
     ) {
     
@@ -34,6 +36,7 @@ export class LanguageSettings {
     this.storage.get('available_languages').then( langs => {
 
       if(langs) {
+        this.languageservice.setAvailable(langs);
         // this.languages = langs
         this.checkCurrent( langs )
       }
@@ -68,8 +71,11 @@ export class LanguageSettings {
 
     this.translate.use( language.code )
     this.storage.set( 'app_language', language.code )
+    this.languageservice.setCurrentLanguage(language.code);
 
-    this.presentToast('Language changed')
+    this.translate.get('Language changed').subscribe( text => {
+      this.presentToast(text);
+    });
 
   }
 

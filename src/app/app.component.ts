@@ -1,5 +1,5 @@
 /* Framework */
-import {ViewChild, Component, isDevMode} from '@angular/core';
+import {ViewChild, Component, isDevMode, NgZone} from '@angular/core';
 import {Platform, MenuController, Nav, ToastController, ModalController, Events, Config} from 'ionic-angular';
 import {DomSanitizer} from '@angular/platform-browser';
 import {TranslateService} from '@ngx-translate/core';
@@ -30,6 +30,7 @@ import { Keyboard } from '@ionic-native/keyboard';
 import {Storage} from '@ionic/storage';
 import { User } from '../models/user.model';
 import { LoginService } from '../providers/logins/login.service';
+import { LanguageService } from "../providers/language/language.service";
 
 @Component({
   templateUrl: 'app.html'
@@ -73,6 +74,7 @@ export class MyApp {
     private fbconnectvars: FBConnectAppSettings,
     private fbconnectIframe: FbConnectIframe,
     private loginservice: LoginService,
+    private languageservice: LanguageService,
     private sanitizer: DomSanitizer,
     private pushService: PushService,
     private appwoo: AppWoo,
@@ -92,6 +94,7 @@ export class MyApp {
     private Push: Push,
     private http: Http,
     private Dialogs: Dialogs,
+    private zone: NgZone,
     private config: Config
   ) {
 
@@ -131,6 +134,15 @@ export class MyApp {
         this.bodyTag.classList.remove('loggedin')
       }
     });
+    this.languageservice.languageStatus().subscribe(language => {
+
+      let is_loggedin = (this.loginservice.user);
+
+      console.log('MyApp initializeApp languageStatus language changed resetTabs', language);
+      console.log('MyApp initializeApp languageStatus language changed is_loggedin', is_loggedin);
+
+      this.resetTabs(is_loggedin);
+    })
 
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
@@ -1211,7 +1223,10 @@ export class MyApp {
     }
   }
 
-  // show or hide tabs on login or logout. resetTabs(false) for logout
+  /**
+   * Show or hide tabs on login or logout. resetTabs(false) for logout
+   * @param login Boolean
+   */
   resetTabs( login ) {
 
     this.navparams = []
@@ -1243,6 +1258,13 @@ export class MyApp {
 
       item.class = item.icon
 
+      // add lang=xx param
+      if(root == 'Iframe' && item.url && item.url.indexOf('http') == 0) {
+        // console.log('MyAppp resetTabs Iframe change url start', item.url)
+        item.url = this.languageservice.appendUrlLang(item.url);
+        // console.log('MyAppp resetTabs Iframe change url end', item.url)
+      }
+
       this.navParamsPush( item, root )
 
     }
@@ -1250,10 +1272,11 @@ export class MyApp {
     this.tabs = this.navparams;
 
     // "refresh" the view by resetting to home tab
-    if( login === false ) {
-        //this.openPage( { 'title': this.tabs[0].title, 'url': '', 'component': 'TabsPage', 'navparams': this.navparams, 'class': this.tabs[0].icon } )
-        this.nav.setRoot( 'TabsPage', this.navparams );
-      }
+    //this.openPage( { 'title': this.tabs[0].title, 'url': '', 'component': 'TabsPage', 'navparams': this.navparams, 'class': this.tabs[0].icon } )
+    
+    this.zone.run( () => {
+      this.nav.setRoot( 'TabsPage', this.navparams );
+  } )
 
   }
 
@@ -1285,13 +1308,16 @@ export class MyApp {
 
     if(data.languages) {
       this.storage.set('available_languages', data.languages)
+      this.languageservice.setAvailable(data.languages);
     } else {
-      this.storage.remove('available_languages')
+      this.storage.remove('available_languages');
+      this.languageservice.setAvailable(null);
     }
 
     this.storage.get( 'app_language' ).then( lang => {
       if( lang ) {
-        this.translate.use( lang )
+        this.translate.use( lang );
+        this.languageservice.setCurrentLanguage(lang);
 
         this.setBackBtnText();
         
@@ -1358,6 +1384,7 @@ export class MyApp {
       console.log('set language to ' + lang);
 
       this.translate.setDefaultLang(lang);
+      this.languageservice.setCurrentLanguage(lang);
       this.setBackBtnText();
     });
   }
