@@ -510,3 +510,11 @@ button.item-ios.divider .item-inner, button.item-ios.submenu-parent .item-inner 
     border-radius: 20px;
     background-color: map-get($colors, primary);
 }
+
+#image-status {
+	
+	img {
+		width: 100%;
+		margin-top: 14px;
+	}
+}
