@@ -1231,6 +1231,9 @@ export class MyApp {
 
     this.navparams = []
 
+    if(typeof(this.tabs) === 'undefined')
+      return;
+
     for( let item of this.tabs ) {
 
       // set component, default is Iframe
@@ -1276,7 +1279,7 @@ export class MyApp {
     
     this.zone.run( () => {
       this.nav.setRoot( 'TabsPage', this.navparams );
-  } )
+    } )
 
   }
 
