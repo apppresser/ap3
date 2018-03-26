@@ -586,7 +586,7 @@ export class MyApp {
     if( page.type === 'apppages' && page.page_type === 'list' ) {
       this.nav.push( 'PostList', page, opt );
     } else if( page.type === 'apppages' && page.page_type === 'media-list' ) {
-      this.nav.setRoot( 'MediaList', page, opt );
+      this.nav.push( 'MediaList', page, opt );
     }else if( page.type === 'apppages' ) {
       this.nav.push(this.getPageModuleName(page.page_id), page, opt );
     } else if (page.url) {

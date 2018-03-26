@@ -381,6 +381,8 @@ export class CustomPage implements OnInit, OnDestroy {
 
 		if( page.type === 'apppages' && page.page_type === 'list' ) {
 			this.nav.push( 'PostList', page, opt );
+		} else if( page.type === 'apppages' && page.page_type === 'media-list' ) {
+			this.nav.push( 'MediaList', page, opt );
 		} else if( page.type === 'apppages' ) {
 			this.nav.push(this.getPageModuleName(page.page_id), page, opt );
 		} else if (page.url) {
@@ -421,6 +423,8 @@ export class CustomPage implements OnInit, OnDestroy {
 
 		if( page.type === 'apppages' && page.page_type === 'list' ) {
 			this.nav.setRoot( 'PostList', page );
+		} else if( page.type === 'apppages' && page.page_type === 'media-list' ) {
+			this.nav.setRoot( 'MediaList', page );
 		} else if( page.type === 'apppages' ) {
 			this.nav.setRoot(this.getPageModuleName(page.page_id), page );
 		} else if (page.url) {
