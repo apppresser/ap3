@@ -54,9 +54,6 @@ export class LanguageService {
 		// remove the existing language
 		url = url.replace(new RegExp("lang=[a-z]{2}","gm"), '');
 
-		// remove empty params
-		url = url.replace('&=&', '&');
-
 		// gather any #
 		let url_parts = url.split('#');
 		let hash = (url_parts[1]) ? '#'+url_parts[1]:'';
@@ -85,6 +82,9 @@ export class LanguageService {
 	
 		// put it all together
 		url = base_url + '?' + params.toString() + hash;
+
+		// remove empty params
+		url = url.replace('&=&', '&');
 
 		// console.log('LanguageService appendUrlLang end', url);
 	
