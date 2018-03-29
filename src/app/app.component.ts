@@ -158,6 +158,8 @@ export class MyApp {
       
       this.maybeDoPush();
 
+      this.doIphoneX();
+
       // prevents bug where select done button didn't display
       this.Keyboard.hideKeyboardAccessoryBar(false);
       // Disable scroll fixes webview displacement, but hides content lower on page. Can't use
@@ -1422,6 +1424,27 @@ export class MyApp {
       console.log('Back ' + text )
       this.config.set('ios', 'backButtonText', text );
     });
+
+  }
+
+  doIphoneX() {
+
+    // hack for iphonex status bar
+    if( this.Device && this.Device.model ) {
+      let model = this.Device.model.toLowerCase();
+
+      if( model.indexOf('iphone10') >= 0 ) {
+
+        this.iphoneX = true;
+
+        if( this.platform.isLandscape() ) {
+          this.customClasses = 'iphoneX-landscape'
+        } else {
+          this.customClasses = 'iphoneX-portrait'
+        }
+        
+      }
+    }
 
   }
 
