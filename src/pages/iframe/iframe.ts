@@ -235,6 +235,12 @@ export class Iframe implements OnInit {
                     target: this.el.nativeElement.querySelector('.ap3-iframe')
                 };
                 this.doCheckinPlaceModal(_e, parsed.geo_place);
+            } else if( parsed.apppgeolocation ) {
+                // appp-geolocation shortcode
+                let _e = {
+                    target: this.el.nativeElement.querySelector('.ap3-iframe')
+                };
+                this.doApppGeolocation(_e);
             }
         }
 
@@ -313,6 +319,52 @@ export class Iframe implements OnInit {
 
         });
 
+    }
+
+    /**
+     *  [appp-geolocation] Geo the location to set the form values
+     */
+    doApppGeolocation(event) {
+        this.findIframeBySelector( event.target );
+
+        // event on wp's page load containing the shortcode
+        this.Geolocation.getCurrentPosition().then((position) => {
+
+            console.log('Iframe doApppGeolocation position', position);
+
+            let coords = {
+                accuracy: position.coords.accuracy,
+                altitude: position.coords.altitude,
+                altitudeAccuracy: position.coords.altitudeAccuracy,
+                heading: position.coords.heading,
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                speed: position.coords.speed
+            };
+            
+            let message = JSON.stringify({
+                apppgeolocation: {
+                    coords: coords,
+                    timestamp: position.timestamp
+                }
+            });
+
+            // need to postmessage this
+            this.iframe.contentWindow.postMessage(message, '*');
+
+        }).catch(reason => {
+            console.log('getCurrentPosition reason', reason);
+
+            let message = JSON.stringify({
+                apppgeolocation: {
+                    ready: false,
+                    message: reason.message
+                }
+            });
+
+            // need to postmessage this
+            this.iframe.contentWindow.postMessage(message, '*');
+        })
     }
 
     notifyThemeKeyboardClosed() {
