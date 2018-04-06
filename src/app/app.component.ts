@@ -1236,6 +1236,8 @@ export class MyApp {
     if(typeof(this.tabs) === 'undefined')
       return;
 
+    login = (typeof login === 'undefined') ? false : login;
+    
     for( let item of this.tabs ) {
 
       // set component, default is Iframe
