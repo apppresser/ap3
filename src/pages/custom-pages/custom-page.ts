@@ -42,6 +42,15 @@ class DynamicContext {
 }
 /** Development mode only -- END */
 
+/**
+ * Customizable options for our
+ * segments, media, language and login modals
+ */
+class ModalOptions {
+	public cssClass?: string;
+	public title?: string;
+}
+
 @IonicPage({
   priority: 'high'
 })
@@ -110,8 +119,8 @@ export class CustomPage implements OnInit, OnDestroy {
 		back: () => {
 			this.back();
 		},
-		mediaModal: ( src, img = null ) => {
-			this.mediaModal(src, img);
+		mediaModal: ( src, img = null, options?: ModalOptions ) => {
+			this.mediaModal(src, img, options);
 		},
 		updateData: () => {
 			this.updateData();
@@ -119,14 +128,14 @@ export class CustomPage implements OnInit, OnDestroy {
 		changeRTL: ( event, rtl ) => {
 			this.changeRTL(event, rtl);
 		},
-		showSegments: () => {
-			this.showSegments();
+		showSegments: (options?: ModalOptions) => {
+			this.showSegments(options);
 		},
-		showLanguages: () => {
-			this.showLanguages();
+		showLanguages: (options?: ModalOptions) => {
+			this.showLanguages(options);
 		},
-		loginModal: () => {
-			this.loginModal();
+		loginModal: (options?: ModalOptions) => {
+			this.loginModal(options);
 		},
 		buyProduct: ( id ) => {
 			this.iap.buy( id );
@@ -438,8 +447,18 @@ export class CustomPage implements OnInit, OnDestroy {
 		this.nav.pop();
 	}
 
-	mediaModal( src, img = null ) {
-		let modal = this.modalCtrl.create('MediaPlayer', {source: src, image: img});
+	mediaModal( src, img = null, opt?: ModalOptions ) {
+
+		const css = (opt && opt.cssClass) ? opt.cssClass : '';
+		const params: {source, image, title?} = {source: src, image: img};
+
+		if(opt && opt.title) {
+			params.title = opt.title;
+		}
+
+		let modal = this.modalCtrl.create('MediaPlayer', params, {
+			cssClass: css
+		});
 		modal.present();
 	}
 
@@ -458,21 +477,36 @@ export class CustomPage implements OnInit, OnDestroy {
 		this.storage.set( 'is_rtl', rtl )
 	}
 
-	showSegments() {
-		let modal = this.modalCtrl.create('PushSettings');
+	showSegments(opt?: ModalOptions) {
+		
+		const css = (opt && opt.cssClass) ? opt.cssClass : '';
+		const params = (opt && opt.title) ? {title: opt.title} : {};
+
+		let modal = this.modalCtrl.create('PushSettings', params, {
+			cssClass: css
+		});
 		modal.present();
 	}
 
-	showLanguages() {
-		let modal = this.modalCtrl.create('LanguageSettings');
+	showLanguages(opt?: ModalOptions) {
+
+		const css = (opt && opt.cssClass) ? opt.cssClass : '';
+		const params = (opt && opt.title) ? {title: opt.title} : {};
+
+		let modal = this.modalCtrl.create('LanguageSettings', params, {
+			cssClass: css
+		});
 		modal.present();
 	}
 
-	loginModal() {
+	loginModal(opt?: ModalOptions) {
 
-		if(!this.login_modal) {
-			this.login_modal = this.modalCtrl.create( 'LoginModal' );
-		}
+		const css = (opt && opt.cssClass) ? opt.cssClass : '';
+		const params = (opt && opt.title) ? {title: opt.title} : {};
+	
+		this.login_modal = this.modalCtrl.create('LoginModal', params, {
+			cssClass: css
+		});
 
 		this.login_modal.onDidDismiss(data => {
 			this.login_modal_open = false;

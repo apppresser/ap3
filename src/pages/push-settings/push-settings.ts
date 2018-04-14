@@ -11,6 +11,7 @@ import {PushService} from '../../providers/push/push';
 export class PushSettings {
 
   segments: any;
+  title: string;
 
   constructor( 
     public navParams: NavParams,
@@ -19,7 +20,12 @@ export class PushSettings {
     public viewCtrl: ViewController,
     public toastCtrl: ToastController
     ) {
-    
+      
+      if(this.navParams.get('title')) {
+        this.title = this.navParams.get('title');
+      } else {
+        this.title = 'Notification Settings';
+      }
   }
 
   ionViewWillEnter() {

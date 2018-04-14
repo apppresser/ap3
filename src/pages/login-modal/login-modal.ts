@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Events, ViewController, LoadingController, IonicPage, ToastController } from 'ionic-angular';
+import { Events, ViewController, LoadingController, IonicPage, ToastController, NavParams } from 'ionic-angular';
 import {WPlogin} from '../../providers/wplogin/wplogin';
 import {Logins} from "../../providers/logins/logins";
 import {FbConnectApp} from '../../providers/facebook/login-app';
@@ -25,8 +25,10 @@ export class LoginModal {
 	fb_login: boolean = false;
 	fb_login_data: any
 	register_link: string = ''
+	title: string = '';
 
 	constructor(
+		public navParams: NavParams,
 		public viewCtrl: ViewController,
 		public loadingCtrl: LoadingController,
 		public wplogin: WPlogin,
@@ -40,6 +42,12 @@ export class LoginModal {
 		private loginservice: LoginService,
 		private Device: Device
 		) {
+      
+		if(this.navParams.get('title')) {
+			this.title = this.navParams.get('title');
+		} else {
+			this.title = 'Login';
+		}
 
 		// login through postmessage sets login_data this way
 		events.subscribe('modal:logindata', data => {

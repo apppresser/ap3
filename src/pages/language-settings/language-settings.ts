@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ViewController, ToastController, IonicPage} from 'ionic-angular';
+import {ViewController, ToastController, IonicPage, NavParams} from 'ionic-angular';
 import {Storage} from '@ionic/storage';
 import {TranslateService} from '@ngx-translate/core';
 import { LanguageService } from "../../providers/language/language.service";
@@ -12,15 +12,21 @@ import { LanguageService } from "../../providers/language/language.service";
 export class LanguageSettings {
 
   languages: any;
+  title: string = '';
 
   constructor( 
+    private navParams: NavParams,
     public storage: Storage,
     public viewCtrl: ViewController,
     public toastCtrl: ToastController,
     private languageservice: LanguageService,
     public translate: TranslateService
     ) {
-    
+      if(this.navParams.get('title')) {
+        this.title = this.navParams.get('title');
+      } else {
+        this.title = 'Language Settings';
+      }
   }
 
   ionViewWillEnter() {

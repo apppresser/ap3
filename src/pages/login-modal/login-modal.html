@@ -2,7 +2,7 @@
 
   <ion-toolbar>
   
-    <ion-title>{{ 'Login' | translate }}</ion-title>
+    <ion-title>{{ title | translate }}</ion-title>
 
     <ion-buttons end>
       <button ion-button *ngIf="!force_login && !login_data || login_data || (is_preview && force_login)" (click)="dismiss()">
