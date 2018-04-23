@@ -35,4 +35,4 @@
 
 <ion-nav id="nav" #content swipeBackEnabled="false"></ion-nav>
 
-<app-footer-nav *ngIf="pages" [menu]="pages"></app-footer-nav>
+<app-footer-nav *ngIf="pages" [menu]="pages" (click)="$event.stopPropagation()"></app-footer-nav>

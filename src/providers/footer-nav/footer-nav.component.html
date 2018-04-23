@@ -1,5 +1,5 @@
-<div class="td-theme-wrap">
-  <div class="mobile-menu-wrap" data-open="false">
+<div [ngClass]="{'td-theme-wrap':true, 'footer-bg-wall':menuOpen&&is_iOS}" (click)="$event.stopPropagation();">
+  <div class="mobile-menu-wrap" data-open="false" (click)="$event.stopPropagation();">
     <div class="td-header-wrap td-header-style-13">
 
       <div class="td-header-menu-wrap-full td-container-wrap td_stretch_container" style="height: 55px;">
@@ -16,7 +16,7 @@
                   </li>
                   <li class="mobile-logo-list-item">
                     <div id="td-top-mobile-toggle">
-                      <button type="button" (click)="onToggleFooterMenu($event)">
+                      <button type="button" (click)="onToggleFooterMenu($event);$event.stopPropagation();">
                         <!--<i class="td-icon-font td-icon-mobile"></i>-->
                         <img src="assets/icon/footer-nav-logo.png">
                       </button>

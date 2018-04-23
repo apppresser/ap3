@@ -1,5 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Events, LoadingController } from 'ionic-angular';
+import { Component, OnInit, Input, HostListener } from '@angular/core';
+import { Events, LoadingController, Platform } from 'ionic-angular';
 import { NgForm } from '@angular/forms';
 
 declare let jQuery;
@@ -16,15 +16,24 @@ export class FooterNavComponent implements OnInit {
   public videoPage: any[];
   public loading: any;
   public filteredMenu: any[];
+  public is_iOS = false;
 
   @Input() menu;
 
   constructor(
+    private platform: Platform,
     public loadingController: LoadingController,
     public events: Events,
   ) { }
 
+  @HostListener('click', ['$event'])
+  public onClick(event: MouseEvent): void {
+    event.stopPropagation();
+  }
+
   ngOnInit() {
+
+    this.is_iOS = this.platform.is('ios');
 
     this.setFooterMenuItems();
 
@@ -102,9 +111,14 @@ export class FooterNavComponent implements OnInit {
     searchForm.reset();
   }
 
-  onToggleFooterMenu($event) {
-    $event.preventDefault();
+  onToggleFooterMenu(event) {
+    event.preventDefault();
+    event.stopPropagation();
     this.toggleFooterMenu();
+
+    console.log("stay on this page!!!");
+
+    return false;
   }
 
   toggleFooterMenu() {
