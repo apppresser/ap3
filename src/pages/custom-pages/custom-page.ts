@@ -375,6 +375,11 @@ export class CustomPage implements OnInit, OnDestroy {
 		if(page && page.extra_classes && this.yieldLogin(page.extra_classes))
 			return;
 
+		if(page && page.extra_classes && (page.extra_classes.indexOf('loginmodal') >= 0 || page.extra_classes.indexOf('logoutmodal') >= 0)) {
+			this.loginModal({title:page.title});
+			return;
+		}
+
 		if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
 	      window.open( page.url, '_system', null );
 	      return;
@@ -416,6 +421,11 @@ export class CustomPage implements OnInit, OnDestroy {
 
 		if(page && page.extra_classes && this.yieldLogin(page.extra_classes))
 			return;
+
+		if(page && page.extra_classes && (page.extra_classes.indexOf('loginmodal') >= 0 || page.extra_classes.indexOf('logoutmodal') >= 0)) {
+			this.loginModal({title:page.title});
+			return;
+		}
 
 		if( page.extra_classes.indexOf('desktoptheme') >= 0 ) {
 			let url = new URL(page.url);

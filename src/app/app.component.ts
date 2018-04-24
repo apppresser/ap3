@@ -32,6 +32,15 @@ import { User } from '../models/user.model';
 import { LoginService } from '../providers/logins/login.service';
 import { LanguageService } from "../providers/language/language.service";
 
+/**
+ * Customizable options for our
+ * segments, media, language and login modals
+ */
+class ModalOptions {
+	public cssClass?: string;
+	public title?: string;
+}
+
 @Component({
   templateUrl: 'app.html'
 })
@@ -544,6 +553,9 @@ export class MyApp {
     } else if( page.target === '_blank' ) {
       this.openIab( page.url, page.target, null );
       return;
+    } else if( typeof(page.extra_classes) !== 'undefined' && (page.extra_classes.indexOf('loginmodal') >= 0||page.extra_classes.indexOf('logoutmodal') >= 0) ) {
+      this.openLoginModal({title:page.title});
+      return;
     }
 
     if( page.type === 'apppages' && page.page_type === 'list' ) {
@@ -577,6 +589,9 @@ export class MyApp {
       return;
     } else if( page.target === '_blank' ) {
       this.openIab( page.url, page.target, null );
+      return;
+    } else if( typeof(page.extra_classes) !== 'undefined' && (page.extra_classes.indexOf('loginmodal') >= 0||page.extra_classes.indexOf('logoutmodal') >= 0) ) {
+      this.openLoginModal({title:page.title});
       return;
     }
 
@@ -1070,10 +1085,15 @@ export class MyApp {
     this.menu.swipeEnable(false)
   }
 
-  openLoginModal() {
+  openLoginModal(opt?: ModalOptions) {
 
-    if(!this.myLoginModal) {
-      this.myLoginModal = this.modalCtrl.create( 'LoginModal' );
+    const css = (opt && opt.cssClass) ? opt.cssClass : '';
+    const params = (opt && opt.title) ? {title: opt.title} : {};
+	
+		if(!this.myLoginModal) {
+      this.myLoginModal = this.modalCtrl.create('LoginModal', params, {
+        cssClass: css
+      });
     }
 
     this.myLoginModal.onDidDismiss(data => {

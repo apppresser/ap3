@@ -1,5 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {NavParams, IonicPage} from 'ionic-angular';
+import {NavParams, IonicPage, ModalController} from 'ionic-angular';
+
+class ModalOptions {
+	public cssClass?: string;
+	public title?: string;
+}
 
 @IonicPage()
 @Component({
@@ -8,8 +13,11 @@ import {NavParams, IonicPage} from 'ionic-angular';
 export class TabsPage implements OnInit {
   tabs: Array<any> = [];
   mySelectedIndex: number;
+  login_modal: any;
+  login_modal_open = false;
 
   constructor(
+    private modalCtrl: ModalController,
     private navParams: NavParams
   ) {}
 
@@ -23,6 +31,9 @@ export class TabsPage implements OnInit {
         tab.root = null;
         tab.target = target;
       }
+      if(typeof(tab.extra_classes) !== 'undefined' && (tab.extra_classes.indexOf('loginmodal') >= 0||tab.extra_classes.indexOf('logoutmodal') >= 0)) {
+        tab.root = null;
+      }
       this.tabs.push(tab);
     }
   }
@@ -31,7 +42,29 @@ export class TabsPage implements OnInit {
     if(tab.url && tab.target) {
       this.openIab(tab.url, tab.target);
     }
+    if(typeof(tab.extra_classes) !== 'undefined' && (tab.extra_classes.indexOf('loginmodal') >= 0||tab.extra_classes.indexOf('logoutmodal') >= 0)) {
+      this.loginModal({title:tab.title});
+    }
   }
+
+  loginModal(opt?: ModalOptions) {
+
+		const css = (opt && opt.cssClass) ? opt.cssClass : '';
+		const params = (opt && opt.title) ? {title: opt.title} : {};
+	
+		this.login_modal = this.modalCtrl.create('LoginModal', params, {
+			cssClass: css
+		});
+
+		this.login_modal.onDidDismiss(data => {
+			this.login_modal_open = false;
+		});
+
+		if( this.login_modal_open === false) {
+			this.login_modal_open = true;
+			this.login_modal.present();
+		}
+	}
 
   maybeOpenIAB(tab) {
 
