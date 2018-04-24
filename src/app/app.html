@@ -1,5 +1,7 @@
 <div [innerHTML]="styles"></div>
 
+<app-footer-nav *ngIf="pages" [menu]="pages" (click)="$event.stopPropagation()"></app-footer-nav>
+
 <ion-menu side="{{menu_side}}" *ngIf="pages" [content]="content" swipeEnabled="false" (ionOpen)="menuOpened()" (ionClose)="menuClosed()">
 
   <ion-header>
@@ -34,5 +36,3 @@
 </ion-menu>
 
 <ion-nav id="nav" #content swipeBackEnabled="false"></ion-nav>
-
-<app-footer-nav *ngIf="pages" [menu]="pages" (click)="$event.stopPropagation()"></app-footer-nav>
