@@ -1302,7 +1302,9 @@ export class MyApp {
     //this.openPage( { 'title': this.tabs[0].title, 'url': '', 'component': 'TabsPage', 'navparams': this.navparams, 'class': this.tabs[0].icon } )
     
     this.zone.run( () => {
-      this.nav.setRoot( 'TabsPage', this.navparams );
+      // If the login/out has a redirect, we don't want to set the root here
+      if(!login)
+        this.nav.setRoot( 'TabsPage', this.navparams );
     } )
 
   }
