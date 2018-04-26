@@ -15,6 +15,7 @@ export class FooterNavComponent implements OnInit {
   public searchTerm: any;
   public videoPage: any[];
   public loading: any;
+  public backdrop: any;
   public filteredMenu: any[];
   public is_iOS = false;
 
@@ -23,6 +24,7 @@ export class FooterNavComponent implements OnInit {
   constructor(
     private platform: Platform,
     public loadingController: LoadingController,
+    public footerBackdrop: LoadingController,
     public events: Events,
   ) { }
 
@@ -134,13 +136,28 @@ export class FooterNavComponent implements OnInit {
       this.slide();
     }
     this.menuOpen = false;
+
+    if(this.is_iOS) {
+      this.backdrop.dismiss();
+    }
   }
 
   openFooterMenu() {
 
-    // jQuery(this.bodyTag).addClass('td-menu-mob-open-menu');
+    // In iOS, closing the footer nav does a click on the layer behind it,
+    // so we have this mess . . .
+    if(this.is_iOS) {
+      // layer next to the ion-loading to adjust the z-index
+      jQuery('app-footer-nav').appendTo("ion-app");
+      this.backdrop = this.footerBackdrop.create({
+        spinner: 'hide',
+        cssClass: 'nav-footer-backdrop',
+        showBackdrop: false
+      });
+  
+      this.backdrop.present();
+    }
 
-    // this.bodyTag.classList.add('td-menu-mob-open-menu');
     this.slide();
     this.menuOpen = true;
   }
