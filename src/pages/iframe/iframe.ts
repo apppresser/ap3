@@ -19,7 +19,8 @@ import { LanguageService } from "../../providers/language/language.service";
 })
 export class Iframe implements OnInit {
 
-    title: string;
+    title: string = ' ';
+    wp_title: string;
     url: any;
     iframe: any;
     param: string;
@@ -93,8 +94,11 @@ export class Iframe implements OnInit {
 
     ionViewWillEnter() {
 
-        this.title = this.navParams.get('title');
-
+        // If we have already set the title from WordPress don't use the one from the menu
+        if(this.title != this.wp_title) {
+            this.title = this.navParams.get('title');
+        }
+        
         this.showShare = false;
 
         this.iframeLoading();
@@ -249,10 +253,15 @@ export class Iframe implements OnInit {
     changeTitle( title ) {
         if( title === '' )
             return;
-        
+
+        // Don't change the title if we already of the one from WordPress
+        if(this.wp_title)
+            return;
+
         // zone fixes bug where title didn't update properly on device
         this.zone.run( () => {
             this.title = title
+            this.wp_title = title
         } )
     }
 
