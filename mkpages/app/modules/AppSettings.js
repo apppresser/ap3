@@ -18,6 +18,10 @@ class AppSettings {
                 port: this.port,
                 method: 'GET',
                 path: '/' + this.site_name + '/wp-json/ap3/v1/app/' + this.app_id,
+                headers: {
+                    'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+                    'Pragma': 'no-cache'
+                }
             };
             if (this.port == 80) {
                 req = http.get(options, (res) => {
