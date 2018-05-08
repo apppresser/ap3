@@ -71,7 +71,7 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 		public loginservice: LoginService,
 		public iap: IAP,
 		public loadingCtrl: LoadingController
-	) { }
+	) {}
 
 	ngOnInit() {
 
@@ -79,12 +79,12 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 
 		this.pagetitle = this.navParams.data.title;
 
-		if (this.navParams.data.is_home == true) {
+		if(this.navParams.data.is_home == true) {
 			this.doLogo()
 		}
 
 		// kill vids on android
-		if (this.platform.is('android')) {
+		if(this.platform.is('android')) {
 			this.killVideos()
 		}
 
@@ -106,7 +106,7 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 
 	ionViewWillEnter() {
 
-		if (this.platform.isRTL && this.viewCtrl.enableBack()) {
+		if(this.platform.isRTL && this.viewCtrl.enableBack()) {
 			this.viewCtrl.showBackButton(false)
 			this.rtlBack = true
 		}
@@ -117,9 +117,9 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 		// Listen for link clicks, open in in app browser
 		this.listenFunc = this.renderer.listen(this.elementRef.nativeElement, 'click', (event) => {
 
-			if (event.target.href && event.target.href.indexOf('http') >= 0) {
+			if(event.target.href && event.target.href.indexOf('http') >= 0) {
 				event.preventDefault();
-				if (event.target.target && event.target.target) {
+				if(event.target.target && event.target.target) {
 					window.open(event.target.href, event.target.target);
 				} else {
 					window.open(event.target.href, '_blank');
@@ -132,8 +132,8 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 	backRtlTransition() {
 		let obj = {}
 
-		if (this.platform.is('ios'))
-			obj = { direction: 'forward' }
+		if(this.platform.is('ios'))
+			obj = {direction: 'forward'}
 
 		this.nav.pop(obj)
 	}
@@ -161,10 +161,10 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 
 			for (let i in frames) {
 
-				if (/youtube|wistia|vimeo/.test(frames[i].src)) {
+				if(/youtube|wistia|vimeo/.test(frames[i].src)) {
 					Vidsrc = frames[i].src;
 					frames[i].src = '';
-					setTimeout(function () {
+					setTimeout(function() {
 						frames[i].src = Vidsrc;
 					}, 500);
 				}
@@ -222,17 +222,17 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 		let menu_index: number;
 		let count: number = 0;
 
-		if (!pages)
+		if(!pages)
 			return menu_index;
 
-		for (let page of pages) {
-			if (page.slug && page.slug == slug) {
+		for(let page of pages) {
+			if(page.slug && page.slug == slug) {
 				menu_index = count;
 			}
 			count++;
 		};
 
-		if (!menu_index && menu_index !== 0)
+		if(!menu_index && menu_index !== 0)
 			console.log(pages); // you can find the slugs here
 
 		return menu_index;
@@ -250,13 +250,13 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 
 		menu_index = this.getMenuIndexBySlug(page_slug);
 
-		if (menu_index || menu_index === 0) {
+		if(menu_index || menu_index === 0) {
 			return this.menus.side[menu_index];
 		}
 
 		menu_index = this.getTabIndexBySlug(page_slug);
 
-		if (menu_index || menu_index === 0) {
+		if(menu_index || menu_index === 0) {
 			return this.menus.tabs[menu_index];
 		}
 
@@ -275,34 +275,39 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 	 */
 	pushPage(page) {
 
-		if (typeof page === 'string') {
+		if(typeof page === 'string') {
 			page = this.getPage(page);
-			if (page === false)
+			if(page === false)
 				return;
 		}
 
-		if (page && page.extra_classes && this.yieldLogin(page.extra_classes))
+		if(page && page.extra_classes && this.yieldLogin(page.extra_classes))
 			return;
 
-		if (page.target === '_blank' && page.extra_classes.indexOf('system') >= 0) {
+		if(page && page.extra_classes && (page.extra_classes.indexOf('loginmodal') >= 0 || page.extra_classes.indexOf('logoutmodal') >= 0)) {
+			this.loginModal({title:page.title});
+			return;
+		}
+
+		if(page.target === '_blank' && page.extra_classes.indexOf('system') >= 0) {
 			window.open(page.url, '_system', null);
 			return;
-		} else if (page.target === '_blank') {
+		} else if(page.target === '_blank') {
 			window.open(page.url, page.target, null);
 			return;
 		}
 
 		let opt = {};
 
-		if (this.platform.isRTL && this.platform.is('ios'))
+	    if( this.platform.isRTL && this.platform.is('ios') )
 			opt = { direction: 'back' }
 
-		if (page.type === 'apppages' && page.page_type === 'list') {
-			this.nav.push('PostList', page, opt);
-		} else if (page.type === 'apppages' && page.page_type === 'media-list') {
-			this.nav.push('MediaList', page, opt);
-		} else if (page.type === 'apppages') {
-			this.nav.push(this.getPageModuleName(page.page_id), page, opt);
+		if( page.type === 'apppages' && page.page_type === 'list' ) {
+			this.nav.push( 'PostList', page, opt );
+		} else if( page.type === 'apppages' && page.page_type === 'media-list' ) {
+			this.nav.push( 'MediaList', page, opt );
+		} else if( page.type === 'apppages' ) {
+			this.nav.push(this.getPageModuleName(page.page_id), page, opt );
 		} else if (page.url) {
 			this.nav.push('Iframe', page, opt);
 		} else {
@@ -317,34 +322,39 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 	 */
 	openPage(page) {
 
-		if (typeof page === 'string') {
+		if(typeof page === 'string') {
 			page = this.getPage(page);
-			if (page === false)
+			if(page === false)
 				return;
 		}
 
-		if (page && page.extra_classes && this.yieldLogin(page.extra_classes))
+		if(page && page.extra_classes && this.yieldLogin(page.extra_classes))
 			return;
 
-		if (page.extra_classes.indexOf('desktoptheme') >= 0) {
+		if(page && page.extra_classes && (page.extra_classes.indexOf('loginmodal') >= 0 || page.extra_classes.indexOf('logoutmodal') >= 0)) {
+			this.loginModal({title:page.title});
+			return;
+		}
+
+		if( page.extra_classes.indexOf('desktoptheme') >= 0 ) {
 			let url = new URL(page.url);
 			url.searchParams.append('appp_bypass', 'true');
 			let iab: any = window.open(url.toString(), '_blank');
 			return;
-		} else if (page.target === '_blank' && page.extra_classes.indexOf('system') >= 0) {
-			window.open(page.url, '_system', null);
+		} else if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
+			window.open( page.url, '_system', null );
 			return;
-		} else if (page.target === '_blank') {
-			window.open(page.url, page.target, null);
+		} else if( page.target === '_blank' ) {
+			window.open( page.url, page.target, null );
 			return;
 		}
 
-		if (page.type === 'apppages' && page.page_type === 'list') {
-			this.nav.setRoot('PostList', page);
-		} else if (page.type === 'apppages' && page.page_type === 'media-list') {
-			this.nav.setRoot('MediaList', page);
-		} else if (page.type === 'apppages') {
-			this.nav.setRoot(this.getPageModuleName(page.page_id), page);
+		if( page.type === 'apppages' && page.page_type === 'list' ) {
+			this.nav.setRoot( 'PostList', page );
+		} else if( page.type === 'apppages' && page.page_type === 'media-list' ) {
+			this.nav.setRoot( 'MediaList', page );
+		} else if( page.type === 'apppages' ) {
+			this.nav.setRoot(this.getPageModuleName(page.page_id), page );
 		} else if (page.url) {
 			this.nav.setRoot('Iframe', page);
 		} else {
@@ -356,12 +366,12 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 		this.nav.pop();
 	}
 
-	mediaModal(src, img = null, opt?: ModalOptions) {
+	mediaModal( src, img = null, opt?: ModalOptions ) {
 
 		const css = (opt && opt.cssClass) ? opt.cssClass : '';
-		const params: { source, image, title?} = { source: src, image: img };
+		const params: {source, image, title?} = {source: src, image: img};
 
-		if (opt && opt.title) {
+		if(opt && opt.title) {
 			params.title = opt.title;
 		}
 
@@ -372,24 +382,24 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 	}
 
 	updateData() {
-		window.localStorage.removeItem('myappp')
+		window.localStorage.removeItem( 'myappp' )
 		this.storage.remove('segments')
-		this.events.publish('data:update', true)
+		this.events.publish( 'data:update', true )
 	}
 
-	changeRTL(event, rtl) {
-		if (rtl) {
+	changeRTL( event, rtl ) {
+		if( rtl ) {	
 			this.platform.setDir('rtl', true)
 		} else {
 			this.platform.setDir('ltr', true)
 		}
-		this.storage.set('is_rtl', rtl)
+		this.storage.set( 'is_rtl', rtl )
 	}
 
 	showSegments(opt?: ModalOptions) {
 
 		const css = (opt && opt.cssClass) ? opt.cssClass : '';
-		const params = (opt && opt.title) ? { title: opt.title } : {};
+		const params = (opt && opt.title) ? {title: opt.title} : {};
 
 		let modal = this.modalCtrl.create('PushSettings', params, {
 			cssClass: css
@@ -400,7 +410,7 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 	showLanguages(opt?: ModalOptions) {
 
 		const css = (opt && opt.cssClass) ? opt.cssClass : '';
-		const params = (opt && opt.title) ? { title: opt.title } : {};
+		const params = (opt && opt.title) ? {title: opt.title} : {};
 
 		let modal = this.modalCtrl.create('LanguageSettings', params, {
 			cssClass: css
@@ -411,7 +421,7 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 	loginModal(opt?: ModalOptions) {
 
 		const css = (opt && opt.cssClass) ? opt.cssClass : '';
-		const params = (opt && opt.title) ? { title: opt.title } : {};
+		const params = (opt && opt.title) ? {title: opt.title} : {};
 
 		this.login_modal = this.modalCtrl.create('LoginModal', params, {
 			cssClass: css
@@ -421,7 +431,7 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 			this.login_modal_open = false;
 		});
 
-		if (this.login_modal_open === false) {
+		if( this.login_modal_open === false) {
 			this.login_modal_open = true;
 			this.login_modal.present();
 		}
@@ -433,8 +443,8 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
    */
 	yieldLogin(extra_classes) {
 
-		if (extra_classes && extra_classes.indexOf('yieldlogin') >= 0) {
-			if (this.user) { // logged in
+	if(extra_classes && extra_classes.indexOf('yieldlogin') >= 0) {
+      if(this.user) { // logged in
 				return false;
 			} else { // logged out, show login modal
 				this.loginModal();
@@ -446,44 +456,44 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 	}
 
 	getPages() {
-		if (!this.pages) {
-			this.pages = JSON.parse(window.localStorage.getItem('myappp'));
+		if(!this.pages) {
+			this.pages = JSON.parse( window.localStorage.getItem( 'myappp' ) );
 		}
 		return this.pages;
 	}
 
 	getSegments() {
-		if (!this.segments)
-			this.segments = JSON.parse(window.localStorage.getItem('segments'));
+		if(!this.segments)
+			this.segments = JSON.parse( window.localStorage.getItem( 'segments' ) );
 		return this.segments;
 	}
 
 	getSideMenu() {
-		let myappp = JSON.parse(window.localStorage.getItem('myappp'));
+		let myappp = JSON.parse( window.localStorage.getItem( 'myappp' ) );
 		return myappp.menus.items;
 	}
 
 	getTabs() {
-		let myappp = JSON.parse(window.localStorage.getItem('myappp'));
+		let myappp = JSON.parse( window.localStorage.getItem( 'myappp' ) );
 		return myappp.tab_menu.items;
 	}
 
 	getPageModuleName(page_id) {
-		if (!isDevMode())
-			return 'Page' + page_id;
+		if(!isDevMode())
+			return 'Page'+page_id;
 		else
 			return 'CustomPage';
 	}
 
-	buyProduct(id) {
-		this.iap.buy(id);
+	buyProduct( id ) {
+		this.iap.buy( id );
 	}
 
-	subscribeNoAds(id) {
+	subscribeNoAds( id ) {
 
 		this.showSpinner();
 
-		this.iap.subscribeNoAds(id);
+		this.iap.subscribeNoAds( id );
 
 		// TODO: convert this to promise, get rid of timeout
 		setTimeout(() => {
@@ -491,9 +501,9 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 		}, 3000);
 	}
 
-	restoreNoAds(id) {
+	restoreNoAds( id ) {
 		this.showSpinner();
-		this.iap.restoreNoAds(id).then(res => {
+		this.iap.restoreNoAds( id ).then( res => {
 			console.log(res)
 			this.hideSpinner();
 		});

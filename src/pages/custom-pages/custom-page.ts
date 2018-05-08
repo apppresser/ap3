@@ -84,8 +84,8 @@ export class CustomPage implements OnInit, OnDestroy {
 		tabs: any
 	};
 
-	constructor( 
-		public navParams: NavParams, 
+	constructor(
+		public navParams: NavParams,
 		public nav: Nav,
 		public modalCtrl: ModalController,
 		public renderer: Renderer,
@@ -170,7 +170,7 @@ export class CustomPage implements OnInit, OnDestroy {
 		}
 
 		// kill vids on android
-		if( this.platform.is('android') ) {
+		if(this.platform.is('android')) {
 			this.killVideos()
 		}
 
@@ -197,7 +197,7 @@ export class CustomPage implements OnInit, OnDestroy {
 
 	ionViewWillEnter() {
 
-        if( this.platform.isRTL && this.viewCtrl.enableBack() ) {
+        if(this.platform.isRTL && this.viewCtrl.enableBack()) {
             this.viewCtrl.showBackButton(false)
             this.rtlBack = true
         }
@@ -207,13 +207,13 @@ export class CustomPage implements OnInit, OnDestroy {
 	listener() {
 		// Listen for link clicks, open in in app browser
 	    this.listenFunc = this.renderer.listen(this.elementRef.nativeElement, 'click', (event) => {
-	    	
-	    	if( event.target.href && event.target.href.indexOf('http') >= 0 ) {
+
+	    	if(event.target.href && event.target.href.indexOf('http') >= 0) {
 				event.preventDefault();
 				if(event.target.target && event.target.target) {
-					window.open( event.target.href, event.target.target);
+					window.open(event.target.href, event.target.target);
 				} else {
-					window.open( event.target.href, '_blank' );
+					window.open(event.target.href, '_blank');
 				}
 	      }
 	    });
@@ -223,10 +223,10 @@ export class CustomPage implements OnInit, OnDestroy {
 	backRtlTransition() {
 		let obj = {}
 
-		if( this.platform.is('ios') )
+		if(this.platform.is('ios'))
 		  obj = {direction: 'forward'}
 
-		this.nav.pop( obj )
+		this.nav.pop(obj)
 	}
 
 	presentToast(msg) {
@@ -252,16 +252,16 @@ export class CustomPage implements OnInit, OnDestroy {
 
 		  for (let i in frames) {
 
-		    if( /youtube|wistia|vimeo/.test(frames[i].src) ) {
+		    if(/youtube|wistia|vimeo/.test(frames[i].src)) {
 		       Vidsrc = frames[i].src;
 		       frames[i].src = '';
-		       setTimeout( function() {
+		       setTimeout(function() {
 		           frames[i].src = Vidsrc;
 		       }, 500);
 		    }
 
 		  }
-		  
+
 		})
 
 	}
@@ -280,10 +280,10 @@ export class CustomPage implements OnInit, OnDestroy {
 
 	doLogo() {
 		// check if logo file exists. If so, show it
-		this.headerLogoService.checkLogo().then( data => {
+		this.headerLogoService.checkLogo().then(data => {
 			this.show_header_logo = true
 			this.header_logo_url = (<string>data)
-		}).catch( e => {
+		}).catch(e => {
 			// no logo, do nothing
             //console.log(e)
 		})
@@ -328,7 +328,7 @@ export class CustomPage implements OnInit, OnDestroy {
 
     	return menu_index;
 	}
-	
+
 	/**
 	 * Search both menus for a page
 	 * 
@@ -338,7 +338,7 @@ export class CustomPage implements OnInit, OnDestroy {
 
 		let menu_index: number;
 		let page: object;
-		
+
 		menu_index = this.getMenuIndexBySlug(page_slug);
 
 		if(menu_index || menu_index === 0) {
@@ -352,7 +352,7 @@ export class CustomPage implements OnInit, OnDestroy {
 		}
 
 		// otherwise . . .
-		this.translate.get('Page not found').subscribe( text => {
+		this.translate.get('Page not found').subscribe(text => {
 			this.presentToast(text);
 		});
 
@@ -380,11 +380,11 @@ export class CustomPage implements OnInit, OnDestroy {
 			return;
 		}
 
-		if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
-	      window.open( page.url, '_system', null );
+		if(page.target === '_blank' && page.extra_classes.indexOf('system') >= 0) {
+	      window.open(page.url, '_system', null);
 	      return;
-	    } else if( page.target === '_blank' ) {
-	      window.open( page.url, page.target, null );
+	    } else if(page.target === '_blank') {
+	      window.open(page.url, page.target, null);
 	      return;
 	    }
 
@@ -488,7 +488,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	}
 
 	showSegments(opt?: ModalOptions) {
-		
+
 		const css = (opt && opt.cssClass) ? opt.cssClass : '';
 		const params = (opt && opt.title) ? {title: opt.title} : {};
 
@@ -513,7 +513,7 @@ export class CustomPage implements OnInit, OnDestroy {
 
 		const css = (opt && opt.cssClass) ? opt.cssClass : '';
 		const params = (opt && opt.title) ? {title: opt.title} : {};
-	
+
 		this.login_modal = this.modalCtrl.create('LoginModal', params, {
 			cssClass: css
 		});
