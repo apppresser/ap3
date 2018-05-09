@@ -118,6 +118,7 @@ export class AppGeo {
 		let ajax_url = this.wordpress_url + 'wp-admin/admin-ajax.php?action=appp_geo_user';
 
 		let data = {
+			'position': position,
 			'longitude': position.coords.longitude,
 			'latitude': position.coords.latitude
 		}
