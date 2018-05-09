@@ -697,6 +697,8 @@ export class MyApp {
   getPageModuleName(page_id) {
     if(!isDevMode())
       return 'Page'+page_id;
+    if(false === this.globalvars.getUseDynamicPageModule()) // building on heroku
+      return 'Page'+page_id;
     else
       return 'CustomPage';
   }

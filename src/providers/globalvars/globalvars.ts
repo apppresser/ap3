@@ -12,6 +12,7 @@ import 'rxjs/add/operator/map';
 export class GlobalVars {
 
   data: any = null;
+  useDynamicContentModule: boolean = true; // false when using our builder on Heroku?
   // url should be WP site with AP installed, dynamically changes based on build form
   // appid: string = '17';
   // apiurl: string = 'https://myapppresser.com/artofmanliness/'
@@ -33,6 +34,10 @@ export class GlobalVars {
 
   getAppId() {
     return this.appid;
+  }
+
+  getUseDynamicPageModule() {
+    return this.useDynamicContentModule;
   }
 
 }
