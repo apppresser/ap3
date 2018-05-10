@@ -13,6 +13,7 @@ export class GlobalVars {
 
   data: any = null;
   isInProductionMode = true;
+  useDynamicContentModule: boolean = false; // false when using our builder on Heroku or running the prod script locally
   // url should be WP site with AP installed, dynamically changes based on build form
   // appid: string = '163';
   // apiurl: string = 'http://staging.myapppresser.com/test/'
@@ -34,6 +35,10 @@ export class GlobalVars {
 
   getAppId() {
     return this.appid;
+  }
+
+  getUseDynamicPageModule() {
+    return this.useDynamicContentModule;
   }
 
 }
