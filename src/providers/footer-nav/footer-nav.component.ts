@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, HostBinding } from '@angular/core';
 import { Events, LoadingController } from 'ionic-angular';
 import { NgForm } from '@angular/forms';
 
@@ -11,13 +11,13 @@ declare let jQuery;
 export class FooterNavComponent implements OnInit {
 
   private bodyTag: any;
-  private menuOpen = false;
   public searchTerm: any;
   public videoPage: any[];
   public loading: any;
   public filteredMenu: any[];
 
   @Input() menu;
+  @HostBinding('class.ft-nav-open') menuOpen:boolean = false;
 
   constructor(
     public loadingController: LoadingController,
@@ -115,7 +115,6 @@ export class FooterNavComponent implements OnInit {
   }
 
   closeFooterMenu() {
-    // this.bodyTag.classList.remove('td-menu-mob-open-menu');
     if(this.menuOpen) {
       this.slide();
     }
@@ -123,10 +122,6 @@ export class FooterNavComponent implements OnInit {
   }
 
   openFooterMenu() {
-
-    // jQuery(this.bodyTag).addClass('td-menu-mob-open-menu');
-
-    // this.bodyTag.classList.add('td-menu-mob-open-menu');
     this.slide();
     this.menuOpen = true;
   }
@@ -141,6 +136,14 @@ export class FooterNavComponent implements OnInit {
     finHeight = $('.mobile-menu-wrap').data('open') == 'true' ? "55px" : autoHeight;
 
     let status = el.data('open') == 'true' ? 'false' : 'true';
+
+    setTimeout(() => {
+      if(status == 'true') {
+        $(this.bodyTag).addClass('footer-nav-open');
+      } else {
+        $(this.bodyTag).removeClass('footer-nav-open');
+      }
+    }, 1000);
 
     el.data('open', status);
     el.height(curHeight).animate({height: finHeight}).css('overflow', '');
