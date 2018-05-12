@@ -4,7 +4,8 @@ import 'rxjs/add/operator/map';
 
 @Injectable()
 export class HeaderLogo {
-  url: string;
+	url: string;
+	logo_exists: boolean;
 
   constructor(
     public http: Http
@@ -16,17 +17,33 @@ export class HeaderLogo {
 
     return new Promise( (resolve, reject) => {
 
-	    this.http.get( './assets/header-logo.png' )
-	        .subscribe(data => {
+			if(this.logo_exists) {
+				// logo exists, we already checked
+				resolve(this.url);
+			} else if(this.logo_exists === false) {
+				// logo does not exists, we already checked
+				reject();
+			} else {
 
-	          // logo file exists, return url 
-	          resolve(this.url);
-	        },
-	        error => {
+				// not sure if logo exists, check please
 
-	          // logo file does not exist
-	          reject(error);
-	        })
+				this.http.get( './assets/header-logo.png' )
+						.subscribe(data => {
+
+							this.logo_exists = true;
+	
+							// logo file exists, return url 
+							resolve(this.url);
+						},
+						error => {
+
+							this.logo_exists = false;
+	
+							// logo file does not exist
+							reject(error);
+						});
+			}
+
 	    });
   }
 
