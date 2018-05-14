@@ -215,7 +215,7 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 
 	/**
 	 * Side or tab menus
-	 * @param slug page slug
+	 * @param slug page slug or URL
 	 * @param pages menu or tab pages
 	 */
 	getIndexBySlug(slug: string, pages) {
@@ -227,6 +227,8 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 
 		for(let page of pages) {
 			if(page.slug && page.slug == slug) {
+				menu_index = count;
+			} else if(page.url && page.url == slug) {
 				menu_index = count;
 			}
 			count++;
