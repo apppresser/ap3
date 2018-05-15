@@ -1,6 +1,9 @@
 import {Component} from '@angular/core';
 import {NavParams, ViewController, ToastController, IonicPage, ModalController} from 'ionic-angular';
 import {Storage} from '@ionic/storage';
+import {File} from '@ionic-native/file';
+
+declare var cordova: any;
 
 @IonicPage()
 @Component({
@@ -17,7 +20,8 @@ export class DownloadList {
     public storage: Storage,
     public viewCtrl: ViewController,
     public toastCtrl: ToastController,
-    public modalCtrl: ModalController
+    public modalCtrl: ModalController,
+    private file: File
     ) {
 
     if(this.navParams.get('title')) {
@@ -49,6 +53,44 @@ export class DownloadList {
 
     let modal = this.modalCtrl.create('MediaPlayer', {source: item.url });
     modal.present();
+
+  }
+
+  removeDownload( item ) {
+
+    let path = cordova.file.dataDirectory + 'media/';
+    let fileName = item.url.replace(/^.*[\\\/]/, '');
+
+    this.file.removeFile( path, fileName ).then( msg => {
+
+      this.removeDownloadSuccess( item )
+
+      }, (error) => {
+
+        console.warn(error)
+
+        // still remove data if file not found
+        if( error.code == 1 ) {
+          this.removeDownloadSuccess( item )
+        }
+
+    })
+
+  }
+
+  removeDownloadSuccess( item ) {
+
+    // remove from downloads and delete file
+    for (let i = this.downloads.length - 1; i >= 0; i--) {
+      if( this.downloads[i].url === item.url ) {
+        this.downloads.splice(i, 1);
+        break;
+      }
+    }
+
+    this.storage.set( 'downloads', this.downloads )
+
+    this.presentToast('Download Removed');
 
   }
 
