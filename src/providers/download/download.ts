@@ -53,6 +53,7 @@ export class Download {
   	return new Promise( (resolve, reject) => {
 
       let filename = filePath.replace(/^.*[\\\/]/, '')
+      filename = filename.replace(/[\s+]/g, '-')
 
   		fileTransfer.download( filePath, cordova.file.dataDirectory + '/media/' + filename ).then((entry) => {
 

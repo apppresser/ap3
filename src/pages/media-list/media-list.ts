@@ -312,13 +312,13 @@ export class MediaList implements OnInit {
 
     } else {
 
-      let path = cordova.file.dataDirectory + '/media';
+      let path = cordova.file.dataDirectory + 'media/';
       let fileName = item.download_url.replace(/^.*[\\\/]/, '');
 
       item.download_url = ''
       item.downloaded = false
 
-      // console.log('remove file ' + path + fileName )
+      console.log('remove file ' + path + fileName )
 
       this.file.removeFile( path, fileName ).then( msg => {
 
