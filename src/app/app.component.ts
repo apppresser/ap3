@@ -1,6 +1,6 @@
 /* Framework */
 import {ViewChild, Component, isDevMode, NgZone} from '@angular/core';
-import {Platform, MenuController, Nav, ToastController, ModalController, Events, Config} from 'ionic-angular';
+import {Platform, MenuController, Nav, ToastController, ModalController, Events, Config, LoadingController} from 'ionic-angular';
 import {DomSanitizer} from '@angular/platform-browser';
 import {TranslateService} from '@ngx-translate/core';
 import {Http} from '@angular/http';
@@ -15,7 +15,8 @@ import {PushService} from '../providers/push/push';
 import {AppWoo} from '../providers/appwoo/appwoo';
 import {AppData} from '../providers/appdata/appdata';
 import {AppGeo} from '../providers/appgeo/appgeo';
-import {Logins} from "../providers/logins/logins";
+import {Logins} from '../providers/logins/logins';
+import {Download} from '../providers/download/download';
 
 /* Native */
 import { StatusBar } from '@ionic-native/status-bar';
@@ -90,6 +91,7 @@ export class MyApp {
     private appdata: AppData,
     private logins: Logins,
     public toastCtrl: ToastController,
+    public loadingCtrl: LoadingController,
     public storage: Storage,
     public modalCtrl: ModalController,
     public events: Events,
@@ -104,7 +106,8 @@ export class MyApp {
     private http: Http,
     private Dialogs: Dialogs,
     private zone: NgZone,
-    private config: Config
+    private config: Config,
+    private download: Download
   ) {
 
     this.initializeApp();
@@ -882,12 +885,22 @@ export class MyApp {
         this.syncLoginStatus( data )
 
       } else if( data.apppage ) {
+
         let page = { title: data.title, component: 'Iframe', url: data.apppage.url, classes: null, page_type: null, type: null };
         this.openPage( page );
+
       } else if( data.geouserpref ) {
-        this.appgeo.startBeacon(data.geouserpref);
-      } else if(data.menulink) {
-        this.openMenuLink(data);
+
+        this.appgeo.startBeacon( data.geouserpref );
+
+      } else if( data.menulink ) {
+
+        this.openMenuLink( data );
+
+      } else if( data.download_url ) {
+
+        this.downloadItem( data );
+
       }
 
     }, false); // end eventListener
@@ -1450,6 +1463,50 @@ export class MyApp {
       console.log('Back ' + text )
       this.config.set('ios', 'backButtonText', text );
     });
+
+  }
+
+  // download item from WP, add to storage
+  downloadItem( data ) {
+
+    console.log(data)
+
+    const loading = this.loadingCtrl.create({
+        showBackdrop: false,
+        //dismissOnPageChange: true
+    });
+
+    loading.present(loading);
+
+    this.download.downloadFile( data.download_url ).then( downloadUrl => {
+
+      if( !downloadUrl )
+        return;
+
+      this.storage.get( 'downloads' ).then( downloads => {
+
+        if( downloads ) {
+
+          downloads.push( { title: data.download_title, url: downloadUrl } )
+
+        } else {
+
+          downloads = [ { title: data.download_title, url: downloadUrl } ]
+
+        }
+
+        this.storage.set( 'downloads', downloads )
+
+      });
+
+      this.translate.get('Download successful.').subscribe( text => {
+        this.presentToast(text);
+      });
+
+      if( loading )
+        loading.dismiss();
+
+    })
 
   }
 

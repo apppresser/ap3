@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      {{ title | translate }}
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+<ion-list>
+<ion-item *ngFor="let download of downloads" (click)="mediaModal(download)">
+  <h2>{{download.title}}</h2>
+  <ion-icon item-end name="play"></ion-icon>
+</ion-item>
+<ion-item *ngIf="!downloads">{{ 'No Downloads available.' | translate }}</ion-item>
+</ion-list>
+
+</ion-content>

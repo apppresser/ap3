@@ -293,9 +293,7 @@ export class MediaList implements OnInit {
 
           item.downloaded = true
 
-          this.downloads.push(item);
-
-          this.storage.set( this.route.substr(-10, 10) + '_downloads', this.downloads);
+          this.saveDownload( item )
 
           this.presentToast('Downloaded!');
 
@@ -412,6 +410,32 @@ export class MediaList implements OnInit {
       this.storage.set( this.route.substr(-10, 10) + '_posts', posts )
     })
 
+
+  }
+
+  saveDownload( item ) {
+
+    this.downloads.push(item);
+
+    // save to local list
+    this.storage.set( this.route.substr(-10, 10) + '_downloads', this.downloads);
+
+    // save to master list also
+    this.storage.get( 'downloads' ).then( downloads => {
+
+      if( downloads ) {
+
+        downloads.push( { title: item.title.rendered, url: item.download_url } )
+
+      } else {
+
+        downloads = [ { title: item.title.rendered, url: item.download_url } ]
+
+      }
+
+      this.storage.set( 'downloads', downloads )
+
+    });
 
   }
 

@@ -23,7 +23,7 @@ export class Download {
 
   downloadFile( filePath ) {
 
-    console.log( cordova.file.dataDirectory, filePath )
+    // console.log( cordova.file.dataDirectory, filePath )
 
   	// simulate progress
   	this.events.publish('load:progress', 10);

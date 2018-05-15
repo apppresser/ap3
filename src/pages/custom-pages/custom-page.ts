@@ -137,6 +137,9 @@ export class CustomPage implements OnInit, OnDestroy {
 		loginModal: (options?: ModalOptions) => {
 			this.loginModal(options);
 		},
+		showDownloads: (options?: ModalOptions) => {
+			this.showDownloads(options);
+		},
 		buyProduct: ( id ) => {
 			this.iap.buy( id );
 		},
@@ -495,6 +498,17 @@ export class CustomPage implements OnInit, OnDestroy {
 		const params = (opt && opt.title) ? {title: opt.title} : {};
 
 		let modal = this.modalCtrl.create('PushSettings', params, {
+			cssClass: css
+		});
+		modal.present();
+	}
+
+	showDownloads(opt?: ModalOptions) {
+
+		const css = (opt && opt.cssClass) ? opt.cssClass : '';
+		const params = (opt && opt.title) ? {title: opt.title} : {};
+
+		let modal = this.modalCtrl.create('DownloadList', params, {
 			cssClass: css
 		});
 		modal.present();
