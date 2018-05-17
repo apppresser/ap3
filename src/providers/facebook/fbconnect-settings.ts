@@ -25,7 +25,7 @@ export class FBConnectAppSettings {
 		private platform: Platform
 	) {
 		this.debug = false;
-		this.login_scope = ['email','public_profile','user_friends'];
+		this.login_scope = ['email','public_profile'];
 		this.me_fields = 'email,name,picture';
 		this.l10n = {
 				login_msg:'Thanks for logging in, {{USERNAME}}!',
