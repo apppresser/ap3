@@ -1469,6 +1469,9 @@ export class MyApp {
   // download item from WP, add to storage
   downloadItem( data ) {
 
+    if( !this.Device.platform ) 
+      return;
+
     console.log(data)
 
     const loading = this.loadingCtrl.create({
@@ -1506,6 +1509,13 @@ export class MyApp {
       if( loading )
         loading.dismiss();
 
+    })
+    .catch( err => {
+      
+      console.warn( err )
+
+      if( loading )
+        loading.dismiss();
     })
 
   }
