@@ -33,4 +33,10 @@ media-player {
 	.vg-icon-fullscreen_exit:before {
 	    content: "\f162";
 	}
+
+	img.media-modal-full-image {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
 }
