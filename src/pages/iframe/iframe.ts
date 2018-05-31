@@ -196,7 +196,9 @@ export class Iframe implements OnInit {
             this.iframe.src = src;
 
         } else if( e.data === 'activity_modal' ) {
-            this.activityModal = true;
+            this.zone.run( () => {
+                this.activityModal = true;
+            } );
         } else if( e.data === 'checkin_icon_show' || e.data === 'checkin_modal' /* icon */ ) {
             this.checkinModal = true;
         } else if( e.data === 'checkin_modal_show' ) {
