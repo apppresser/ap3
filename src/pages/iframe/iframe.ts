@@ -404,6 +404,9 @@ export class Iframe implements OnInit {
     // Show alert in preview if not using https
     previewAlert(url) {
 
+        if(typeof url === 'undefined')
+            return;
+
         if( this.Device.platform != 'iOS' && this.Device.platform != 'Android' && url.indexOf('http://') >= 0 && location.port != '8100' ) {
 
           alert('Cannot display http pages in browser preview. Please build app for device or use https.');
