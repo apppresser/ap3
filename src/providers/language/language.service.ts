@@ -47,9 +47,6 @@ export class LanguageService {
 
 	appendUrlLang(url) {
 
-		if(typeof url === 'undefined')
-			return '';
-
 		// console.log('LanguageService appendUrlLang start', url);
 
 		let params = new HttpParams();
