@@ -30,7 +30,8 @@ import { Keyboard } from '@ionic-native/keyboard';
 import {Storage} from '@ionic/storage';
 import { User } from '../models/user.model';
 import { LoginService } from '../providers/logins/login.service';
-import { PushwooshService } from "../providers/pushwoosh.service";
+// import { PushwooshService } from "../providers/pushwoosh.service";
+import { PushService } from "../providers/push/push";
 
 @Component({
   templateUrl: 'app.html'
@@ -72,8 +73,8 @@ export class MyApp {
     private fbconnectIframe: FbConnectIframe,
     private loginservice: LoginService,
     private sanitizer: DomSanitizer,
-    // private pushService: PushService,
-    private pushwoosh: PushwooshService,
+    private pushService: PushService,
+    // private pushwoosh: PushwooshService,
     private appwoo: AppWoo,
     private appdata: AppData,
     private logins: Logins,
@@ -915,13 +916,13 @@ export class MyApp {
          */
 
         // Subscribe through myapppresser.com api
-        // this.pushService.subscribeDevice( this.regId ).then( (result:string) => {
+        this.pushService.subscribeDevice( this.regId ).then( (result:string) => {
 
-        //   var newresult = JSON.parse( result );
+          var newresult = JSON.parse( result );
 
-        //   this.storage.set('endpointArn', newresult.endpointArn )
+          this.storage.set('endpointArn', newresult.endpointArn )
 
-        // });
+        });
 
       } );
 
@@ -987,16 +988,16 @@ export class MyApp {
      * 
      */
 
-    // this.storage.get('endpointArn').then( id => {
+    this.storage.get('endpointArn').then( id => {
 
-    //   if( id ) {
-    //     // ajax call to save this to user meta
-    //     this.pushService.sendDeviceToWp(id, ajaxurl).then( result => {
-    //       console.log(result);
-    //     });
-    //   }
+      if( id ) {
+        // ajax call to save this to user meta
+        this.pushService.sendDeviceToWp(id, ajaxurl).then( result => {
+          console.log(result);
+        });
+      }
 
-    // })
+    })
 
   }
 
