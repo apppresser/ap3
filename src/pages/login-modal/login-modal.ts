@@ -176,6 +176,15 @@ export class LoginModal {
 
 	}
 
+	doResetPassword() {
+		
+		this.dismiss();
+
+		this.events.publish('pushpage', { url: this.loginservice.getPasswordResetUrl(), title: '', is_register_page: false } )
+	
+
+	}
+
 	doFBLogin() {
 
 		if( typeof this.Device.platform != 'string' && location.port != '8100') {

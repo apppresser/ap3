@@ -31,6 +31,12 @@
       <button ion-button type="submit" block>{{ 'Submit' | translate }}</button>
       </div>
 
+      <div class="appforgotpassword">
+        <button href="#" type="button" (click)="doResetPassword($event)">
+          <span class="forgot-password-text">{{ 'Forgot password?' | translate }}</span>
+        </button>
+      </div>
+
       <div *ngIf="fb_login">
 
           <div class="login-div-wrap">
