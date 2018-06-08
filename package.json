@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "build": "ionic-app-scripts build",
+    "quick": "ionic-app-scripts build --webpack ./config/webpack.dev.config.js --sourceMapType eval --enableLint false",
     "serve": "ionic-app-scripts serve",
     "pages": "cd mkpages && node app",
     "ios": "ionic-app-scripts build && cordova build ios"
