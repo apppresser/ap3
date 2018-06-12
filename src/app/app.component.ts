@@ -700,7 +700,7 @@ export class MyApp {
   getPageModuleName(page_id) {
     if(!isDevMode())
       return 'Page'+page_id;
-    if(false === this.globalvars.getUseDynamicPageModule()) // building on heroku
+    if(false === this.globalvars.getUseDynamicPageModule()) // building on remote Ionic builder
       return 'Page'+page_id;
     else
       return 'CustomPage';

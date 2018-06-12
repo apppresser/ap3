@@ -12,7 +12,7 @@ import 'rxjs/add/operator/map';
 export class GlobalVars {
 
   data: any = null;
-  useDynamicContentModule: boolean = false; // false when using our builder on Heroku?
+  useDynamicContentModule: boolean = false; // false when using our builder on remote Ionic builder?
   // url should be WP site with AP installed, dynamically changes based on build form
   // appid: string = '18';
   // apiurl: string = 'http://myapppresser.local/test/'
