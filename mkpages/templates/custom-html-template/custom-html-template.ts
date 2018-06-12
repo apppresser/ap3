@@ -2,6 +2,7 @@ import { Component, Renderer, ElementRef, OnInit, AfterViewInit, Input, isDevMod
 import { Nav, NavParams, ModalController, Platform, ViewController, Events, IonicPage, LoadingController } from 'ionic-angular';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Storage } from '@ionic/storage';
+import { Network } from '@ionic-native/network';
 
 import { IonicModule, ToastController } from 'ionic-angular';
 import { HeaderLogo } from '../../providers/header-logo/header-logo';
@@ -9,7 +10,9 @@ import { HeaderLogo } from '../../providers/header-logo/header-logo';
 import { GlobalVars } from '../../providers/globalvars/globalvars';
 import { IAP } from '../../providers/inapppurchase/inapppurchase';
 import { User } from '../../models/user.model';
-import { LoginService } from "../../providers/logins/login.service";
+import { LoginService } from '../../providers/logins/login.service';
+import {Posts} from '../../providers/posts/posts';
+
 
 /**
  * Customizable options for our
@@ -54,6 +57,10 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 		side: any,
 		tabs: any
 	};
+	route: string;
+	page: number = 1;
+	items: any;
+	networkState: any;
 
 	constructor(
 		public navParams: NavParams,
@@ -70,10 +77,17 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 		private headerLogoService: HeaderLogo,
 		public loginservice: LoginService,
 		public iap: IAP,
-		public loadingCtrl: LoadingController
+		public loadingCtrl: LoadingController,
+		public globalvars: GlobalVars,
+		public postCtrl: Posts,
+		private network: Network
 	) {}
 
 	ngOnInit() {
+
+		// API route, optional
+		// this.route = this.navParams.data.api_route;
+		this.route = 'https://reactordev.com/apv3/wp-json/wp/v2/posts';
 
 		this.subscriptions.push(this.loginservice.loginStatus().subscribe(user => this.user = user));
 
@@ -102,6 +116,15 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 
 		this.listener();
 
+		this.networkState = this.network.type;
+
+	    if( this.networkState === 'none' || this.networkState === 'unknown' ) {
+	      // if offline, get posts from storage
+	      this.getStoredPosts();
+	    } else {
+	      this.loadPosts( this.route );
+	    }
+
 	}
 
 	ionViewWillEnter() {
@@ -110,6 +133,67 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 			this.viewCtrl.showBackButton(false)
 			this.rtlBack = true
 		}
+
+	}
+
+	// get posts from storage when we are offline
+	getStoredPosts() {
+
+		this.storage.get( this.route.substr(-10, 10) + '_posts' ).then( posts => {
+		  if( posts ) {
+		    this.items = posts;
+		  } else {
+		    this.presentToast('No data available, pull to refresh when you are online.');
+		  }
+		});
+
+	}
+
+	loadPosts( route ) {
+
+		let loading = this.loadingCtrl.create({
+		    showBackdrop: false,
+		    //dismissOnPageChange: true
+		});
+
+		loading.present(loading);
+
+		this.page = 1;
+
+		// any menu imported from WP has to use same component. Other pages can be added manually with different components
+		this.postCtrl.load( route, this.page ).then(items => {
+
+		  // Loads posts from WordPress API
+		  this.items = items;
+		  console.log('items loaded', items)
+
+		  this.storage.set( route.substr(-10, 10) + '_posts', items);
+
+		  // load more right away
+		  // this.loadMore(null);
+		  loading.dismiss();
+		}).catch((err) => {
+		  loading.dismiss();
+		  console.error('Error getting posts', err);
+		  this.presentToast('Error getting posts.');
+		});
+
+		setTimeout(() => {
+		    loading.dismiss();
+		}, 8000);
+
+	}
+
+	loadDetail(event, item) {
+
+		let opt = {};
+
+		if( this.platform.isRTL && this.platform.is('ios') )
+		  opt = { direction: 'back' }
+
+		this.nav.push('PostDetailsPage', {
+		  item: item
+		}, opt);
 
 	}
 
