@@ -2,10 +2,10 @@ import {Component, Renderer, ElementRef, OnInit, AfterViewInit, Input, isDevMode
 import {Nav, NavParams, ModalController, Platform, ViewController, Events, IonicPage, LoadingController} from 'ionic-angular';
 import {TranslateService, TranslateModule} from '@ngx-translate/core';
 import {Storage} from '@ionic/storage';
-
+import {Network} from '@ionic-native/network';
 import {IonicModule, ToastController} from 'ionic-angular';
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
-
+import {Posts} from '../../providers/posts/posts';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {IAP} from '../../providers/inapppurchase/inapppurchase';
 
@@ -20,7 +20,7 @@ import {IAP} from '../../providers/inapppurchase/inapppurchase';
  */
 
 /** Development mode only -- START */
-import {IComponentInputData} from 'angular2-dynamic-component/index';
+import { IComponentInputData } from 'angular2-dynamic-component/index';
 import { User } from '../../models/user.model';
 import { LoginService } from '../../providers/logins/login.service';
 
@@ -83,6 +83,10 @@ export class CustomPage implements OnInit, OnDestroy {
 		side: any,
 		tabs: any
 	};
+	route: string;
+	page: number = 1;
+	items: any;
+	networkState: any;
 
 	constructor(
 		public navParams: NavParams,
@@ -99,60 +103,15 @@ export class CustomPage implements OnInit, OnDestroy {
 		private headerLogoService: HeaderLogo,
 		public loginservice: LoginService,
 		public iap: IAP,
-		public loadingCtrl: LoadingController
+		public loadingCtrl: LoadingController,
+		public postCtrl: Posts,
+		private network: Network
         ) {}
 
-	/** Development mode only -- START */
-	inputData: IComponentInputData = {
-		// anything that the template needs access to goes here
-		user: this.loginservice.user,
-		pages: this.getPages(),
-		segments: this.getSegments(),
-		platform: this.platform,
-		customClasses: this.customClasses,
-		pushPage: (page) => {
-			this.pushPage(page);
-		},
-		openPage: ( page ) => {
-			this.openPage(page);
-		},
-		back: () => {
-			this.back();
-		},
-		mediaModal: ( src, img = null, options?: ModalOptions ) => {
-			this.mediaModal(src, img, options);
-		},
-		updateData: () => {
-			this.updateData();
-		},
-		changeRTL: ( event, rtl ) => {
-			this.changeRTL(event, rtl);
-		},
-		showSegments: (options?: ModalOptions) => {
-			this.showSegments(options);
-		},
-		showLanguages: (options?: ModalOptions) => {
-			this.showLanguages(options);
-		},
-		loginModal: (options?: ModalOptions) => {
-			this.loginModal(options);
-		},
-		showDownloads: (options?: ModalOptions) => {
-			this.showDownloads(options);
-		},
-		buyProduct: ( id ) => {
-			this.iap.buy( id );
-		},
-		subscribeNoAds: ( id ) => {
-			this.iap.subscribeNoAds( id );
-		},
-		restoreNoAds: ( id ) => {
-			this.iap.restoreNoAds( id );
-		}
-	}
-	/** Development mode only -- END */
-
 	ngOnInit() {
+
+		// this.route = this.navParams.data.api_route;
+		this.route = 'https://reactordev.com/apv3/wp-json/wp/v2/posts'
 
 		// Initial user settings
 		this.user = this.loginservice.user;
@@ -196,6 +155,15 @@ export class CustomPage implements OnInit, OnDestroy {
 
 		this.listener();
 
+		this.networkState = this.network.type;
+
+	    if( this.networkState === 'none' || this.networkState === 'unknown' ) {
+	      // if offline, get posts from storage
+	      this.getStoredPosts();
+	    } else {
+	      this.loadPosts( this.route );
+	    }
+
 	}
 
 	ionViewWillEnter() {
@@ -220,6 +188,67 @@ export class CustomPage implements OnInit, OnDestroy {
 				}
 	      }
 	    });
+	}
+
+	// get posts from storage when we are offline
+	getStoredPosts() {
+
+		this.storage.get( this.route.substr(-10, 10) + '_posts' ).then( posts => {
+		  if( posts ) {
+		    this.items = posts;
+		  } else {
+		    this.presentToast('No data available, pull to refresh when you are online.');
+		  }
+		});
+
+	}
+
+	loadPosts( route ) {
+
+		let loading = this.loadingCtrl.create({
+		    showBackdrop: false,
+		    //dismissOnPageChange: true
+		});
+
+		loading.present(loading);
+
+		this.page = 1;
+
+		// any menu imported from WP has to use same component. Other pages can be added manually with different components
+		this.postCtrl.load( route, this.page ).then(items => {
+
+		  // Loads posts from WordPress API
+		  this.items = items;
+		  console.log('items loaded', items)
+
+		  this.storage.set( route.substr(-10, 10) + '_posts', items);
+
+		  // load more right away
+		  // this.loadMore(null);
+		  loading.dismiss();
+		}).catch((err) => {
+		  loading.dismiss();
+		  console.error('Error getting posts', err);
+		  this.presentToast('Error getting posts.');
+		});
+
+		setTimeout(() => {
+		    loading.dismiss();
+		}, 8000);
+
+	}
+
+	itemTapped(event, item) {
+
+		let opt = {};
+
+		if( this.platform.isRTL && this.platform.is('ios') )
+		  opt = { direction: 'back' }
+
+		this.nav.push('PostDetailsPage', {
+		  item: item
+		}, opt);
+
 	}
 
 	// changes the back button transition direction if app is RTL
@@ -548,19 +577,19 @@ export class CustomPage implements OnInit, OnDestroy {
    * Open the login modal if the menu item's extra_classes contains 'yieldlogin'
    * @param extra_classes 
    */
-  yieldLogin(extra_classes) {
+	yieldLogin(extra_classes) {
 
-	if(extra_classes && extra_classes.indexOf('yieldlogin') >= 0) {
-      if(this.user) { // logged in
-        return false;
-      } else { // logged out, show login modal
-        this.loginModal();
-        return true;
-      }
-    }
+		if(extra_classes && extra_classes.indexOf('yieldlogin') >= 0) {
+		  if(this.user) { // logged in
+		    return false;
+		  } else { // logged out, show login modal
+		    this.loginModal();
+		    return true;
+		  }
+		}
 
-    return false;
-  }
+		return false;
+	}
 
 	getPages() {
 		if(!this.pages) {
@@ -631,5 +660,55 @@ export class CustomPage implements OnInit, OnDestroy {
 			subscription.unsubscribe();
 		});
 	}
+
+	/** Development mode only -- START */
+	inputData: IComponentInputData = {
+		// anything that the template needs access to goes here
+		user: this.loginservice.user,
+		pages: this.getPages(),
+		segments: this.getSegments(),
+		platform: this.platform,
+		customClasses: this.customClasses,
+		pushPage: (page) => {
+			this.pushPage(page);
+		},
+		openPage: ( page ) => {
+			this.openPage(page);
+		},
+		back: () => {
+			this.back();
+		},
+		mediaModal: ( src, img = null, options?: ModalOptions ) => {
+			this.mediaModal(src, img, options);
+		},
+		updateData: () => {
+			this.updateData();
+		},
+		changeRTL: ( event, rtl ) => {
+			this.changeRTL(event, rtl);
+		},
+		showSegments: (options?: ModalOptions) => {
+			this.showSegments(options);
+		},
+		showLanguages: (options?: ModalOptions) => {
+			this.showLanguages(options);
+		},
+		loginModal: (options?: ModalOptions) => {
+			this.loginModal(options);
+		},
+		showDownloads: (options?: ModalOptions) => {
+			this.showDownloads(options);
+		},
+		buyProduct: ( id ) => {
+			this.iap.buy( id );
+		},
+		subscribeNoAds: ( id ) => {
+			this.iap.subscribeNoAds( id );
+		},
+		restoreNoAds: ( id ) => {
+			this.iap.restoreNoAds( id );
+		}
+	}
+	/** Development mode only -- END */
 
 }
