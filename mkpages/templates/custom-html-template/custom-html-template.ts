@@ -86,8 +86,7 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 	ngOnInit() {
 
 		// API route, optional
-		// this.route = this.navParams.data.api_route;
-		this.route = 'https://reactordev.com/apv3/wp-json/wp/v2/posts';
+		this.route = this.navParams.data.api_route;
 
 		this.subscriptions.push(this.loginservice.loginStatus().subscribe(user => this.user = user));
 
@@ -165,7 +164,7 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 
 		  // Loads posts from WordPress API
 		  this.items = items;
-		  console.log('items loaded', items)
+		  // console.log('items loaded', items)
 
 		  this.storage.set( route.substr(-10, 10) + '_posts', items);
 
@@ -184,7 +183,7 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 
 	}
 
-	loadDetail(event, item) {
+	loadDetail(item) {
 
 		let opt = {};
 
