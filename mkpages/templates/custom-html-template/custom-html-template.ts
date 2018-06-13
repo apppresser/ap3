@@ -115,14 +115,18 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 
 		this.listener();
 
-		this.networkState = this.network.type;
+		if( this.route ) {
 
-	    if( this.networkState === 'none' || this.networkState === 'unknown' ) {
-	      // if offline, get posts from storage
-	      this.getStoredPosts();
-	    } else {
-	      this.loadPosts( this.route );
-	    }
+			this.networkState = this.network.type;
+
+		    if( this.networkState === 'none' || this.networkState === 'unknown' ) {
+		      // if offline, get posts from storage
+		      this.getStoredPosts();
+		    } else {
+		      this.loadPosts( this.route );
+		    }
+
+		}
 
 	}
 
