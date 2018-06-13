@@ -371,6 +371,7 @@ export class MyApp {
       'root': root,
       'icon': item.class,
       'slug': item.slug,
+      'api_route' : item.api_route,
       'list_route': item.list_route,
       'list_display': item.list_display,
       'favorites': item.favorites,
