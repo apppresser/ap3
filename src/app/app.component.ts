@@ -1,6 +1,6 @@
 /* Framework */
 import {ViewChild, Component, isDevMode, NgZone} from '@angular/core';
-import {Platform, MenuController, Nav, ToastController, ModalController, Events, Config, LoadingController} from 'ionic-angular';
+import {Platform, MenuController, Nav, ToastController, ModalController, Events, Config, LoadingController, Tab, Tabs} from 'ionic-angular';
 import {DomSanitizer} from '@angular/platform-browser';
 import {TranslateService} from '@ngx-translate/core';
 import {Http} from '@angular/http';
@@ -153,7 +153,9 @@ export class MyApp {
       console.log('MyApp initializeApp languageStatus language changed resetTabs', language);
       console.log('MyApp initializeApp languageStatus language changed is_loggedin', is_loggedin);
 
-      this.resetTabs(is_loggedin);
+      const lang_updated = true;
+
+      this.resetTabs(is_loggedin, lang_updated);
     })
 
     this.platform.ready().then(() => {
@@ -1265,7 +1267,7 @@ export class MyApp {
    * Show or hide tabs on login or logout. resetTabs(false) for logout
    * @param login Boolean
    */
-  resetTabs( login ) {
+  resetTabs( login, lang_updated? ) {
 
     this.navparams = []
 
@@ -1319,8 +1321,23 @@ export class MyApp {
     
     this.zone.run( () => {
       // If the login/out has a redirect, we don't want to set the root here
-      if(!login)
-        this.nav.setRoot( 'TabsPage', this.navparams );
+      if(!login || lang_updated) {
+
+        if(lang_updated) {
+
+          // some craziness to update Iframe components in the TabsPage Tab
+          // bug fix: https://trello.com/c/Q3qlMxOU/999-language-options-and-iframe-tab-conflict
+          this.nav.popToRoot(this.navparams).then(()=>{
+            (<Nav>this.nav.getActiveChildNav()).goToRoot(this.navparams).then(() => {
+              this.nav.setRoot( 'TabsPage', this.navparams );
+            });
+          });
+        } else {
+
+          // reset the tabs
+          this.nav.setRoot( 'TabsPage', this.navparams );
+        }
+      }
     } )
 
   }
