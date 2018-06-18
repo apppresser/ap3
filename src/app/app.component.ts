@@ -1295,9 +1295,9 @@ export class MyApp {
         item.show = false;
       }
 
-      if( login === false && item.extra_classes.indexOf('loggedin') >= 0 ) {
+      if( login == false && item.extra_classes.indexOf('loggedin') >= 0 ) {
         item.show = false;
-      } else if( login === true && item.extra_classes.indexOf('loggedout') >= 0 ) {
+      } else if( login && item.extra_classes.indexOf('loggedout') >= 0 ) {
         item.show = false;
       }
 
@@ -1314,7 +1314,7 @@ export class MyApp {
 
     }
 
-    this.tabs = this.navparams;
+    this.tabs = this.navparams.slice();
 
     // "refresh" the view by resetting to home tab
     //this.openPage( { 'title': this.tabs[0].title, 'url': '', 'component': 'TabsPage', 'navparams': this.navparams, 'class': this.tabs[0].icon } )
@@ -1337,6 +1337,13 @@ export class MyApp {
           // reset the tabs
           this.nav.setRoot( 'TabsPage', this.navparams );
         }
+      } else {
+        // refresh tabs if logged in anyway
+        this.nav.popToRoot(this.navparams).then(()=>{
+          (<Nav>this.nav.getActiveChildNav()).goToRoot(this.navparams).then(() => {
+            this.nav.setRoot( 'TabsPage', this.navparams );
+          });
+        });
       }
     } )
 
