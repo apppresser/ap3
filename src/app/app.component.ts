@@ -1295,7 +1295,7 @@ export class MyApp {
         item.show = false;
       }
 
-      if( login == false && item.extra_classes.indexOf('loggedin') >= 0 ) {
+      if( !login && item.extra_classes.indexOf('loggedin') >= 0 ) {
         item.show = false;
       } else if( login && item.extra_classes.indexOf('loggedout') >= 0 ) {
         item.show = false;
@@ -1337,13 +1337,6 @@ export class MyApp {
           // reset the tabs
           this.nav.setRoot( 'TabsPage', this.navparams );
         }
-      } else {
-        // refresh tabs if logged in anyway
-        this.nav.popToRoot(this.navparams).then(()=>{
-          (<Nav>this.nav.getActiveChildNav()).goToRoot(this.navparams).then(() => {
-            this.nav.setRoot( 'TabsPage', this.navparams );
-          });
-        });
       }
     } )
 
