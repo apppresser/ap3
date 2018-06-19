@@ -606,12 +606,18 @@ export class CustomPage implements OnInit, OnDestroy {
 
 	getSideMenu() {
 		let myappp = JSON.parse( window.localStorage.getItem( 'myappp' ) );
-		return myappp.menus.items;
+		if(myappp && myappp.menus && myappp.menus.items)
+			return myappp.menus.items;
+		else
+			return [];
 	}
 
 	getTabs() {
 		let myappp = JSON.parse( window.localStorage.getItem( 'myappp' ) );
-		return myappp.tab_menu.items;
+		if(myappp && myappp.tab_menu && myappp.tab_menu.items)
+			return myappp.tab_menu.items;
+		else
+			return [];
 	}
 
 	getPageModuleName(page_id) {

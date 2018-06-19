@@ -405,10 +405,17 @@ export class MyApp {
     this.showingIntro = true;
 
     let page_id = this.getPageIdBySlug(slug);
+    if(!page_id) {
+      page_id = this.getTabIndexBySlug(slug);
+    }
 
-    let intro = { 'title': "Introduction", 'component': this.getPageModuleName(page_id), 'class': "", 'navparams': { 'slug': slug } };
+    if(page_id) {
+      let intro = { 'title': "Introduction", 'component': this.getPageModuleName(page_id), 'class': "", 'navparams': { 'slug': slug } };
+      this.nav.push( this.getPageModuleName(page_id), intro.navparams );
+    } else {
+      throw('page_id for intro not found');
+    }
 
-    this.nav.push( this.getPageModuleName(page_id), intro.navparams );
 
     window.localStorage.setItem('app-intro-shown', "true" );
   }
@@ -457,10 +464,14 @@ export class MyApp {
 
     let page_id = 0;
 
-    this.pages.forEach(page => {
-      if(page.slug && page.slug == slug && page.page_id)
-        page_id = page.page_id;
-    });
+    if(this.pages && this.pages.length) {
+      this.pages.forEach(page => {
+        if(page.slug && page.slug == slug && page.page_id)
+          page_id = page.page_id;
+      });
+    } else {
+      return false;
+    }
 
     return page_id;
   }
@@ -469,10 +480,12 @@ export class MyApp {
 
     let mypage: any;
 
-    this.pages.forEach(page => {
-      if(page.slug && page.slug == slug && page.page_id)
-        mypage = page;
-    });
+    if(this.pages && this.pages.length) {
+      this.pages.forEach(page => {
+        if(page.slug && page.slug == slug && page.page_id)
+          mypage = page;
+      });
+    }
 
     return mypage;
   }
