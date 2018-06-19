@@ -73,6 +73,7 @@ export class MyApp {
   regId: any;
   customClasses: string;
   iphoneX: boolean = false;
+  showingIntro: boolean = false;
 
   constructor(
     private platform: Platform,
@@ -400,6 +401,8 @@ export class MyApp {
 
     if( this.introshown === "true" ) 
       return;
+
+    this.showingIntro = true;
 
     let page_id = this.getPageIdBySlug(slug);
 
@@ -1324,6 +1327,16 @@ export class MyApp {
       if(!login || lang_updated) {
 
         if(lang_updated) {
+
+          if(this.showingIntro) {
+
+            // Don't refresh the tabs if showing the intro now
+            setTimeout(() => {
+              this.showingIntro = false;
+            }, 6000);
+      
+            return;
+          }
 
           // some craziness to update Iframe components in the TabsPage Tab
           // bug fix: https://trello.com/c/Q3qlMxOU/999-language-options-and-iframe-tab-conflict
