@@ -2,8 +2,9 @@
 
     <ion-card (click)="loadDetail(item)" *ngFor="let item of items">
       
-      <div class="card-featured-wrap" *ngIf="item.featured_image_urls && item.featured_image_urls.large">
-        <img src="{{item.featured_image_urls.large}}">
+      <div class="card-featured-wrap" *ngIf="item.featured_image_urls">
+        <img *ngIf="item.featured_image_urls.large" src="{{item.featured_image_urls.large}}">
+        <img *ngIf="!item.featured_image_urls.large && item.featured_image_urls.medium" src="{{item.featured_image_urls.medium}}">
       </div>
 
       <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_title" [innerHTML]="item.appp.post_list.above_title"></div>

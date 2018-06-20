@@ -2,4 +2,9 @@ slider-component {
 	ion-slides {
 		height: 300px;
 	}
+
+	ion-slide {
+		background-repeat: no-repeat;
+		background-position: center;
+	}
 }
