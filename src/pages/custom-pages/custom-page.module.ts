@@ -3,6 +3,8 @@ import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import {DynamicComponentModule} from 'angular2-dynamic-component/index';
 import { CustomPage } from './custom-page';
+import { ListComponentModule } from '../../components/list/list.module';
+import { SliderComponentModule } from '../../components/slider/slider.module';
 
 @NgModule({
   declarations: [
@@ -11,7 +13,9 @@ import { CustomPage } from './custom-page';
   imports: [
     IonicPageModule.forChild(CustomPage),
     TranslateModule.forChild(),
-    DynamicComponentModule
+    DynamicComponentModule,
+    ListComponentModule,
+    SliderComponentModule
   ],
   entryComponents: [
     CustomPage

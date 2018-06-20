@@ -23,6 +23,8 @@ import {IAP} from '../../providers/inapppurchase/inapppurchase';
 import { IComponentInputData } from 'angular2-dynamic-component/index';
 import { User } from '../../models/user.model';
 import { LoginService } from '../../providers/logins/login.service';
+import { ListComponentModule } from '../../components/list/list.module';
+import { SliderComponentModule } from '../../components/slider/slider.module';
 
 /*
  * Uses dynamic component creation, see https://github.com/apoterenko/angular2-dynamic-component
@@ -66,7 +68,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	rtlBack: boolean = false;
 	language: any;
 	templateUrl: string;
-	extraModules = [IonicModule, TranslateModule];
+	extraModules = [IonicModule, TranslateModule, ListComponentModule, SliderComponentModule];
 	langs: any;
 	segments: any;
 	show_segments: boolean = false;
@@ -110,9 +112,6 @@ export class CustomPage implements OnInit, OnDestroy {
 
 	ngOnInit() {
 
-		// this.route = this.navParams.data.api_route;
-		this.route = 'https://reactordev.com/apv3/wp-json/wp/v2/posts'
-
 		// Initial user settings
 		this.user = this.loginservice.user;
 		this.inputData.user = this.loginservice.user;
@@ -155,14 +154,6 @@ export class CustomPage implements OnInit, OnDestroy {
 
 		this.listener();
 
-		this.networkState = this.network.type;
-
-	    if( this.networkState === 'none' || this.networkState === 'unknown' ) {
-	      // if offline, get posts from storage
-	      this.getStoredPosts();
-	    } else {
-	      this.loadPosts( this.route );
-	    }
 
 	}
 
@@ -188,67 +179,6 @@ export class CustomPage implements OnInit, OnDestroy {
 				}
 	      }
 	    });
-	}
-
-	// get posts from storage when we are offline
-	getStoredPosts() {
-
-		this.storage.get( this.route.substr(-10, 10) + '_posts' ).then( posts => {
-		  if( posts ) {
-		    this.items = posts;
-		  } else {
-		    this.presentToast('No data available, pull to refresh when you are online.');
-		  }
-		});
-
-	}
-
-	loadPosts( route ) {
-
-		let loading = this.loadingCtrl.create({
-		    showBackdrop: false,
-		    //dismissOnPageChange: true
-		});
-
-		loading.present(loading);
-
-		this.page = 1;
-
-		// any menu imported from WP has to use same component. Other pages can be added manually with different components
-		this.postCtrl.load( route, this.page ).then(items => {
-
-		  // Loads posts from WordPress API
-		  this.items = items;
-		  console.log('items loaded', items)
-
-		  this.storage.set( route.substr(-10, 10) + '_posts', items);
-
-		  // load more right away
-		  // this.loadMore(null);
-		  loading.dismiss();
-		}).catch((err) => {
-		  loading.dismiss();
-		  console.error('Error getting posts', err);
-		  this.presentToast('Error getting posts.');
-		});
-
-		setTimeout(() => {
-		    loading.dismiss();
-		}, 8000);
-
-	}
-
-	itemTapped(event, item) {
-
-		let opt = {};
-
-		if( this.platform.isRTL && this.platform.is('ios') )
-		  opt = { direction: 'back' }
-
-		this.nav.push('PostDetailsPage', {
-		  item: item
-		}, opt);
-
 	}
 
 	// changes the back button transition direction if app is RTL
