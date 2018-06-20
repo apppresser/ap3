@@ -14,7 +14,8 @@ declare var cordova:any;
 
 @IonicPage()
 @Component({
-  templateUrl: 'media-list.html'
+  templateUrl: 'media-list.html',
+  selector: 'media-list'
 })
 export class MediaList implements OnInit {
 

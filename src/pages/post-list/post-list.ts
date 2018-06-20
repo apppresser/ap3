@@ -9,7 +9,8 @@ import {Network} from '@ionic-native/network';
 
 @IonicPage()
 @Component({
-  templateUrl: 'post-list.html'
+  templateUrl: 'post-list.html',
+  selector: 'post-list'
 })
 export class PostList implements OnInit {
 

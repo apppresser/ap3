@@ -8,7 +8,8 @@ import { VideoUtils } from "../../providers/video/video-utils";
 
 @IonicPage()
 @Component({
-  templateUrl: 'post-details.html'
+  templateUrl: 'post-details.html',
+  selector: 'post-details'
 })
 export class PostDetailsPage implements OnInit {
   selectedItem: any;

@@ -15,7 +15,8 @@ import { LanguageService } from "../../providers/language/language.service";
 
 @IonicPage()
 @Component({
-    templateUrl: 'iframe.html'
+    templateUrl: 'iframe.html',
+    selector: 'wordpress-page'
 })
 export class Iframe implements OnInit {
 
