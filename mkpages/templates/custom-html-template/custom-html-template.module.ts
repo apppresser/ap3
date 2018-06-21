@@ -18,7 +18,7 @@ import { ApSliderComponentModule } from '../../components/ap-slider/ap-slider.mo
     ApListComponentModule
   ],
   entryComponents: [
-    CustomHtmlTemplate
+    CustomHtmlTemplate 
   ],
   exports: [
     CustomHtmlTemplate
