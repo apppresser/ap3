@@ -1,0 +1,66 @@
+<div class="list-loading-spinner" *ngIf="loading"><ion-spinner name="bubbles"></ion-spinner></div>
+
+<ion-list *ngIf="card">
+
+    <ion-card (click)="loadDetail(item)" *ngFor="let item of items">
+      
+      <div class="card-featured-wrap" *ngIf="item.featured_image_urls">
+        <img *ngIf="item.featured_image_urls.large" src="{{item.featured_image_urls.large}}">
+        <img *ngIf="!item.featured_image_urls.large && item.featured_image_urls.medium" src="{{item.featured_image_urls.medium}}">
+      </div>
+
+      <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_title" [innerHTML]="item.appp.post_list.above_title"></div>
+
+      <ion-card-content>
+
+        <ion-card-title *ngIf="item.title && item.title.rendered">
+          <h2 [innerHTML]="item.title.rendered"></h2>
+        </ion-card-title>
+
+        <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_title" [innerHTML]="item.appp.post_list.below_title"></div>
+
+        <p *ngIf="item.excerpt && item.excerpt.rendered" [innerHTML]="item.excerpt.rendered"></p>
+
+      </ion-card-content>
+
+      <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_content" [innerHTML]="item.appp.post_list.below_content"></div>
+
+    </ion-card>
+
+</ion-list>
+
+<ion-list *ngIf="!card">
+
+	<ion-item-sliding *ngFor="let item of items" #slidingItem>
+      <button ion-item (click)="loadDetail(item)">
+
+      <ion-avatar item-left *ngIf="item.featured_image_urls">
+        <img *ngIf="item.featured_image_urls && item.featured_image_urls.thumbnail" src="{{item.featured_image_urls.thumbnail}}">
+        <img *ngIf="!item.featured_image_urls || !item.featured_image_urls.thumbnail" src="assets/default.png">
+      </ion-avatar>
+
+      <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_title" [innerHTML]="item.appp.post_list.above_title"></div>
+
+      <h2 *ngIf="item.title && item.title.rendered" [innerHTML]="item.title.rendered"></h2>
+
+      <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_title" [innerHTML]="item.appp.post_list.below_title"></div>
+
+      <p *ngIf="item.excerpt && item.excerpt.rendered" [innerHTML]="item.excerpt.rendered"></p>
+
+      <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_content" [innerHTML]="item.appp.post_list.below_content"></div>
+
+      </button>
+
+      <ion-item-options side="right" *ngIf="favorites">
+        <button ion-button color="primary" (click)="addFav(slidingItem, item)">
+          <ion-icon name="star-outline"></ion-icon>
+          {{ 'Favorite' | translate }}
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+
+</ion-list>
+
+<ion-infinite-scroll *ngIf="infiniteScroll" (ionInfinite)="loadMore($event)">
+<ion-infinite-scroll-content></ion-infinite-scroll-content>
+</ion-infinite-scroll>

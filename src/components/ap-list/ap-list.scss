@@ -1,0 +1,11 @@
+ap-list {
+	.list-loading-spinner {
+	    text-align: center;
+	    margin: 5px;
+
+	    ion-spinner * {
+		  fill: rgba(0,0,0,.2);
+		}
+
+	}
+}

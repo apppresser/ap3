@@ -1,0 +1,11 @@
+<ion-slides>
+
+  <ion-slide *ngFor="let item of items" [ngStyle]="{'background-image': 'url(' + ( item.featured_image_urls.large ? item.featured_image_urls.large : item.featured_image_urls.medium ) + ')'}" (click)="loadDetail(item)">
+
+    <h3 class="item-title" *ngIf="item.title && item.title.rendered" [innerHTML]="item.title.rendered"></h3>
+
+    <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.item_content" [innerHTML]="item.appp.post_list.item_content"></div>
+
+  </ion-slide>
+
+</ion-slides>

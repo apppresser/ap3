@@ -15,7 +15,7 @@ import { ApSliderComponentModule } from '../../components/ap-slider/ap-slider.mo
     TranslateModule.forChild(),
     SafeUrlModule,
     ApSliderComponentModule,
-    ApListComponentModule
+    ApListComponentModule 
   ],
   entryComponents: [
     CustomHtmlTemplate 
