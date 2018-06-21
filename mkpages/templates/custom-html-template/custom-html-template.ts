@@ -85,9 +85,6 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 
 	ngOnInit() {
 
-		// API route, optional
-		this.route = this.navParams.data.api_route;
-
 		this.subscriptions.push(this.loginservice.loginStatus().subscribe(user => this.user = user));
 
 		this.pagetitle = this.navParams.data.title;
@@ -115,19 +112,6 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 
 		this.listener();
 
-		if( this.route ) {
-
-			this.networkState = this.network.type;
-
-		    if( this.networkState === 'none' || this.networkState === 'unknown' ) {
-		      // if offline, get posts from storage
-		      this.getStoredPosts();
-		    } else {
-		      this.loadPosts( this.route );
-		    }
-
-		}
-
 	}
 
 	ionViewWillEnter() {
@@ -136,67 +120,6 @@ export class CustomHtmlTemplate implements OnInit, OnDestroy {
 			this.viewCtrl.showBackButton(false)
 			this.rtlBack = true
 		}
-
-	}
-
-	// get posts from storage when we are offline
-	getStoredPosts() {
-
-		this.storage.get( this.route.substr(-10, 10) + '_posts' ).then( posts => {
-		  if( posts ) {
-		    this.items = posts;
-		  } else {
-		    this.presentToast('No data available, pull to refresh when you are online.');
-		  }
-		});
-
-	}
-
-	loadPosts( route ) {
-
-		let loading = this.loadingCtrl.create({
-		    showBackdrop: false,
-		    //dismissOnPageChange: true
-		});
-
-		loading.present(loading);
-
-		this.page = 1;
-
-		// any menu imported from WP has to use same component. Other pages can be added manually with different components
-		this.postCtrl.load( route, this.page ).then(items => {
-
-		  // Loads posts from WordPress API
-		  this.items = items;
-		  // console.log('items loaded', items)
-
-		  this.storage.set( route.substr(-10, 10) + '_posts', items);
-
-		  // load more right away
-		  // this.loadMore(null);
-		  loading.dismiss();
-		}).catch((err) => {
-		  loading.dismiss();
-		  console.error('Error getting posts', err);
-		  this.presentToast('Error getting posts.');
-		});
-
-		setTimeout(() => {
-		    loading.dismiss();
-		}, 8000);
-
-	}
-
-	loadDetail(item) {
-
-		let opt = {};
-
-		if( this.platform.isRTL && this.platform.is('ios') )
-		  opt = { direction: 'back' }
-
-		this.nav.push('PostDetailsPage', {
-		  item: item
-		}, opt);
 
 	}
 
