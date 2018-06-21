@@ -3,8 +3,8 @@ import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import {DynamicComponentModule} from 'angular2-dynamic-component/index';
 import { CustomPage } from './custom-page';
-import { ListComponentModule } from '../../components/list/list.module';
-import { SliderComponentModule } from '../../components/slider/slider.module';
+import { ApListComponentModule } from '../../components/ap-list/ap-list.module';
+import { ApSliderComponentModule } from '../../components/ap-slider/ap-slider.module';
 
 @NgModule({
   declarations: [
@@ -14,8 +14,8 @@ import { SliderComponentModule } from '../../components/slider/slider.module';
     IonicPageModule.forChild(CustomPage),
     TranslateModule.forChild(),
     DynamicComponentModule,
-    ListComponentModule,
-    SliderComponentModule
+    ApListComponentModule,
+    ApSliderComponentModule
   ],
   entryComponents: [
     CustomPage

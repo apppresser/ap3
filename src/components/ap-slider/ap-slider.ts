@@ -7,20 +7,27 @@ import {Device} from '@ionic-native/device';
 import {Network} from '@ionic-native/network';
 
 /**
- * Generated class for the SliderComponent component.
+ * Generated class for the ApSliderComponent component.
  *
  * See https://angular.io/api/core/Component for more info on Angular
  * Components.
  */
 @Component({
-  selector: 'slider-component',
-  templateUrl: 'slider.html'
+  selector: 'ap-slider',
+  templateUrl: 'ap-slider.html'
 })
-export class SliderComponent implements OnInit {
+export class ApSliderComponent implements OnInit {
 
 	@ViewChild(Slides) slides: Slides;
 
 	@Input() route: string;
+	@Input() pager: string;
+	@Input() slidesPerView: string;
+	@Input() loop: string;
+	@Input() effect: string;
+	@Input() paginationType: string;
+	@Input() preventClicks: string;
+	@Input() freeMode: string;
 
 	items: any;
 	loading: any;
@@ -53,6 +60,33 @@ export class SliderComponent implements OnInit {
 		      this.loadPosts();
 		    }
 
+		}
+
+		// set options based on input attributes
+		if( this.pager === "false" ) {
+			this.slides.pager = false;
+		} else {
+			this.slides.pager = true;
+		}
+
+		if( this.slidesPerView ) {
+			this.slides.slidesPerView = this.slidesPerView
+		}
+
+		if( this.loop === "true" ) {
+			this.slides.loop = true
+		}
+
+		if( this.freeMode === "true" ) {
+			this.slides.freeMode = true
+		}
+
+		if( this.effect ) {
+			this.slides.effect = this.effect
+		}
+
+		if( this.paginationType ) {
+			this.slides.paginationType = this.paginationType
 		}
 
 	}
@@ -90,6 +124,9 @@ export class SliderComponent implements OnInit {
 	}
 
 	loadDetail(item) {
+
+		if( this.preventClicks === "true" )
+			return;
 
 		let opt = {};
 

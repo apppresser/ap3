@@ -7,26 +7,25 @@ import {Device} from '@ionic-native/device';
 import {Network} from '@ionic-native/network';
 
 /**
- * Generated class for the ListComponent component.
+ * Generated class for the ApListComponent component.
  *
  * See https://angular.io/api/core/Component for more info on Angular
  * Components.
  */
 @Component({
-  selector: 'list-component',
-  templateUrl: 'list.html'
+  selector: 'ap-list',
+  templateUrl: 'ap-list.html'
 })
-export class ListComponent implements OnInit {
+export class ApListComponent implements OnInit {
 
 	@Input() route: string;
 	@Input() card: boolean = false;
 	@Input() favorites: boolean = false;
 	@Input() infiniteScroll: boolean = false;
-	@Input() pullToRefresh: boolean = false;
 
 	page: number = 1;
 	items: any;
-	loading: any;
+	loading: boolean = false;
 	networkState: string;
 	favoriteItems: any;
 
@@ -77,16 +76,7 @@ export class ListComponent implements OnInit {
 
 	loadPosts() {
 
-		if( !this.loading ) {
-
-			this.loading = this.loadingController.create({
-			    showBackdrop: false,
-			    //dismissOnPageChange: true
-			});
-
-			this.loading.present(this.loading);
-
-		}
+		this.loading = true;
 
 		this.page = 1;
 
@@ -95,7 +85,6 @@ export class ListComponent implements OnInit {
 
 		  // Loads posts from WordPress API
 		  this.items = items;
-		  console.log('list comp items', items)
 
 		  this.storage.set( this.route.substr(-10, 10) + '_posts', items);
 
@@ -103,23 +92,16 @@ export class ListComponent implements OnInit {
 		  if( this.infiniteScroll )
 		  	this.loadMore(null);
 
-		  if( this.loading )
-		  	this.loading.dismiss();
+		  this.loading = false
 
 		}).catch((err) => {
 
-		  if( this.loading )
-		  	this.loading.dismiss();
+		  this.loading = false
 
 		  console.error('Error getting posts', err);
 		  this.presentToast('Error getting posts.');
 
 		});
-
-		setTimeout(() => {
-			if( this.loading )
-		    	this.loading.dismiss();
-		}, 8000);
 
 	}
 

@@ -1,4 +1,4 @@
-<ion-slides pager>
+<ion-slides>
 
   <ion-slide *ngFor="let item of items" [ngStyle]="{'background-image': 'url(' + ( item.featured_image_urls.large ? item.featured_image_urls.large : item.featured_image_urls.medium ) + ')'}" (click)="loadDetail(item)">
 

@@ -1,3 +1,5 @@
+<div class="list-loading-spinner" *ngIf="loading"><ion-spinner name="bubbles"></ion-spinner></div>
+
 <ion-list *ngIf="card">
 
     <ion-card (click)="loadDetail(item)" *ngFor="let item of items">

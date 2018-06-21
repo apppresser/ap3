@@ -1,18 +1,18 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { ListComponent } from './list';
+import { ApSliderComponent } from './ap-slider';
 
 @NgModule({
   declarations: [
-    ListComponent,
+    ApSliderComponent,
   ],
   imports: [
-    IonicPageModule.forChild(ListComponent),
+    IonicPageModule.forChild(ApSliderComponent),
     TranslateModule.forChild()
   ],
   exports: [
-    ListComponent
+    ApSliderComponent
   ]
 })
-export class ListComponentModule {}
+export class ApSliderComponentModule {}

@@ -23,8 +23,8 @@ import {IAP} from '../../providers/inapppurchase/inapppurchase';
 import { IComponentInputData } from 'angular2-dynamic-component/index';
 import { User } from '../../models/user.model';
 import { LoginService } from '../../providers/logins/login.service';
-import { ListComponentModule } from '../../components/list/list.module';
-import { SliderComponentModule } from '../../components/slider/slider.module';
+import { ApListComponentModule } from '../../components/ap-list/ap-list.module';
+import { ApSliderComponentModule } from '../../components/ap-slider/ap-slider.module';
 
 /*
  * Uses dynamic component creation, see https://github.com/apoterenko/angular2-dynamic-component
@@ -68,7 +68,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	rtlBack: boolean = false;
 	language: any;
 	templateUrl: string;
-	extraModules = [IonicModule, TranslateModule, ListComponentModule, SliderComponentModule];
+	extraModules = [IonicModule, TranslateModule, ApListComponentModule, ApSliderComponentModule];
 	langs: any;
 	segments: any;
 	show_segments: boolean = false;
