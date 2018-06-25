@@ -13,9 +13,11 @@ export class MediaPlayer {
   title: string = '';
   showVideoPlayer: boolean = true;
   imageSrc: string;
-  isPdf: boolean = false;
 
-  constructor( public navParams: NavParams, public viewCtrl: ViewController ) {
+  constructor( 
+    public navParams: NavParams, 
+    public viewCtrl: ViewController 
+    ) {
     this.source = navParams.get('source');
     this.image = navParams.get('image');
 
@@ -28,12 +30,6 @@ export class MediaPlayer {
     var fileExt = this.source.split('.').pop();
     if( fileExt === 'jpg' || fileExt === 'png' || fileExt === 'jpeg' ) {
       this.showVideoPlayer = false;
-    } else if( fileExt === 'pdf' ) {
-
-      (<any>window).pdfWorkerSrc = 'assets/lib/pdf-worker.min.js';
-
-      this.showVideoPlayer = false;
-      this.isPdf = true;
     } else {
       this.showVideoPlayer = true;
     }

@@ -28,6 +28,7 @@
     "@ionic-native/core": "4.3.2",
     "@ionic-native/device": "^4.3.2",
     "@ionic-native/dialogs": "4.3.2",
+    "@ionic-native/document-viewer": "^4.8.0",
     "@ionic-native/facebook": "4.3.2",
     "@ionic-native/file": "4.3.2",
     "@ionic-native/file-transfer": "^4.5.3",
@@ -59,7 +60,6 @@
     "ionic-angular": "^3.9.2",
     "ionic-plugin-keyboard": "~2.2.1",
     "ionicons": "3.0.0",
-    "ng2-pdf-viewer": "^5.1.0",
     "rxjs": "5.5.2",
     "sw-toolbox": "3.6.0",
     "ts-metadata-helper": "0.0.4",
@@ -76,7 +76,9 @@
     "cordova-plugin-whitelist",
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
-    {"locator": "phonegap-plugin-push"},
+    {
+      "locator": "phonegap-plugin-push"
+    },
     "ionic-plugin-keyboard"
   ],
   "cordovaPlatforms": [

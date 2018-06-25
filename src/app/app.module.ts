@@ -26,6 +26,7 @@ import { Push } from "@ionic-native/push";
 import { Dialogs } from "@ionic-native/dialogs";
 import { Geolocation } from "@ionic-native/geolocation";
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
+import { DocumentViewer } from '@ionic-native/document-viewer';
 
 /* Providers */
 import {AppCamera} from '../providers/camera/app-camera';
@@ -124,7 +125,8 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     VideoUtils,
     IAP,
     InAppPurchase,
-    Download
+    Download,
+    DocumentViewer
   ]
 })
 export class AppModule {}

@@ -13,9 +13,7 @@
 
 <ion-content>
 
-    <img [src]="source" *ngIf="!showVideoPlayer && !isPdf" class="media-modal-full-image" />
-
-    <pdf-viewer *ngIf="isPdf" [src]="source" [original-size]="false" [render-text]="false" style="display: block;max-width:100%;"></pdf-viewer>
+    <img [src]="source" *ngIf="!showVideoPlayer" class="media-modal-full-image" />
 
     <vg-player *ngIf="showVideoPlayer">
         <vg-overlay-play [ngStyle]="{'background-image': 'url(' + image + ')'}"></vg-overlay-play>
