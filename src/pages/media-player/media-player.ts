@@ -13,6 +13,7 @@ export class MediaPlayer {
   title: string = '';
   showVideoPlayer: boolean = true;
   imageSrc: string;
+  isPdf: boolean = false;
 
   constructor( public navParams: NavParams, public viewCtrl: ViewController ) {
     this.source = navParams.get('source');
@@ -28,8 +29,11 @@ export class MediaPlayer {
     if( fileExt === 'jpg' || fileExt === 'png' || fileExt === 'jpeg' ) {
       this.showVideoPlayer = false;
     } else if( fileExt === 'pdf' ) {
-      window.open( 'https://docs.google.com/gview?url=' + this.source, '_blank' );
-      this.dismiss();
+
+      (<any>window).pdfWorkerSrc = 'assets/lib/pdf-worker.min.js';
+
+      this.showVideoPlayer = false;
+      this.isPdf = true;
     } else {
       this.showVideoPlayer = true;
     }

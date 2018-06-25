@@ -8,6 +8,8 @@ import {VgControlsModule} from 'videogular2/controls';
 import {VgOverlayPlayModule} from 'videogular2/overlay-play';
 import {VgBufferingModule} from 'videogular2/buffering';
 
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+
 @NgModule({
   declarations: [
     MediaPlayer,
@@ -19,6 +21,7 @@ import {VgBufferingModule} from 'videogular2/buffering';
     VgControlsModule,
     VgOverlayPlayModule,
     VgBufferingModule,
+    PdfViewerModule
   ],
   exports: [
     MediaPlayer
