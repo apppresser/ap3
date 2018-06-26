@@ -197,7 +197,7 @@ class AppBuilder {
     make_page_html_component(page, zip_filename) {
         const page_id = page.page_id;
         let file_name;
-        const src_folder = 'templates/custom-html-template';
+        const src_folder = '../src/pages/custom-pages';
         const new_folder = 'page-' + page_id;
         const dest_dir = 'builds/app_' + this.cli_params.site_name + '_' + this.cli_params.app_id;
         const root_folder = path.resolve('./') + '/';
@@ -211,15 +211,15 @@ class AppBuilder {
         }
         // module
         file_name = 'page-' + page_id + '.module.ts';
-        componentMaker.build_template('custom-html-template.module.ts', file_name, [
-            { key: 'CustomHtmlTemplate', value: 'Page' + page_id },
-            { key: 'custom-html-template', value: 'page-' + page_id }
+        componentMaker.build_template('custom-page.module.ts', file_name, [
+            { key: 'CustomPage', value: 'Page' + page_id },
+            { key: 'custom-page', value: 'page-' + page_id }
         ]);
         // component
         file_name = 'page-' + page_id + '.ts';
-        componentMaker.build_template('custom-html-template.ts', file_name, [
-            { key: 'CustomHtmlTemplate', value: 'Page' + page_id },
-            { key: 'custom-html-template', value: 'page-' + page_id }
+        componentMaker.build_template('custom-page.ts', file_name, [
+            { key: 'CustomPage', value: 'Page' + page_id },
+            { key: 'custom-page', value: 'page-' + page_id }
         ]);
     }
     /**
@@ -238,7 +238,7 @@ class AppBuilder {
         if (zip_filename) {
             let zip_folder_path = dest_dir + '/' + zip_filename.replace('.zip', '');
             contentCollector.get_page_content_from_zip(page_id, page_slug, zip_folder_path).then(content => {
-                componentMaker.build_template('custom-html-template.html', file_name, [
+                componentMaker.build_template('custom-page.html', file_name, [
                     { key: 'Content goes here', value: content }
                 ]);
             }).catch((error) => {
@@ -250,7 +250,7 @@ class AppBuilder {
         }
         else {
             contentCollector.get_page_content_from_api(page_id).then((content) => {
-                componentMaker.build_template('custom-html-template.html', file_name, [
+                componentMaker.build_template('custom-page.html', file_name, [
                     { key: 'Content goes here', value: content }
                 ]);
             }).catch((error) => {
