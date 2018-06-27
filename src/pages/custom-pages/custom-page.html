@@ -20,7 +20,12 @@
 	</ion-navbar>
 </ion-header>
 
-<ion-content [ngClass]="customClasses">
+<ion-content *ngIf="!use_dynamic" [ngClass]="customClasses">
+
+	Content goes here
+	
+</ion-content>
+<ion-content *ngIf="use_dynamic" [ngClass]="customClasses">
 
 	<DynamicComponent *ngIf="templateUrl"
     [componentTemplateUrl]="templateUrl" 

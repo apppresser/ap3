@@ -89,6 +89,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	page: number = 1;
 	items: any;
 	networkState: any;
+	use_dynamic: boolean = false;
 
 	constructor(
 		public navParams: NavParams,
@@ -107,10 +108,13 @@ export class CustomPage implements OnInit, OnDestroy {
 		public iap: IAP,
 		public loadingCtrl: LoadingController,
 		public postCtrl: Posts,
+		public globalvars: GlobalVars,
 		private network: Network
         ) {}
 
 	ngOnInit() {
+
+		this.use_dynamic = this.globalvars.getUseDynamicPageModule();
 
 		// Initial user settings
 		this.user = this.loginservice.user;
