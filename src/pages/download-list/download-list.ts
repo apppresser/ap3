@@ -3,8 +3,6 @@ import {NavParams, ViewController, ToastController, IonicPage, ModalController} 
 import {Storage} from '@ionic/storage';
 import {File} from '@ionic-native/file';
 
-import { DocumentViewer, DocumentViewerOptions } from '@ionic-native/document-viewer';
-
 declare var cordova: any;
 
 @IonicPage()
@@ -23,8 +21,7 @@ export class DownloadList {
     public viewCtrl: ViewController,
     public toastCtrl: ToastController,
     public modalCtrl: ModalController,
-    private file: File,
-    private docViewer: DocumentViewer
+    private file: File
     ) {
 
     if(this.navParams.get('title')) {
@@ -51,28 +48,6 @@ export class DownloadList {
   }
 
   mediaModal( item ) {
-
-    let fileExt = item.url.split('.').pop();
-    if( fileExt === 'pdf' ) {
-
-      const options: DocumentViewerOptions = {
-        title: item.title,
-        print : {
-          enabled : true
-        },
-        openWith : {
-          enabled : true
-        },
-        search : {
-          enabled : true
-        }
-      }
-
-      this.docViewer.viewDocument(item.url, 'application/pdf', options)
-
-      return;
-
-    }
 
     let modal = this.modalCtrl.create('MediaPlayer', {source: item.url });
     modal.present();

@@ -13,6 +13,8 @@ export class MediaPlayer {
   title: string = '';
   showVideoPlayer: boolean = true;
   imageSrc: string;
+  isPdf: boolean = false;
+  pdfSrc: any;
 
   constructor( 
     public navParams: NavParams, 
@@ -30,9 +32,40 @@ export class MediaPlayer {
     var fileExt = this.source.split('.').pop();
     if( fileExt === 'jpg' || fileExt === 'png' || fileExt === 'jpeg' ) {
       this.showVideoPlayer = false;
+    } else if( fileExt === 'pdf' ) {
+
+      this.showVideoPlayer = false;
+      this.isPdf = true;
+
+      this.loadPdf().then( data => {
+        this.pdfSrc = data
+      })
+
     } else {
       this.showVideoPlayer = true;
     }
+  }
+
+  // https://github.com/VadimDez/ng2-pdf-viewer/issues/180
+  loadPdf() {
+
+    return new Promise<string>((resolve, reject) => {
+
+    const request = new XMLHttpRequest();
+      request.open('GET', this.source, true);
+      request.responseType = 'blob';
+
+      request.onload = () => {
+        const reader = new FileReader();
+
+        reader.onload = (e: any) => resolve(e.target.result);
+        reader.onerror = err => reject(err);
+        reader.readAsDataURL(request.response);
+      };
+
+      request.send();
+    });
+
   }
 
   dismiss() {
