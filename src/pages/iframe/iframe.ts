@@ -434,7 +434,7 @@ export class Iframe implements OnInit {
         */
 
         // only look in active stack
-        let components = document.querySelectorAll('#nav > ng-component');
+        let components = document.querySelectorAll('#nav > wordpress-page');
 
         for (let i = components.length - 1; i >= 0; i--) {
 
