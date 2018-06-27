@@ -190,6 +190,9 @@ export class MyApp {
         this.appdata.checkForUpdates( this.apiurl );
       }, 5000 );
 
+      // for pdf viewer in media modal
+      (<any>window).pdfWorkerSrc = 'assets/lib/pdf-worker.min.js';
+
     });
 
   }

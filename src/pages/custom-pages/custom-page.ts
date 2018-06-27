@@ -395,12 +395,12 @@ export class CustomPage implements OnInit, OnDestroy {
 			return;
 		}
 
-		if( page.extra_classes.indexOf('desktoptheme') >= 0 ) {
+		if( page.extra_classes && page.extra_classes.indexOf('desktoptheme') >= 0 ) {
 			let url = new URL(page.url);
 			url.searchParams.append('appp_bypass', 'true');
 			let iab: any = window.open(url.toString(), '_blank');
 			return;
-		} else if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
+		} else if( page.target === '_blank' && page.extra_classes && page.extra_classes.indexOf('system') >= 0 ) {
 			window.open( page.url, '_system', null );
 			return;
 		} else if( page.target === '_blank' ) {
