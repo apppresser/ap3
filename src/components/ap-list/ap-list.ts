@@ -5,6 +5,7 @@ import {NavController, NavParams, LoadingController, ToastController, ItemSlidin
 import {Storage} from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {Network} from '@ionic-native/network';
+import { TranslateService } from '@ngx-translate/core';
 
 /**
  * Generated class for the ApListComponent component.
@@ -38,7 +39,8 @@ export class ApListComponent implements OnInit {
 	    public toastCtrl: ToastController,
 	    public viewCtrl: ViewController,
 	    public platform: Platform,
-	    private network: Network,
+			private network: Network,
+			private translate: TranslateService,
 	    private Device: Device
 		) {
 
@@ -68,7 +70,9 @@ export class ApListComponent implements OnInit {
 		  if( posts ) {
 		    this.items = posts;
 		  } else {
-		    this.presentToast('No data available, pull to refresh when you are online.');
+				this.translate.get('No data available, pull to refresh when you are online.').subscribe( text => {
+					this.presentToast(text);
+				});
 		  }
 		});
 
@@ -98,8 +102,10 @@ export class ApListComponent implements OnInit {
 
 		  this.loading = false
 
-		  console.error('Error getting posts', err);
-		  this.presentToast('Error getting posts.');
+			console.error('Error getting posts', err);
+			this.translate.get('Error getting posts.').subscribe( text => {
+				this.presentToast(text);
+			});
 
 		});
 
@@ -178,7 +184,9 @@ export class ApListComponent implements OnInit {
 
 		  this.storage.set( this.route.substr(-10, 10) + '_favorites', this.favoriteItems);
 
-		  this.presentToast('Favorite Added');
+			this.translate.get('Favorite added').subscribe( text => {
+				this.presentToast(text);
+			});
 
 		} else {
 
@@ -198,7 +206,9 @@ export class ApListComponent implements OnInit {
 		    this.showAll();
 		  }
 
-		  this.presentToast('Favorite Removed');
+			this.translate.get('Favorite Removed').subscribe( text => {
+				this.presentToast(text);
+			});
 
 		}
 
@@ -217,7 +227,9 @@ export class ApListComponent implements OnInit {
 		    this.items = favorites;
 
 		  } else {
-		    this.presentToast('No Favorites to show');
+				this.translate.get('No Favorites to show').subscribe( text => {
+					this.presentToast(text);
+				});
 		  }
 
 		});
