@@ -208,6 +208,8 @@ export class Iframe implements OnInit {
                 target: this.el.nativeElement.querySelector('.ap3-iframe')
             };
             this.doCheckinModal(_e);
+        } else if( e.data === 'dismiss' ) {
+            this.dismiss();
         } else if( e.data.indexOf('{') === 0 ) {
 
             // if it's a json object, parse it
@@ -496,5 +498,9 @@ export class Iframe implements OnInit {
             // no logo, do nothing
             //console.log(e)
         })
+    }
+
+    dismiss() {
+        this.viewCtrl.dismiss();
     }
 }
