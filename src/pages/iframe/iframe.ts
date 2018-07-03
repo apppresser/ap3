@@ -186,7 +186,10 @@ export class Iframe implements OnInit {
         let w = e.target;
 
         if( e.data === 'site_loaded' ) {
-            this.loading.dismiss();
+
+            if(this.loading)
+                this.loading.dismiss();
+
         } else if( e.data === 'show_spinner' ) {
             this.showSpinner()
         } else if( e.data === 'reload_frame' ) {
@@ -208,8 +211,8 @@ export class Iframe implements OnInit {
                 target: this.el.nativeElement.querySelector('.ap3-iframe')
             };
             this.doCheckinModal(_e);
-        } else if( e.data === 'dismiss' ) {
-            this.dismiss();
+        } else if( e.data === 'goback' ) {
+            this.goBack();
         } else if( e.data.indexOf('{') === 0 ) {
 
             // if it's a json object, parse it
@@ -500,7 +503,16 @@ export class Iframe implements OnInit {
         })
     }
 
-    dismiss() {
-        this.viewCtrl.dismiss();
+    // used by postMessage in applms to dismiss current view
+    goBack() {
+        this.findIframe();
+
+        let page = this.findAncestor( this.iframe, 'ion-page' );
+
+        let back = page.getElementsByClassName('back-button')[0]
+
+        back.click()
+        return;
+
     }
 }
