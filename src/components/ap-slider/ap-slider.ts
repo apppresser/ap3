@@ -5,6 +5,7 @@ import {NavController, NavParams, ToastController, ItemSliding, Slides, ViewCont
 import {Storage} from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {Network} from '@ionic-native/network';
+import { TranslateService } from '@ngx-translate/core';
 
 /**
  * Generated class for the ApSliderComponent component.
@@ -41,7 +42,8 @@ export class ApSliderComponent implements OnInit {
 	    public platform: Platform,
 	    public toastCtrl: ToastController,
 	    public viewCtrl: ViewController,
-	    private network: Network,
+			private network: Network,
+			private translate: TranslateService,
 	    private Device: Device
 		) {
 
@@ -98,7 +100,9 @@ export class ApSliderComponent implements OnInit {
 		  if( posts ) {
 		    this.items = posts;
 		  } else {
-		    this.presentToast('No data available, pull to refresh when you are online.');
+				this.translate.get('No data available, pull to refresh when you are online.').subscribe( text => {
+					this.presentToast(text);
+				});
 		  }
 		});
 
@@ -117,7 +121,9 @@ export class ApSliderComponent implements OnInit {
 		}).catch((err) => {
 
 		  console.error('Error getting posts', err);
-		  this.presentToast('Error getting posts.');
+			this.translate.get('Error getting posts.').subscribe( text => {
+				this.presentToast(text);
+			});
 
 		});
 
