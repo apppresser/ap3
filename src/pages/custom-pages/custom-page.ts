@@ -9,7 +9,7 @@ import {Posts} from '../../providers/posts/posts';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {IAP} from '../../providers/inapppurchase/inapppurchase';
 
-import {Iframe} from "../pages/iframe/iframe";
+import {Iframe} from "../iframe/iframe";
 
 /**
  * Any changes done to this file needs to be copied over to
