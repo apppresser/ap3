@@ -48,6 +48,8 @@ import {AppGeo} from "../providers/appgeo/appgeo";
 import {IAP} from "../providers/inapppurchase/inapppurchase";
 import {Download} from "../providers/download/download";
 
+import {Iframe} from "../pages/iframe/iframe";
+
 /* Other */
 import { IonicStorageModule } from '@ionic/storage';
 
@@ -64,7 +66,8 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
 
 @NgModule({
   declarations: [
-    MyApp
+    MyApp,
+    Iframe
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -82,7 +85,8 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
   ],
   bootstrap: [IonicApp],
   entryComponents: [
-    MyApp
+    MyApp,
+    Iframe
   ],
   providers: [
     {provide: ErrorHandler, useClass: IonicErrorHandler},

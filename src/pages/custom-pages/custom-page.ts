@@ -9,6 +9,8 @@ import {Posts} from '../../providers/posts/posts';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {IAP} from '../../providers/inapppurchase/inapppurchase';
 
+import {Iframe} from "../pages/iframe/iframe";
+
 /**
  * Any changes done to this file needs to be copied over to
  * mkpages/templates/custom-html-template/ for the production
@@ -368,7 +370,7 @@ export class CustomPage implements OnInit, OnDestroy {
 		} else if( page.type === 'apppages' ) {
 			this.nav.push(this.getPageModuleName(page.page_id), page, opt );
 		} else if (page.url) {
-			this.nav.push('Iframe', page, opt);
+			this.nav.push(Iframe, page, opt);
 		} else {
 			this.nav.push(page.component, page.navparams, opt);
 		}
@@ -415,7 +417,7 @@ export class CustomPage implements OnInit, OnDestroy {
 		} else if( page.type === 'apppages' ) {
 			this.nav.setRoot(this.getPageModuleName(page.page_id), page );
 		} else if (page.url) {
-			this.nav.setRoot('Iframe', page);
+			this.nav.setRoot(Iframe, page);
 		} else {
 			this.nav.setRoot(page.component, page.navparams);
 		}

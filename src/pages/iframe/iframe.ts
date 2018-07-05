@@ -1,4 +1,4 @@
-import {NavParams, Nav, LoadingController, ModalController, Platform, ViewController, IonicPage} from 'ionic-angular';
+import {NavParams, Nav, LoadingController, ModalController, Platform, ViewController} from 'ionic-angular';
 import {Component, HostListener, ElementRef, OnInit, Input, NgZone} from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -13,7 +13,6 @@ import {MediaPlayer} from '../media-player/media-player';
 import {HeaderLogo} from "../../providers/header-logo/header-logo";
 import { LanguageService } from "../../providers/language/language.service";
 
-@IonicPage()
 @Component({
     templateUrl: 'iframe.html',
     selector: 'wordpress-page'
@@ -489,7 +488,7 @@ export class Iframe implements OnInit {
     }
 
     cartLink() {
-        this.nav.push('Iframe', { 'title': '', 'url': this.cart_link } );
+        this.nav.push(Iframe, { 'title': '', 'url': this.cart_link } );
     }
 
     doLogo() {

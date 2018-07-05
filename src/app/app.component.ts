@@ -33,6 +33,8 @@ import { User } from '../models/user.model';
 import { LoginService } from '../providers/logins/login.service';
 import { LanguageService } from "../providers/language/language.service";
 
+import {Iframe} from "../pages/iframe/iframe";
+
 /**
  * Customizable options for our
  * segments, media, language and login modals
@@ -285,7 +287,7 @@ export class MyApp {
       for( let item of data.tab_menu.items ) {
 
         // set component, default is Iframe
-        var root = 'Iframe';
+        var root:any = Iframe;
 
         if( item.type === 'apppages' && item.page_type === 'list' ) {
           root = 'PostList';
@@ -349,7 +351,7 @@ export class MyApp {
         data.menus.items[0].is_home = true;
 
         // anything else uses Iframe component
-        this.nav.setRoot( 'Iframe', data.menus.items[0] );
+        this.nav.setRoot( Iframe, data.menus.items[0] );
 
       }
 
@@ -590,7 +592,7 @@ export class MyApp {
     } else if( page.type === 'apppages' ) {
       this.nav.setRoot(this.getPageModuleName(page.page_id), page );
     } else if (page.url) {
-      this.nav.setRoot('Iframe', page);
+      this.nav.setRoot(Iframe, page);
     } else {
       this.nav.setRoot(page.component, page.navparams);
     }
@@ -632,7 +634,7 @@ export class MyApp {
     }else if( page.type === 'apppages' ) {
       this.nav.push(this.getPageModuleName(page.page_id), page, opt );
     } else if (page.url) {
-      this.nav.push('Iframe', page, opt);
+      this.nav.push(Iframe, page, opt);
     } else {
       this.nav.push(page.component, page.navparams, opt);
     }
@@ -852,7 +854,7 @@ export class MyApp {
       if (data.url) {
 
         // push a new page
-        let page = { title: data.title, component: 'Iframe', url: data.url, classes: null };
+        let page = { title: data.title, component: Iframe, url: data.url, classes: null };
         this.pushPage( page );
 
       } else if (data.msg) {
@@ -908,7 +910,7 @@ export class MyApp {
 
       } else if( data.apppage ) {
 
-        let page = { title: data.title, component: 'Iframe', url: data.apppage.url, classes: null, page_type: null, type: null };
+        let page = { title: data.title, component: Iframe, url: data.apppage.url, classes: null, page_type: null, type: null };
         this.openPage( page );
 
       } else if( data.geouserpref ) {
@@ -1043,7 +1045,7 @@ export class MyApp {
 
         // if apppush post URL
         if( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 && data.additionalData.target && data.additionalData.target == '_self' ) {
-          let page = { title: data.title, component: 'Iframe', url: data.additionalData.url, classes: null };
+          let page = { title: data.title, component: Iframe, url: data.additionalData.url, classes: null };
           this.pushPage( page );
           return;
         }
@@ -1221,7 +1223,7 @@ export class MyApp {
         page = { 
           title: title,
           url: url,
-          component: 'Iframe',
+          component: Iframe,
           classes: null,
           target: '',
           extra_classes: '',
@@ -1298,7 +1300,7 @@ export class MyApp {
     for( let item of this.tabs ) {
 
       // set component, default is Iframe
-      var root = 'Iframe';
+      var root:any = Iframe;
 
       if( item.type === 'apppages' && item.page_type === 'list' ) {
         root = 'PostList';
@@ -1323,7 +1325,7 @@ export class MyApp {
       item.class = item.icon
 
       // add lang=xx param
-      if(root == 'Iframe' && item.url && item.url.indexOf('http') == 0) {
+      if(root == Iframe && item.url && item.url.indexOf('http') == 0) {
         // console.log('MyAppp resetTabs Iframe change url start', item.url)
         item.url = this.languageservice.appendUrlLang(item.url);
         // console.log('MyAppp resetTabs Iframe change url end', item.url)
