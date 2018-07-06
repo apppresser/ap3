@@ -180,7 +180,11 @@ export class LoginModal {
 		
 		this.dismiss();
 
-		this.events.publish('pushpage', { url: this.loginservice.getPasswordResetUrl(), title: '', is_register_page: false } )
+		this.events.publish('pushpage', { 
+			url: this.loginservice.getPasswordResetUrl(), 
+			title: '', 
+			is_register_page: this.force_login // apply the force_login if needed
+		} );
 	
 
 	}
