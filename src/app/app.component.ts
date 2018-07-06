@@ -594,10 +594,19 @@ export class MyApp {
     } else if (page.url) {
 
       // can't set root on tabs
-      let active = this.nav.getActive();
-      if( active.id = "TabsPage" ) {
-        this.nav.push( Iframe, page )
-        return;
+      let first = this.nav.first();
+      console.log('first', first)
+
+      if( first.id === "TabsPage" ) {
+        
+        if( page.root === "true" ) {
+          // if root is in the message, we pop to the root via tabs.ts
+          return;
+        } else {
+          this.nav.push( Iframe, page )
+          return;
+        }
+
       }
 
       this.nav.setRoot( Iframe, page );
@@ -919,7 +928,7 @@ export class MyApp {
 
       } else if( data.apppage ) {
 
-        let page = { title: data.title, component: Iframe, url: data.apppage.url, classes: null, page_type: null, type: null };
+        let page = { title: data.title, component: Iframe, url: data.apppage.url, classes: null, page_type: null, type: null, root: data.apppage.root };
         this.openPage( page );
 
       } else if( data.geouserpref ) {

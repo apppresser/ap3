@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
-import {NavController, NavParams, LoadingController, ToastController, ItemSliding, Platform, ViewController, IonicPage} from 'ionic-angular';
+import {NavController, NavParams, LoadingController, ToastController, ItemSliding, Platform, ViewController, IonicPage, Events} from 'ionic-angular';
 
 import {Storage} from '@ionic/storage';
 import {Network} from '@ionic-native/network';
@@ -42,7 +42,8 @@ export class ApListComponent implements OnInit {
 	    public viewCtrl: ViewController,
 	    public platform: Platform,
 		private network: Network,
-		private translate: TranslateService
+		private translate: TranslateService,
+		public events: Events
 		) {
 
 	}
@@ -121,7 +122,7 @@ export class ApListComponent implements OnInit {
 			let data = JSON.parse( window.localStorage.getItem( 'myappp' ) );
 
 			if( data.tab_menu && data.tab_menu.items ) {
-				this.nav.push( Iframe, newitem )
+				this.events.publish( 'pushpage', newitem )
 			} else {
 				this.nav.setRoot(Iframe, newitem );
 			}

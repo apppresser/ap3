@@ -119,6 +119,7 @@ export class TabsPage implements OnInit {
       console.log('from tabs.ts', data)
 
       let page = { title: ( data.title ? data.title : '' ), component: Iframe, url: data.apppage.url, classes: null, page_type: null, type: null };
+      // for learndash, when we have a redirect
       this.nav.popToRoot({animate: false}).then( ()=> {
         this.nav.push( Iframe, page );
       })
