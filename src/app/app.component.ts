@@ -592,7 +592,16 @@ export class MyApp {
     } else if( page.type === 'apppages' ) {
       this.nav.setRoot(this.getPageModuleName(page.page_id), page );
     } else if (page.url) {
-      this.nav.setRoot(Iframe, page);
+
+      // can't set root on tabs
+      let active = this.nav.getActive();
+      if( active.id = "TabsPage" ) {
+        this.nav.push( Iframe, page )
+        return;
+      }
+
+      this.nav.setRoot( Iframe, page );
+
     } else {
       this.nav.setRoot(page.component, page.navparams);
     }

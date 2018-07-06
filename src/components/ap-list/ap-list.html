@@ -21,6 +21,8 @@
 
         <p *ngIf="item.excerpt && item.excerpt.rendered" [innerHTML]="item.excerpt.rendered"></p>
 
+        <div class="item-content" *ngIf="!item.excerpt && item.content.rendered" [innerHTML]="truncateString( item.content.rendered )"></div>
+
       </ion-card-content>
 
       <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_content" [innerHTML]="item.appp.post_list.below_content"></div>
@@ -46,6 +48,8 @@
       <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_title" [innerHTML]="item.appp.post_list.below_title"></div>
 
       <p *ngIf="item.excerpt && item.excerpt.rendered" [innerHTML]="item.excerpt.rendered"></p>
+
+      <div class="item-content" *ngIf="!item.excerpt && item.content.rendered" [innerHTML]="truncateString( item.content.rendered )"></div>
 
       <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_content" [innerHTML]="item.appp.post_list.below_content"></div>
 

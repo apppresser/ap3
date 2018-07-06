@@ -1,11 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
-import {NavController, NavParams, LoadingController, ToastController, ItemSliding, Platform, ViewController, Content, IonicPage} from 'ionic-angular';
+import {NavController, NavParams, LoadingController, ToastController, ItemSliding, Platform, ViewController, IonicPage} from 'ionic-angular';
 
 import {Storage} from '@ionic/storage';
-import {Device} from '@ionic-native/device';
 import {Network} from '@ionic-native/network';
-import { TranslateService } from '@ngx-translate/core';
+import {TranslateService} from '@ngx-translate/core';
+
+import {Iframe} from "../../pages/iframe/iframe";
 
 /**
  * Generated class for the ApListComponent component.
@@ -23,6 +24,7 @@ export class ApListComponent implements OnInit {
 	@Input() card: boolean = false;
 	@Input() favorites: boolean = false;
 	@Input() infiniteScroll: boolean = false;
+	@Input() wp: string;
 
 	page: number = 1;
 	items: any;
@@ -39,9 +41,8 @@ export class ApListComponent implements OnInit {
 	    public toastCtrl: ToastController,
 	    public viewCtrl: ViewController,
 	    public platform: Platform,
-			private network: Network,
-			private translate: TranslateService,
-	    private Device: Device
+		private network: Network,
+		private translate: TranslateService
 		) {
 
 	}
@@ -112,6 +113,21 @@ export class ApListComponent implements OnInit {
 	}
 
 	loadDetail(item) {
+
+		// this is for learndash
+		if( this.wp === "true" ) {
+
+			let newitem: { url:string, title:string } = { url: item.link, title: item.title.rendered };
+			let data = JSON.parse( window.localStorage.getItem( 'myappp' ) );
+
+			if( data.tab_menu && data.tab_menu.items ) {
+				this.nav.push( Iframe, newitem )
+			} else {
+				this.nav.setRoot(Iframe, newitem );
+			}
+
+			return;
+		}
 
 		let opt = {};
 
@@ -240,6 +256,10 @@ export class ApListComponent implements OnInit {
 		this.storage.get( this.route.substr(-10, 10) + '_posts' ).then((items) => {
 		  this.items = items;
 		});
+	}
+
+	truncateString( string ) {
+		return string.substring(0,300);
 	}
 
 	presentToast(msg) {

@@ -1,5 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {NavParams, IonicPage, ModalController} from 'ionic-angular';
+import {Component, OnInit, HostListener} from '@angular/core';
+import {NavParams, IonicPage, ModalController, NavController} from 'ionic-angular';
+
+import {Iframe} from "../iframe/iframe";
 
 class ModalOptions {
 	public cssClass?: string;
@@ -18,7 +20,8 @@ export class TabsPage implements OnInit {
 
   constructor(
     private modalCtrl: ModalController,
-    private navParams: NavParams
+    private navParams: NavParams,
+    public nav: NavController
   ) {}
 
   ngOnInit() {
@@ -36,6 +39,7 @@ export class TabsPage implements OnInit {
       }
       this.tabs.push(tab);
     }
+
   }
 
   onIonSelect($event, tab) {
@@ -92,6 +96,34 @@ export class TabsPage implements OnInit {
   openIab( link, target, options = null ) {
     
     window.open(link, target, options );
+
+  }
+
+  // ng2 way of adding a listener
+  @HostListener('window:message', ['$event'])
+
+  onMessage(event) {
+    this.myListeners(event)
+  }
+
+  myListeners(e) {
+
+    // if it's not our json object, return
+    if (e.data.indexOf('{') != 0)
+      return;
+
+    var data = JSON.parse(e.data);
+
+    if( data.apppage && data.apppage.root ) {
+
+      console.log('from tabs.ts', data)
+
+      let page = { title: ( data.title ? data.title : '' ), component: Iframe, url: data.apppage.url, classes: null, page_type: null, type: null };
+      this.nav.popToRoot({animate: false}).then( ()=> {
+        this.nav.push( Iframe, page );
+      })
+
+    }
 
   }
 

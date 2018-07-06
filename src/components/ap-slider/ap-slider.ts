@@ -1,17 +1,15 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
-import {NavController, NavParams, ToastController, ItemSliding, Slides, ViewController, Content, IonicPage, Platform} from 'ionic-angular';
+import {NavController, NavParams, ToastController, ItemSliding, Slides, ViewController, IonicPage, Platform} from 'ionic-angular';
 
 import {Storage} from '@ionic/storage';
-import {Device} from '@ionic-native/device';
 import {Network} from '@ionic-native/network';
 import { TranslateService } from '@ngx-translate/core';
 
+import {Iframe} from "../../pages/iframe/iframe";
+
 /**
- * Generated class for the ApSliderComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
+ * For reference: https://github.com/ionic-team/ionic/blob/master/core/src/components/slides/slides.tsx
  */
 @Component({
   selector: 'ap-slider',
@@ -29,6 +27,8 @@ export class ApSliderComponent implements OnInit {
 	@Input() paginationType: string;
 	@Input() preventClicks: string;
 	@Input() freeMode: string;
+	@Input() wp: string;
+	@Input() spaceBetween: string;
 
 	items: any;
 	loading: any;
@@ -42,9 +42,8 @@ export class ApSliderComponent implements OnInit {
 	    public platform: Platform,
 	    public toastCtrl: ToastController,
 	    public viewCtrl: ViewController,
-			private network: Network,
-			private translate: TranslateService,
-	    private Device: Device
+		private network: Network,
+		private translate: TranslateService
 		) {
 
 	}
@@ -91,6 +90,10 @@ export class ApSliderComponent implements OnInit {
 			this.slides.paginationType = this.paginationType
 		}
 
+		if( this.spaceBetween ) {
+			this.slides.spaceBetween = this.spaceBetween;
+		}
+
 	}
 
 	// get posts from storage when we are offline
@@ -133,6 +136,21 @@ export class ApSliderComponent implements OnInit {
 
 		if( this.preventClicks === "true" )
 			return;
+
+		// this is for learndash
+		if( this.wp === "true" ) {
+
+			let newitem: { url:string, title:string } = { url: item.link, title: item.title.rendered };
+			let data = JSON.parse( window.localStorage.getItem( 'myappp' ) );
+
+			if( data.tab_menu && data.tab_menu.items ) {
+				this.nav.push( Iframe, newitem )
+			} else {
+				this.nav.setRoot(Iframe, newitem );
+			}
+
+			return;
+		}
 
 		let opt = {};
 
