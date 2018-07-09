@@ -128,6 +128,13 @@ export class Iframe implements OnInit {
     ionViewWillLeave() {
         // Hack to clear page title when going back. Otherwise page title will be from previous page
         window.postMessage( JSON.stringify({post_title:'', post_url: 'none'}), '*' )
+
+        // send a message to cached views so we can update any data with ajax. For example, learndash course progress
+        this.findIframe();
+
+        if( this.iframe ) {
+            this.iframe.contentWindow.postMessage('app_view_enter', '*');
+        }
     }
 
     iframeLoading() {
@@ -456,6 +463,9 @@ export class Iframe implements OnInit {
               var active = components[i];
             }
         }
+
+        if( !active )
+            return;
 
         // If we have tabs views stack differently
         if( active.querySelectorAll('ion-tabs .show-tabbar').length ) {
