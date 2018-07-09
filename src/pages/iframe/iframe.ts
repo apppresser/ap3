@@ -61,25 +61,35 @@ export class Iframe implements OnInit {
 
     ngOnInit() {
 
+        this.iframeLoading();
+
         if(this.navParams.data.is_home == true) {
+
             this.doLogo()
-          }
-  
-          this.setupURL();
-  
-          let dataurl = this.navParams.data.url;
-  
-          // Show error message if in preview and not using https
-          this.previewAlert( this.navParams.data.url );
-  
-          let myappp: any = localStorage.getItem('myappp');
-          if(myappp) {
-              if(typeof myappp == 'string')
-                  myappp = JSON.parse(myappp);
-          
-              if(myappp && myappp.meta && myappp.meta.share && myappp.meta.share.icon && myappp.meta.share.icon.hide)
-                  this.hide_share_icon = myappp.meta.share.icon.hide;
-          }
+
+            // hack to fix spinner appearing too long when iframe is home tab. Caused by language service calls to resetTabs in main component.
+            setTimeout(() => {
+                if( this.loading )
+                    this.loading.dismiss();
+            }, 4000);
+
+        }
+
+        this.setupURL();
+
+        let dataurl = this.navParams.data.url;
+
+        // Show error message if in preview and not using https
+        this.previewAlert( this.navParams.data.url );
+
+        let myappp: any = localStorage.getItem('myappp');
+        if(myappp) {
+          if(typeof myappp == 'string')
+              myappp = JSON.parse(myappp);
+
+          if(myappp && myappp.meta && myappp.meta.share && myappp.meta.share.icon && myappp.meta.share.icon.hide)
+              this.hide_share_icon = myappp.meta.share.icon.hide;
+        }
     }
 
     /**
@@ -100,8 +110,6 @@ export class Iframe implements OnInit {
         }
         
         this.showShare = false;
-
-        this.iframeLoading();
 
         if(this.navParams.get('is_register_page') === true) {
             console.log('yes, is_register_page');
@@ -154,7 +162,8 @@ export class Iframe implements OnInit {
         this.loading.present();
 
         setTimeout(() => {
-            this.loading.dismiss();
+            if( this.loading )
+             this.loading.dismiss();
         }, 8000);
     }
 

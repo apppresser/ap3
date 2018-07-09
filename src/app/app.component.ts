@@ -149,6 +149,8 @@ export class MyApp {
         this.bodyTag.classList.remove('loggedin')
       }
     });
+
+    // TODO: this causes a bug when iframe page is the homepage. It calls resetTabs too many times, which loads iframe.ts twice, causing the spinner to appear for too long.
     this.languageservice.languageStatus().subscribe(language => {
 
       let is_loggedin = (this.loginservice.user);
