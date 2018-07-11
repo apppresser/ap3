@@ -1,6 +1,29 @@
 ap-slider {
 	ion-slides {
 		height: 300px;
+
+		.card {
+			height: 250px;
+			width: auto;
+			max-width: 250px;
+			margin: 0;
+
+			ion-card-content {
+				display: inline;
+
+				.item-content {
+					padding: 10px;
+				}
+
+				p {
+					color: #777;
+				}
+			}
+		}
+
+		.card-featured-wrap {
+			max-height: 100px;
+		}
 	}
 
 	ion-slide {

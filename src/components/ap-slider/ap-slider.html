@@ -1,11 +1,44 @@
-<ion-slides>
+<ion-slides *ngIf="!card">
 
-  <ion-slide *ngFor="let item of items" [ngStyle]="{'background-image': 'url(' + ( item.featured_image_urls.large ? item.featured_image_urls.large : item.featured_image_urls.medium ) + ')'}" (click)="loadDetail(item)">
+	<ion-slide *ngFor="let item of items" [ngStyle]="{'background-image': 'url(' + ( item.featured_image_urls.large ? item.featured_image_urls.large : item.featured_image_urls.medium ) + ')'}" (click)="loadDetail(item)">
 
-    <h3 class="item-title" *ngIf="item.title && item.title.rendered" [innerHTML]="item.title.rendered"></h3>
+		<h3 class="item-title" *ngIf="item.title && item.title.rendered" [innerHTML]="item.title.rendered"></h3>
 
-    <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.item_content" [innerHTML]="item.appp.post_list.item_content"></div>
+		<div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.item_content" [innerHTML]="item.appp.post_list.item_content"></div>
 
-  </ion-slide>
+	</ion-slide>
+
+</ion-slides>
+
+<ion-slides *ngIf="card">
+
+	<ion-slide *ngFor="let item of items" (click)="loadDetail(item)">
+
+		<ion-card>
+		  
+		  <div class="card-featured-wrap" *ngIf="item.featured_image_urls">
+		    <img *ngIf="item.featured_image_urls.large" src="{{item.featured_image_urls.large}}">
+		    <img *ngIf="!item.featured_image_urls.large && item.featured_image_urls.medium" src="{{item.featured_image_urls.medium}}">
+		  </div>
+
+		  <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_title" [innerHTML]="item.appp.post_list.above_title"></div>
+
+		  <ion-card-content>
+
+		    <ion-card-title *ngIf="item.title && item.title.rendered">
+		      <h2 [innerHTML]="item.title.rendered"></h2>
+		    </ion-card-title>
+
+		    <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_title" [innerHTML]="item.appp.post_list.below_title"></div>
+
+		    <p *ngIf="item.excerpt && item.excerpt.rendered" [innerHTML]="item.excerpt.rendered"></p>
+
+		    <div class="item-content" *ngIf="!item.excerpt && item.content.rendered" [innerHTML]="truncateString( item.content.rendered )"></div>
+
+		  </ion-card-content>
+
+		</ion-card>
+
+	</ion-slide>
 
 </ion-slides>

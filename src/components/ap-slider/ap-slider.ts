@@ -29,6 +29,7 @@ export class ApSliderComponent implements OnInit {
 	@Input() freeMode: string;
 	@Input() wp: string;
 	@Input() spaceBetween: string;
+	@Input() card: boolean = false;
 
 	items: any;
 	loading: any;
@@ -48,7 +49,7 @@ export class ApSliderComponent implements OnInit {
 
 	}
 
-	ngOnInit() {
+	ngAfterViewInit() {
 
 		if( this.route ) {
 
@@ -64,12 +65,6 @@ export class ApSliderComponent implements OnInit {
 		}
 
 		// set options based on input attributes
-		if( this.pager === "false" ) {
-			this.slides.pager = false;
-		} else {
-			this.slides.pager = true;
-		}
-
 		if( this.slidesPerView ) {
 			this.slides.slidesPerView = this.slidesPerView
 		}
@@ -92,6 +87,13 @@ export class ApSliderComponent implements OnInit {
 
 		if( this.spaceBetween ) {
 			this.slides.spaceBetween = this.spaceBetween;
+		}
+
+		if( this.pager === "false" ) {
+			this.slides.pager = false;
+		} else {
+			console.log('do pager')
+			this.slides.pager = true;
 		}
 
 	}
@@ -161,6 +163,10 @@ export class ApSliderComponent implements OnInit {
 		  item: item
 		}, opt);
 
+	}
+
+	truncateString( string ) {
+		return string.substring(0,50);
 	}
 
 	presentToast(msg) {
