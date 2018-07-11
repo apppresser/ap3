@@ -260,7 +260,7 @@ export class ApListComponent implements OnInit {
 	}
 
 	truncateString( string ) {
-		return string.substring(0,300);
+		return string.substring(0,100);
 	}
 
 	presentToast(msg) {

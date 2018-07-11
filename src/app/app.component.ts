@@ -597,7 +597,6 @@ export class MyApp {
 
       // can't set root on tabs
       let first = this.nav.first();
-      console.log('first', first)
 
       if( first.id === "TabsPage" ) {
         
