@@ -1,6 +1,6 @@
 import { Component, Input, ViewChild } from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
-import {NavController, NavParams, ToastController, ItemSliding, Slides, ViewController, IonicPage, Platform} from 'ionic-angular';
+import {NavController, NavParams, ToastController, ItemSliding, Slides, ViewController, IonicPage, Platform, Events} from 'ionic-angular';
 
 import {Storage} from '@ionic/storage';
 import {Network} from '@ionic-native/network';
@@ -44,7 +44,8 @@ export class ApSliderComponent {
 	    public toastCtrl: ToastController,
 	    public viewCtrl: ViewController,
 		private network: Network,
-		private translate: TranslateService
+		private translate: TranslateService,
+		public events: Events
 		) {
 
 	}
@@ -146,9 +147,10 @@ export class ApSliderComponent {
 			let data = JSON.parse( window.localStorage.getItem( 'myappp' ) );
 
 			if( data.tab_menu && data.tab_menu.items ) {
-				this.nav.push( Iframe, newitem )
+				// push from main component so we don't have nested views
+				this.events.publish( 'pushpage', newitem )
 			} else {
-				this.nav.setRoot(Iframe, newitem );
+				this.nav.push(Iframe, newitem );
 			}
 
 			return;

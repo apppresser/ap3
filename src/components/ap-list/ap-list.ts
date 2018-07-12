@@ -122,9 +122,10 @@ export class ApListComponent implements OnInit {
 			let data = JSON.parse( window.localStorage.getItem( 'myappp' ) );
 
 			if( data.tab_menu && data.tab_menu.items ) {
+				// push from main component so we don't have nested views
 				this.events.publish( 'pushpage', newitem )
 			} else {
-				this.nav.setRoot(Iframe, newitem );
+				this.nav.push(Iframe, newitem );
 			}
 
 			return;

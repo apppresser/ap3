@@ -608,6 +608,15 @@ export class MyApp {
           return;
         }
 
+      } else {
+
+        // learndash redirect with side menu
+        this.nav.popToRoot({animate: false}).then( ()=> {
+            this.nav.push( Iframe, page );
+        })
+
+        return;
+
       }
 
       this.nav.setRoot( Iframe, page );
