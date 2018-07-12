@@ -89,13 +89,6 @@ export class ApSliderComponent {
 			this.slides.spaceBetween = this.spaceBetween;
 		}
 
-		if( this.pager === "false" ) {
-			this.slides.pager = false;
-		} else {
-			console.log('do pager')
-			this.slides.pager = true;
-		}
-
 	}
 
 	// get posts from storage when we are offline
@@ -118,10 +111,17 @@ export class ApSliderComponent {
 		// any menu imported from WP has to use same component. Other pages can be added manually with different components
 		this.postService.load( this.route, '1' ).then(items => {
 
-		  // Loads posts from WordPress API
-		  this.items = items;
+			// Loads posts from WordPress API
+			this.items = items;
 
-		  this.storage.set( this.route.substr(-10, 10) + '_slides', items);
+			this.storage.set( this.route.substr(-10, 10) + '_slides', items);
+
+			// this is not working
+			if( this.pager === "false" ) {
+				this.slides.pager = false;
+			} else {
+				this.slides.pager = true;
+			}
 
 		}).catch((err) => {
 

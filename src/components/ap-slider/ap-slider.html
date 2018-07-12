@@ -1,4 +1,4 @@
-<ion-slides *ngIf="!card">
+<ion-slides *ngIf="!card" pager>
 
 	<ion-slide *ngFor="let item of items" [ngStyle]="{'background-image': 'url(' + ( item.featured_image_urls.large ? item.featured_image_urls.large : item.featured_image_urls.medium ) + ')'}" (click)="loadDetail(item)">
 
@@ -10,7 +10,7 @@
 
 </ion-slides>
 
-<ion-slides *ngIf="card">
+<ion-slides *ngIf="card" pager>
 
 	<ion-slide *ngFor="let item of items" (click)="loadDetail(item)">
 
