@@ -619,8 +619,6 @@ export class MyApp {
 
       }
 
-      this.nav.setRoot( Iframe, page );
-
     } else {
       this.nav.setRoot(page.component, page.navparams);
     }
