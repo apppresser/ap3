@@ -55,12 +55,15 @@ export class PostList implements OnInit {
 
     this.title = navParams.data.title;
 
+    this.customClasses = 'post-list' + ((navParams.data.slug) ? ' page-' + navParams.data.slug : '');
+
     if(navParams.data.is_home == true) {
       this.doLogo()
     }
 
     if( navParams.data.favorites && navParams.data.favorites === "true" ) {
       this.doFavorites = true;
+      this.customClasses += ' has-favorites';
     }
 
     if( navParams.data.show_slider && navParams.data.show_slider === "true" && navParams.data.slide_route ) {
@@ -75,8 +78,6 @@ export class PostList implements OnInit {
     }
 
     this.previewAlert(this.route);
-
-    this.customClasses = 'post-list' + ((navParams.data.slug) ? ' page-' + navParams.data.slug : '');
     
   }
 
