@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
 import {NavController, NavParams, ToastController, ItemSliding, Slides, ViewController, IonicPage, Platform} from 'ionic-angular';
 
@@ -15,7 +15,7 @@ import {Iframe} from "../../pages/iframe/iframe";
   selector: 'ap-slider',
   templateUrl: 'ap-slider.html'
 })
-export class ApSliderComponent implements OnInit {
+export class ApSliderComponent {
 
 	@ViewChild(Slides) slides: Slides;
 
