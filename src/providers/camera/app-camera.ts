@@ -104,29 +104,16 @@ export class AppCamera {
        Ionic stacks cached views on top of each other, which causes duplicate ids on the page. We need to find the active page in the stack, and send our post messages there. Otherwise message is sent to the wrong page.
       */
 
-      // only look in active stack
-      let components = document.querySelectorAll('#nav  wordpress-page');
+      let components = document.querySelectorAll('#nav wordpress-page');
 
-      for (let i = components.length - 1; i >= 0; i--) {
+      for (var i = 0; i < components.length; ++i) {
 
-        if( !components[i].hasAttribute('hidden') ) {
-          // this is the shown ng-component element
-          var active = components[i];
-        }
+          if( !components[i].hasAttribute('hidden') ) {
+            // we are just getting the last component on the page
+            var active = components[i];
+          }
       }
 
-      // If we have tabs views stack differently
-      if( active.querySelectorAll('ion-tabs .show-tabbar').length ) {
-
-          // tabs exist, define iframe relative to active tab
-          let page = active.querySelectorAll( 'ion-tab[aria-hidden=false] .show-page' );
-          this.iframe = page[0].getElementsByClassName('ap3-iframe')[0];
-
-          return;
-
-      }
-
-      // if no tabs
       this.iframe = active.querySelector('#ap3-iframe');
       this.iframedoc = this.iframe.contentWindow.document;
 
