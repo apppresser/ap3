@@ -467,8 +467,6 @@ export class Iframe implements OnInit {
         // if no tabs
         this.iframe = active.querySelector('#ap3-iframe');
 
-        console.log('iframe.ts', this.iframe)
-
     }
 
     // changes the back button transition direction if app is RTL
