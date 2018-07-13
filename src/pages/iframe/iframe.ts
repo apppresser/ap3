@@ -130,11 +130,11 @@ export class Iframe implements OnInit {
         window.postMessage( JSON.stringify({post_title:'', post_url: 'none'}), '*' )
 
         // send a message to cached views so we can update any data with ajax. For example, learndash course progress
-        // this.findIframe();
+        this.findIframe();
 
-        // if( this.iframe ) {
-        //     this.iframe.contentWindow.postMessage('app_view_enter', '*');
-        // }
+        if( this.iframe ) {
+            this.iframe.contentWindow.postMessage('app_view_enter', '*');
+        }
     }
 
     iframeLoading() {
@@ -456,30 +456,18 @@ export class Iframe implements OnInit {
         // only look in active stack
         let components = document.querySelectorAll('#nav wordpress-page');
 
-        for (let i = components.length - 1; i >= 0; i--) {
+        for (var i = 0; i < components.length; ++i) {
 
             if( !components[i].hasAttribute('hidden') ) {
-              // this is the shown ng-component element
+              // we are just getting the last component on the page
               var active = components[i];
             }
         }
 
-        if( !active )
-            return;
-
-        // If we have tabs views stack differently
-        if( active.querySelectorAll('ion-tabs .show-tabbar').length ) {
-
-          // tabs exist, define iframe relative to active tab
-          let page = active.querySelectorAll( 'ion-tab[aria-hidden=false] .show-page' );
-          this.iframe = page[0].getElementsByClassName('ap3-iframe')[0];
-
-          return;
-
-        }
-
         // if no tabs
         this.iframe = active.querySelector('#ap3-iframe');
+
+        console.log('iframe.ts', this.iframe)
 
     }
 
