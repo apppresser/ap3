@@ -38,6 +38,7 @@ export class Iframe implements OnInit {
     show_header_logo: boolean = false;
     hide_share_icon: boolean = false;
     is_registration_page: boolean = false;
+    is_cached: boolean = false;
 
     constructor(
         public navParams: NavParams,
@@ -90,6 +91,7 @@ export class Iframe implements OnInit {
           if(myappp && myappp.meta && myappp.meta.share && myappp.meta.share.icon && myappp.meta.share.icon.hide)
               this.hide_share_icon = myappp.meta.share.icon.hide;
         }
+
     }
 
     /**
@@ -125,16 +127,28 @@ export class Iframe implements OnInit {
 
     }
 
+    ionViewDidLoad() {
+
+        // set this.iframe for use in cached views
+        this.findIframe()
+
+    }
+
+    ionViewDidEnter() {
+
+        // this message fires when entering a cached view so we can update any data with ajax. For example, learndash course progress
+        if( this.iframe && this.is_cached ) {
+            this.iframe.contentWindow.postMessage('app_view_enter', '*');
+        }
+
+    }
+
     ionViewWillLeave() {
         // Hack to clear page title when going back. Otherwise page title will be from previous page
         window.postMessage( JSON.stringify({post_title:'', post_url: 'none'}), '*' )
 
-        // send a message to cached views so we can update any data with ajax. For example, learndash course progress
-        this.findIframe();
+        this.is_cached = true;
 
-        if( this.iframe ) {
-            this.iframe.contentWindow.postMessage('app_view_enter', '*');
-        }
     }
 
     iframeLoading() {
