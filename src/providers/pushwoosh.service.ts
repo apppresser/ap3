@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Platform } from 'ionic-angular';
+import { Platform, Events } from 'ionic-angular';
 import { Dialogs } from '@ionic-native/dialogs';
 import {TranslateService} from '@ngx-translate/core';
 import { LiveStreamService } from './video/livestream.service';
 
 declare var window;
 
-const PUSHWOOSH_APP_ID = '608D6-2670F';
-const GOOGLE_PROJECT_NUMBER = '412721698449';
+const PUSHWOOSH_APP_ID = '8BEFA-42AAF';
+const GOOGLE_PROJECT_NUMBER = '928356289655';
 const MPNS_SERVICE_NAME = '';  // windows
 // const API_ACCESS = 'HAJAQdHUVFigSFWKKAv2PPs68SupceX8UpRuHpvAfNPPZZIlsdQseYfyjTLV3SMIwSb3sFXlZSosdjTkFgF1';
 
@@ -20,6 +20,7 @@ export class PushwooshService {
 
 	constructor(
 		private platform: Platform,
+		private events: Events,
 		public translate: TranslateService,
 		private Dialogs: Dialogs,
 		private livestream: LiveStreamService
@@ -55,11 +56,23 @@ export class PushwooshService {
 					let message = (notification && notification.message) ? notification.message : 'Message';
 
 					if(notification && (notification.message || notification.title)) {
-						this.Dialogs.alert(
-							message,  // message
-							title,    // title
-							this.translate.instant('Done')  // buttonName						
+						this.Dialogs.confirm(
+							message,
+							title,
+							[this.translate.instant('Read'),this.translate.instant('Cancel')],
+						).then( () => {
+								if(notification.userdata && notification.userdata.url) {
+									this.events.publish('pushpage', {
+										url: notification.userdata.url
+									});
+								}
+							}
 						);
+						// this.Dialogs.alert(
+						// 	message,  // message
+						// 	title,    // title
+						// 	this.translate.instant('Done')  // buttonName						
+						// );
 					} else {
 						console.log('notification message and title not found');
 					}
