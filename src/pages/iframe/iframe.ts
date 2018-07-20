@@ -228,10 +228,6 @@ export class Iframe implements OnInit {
             let src = this.iframe.src;
             this.iframe.src = src;
 
-        } else if( e.data === 'activity_modal' ) {
-            this.zone.run( () => {
-                this.activityModal = true;
-            } );
         } else if( e.data === 'checkin_icon_show' || e.data === 'checkin_modal' /* icon */ ) {
             this.checkinModal = true;
         } else if( e.data === 'checkin_modal_show' ) {
@@ -249,6 +245,14 @@ export class Iframe implements OnInit {
 
             if( parsed.media ) {
                 this.mediaModal( parsed.media, parsed.img );
+            } else if ( parsed.activity_modal ) {
+
+                // only add the activity_modal icon to this iframe
+                if( parsed.iframe_url == this.iframe.src ) {
+                    this.zone.run( () => {
+                        this.activityModal = true;
+                    } );
+                }
             } else if ( parsed.apppkeyboardhelper ) {
 
                 if(parsed.apppkeyboardhelper === 'close') {
