@@ -593,7 +593,11 @@ export class MyApp {
       this.nav.setRoot( 'MediaList', page );
     } else if( page.type === 'apppages' ) {
       this.nav.setRoot(this.getPageModuleName(page.page_id), page );
+    } else if( page.url && page.type === 'custom' ) {
+      this.nav.setRoot( Iframe, page );
     } else if (page.url) {
+
+      // for LearnDash post messages
 
       // can't set root on tabs
       let first = this.nav.first();
