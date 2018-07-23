@@ -296,8 +296,9 @@ export class Iframe implements OnInit {
             return;
 
         // Don't change the title if we already of the one from WordPress
-        if(this.wp_title)
-            return;
+        // Oops! This caused a bug: https://trello.com/c/RvRor5KD
+        // if(this.wp_title)
+        //     return;
 
         // zone fixes bug where title didn't update properly on device
         this.zone.run( () => {
