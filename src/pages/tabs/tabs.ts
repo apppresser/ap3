@@ -1,7 +1,9 @@
 import {Component, OnInit, HostListener} from '@angular/core';
-import {NavParams, IonicPage, ModalController, NavController} from 'ionic-angular';
+import {NavParams, IonicPage, ModalController, NavController, Events} from 'ionic-angular';
 
 import {Iframe} from "../iframe/iframe";
+import { LoginService } from '../../providers/logins/login.service';
+import { User } from '../../models/user.model';
 
 class ModalOptions {
 	public cssClass?: string;
@@ -14,6 +16,8 @@ class ModalOptions {
 })
 export class TabsPage implements OnInit {
   tabs: Array<any> = [];
+  bodyTag: any;
+  user: User;
   mySelectedIndex: number;
   login_modal: any;
   login_modal_open = false;
@@ -21,10 +25,25 @@ export class TabsPage implements OnInit {
   constructor(
     private modalCtrl: ModalController,
     private navParams: NavParams,
+    private events: Events,
+    private loginservice: LoginService,
     public nav: NavController
   ) {}
 
   ngOnInit() {
+
+    // Login status
+    this.bodyTag = document.getElementsByTagName('body')[0];
+    this.loginservice.loginStatus().subscribe(user => {
+      this.user = user
+      if(user) {
+        this.bodyTag.classList.add('loggedin')
+      } else {
+        this.bodyTag.classList.remove('loggedin')
+      }
+    });
+
+
     this.mySelectedIndex = this.navParams.data.tabIndex || 0;
 
     // root=null if opening in the IAB
@@ -43,6 +62,20 @@ export class TabsPage implements OnInit {
   }
 
   onIonSelect($event, tab) {
+
+    // yield login
+    /**
+     * TODO: test again in a newer version of Ionic
+     * 
+     * This feature isn't working because the ionSelect doesn't
+     * allow you to $event.stopPropagation() or $event.preventDefault()
+     * 
+     * We need to test the yield login BEFORE transitioning to the selcted tab
+     */
+    // if(this.yieldLogin($event, tab))
+    //   return false;
+    
+
     if(tab.url && tab.target) {
       this.openIab(tab.url, tab.target);
     }
@@ -97,6 +130,28 @@ export class TabsPage implements OnInit {
     
     window.open(link, target, options );
 
+  }
+
+  /**
+   * Open the login modal if the menu item's extra_classes contains 'yieldlogin'
+   * @param tab 
+   */
+  yieldLogin($event, tab) {
+
+    if(tab && tab.extra_classes && tab.extra_classes.indexOf('yieldlogin') >= 0) {
+      if(this.user) { // logged in
+        return false;
+      } else { // logged out, show login modal
+        this.events.publish('login:force_login');
+
+        // This portion needs to work before using this function
+        // $event.preventDefault();
+        // $event.stopPropagation();
+        return true;
+      }
+    }
+
+    return false;
   }
 
   // ng2 way of adding a listener
