@@ -4,6 +4,11 @@ ion-content{
         width: 100%;
         border: none;
     }
+
+    .entry-content iframe {
+    	max-width: 100%;
+    	height: auto;
+    }
 }
 
 .loading-md .loading-wrapper, .loading-ios .loading-wrapper {
