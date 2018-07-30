@@ -169,6 +169,7 @@ export class TabsPage implements OnInit {
 
     var data = JSON.parse(e.data);
 
+    // close all windows and then re-open root page, for LearnDash
     if( data.apppage && data.apppage.root ) {
 
       let page = { title: ( data.title ? data.title : '' ), component: Iframe, url: data.apppage.url, classes: null, page_type: null, type: null };

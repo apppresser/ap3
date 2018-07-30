@@ -595,22 +595,18 @@ export class MyApp {
       this.nav.setRoot(this.getPageModuleName(page.page_id), page );
     } else if( page.url && page.type === 'custom' ) {
       this.nav.setRoot( Iframe, page );
-    } else if (page.url) {
+    } else if (page.url && page.root === "true") {
 
-      // for LearnDash post messages
+      // for LearnDash post messages, specifically course completion redirects
 
       // can't set root on tabs
       let first = this.nav.first();
 
       if( first.id === "TabsPage" ) {
         
-        if( page.root === "true" ) {
-          // if root is in the message, we pop to the root via tabs.ts
-          return;
-        } else {
-          this.nav.push( Iframe, page )
-          return;
-        }
+        // if root is in the message, we pop to the root via tabs.ts
+        return;
+        
 
       } else {
 
@@ -623,6 +619,8 @@ export class MyApp {
 
       }
 
+    } else if (page.url) {
+      this.nav.setRoot( Iframe, page );
     } else {
       this.nav.setRoot(page.component, page.navparams);
     }
