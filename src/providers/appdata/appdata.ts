@@ -124,7 +124,7 @@ export class AppData {
       .subscribe(data => {
         // we've got back the raw data, now generate the core schedule data
         // and save the data for later reference
-        if( this.local.meta && data.meta && this.local.meta.app_update_version != data.meta.app_update_version ) {
+        if( this.local && this.local.meta && data.meta && this.local.meta.app_update_version != data.meta.app_update_version ) {
 
           window.localStorage.setItem( 'myappp_update', 'true' );
 

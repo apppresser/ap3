@@ -1,0 +1,25 @@
+bp-list {
+	.list-loading-spinner {
+	    text-align: center;
+	    margin: 5px;
+
+	    ion-spinner * {
+		  fill: rgba(0,0,0,.2);
+		}
+
+	}
+
+	&.col-2 .list {
+		display: flex;
+    	flex-wrap: wrap;
+
+    	.card {
+    		width: calc(50% - 15px);
+    		margin: 10px 5px 0 10px;
+    	}
+
+    	.card:nth-of-type(even) {
+			margin-left: 5px;
+    	}
+	}
+}

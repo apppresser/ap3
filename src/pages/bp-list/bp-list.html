@@ -1,0 +1,53 @@
+<ion-header>
+
+  <ion-navbar>
+    
+    <ion-buttons start>
+    <button *ngIf="rtlBack||is_registration_page" (click)="backRtlTransition()" ion-button class="custom-back-button">
+        <ion-icon name="arrow-back"></ion-icon>
+        {{ 'Back' | translate }}
+    </button>
+
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+
+    </ion-buttons>
+
+      <img class="header-logo" *ngIf="show_header_logo" [src]="header_logo_url" />
+
+      <ion-title *ngIf="!show_header_logo">{{title | translate}}</ion-title>
+
+      <ion-buttons end>
+        <button ion-button (click)="doActivity()">
+      <ion-icon name="ios-create-outline"></ion-icon>
+    </button>
+
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+
+  	<button ion-item (click)="loadDetail(item)" *ngFor="let item of items">
+
+        <ion-avatar item-left>
+          <img *ngIf="item.user_avatar && item.user_avatar.thumb" src="https:{{item.user_avatar.thumb}}">
+          <img *ngIf="!item.user_avatar || !item.user_avatar.thumb" src="assets/default.png">
+        </ion-avatar>
+
+        <h2 *ngIf="item.title" [innerHTML]="item.title"></h2>
+
+        <div class="item-content" *ngIf="item.content" [innerHTML]="item.content"></div>
+
+      </button>
+
+  </ion-list>
+
+  <ion-infinite-scroll *ngIf="infiniteScroll" (ionInfinite)="loadMore($event)">
+  <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+</ion-content>
