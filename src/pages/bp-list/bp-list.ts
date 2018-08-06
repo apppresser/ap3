@@ -108,6 +108,8 @@ export class BpList implements OnInit {
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
     this.postService.load( route, this.page ).then(items => {
 
+    	console.log(items)
+
       // Loads posts from WordPress API
       this.items = items;
 
@@ -136,7 +138,8 @@ export class BpList implements OnInit {
       opt = { direction: 'back' }
 
     this.nav.push('BpDetailsPage', {
-      item: item
+      item: item,
+      route: this.route
     }, opt);
   }
 
@@ -202,6 +205,8 @@ export class BpList implements OnInit {
   }
 
   doActivity() {
+
+  	console.log('do activity')
 
   	const bpModal = this.modalCtrl.create('BpModal');
   	bpModal.present();

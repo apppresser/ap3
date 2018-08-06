@@ -2,6 +2,8 @@ import {NavController, NavParams, ModalController, Platform, ViewController, Ion
 import {Component, Renderer, ElementRef, OnInit} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SocialSharing} from '@ionic-native/social-sharing';
+import {Http} from '@angular/http';
+import 'rxjs/add/operator/map';
 
 import {MediaPlayer} from '../media-player/media-player';
 import { VideoUtils } from "../../providers/video/video-utils";
@@ -13,6 +15,7 @@ import { VideoUtils } from "../../providers/video/video-utils";
 })
 export class BpDetailsPage implements OnInit {
   selectedItem: any;
+  activityComments: any;
   content: any;
   listenFunc: Function;
   rtlBack: boolean = false;
@@ -28,35 +31,81 @@ export class BpDetailsPage implements OnInit {
     public viewCtrl: ViewController,
     public platform: Platform,
     private SocialSharing: SocialSharing,
-    private videoUtils: VideoUtils
+    private videoUtils: VideoUtils,
+    public http: Http
     ) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = this.navParams.get('item');
 
-    this.content = sanitizer.bypassSecurityTrustHtml( this.selectedItem.content );
+    if( !this.selectedItem )
+      return;
+
+    console.log(this.navParams)
+
+  }
+
+  ngOnInit() {
+
+    this.setupContent()
+    
+    this.getComments()
+
+  }
+
+  getComments() {
+
+    let url = this.navParams.get('route') + '/' + this.selectedItem.id
+
+    console.log(url)
+
+    this.http.get( url )
+      .map(res => res.json())
+      .subscribe(response => {
+
+        console.log(response)
+
+        this.activityComments = this.formatComments( response.activities[0].children );
+
+        console.log(this.activityComments)
+
+      },
+      error => {
+        // probably a bad url or 404
+        this.activityItem = { content: "Error retrieving activity." }
+      })
+
+  }
+
+  setupContent() {
+
+    this.content = this.sanitizer.bypassSecurityTrustHtml( this.selectedItem.content );
 
     // Listen for link clicks, open in in app browser
-    this.listenFunc = renderer.listen(elementRef.nativeElement, 'click', (event) => {
+    this.listenFunc = this.renderer.listen(this.elementRef.nativeElement, 'click', (event) => {
 
       this.iabLinks( event.target )
 
     });
 
-    if( platform.is('android') ) {
+    if( this.platform.is('android') ) {
       this.videoUtils.killVideos(this.elementRef);
     }
 
   }
 
-  ngOnInit() {
-    let myappp: any = localStorage.getItem('myappp');
-    if(myappp) {
-        if(typeof myappp == 'string')
-            myappp = JSON.parse(myappp);
+  formatComments( comments ) {
+
+    const ret = [];
+
+    Object.keys(comments).forEach(
+      e => {
+        console.log(comments[e])
+        ret.push( comments[e] )
+      }
+    );
+
+    return ret;
     
-        if(myappp && myappp.meta && myappp.meta.share && myappp.meta.share.icon && myappp.meta.share.icon.hide)
-            this.showShare = (myappp.meta.share.icon.hide) ? false : true;
-    }
   }
 
   iabLinks( el ) {

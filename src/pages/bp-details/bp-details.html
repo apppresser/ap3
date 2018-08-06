@@ -13,7 +13,7 @@
 
 		</ion-buttons>
 
-		<ion-title><span [innerHTML]="selectedItem.title.rendered"></span></ion-title>
+		<ion-title></ion-title>
 		
 	</ion-navbar>
 </ion-header>
@@ -21,9 +21,19 @@
 <ion-content>
  <div *ngIf="selectedItem" class="selection">
 
-    <h2 [innerHTML]="selectedItem.title"></h2>
-
     <div *ngIf="content" [innerHTML]="content"></div>
 
  </div>
+
+ <ion-list *ngIf="activityComments">
+
+    <ion-item *ngFor="let comment of activityComments">
+
+        <h2 *ngIf="comment.display_name" [innerHTML]="comment.display_name"></h2>
+
+        <div class="comment-content" *ngIf="comment.content" [innerHTML]="comment.content"></div>
+    </ion-item>
+
+ </ion-list>
+
 </ion-content>
