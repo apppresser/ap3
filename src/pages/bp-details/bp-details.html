@@ -19,21 +19,32 @@
 </ion-header>
 
 <ion-content>
- <div *ngIf="selectedItem" class="selection">
 
-    <div *ngIf="content" [innerHTML]="content"></div>
+	<ion-item *ngIf="selectedItem">
 
- </div>
+		<ion-avatar item-start>
+		  <img *ngIf="selectedItem.user_avatar && selectedItem.user_avatar.thumb" src="https:{{selectedItem.user_avatar.thumb}}">
+		  <img *ngIf="!selectedItem.user_avatar || !selectedItem.user_avatar.thumb" src="assets/default.png">
+		</ion-avatar>
 
- <ion-list *ngIf="activityComments">
+		<h2 *ngIf="selectedItem.title" [innerHTML]="selectedItem.title"></h2>
 
-    <ion-item *ngFor="let comment of activityComments">
+		<div *ngIf="content" class="item-content" [innerHTML]="content"></div>
 
-        <h2 *ngIf="comment.display_name" [innerHTML]="comment.display_name"></h2>
+	</ion-item>
 
-        <div class="comment-content" *ngIf="comment.content" [innerHTML]="comment.content"></div>
-    </ion-item>
+	<ion-list class="activity-comments" *ngIf="activityComments">
 
- </ion-list>
+		<ion-item *ngFor="let comment of activityComments">
+
+			<span class="comment-name" *ngIf="comment.display_name" [innerHTML]="comment.display_name"></span>
+
+			<span class="comment-content" *ngIf="comment.content" [innerHTML]="comment.content"></span>
+
+		</ion-item>
+
+	</ion-list>
+
+	<ion-spinner class="comments-spinner" *ngIf="!commentsLoaded"></ion-spinner>
 
 </ion-content>

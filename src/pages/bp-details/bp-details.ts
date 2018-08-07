@@ -16,6 +16,7 @@ import { VideoUtils } from "../../providers/video/video-utils";
 export class BpDetailsPage implements OnInit {
   selectedItem: any;
   activityComments: any;
+  commentsLoaded: boolean = false;
   content: any;
   listenFunc: Function;
   rtlBack: boolean = false;
@@ -66,12 +67,13 @@ export class BpDetailsPage implements OnInit {
 
         this.activityComments = this.formatComments( response.activities[0].children );
 
-        console.log(this.activityComments)
+        this.commentsLoaded = true
 
       },
       error => {
         // probably a bad url or 404
-        this.activityItem = { content: "Error retrieving activity." }
+        console.warn(error)
+        this.commentsLoaded = true
       })
 
   }

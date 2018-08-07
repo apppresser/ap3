@@ -33,7 +33,7 @@
 
   	<button ion-item (click)="loadDetail(item)" *ngFor="let item of items">
 
-        <ion-avatar item-left>
+        <ion-avatar item-start>
           <img *ngIf="item.user_avatar && item.user_avatar.thumb" src="https:{{item.user_avatar.thumb}}">
           <img *ngIf="!item.user_avatar || !item.user_avatar.thumb" src="assets/default.png">
         </ion-avatar>
