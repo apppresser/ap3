@@ -22,4 +22,21 @@ bp-list {
 			margin-left: 5px;
     	}
 	}
+
+	.card {
+		box-shadow: none;
+		border: none;
+		border-bottom: 1px solid #eee;
+	}
+
+	.comment-name {
+		font-weight: 500;
+		margin-right:8px;
+		font-size: 1.4rem;
+	}
+
+}
+
+.card .activity-image {
+	margin: 10px 0;
 }

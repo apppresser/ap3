@@ -96,6 +96,9 @@ export class BpList implements OnInit {
 
   loadPosts( route ) {
 
+  	if( !route )
+  		return;
+
     let loading = this.loadingController.create({
         showBackdrop: false,
         //dismissOnPageChange: true
@@ -108,8 +111,6 @@ export class BpList implements OnInit {
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
     this.postService.load( route, this.page ).then(items => {
 
-    	console.log(items)
-
       // Loads posts from WordPress API
       this.items = items;
 
@@ -119,6 +120,7 @@ export class BpList implements OnInit {
       this.loadMore(null);
       loading.dismiss();
     }).catch((err) => {
+
       loading.dismiss();
       console.error('Error getting posts', err);
       this.presentToast('Error getting posts.');
@@ -158,7 +160,7 @@ export class BpList implements OnInit {
 
     this.page++;
 
-    this.postService.load( this.route, this.page ).then(items => {
+    this.postService.load( this.route + '?display_comments=false&type=activity_update', this.page ).then(items => {
       // Loads posts from WordPress API
       let length = items["length"];
 
@@ -182,7 +184,7 @@ export class BpList implements OnInit {
       if(infiniteScroll)
         infiniteScroll.complete();
 
-      console.warn(e)
+      console.warn('load more error', e)
 
     });
 

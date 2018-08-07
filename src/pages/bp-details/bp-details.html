@@ -20,28 +20,37 @@
 
 <ion-content>
 
-	<ion-item *ngIf="selectedItem">
+	<ion-card *ngIf="selectedItem">
 
-		<ion-avatar item-start>
-		  <img *ngIf="selectedItem.user_avatar && selectedItem.user_avatar.thumb" src="https:{{selectedItem.user_avatar.thumb}}">
-		  <img *ngIf="!selectedItem.user_avatar || !selectedItem.user_avatar.thumb" src="assets/default.png">
-		</ion-avatar>
+		<ion-item *ngIf="selectedItem.title">
+			<ion-avatar item-start>
+				<img *ngIf="selectedItem.user_avatar && selectedItem.user_avatar.thumb" src="https:{{selectedItem.user_avatar.thumb}}">
+		  		<img *ngIf="!selectedItem.user_avatar || !selectedItem.user_avatar.thumb" src="assets/default.png">
+			</ion-avatar>
+			<span class="comment-name" *ngIf="selectedItem.title" [innerHTML]="selectedItem.title"></span>
+		</ion-item>
 
-		<h2 *ngIf="selectedItem.title" [innerHTML]="selectedItem.title"></h2>
+		<ion-card-content *ngIf="content">
 
-		<div *ngIf="content" class="item-content" [innerHTML]="content"></div>
+			<div class="item-content" [innerHTML]="content"></div>
 
-	</ion-item>
+		</ion-card-content>
+
+	</ion-card>
 
 	<ion-list class="activity-comments" *ngIf="activityComments">
 
-		<ion-item *ngFor="let comment of activityComments">
+		<ion-card *ngFor="let comment of activityComments">
 
-			<span class="comment-name" *ngIf="comment.display_name" [innerHTML]="comment.display_name"></span>
+			<ion-card-content *ngIf="comment.content">
 
-			<span class="comment-content" *ngIf="comment.content" [innerHTML]="comment.content"></span>
+				<span class="comment-name" [innerHTML]="comment.display_name" *ngIf="comment.display_name"></span>
 
-		</ion-item>
+				<span class="comment-content" [innerHTML]="comment.content"></span>
+
+			</ion-card-content>
+
+		</ion-card>
 
 	</ion-list>
 

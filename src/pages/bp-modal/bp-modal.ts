@@ -3,6 +3,8 @@ import { Events, ViewController, LoadingController, IonicPage, ToastController, 
 import {Storage} from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {TranslateService} from '@ngx-translate/core';
+import {BpProvider} from '../../providers/buddypress/bp-provider';
+import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
 
 @IonicPage()
 @Component({
@@ -16,6 +18,7 @@ export class BpModal {
 	title: string = '';
 	login_data: any;
 	activity: any = {};
+	uploadedImage: any;
 
 	constructor(
 		public navParams: NavParams,
@@ -25,7 +28,9 @@ export class BpModal {
 		public storage: Storage,
 		public translate: TranslateService,
 		private toastCtrl: ToastController,
-		private Device: Device
+		private Device: Device,
+		public bpProvider: BpProvider,
+		private actionSheet: ActionSheet
 		) {
       
 		if(this.navParams.get('title')) {
@@ -48,12 +53,46 @@ export class BpModal {
 	}
 
 	submitForm() {
-		console.log(this.activity.content)
+		console.log(this.activity)
 		this.dismiss()
 	}
 
 	openLoginModal() {
 
+	}
+
+	imageSheet() {
+
+		this.uploadedImage = 'http://appdev.local/wp-content/uploads/2018/05/af2e834c1e23ab30f1d672579d61c25a_15.png'
+
+		return;
+
+		let options = {
+	      title: 'Choose an image',
+	      buttonLabels: ['Take Photo', 'Photo Library'],
+	      addCancelButtonWithLabel: 'Cancel',
+	      destructiveButtonLast: true
+	    }
+    
+	    this.actionSheet.show( options ).then( (buttonIndex: number) => {
+
+	      if( buttonIndex === 1 ) {
+
+	        this.bpProvider.doCamera( 'camera' ).then( this.gotImage )
+
+	      } else if( buttonIndex === 2 ) {
+
+	        this.bpProvider.doCamera( 'library' ).then( this.gotImage )
+
+	      }
+
+	    })
+
+	}
+
+	gotImage( image ) {
+		console.log(image)
+		this.uploadedImage = image
 	}
 
 	dismiss() {

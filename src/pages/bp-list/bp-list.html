@@ -31,18 +31,23 @@
 
   <ion-list>
 
-  	<button ion-item (click)="loadDetail(item)" *ngFor="let item of items">
+  	<ion-card (click)="loadDetail(item)" *ngFor="let item of items">
 
+      <ion-item *ngIf="item.title">
         <ion-avatar item-start>
           <img *ngIf="item.user_avatar && item.user_avatar.thumb" src="https:{{item.user_avatar.thumb}}">
           <img *ngIf="!item.user_avatar || !item.user_avatar.thumb" src="assets/default.png">
         </ion-avatar>
+        <span class="comment-name" [innerHTML]="item.title"></span>
+      </ion-item>
 
-        <h2 *ngIf="item.title" [innerHTML]="item.title"></h2>
-
+      <ion-card-content>
+        
         <div class="item-content" *ngIf="item.content" [innerHTML]="item.content"></div>
 
-      </button>
+      </ion-card-content>
+
+    </ion-card>
 
   </ion-list>
 

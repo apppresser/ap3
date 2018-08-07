@@ -16,16 +16,34 @@
 
 <ion-content>
 
-	<form (ngSubmit)="submitForm()" padding *ngIf="login_data">
+  <form (ngSubmit)="submitForm()" padding *ngIf="login_data">
 
-      <ion-item>
-        <ion-textarea name="content" [(ngModel)]="activity.content"></ion-textarea>
-      </ion-item>
-      
-      <div padding>
-      <button ion-button type="submit" block>{{ 'Submit' | translate }}</button>
-      </div>
-    </form>
+    <ion-item>
+      <ion-textarea class="activity-texarea" placeholder="{{ 'Whats new?' | translate }}" name="content" [(ngModel)]="activity.content"></ion-textarea>
+    </ion-item>
+
+    <img *ngIf="uploadedImage" class="uploaded-image" src="{{uploadedImage}}">
+
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <button ion-button type="submit" block>{{ 'Post update' | translate }}</button>
+        </ion-col>
+
+        <ion-col>
+
+          <ion-item class="fake-button" icon-start color="light" (click)="imageSheet()">
+            <ion-icon name="camera"></ion-icon>
+            Add Image
+          </ion-item>
+
+        </ion-col>
+
+      </ion-row>
+
+    </ion-grid>
+
+  </form>
 
 	<div padding *ngIf="!login_data">
     	<button ion-button block (click)="openLoginModal()">{{ 'Click here to login' | translate }}</button>
