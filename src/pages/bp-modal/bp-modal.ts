@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Events, ViewController, LoadingController, IonicPage, ToastController, NavParams } from 'ionic-angular';
+import { Events, ViewController, LoadingController, IonicPage, ToastController, NavParams, ModalController } from 'ionic-angular';
 import {Storage} from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {TranslateService} from '@ngx-translate/core';
@@ -18,7 +18,8 @@ export class BpModal {
 	title: string = '';
 	login_data: any;
 	activity: any = {};
-	uploadedImage: any;
+	uploadedImage: string;
+	route: any;
 
 	constructor(
 		public navParams: NavParams,
@@ -30,7 +31,8 @@ export class BpModal {
 		private toastCtrl: ToastController,
 		private Device: Device,
 		public bpProvider: BpProvider,
-		private actionSheet: ActionSheet
+		private actionSheet: ActionSheet,
+		public modalCtrl: ModalController
 		) {
       
 		if(this.navParams.get('title')) {
@@ -38,6 +40,8 @@ export class BpModal {
 		} else {
 			this.title = 'Activity';
 		}
+
+		this.route = this.navParams.get('route');
 
 		// get login data on first load
 		this.storage.get('user_login').then( data => {
@@ -54,18 +58,22 @@ export class BpModal {
 
 	submitForm() {
 		console.log(this.activity)
-		this.dismiss()
+		this.bpProvider.postActivity( this.login_data, this.activity, this.uploadedImage ).then( ret => {
+			console.log(ret)
+			this.presentToast('Update posted!')
+			this.events.publish('bp-list-reload')
+			setTimeout( ()=> {
+				this.dismiss()
+			}, 500 )
+		})
+
 	}
 
 	openLoginModal() {
-
+		this.modalCtrl.create('LoginModal')
 	}
 
 	imageSheet() {
-
-		this.uploadedImage = 'http://appdev.local/wp-content/uploads/2018/05/af2e834c1e23ab30f1d672579d61c25a_15.png'
-
-		return;
 
 		let options = {
 	      title: 'Choose an image',
@@ -78,21 +86,22 @@ export class BpModal {
 
 	      if( buttonIndex === 1 ) {
 
-	        this.bpProvider.doCamera( 'camera' ).then( this.gotImage )
+	        this.bpProvider.doCamera( 'camera' ).then( image => {
+
+	        	this.uploadedImage = (<string>image)
+	        })
 
 	      } else if( buttonIndex === 2 ) {
 
-	        this.bpProvider.doCamera( 'library' ).then( this.gotImage )
+	        this.bpProvider.doCamera( 'library' ).then( image => {
+	        	console.log(image) 
+	        	this.uploadedImage = (<string>image)
+	        })
 
 	      }
 
 	    })
 
-	}
-
-	gotImage( image ) {
-		console.log(image)
-		this.uploadedImage = image
 	}
 
 	dismiss() {

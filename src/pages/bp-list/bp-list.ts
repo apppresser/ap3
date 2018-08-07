@@ -1,4 +1,4 @@
-import {NavController, NavParams, LoadingController, ToastController, ModalController, Platform, ViewController, Content, IonicPage} from 'ionic-angular';
+import {NavController, NavParams, LoadingController, ToastController, ModalController, Platform, ViewController, Content, IonicPage, Events} from 'ionic-angular';
 import {Component, ViewChild, OnInit, Input} from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
@@ -42,7 +42,8 @@ export class BpList implements OnInit {
     private headerLogoService: HeaderLogo,
     private Network: Network,
     private Device: Device,
-    public modalCtrl: ModalController
+    public modalCtrl: ModalController,
+    private events: Events
   ) {
 
     this.route = navParams.data.list_route;
@@ -56,6 +57,10 @@ export class BpList implements OnInit {
     }
 
     this.previewAlert(this.route);
+
+    events.subscribe('bp-list-reload', data => {
+      this.loadPosts( this.route + '?display_comments=false&type=activity_update' );
+    });
     
   }
 
@@ -208,9 +213,7 @@ export class BpList implements OnInit {
 
   doActivity() {
 
-  	console.log('do activity')
-
-  	const bpModal = this.modalCtrl.create('BpModal');
+  	const bpModal = this.modalCtrl.create('BpModal', { route: this.route });
   	bpModal.present();
 
   }

@@ -22,7 +22,7 @@
       <ion-textarea class="activity-texarea" placeholder="{{ 'Whats new?' | translate }}" name="content" [(ngModel)]="activity.content"></ion-textarea>
     </ion-item>
 
-    <img *ngIf="uploadedImage" class="uploaded-image" src="{{uploadedImage}}">
+    <img *ngIf="uploadedImage" class="uploaded-image" [src]="uploadedImage">
 
     <ion-grid>
       <ion-row>
