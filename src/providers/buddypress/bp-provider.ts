@@ -51,7 +51,6 @@ export class BpProvider {
         // imageData is either a base64 encoded string or a file URI
         // If it's base64:
         // let base64Image = "data:image/jpeg;base64," + imageData;
-        console.log(imageData)
         resolve( imageData );
 
       }, (err) => {
@@ -68,6 +67,11 @@ export class BpProvider {
   /* Returns promise. 
    */
   postWithImage( login_data, activity, camImage ) {
+
+    if( !activity.content && camImage ) {
+      // let people post only an image
+      activity.content = '';
+    }
 
     let item = window.localStorage.getItem( 'myappp' );
     let route = JSON.parse( item ).wordpress_url + 'wp-json/buddypress/v1/activity';
@@ -95,8 +99,6 @@ export class BpProvider {
         image = anumber + '.jpg';
       }
 
-      console.log(image)
-
       // this creates a random string based on the date
       let d = new Date().toTimeString();
       let random = d.replace(/[\W_]+/g, "").substr(0,6);
@@ -117,11 +119,10 @@ export class BpProvider {
 
       options.params = params;
 
-      console.log( options )
-
-      fileTransfer.upload(imageURI, route, options, true).then((msg) => {
-        console.log(msg);
-        resolve(msg)
+      fileTransfer.upload(imageURI, route, options, true).then((data) => {
+        console.log(data)
+        console.log( JSON.parse( data.response ) )
+        resolve( JSON.parse( data.response ) )
       }).catch((FileTransferError) => {
         this.handleError(FileTransferError);
         reject(FileTransferError)
@@ -149,8 +150,6 @@ export class BpProvider {
       this.http.post( route + '?' + data, null )
         .map(res => res.json())
         .subscribe(data => {
-
-            console.log(data)
           
             resolve(data)
 

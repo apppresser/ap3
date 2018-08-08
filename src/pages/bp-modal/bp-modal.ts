@@ -70,8 +70,6 @@ export class BpModal {
 			return;
 		}
 
-		console.log(this.activity)
-
 		if( this.uploadedImage ) {
 
 			this.bpProvider.postWithImage( this.login_data, this.activity, this.uploadedImage )
@@ -79,8 +77,9 @@ export class BpModal {
 				.then( ret => {
 
 					console.log(ret)
+
 					this.presentToast('Update posted!')
-					this.events.publish('bp-list-reload')
+					this.events.publish('bp-add-activity', ret )
 					setTimeout( ()=> {
 						this.dismiss()
 					}, 500 )
@@ -114,7 +113,7 @@ export class BpModal {
 
 					setTimeout( ()=> {
 						this.dismiss()
-					}, 500 )
+					}, 100 )
 					
 
 				}).catch( e => {

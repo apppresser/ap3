@@ -59,7 +59,6 @@ export class BpList implements OnInit {
     this.previewAlert(this.route);
 
     events.subscribe('bp-add-activity', data => {
-      console.log('add activity', data[0])
       this.items.unshift( data[0] )
     });
     

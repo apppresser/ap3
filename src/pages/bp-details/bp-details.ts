@@ -43,7 +43,6 @@ export class BpDetailsPage implements OnInit {
       return;
 
     events.subscribe('bp-add-comment', data => {
-      console.log('add comment', data[0])
       this.activityComments.push( data[0] )
     });
 
