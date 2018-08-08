@@ -107,7 +107,9 @@
       "cordova-plugin-statusbar": {},
       "cordova-plugin-inapppurchase": {},
       "cordova-plugin-inappbrowser": {},
-      "cordova-plugin-file-transfer": {}
+      "cordova-plugin-file-transfer": {},
+      "cordova-plugin-camera": {},
+      "cordova-plugin-actionsheet": {}
     },
     "platforms": [
       "ios"

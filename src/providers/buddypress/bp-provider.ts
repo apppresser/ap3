@@ -67,7 +67,7 @@ export class BpProvider {
 
   /* Returns promise. 
    */
-  postActivity( login_data, activity, camImage ) {
+  postWithImage( login_data, activity, camImage ) {
 
     let item = window.localStorage.getItem( 'myappp' );
     let route = JSON.parse( item ).wordpress_url + 'wp-json/buddypress/v1/activity';
@@ -76,14 +76,15 @@ export class BpProvider {
 
       let imageURI = '';
 
+      const fileTransfer: TransferObject = this.Transfer.create();
+      let options: FileUploadOptions = {};
+
       if(camImage.indexOf('{') === 0) { // from cordova-plugin-camera-with-exif
         let img = JSON.parse(camImage);
         imageURI = img.filename;
       } else { // from cordova-plugin-camera
         imageURI = camImage;
       }
-
-      const fileTransfer: TransferObject = this.Transfer.create();
 
       let image = imageURI.substr(imageURI.lastIndexOf('/') + 1);
 
@@ -100,7 +101,7 @@ export class BpProvider {
       let d = new Date().toTimeString();
       let random = d.replace(/[\W_]+/g, "").substr(0,6);
 
-      let options: FileUploadOptions = {
+      options = {
         fileKey: 'activity_image',
         // prepend image name with random string to avoid duplicate upload errors
         fileName: imageURI ? random + image : random,
@@ -111,7 +112,7 @@ export class BpProvider {
 
       let params = {
         content: activity.content,
-        user_id: 1
+        user_id: login_data.user_id
       }
 
       options.params = params;
@@ -128,6 +129,43 @@ export class BpProvider {
 
     }) // end promise
     
+  }
+
+  /* Returns promise. 
+   */
+  postTextOnly( login_data, activity ) {
+
+    let item = window.localStorage.getItem( 'myappp' );
+    let route = JSON.parse( item ).wordpress_url + 'wp-json/buddypress/v1/activity';
+
+    let data = 'user_id=' + login_data.user_id + '&content=' + activity.content;
+
+    if( activity.parent ) {
+      data += '&type=activity_comment&parent=' + activity.parent + '&id=' + activity.parent
+    }
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.post( route + '?' + data, null )
+        .map(res => res.json())
+        .subscribe(data => {
+
+            console.log(data)
+          
+            resolve(data)
+
+          },
+          error => {
+
+            console.log(error)
+
+            reject(error);
+
+          }
+        )
+
+    }) // end promise
+
   }
 
   handleError(err) {

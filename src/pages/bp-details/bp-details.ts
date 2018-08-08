@@ -1,4 +1,4 @@
-import {NavController, NavParams, ModalController, Platform, ViewController, IonicPage} from 'ionic-angular';
+import {NavController, NavParams, ModalController, Platform, ViewController, IonicPage, Events} from 'ionic-angular';
 import {Component, Renderer, ElementRef, OnInit} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SocialSharing} from '@ionic-native/social-sharing';
@@ -33,7 +33,8 @@ export class BpDetailsPage implements OnInit {
     public platform: Platform,
     private SocialSharing: SocialSharing,
     private videoUtils: VideoUtils,
-    public http: Http
+    public http: Http,
+    public events: Events
     ) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = this.navParams.get('item');
@@ -41,7 +42,10 @@ export class BpDetailsPage implements OnInit {
     if( !this.selectedItem )
       return;
 
-    console.log(this.navParams)
+    events.subscribe('bp-add-comment', data => {
+      console.log('add comment', data[0])
+      this.activityComments.push( data[0] )
+    });
 
   }
 
@@ -149,6 +153,11 @@ export class BpDetailsPage implements OnInit {
     let modal = this.modalCtrl.create(MediaPlayer, {source: src, image: img});
     modal.present();
 
+  }
+
+  comment() {
+    let modal = this.modalCtrl.create('BpModal', {comment: true, parent: this.selectedItem.id });
+    modal.present();
   }
 
   share() {

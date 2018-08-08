@@ -14,6 +14,12 @@
 		</ion-buttons>
 
 		<ion-title></ion-title>
+
+		<ion-buttons end>
+			<button ion-button (click)="comment()">
+			<ion-icon name="text"></ion-icon>
+			</button>
+		</ion-buttons>
 		
 	</ion-navbar>
 </ion-header>
@@ -36,6 +42,21 @@
 
 		</ion-card-content>
 
+		<ion-row>
+			<ion-col>
+			  <button ion-button icon-start clear small (click)="comment()">
+			    <ion-icon name="text"></ion-icon>
+			    <div>Reply</div>
+			  </button>
+			</ion-col>
+			<ion-col text-right>
+			  <button ion-button icon-start clear small>
+			    <ion-icon name="flag"></ion-icon>
+			    <div>Flag</div>
+			  </button>
+			</ion-col>
+		</ion-row>
+
 	</ion-card>
 
 	<ion-list class="activity-comments" *ngIf="activityComments">
@@ -45,6 +66,8 @@
 			<ion-card-content *ngIf="comment.content">
 
 				<span class="comment-name" [innerHTML]="comment.display_name" *ngIf="comment.display_name"></span>
+
+				<span class="comment-name" [innerHTML]="comment.title" *ngIf="comment.title && !comment.display_name"></span>
 
 				<span class="comment-content" [innerHTML]="comment.content"></span>
 

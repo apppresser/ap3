@@ -27,10 +27,12 @@
     <ion-grid>
       <ion-row>
         <ion-col>
-          <button ion-button type="submit" block>{{ 'Post update' | translate }}</button>
+          <button *ngIf="!isReply" ion-button type="submit" block>{{ 'Post update' | translate }}</button>
+
+          <button *ngIf="isReply" ion-button type="submit" block>{{ 'Post comment' | translate }}</button>
         </ion-col>
 
-        <ion-col>
+        <ion-col *ngIf="!isReply">
 
           <ion-item class="fake-button" icon-start color="light" (click)="imageSheet()">
             <ion-icon name="camera"></ion-icon>

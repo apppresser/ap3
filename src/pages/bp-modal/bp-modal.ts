@@ -20,6 +20,7 @@ export class BpModal {
 	activity: any = {};
 	uploadedImage: string;
 	route: any;
+	isReply: boolean = false;
 
 	constructor(
 		public navParams: NavParams,
@@ -43,6 +44,12 @@ export class BpModal {
 
 		this.route = this.navParams.get('route');
 
+		console.log( 'comment ' + this.navParams.get('comment') );
+
+		if( this.navParams.get('comment') == true ) {
+			this.isReply = true;
+		}
+
 		// get login data on first load
 		this.storage.get('user_login').then( data => {
 
@@ -57,15 +64,67 @@ export class BpModal {
 	}
 
 	submitForm() {
+
+		if( !this.activity && !this.uploadedImage ) {
+			this.presentToast("Please enter some content.")
+			return;
+		}
+
 		console.log(this.activity)
-		this.bpProvider.postActivity( this.login_data, this.activity, this.uploadedImage ).then( ret => {
-			console.log(ret)
-			this.presentToast('Update posted!')
-			this.events.publish('bp-list-reload')
-			setTimeout( ()=> {
-				this.dismiss()
-			}, 500 )
-		})
+
+		if( this.uploadedImage ) {
+
+			this.bpProvider.postWithImage( this.login_data, this.activity, this.uploadedImage )
+
+				.then( ret => {
+
+					console.log(ret)
+					this.presentToast('Update posted!')
+					this.events.publish('bp-list-reload')
+					setTimeout( ()=> {
+						this.dismiss()
+					}, 500 )
+
+				}).catch( e => {
+
+					console.warn(e)
+					this.presentToast('There was a problem, please try again.')
+
+				});
+
+		} else {
+
+			if( this.isReply ) {
+				this.activity.parent = this.navParams.get('parent');
+			}
+
+			this.bpProvider.postTextOnly( this.login_data, this.activity )
+
+				.then( ret => {
+
+					console.log(ret)
+
+					if( this.isReply ) {
+						this.presentToast('Comment posted!')
+						this.events.publish('bp-add-comment', ret )
+					} else {
+						this.presentToast('Update posted!')
+						this.events.publish('bp-add-activity', ret )
+					}
+
+					setTimeout( ()=> {
+						this.dismiss()
+					}, 500 )
+					
+
+				}).catch( e => {
+
+					console.warn(e)
+					this.presentToast('There was a problem, please try again.')
+
+				});
+
+		}
 
 	}
 

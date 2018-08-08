@@ -58,8 +58,9 @@ export class BpList implements OnInit {
 
     this.previewAlert(this.route);
 
-    events.subscribe('bp-list-reload', data => {
-      this.loadPosts( this.route + '?display_comments=false&type=activity_update' );
+    events.subscribe('bp-add-activity', data => {
+      console.log('add activity', data[0])
+      this.items.unshift( data[0] )
     });
     
   }
