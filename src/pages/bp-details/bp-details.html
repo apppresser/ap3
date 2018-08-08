@@ -28,12 +28,12 @@
 
 	<ion-card *ngIf="selectedItem">
 
-		<ion-item *ngIf="selectedItem.title">
-			<ion-avatar item-start>
-				<img *ngIf="selectedItem.user_avatar && selectedItem.user_avatar.thumb" src="https:{{selectedItem.user_avatar.thumb}}">
-		  		<img *ngIf="!selectedItem.user_avatar || !selectedItem.user_avatar.thumb" src="assets/default.png">
+		<ion-item>
+			<ion-avatar item-start *ngIf="selectedItem.user_avatar">
+				<img *ngIf="selectedItem.user_avatar.thumb" src="https:{{selectedItem.user_avatar.thumb}}">
+		  		<img *ngIf="!selectedItem.user_avatar.thumb" src="assets/default.png">
 			</ion-avatar>
-			<span class="comment-name" *ngIf="selectedItem.title" [innerHTML]="selectedItem.title"></span>
+			<span class="comment-name" *ngIf="selectedItem.display_name" [innerHTML]="selectedItem.display_name"></span>
 		</ion-item>
 
 		<ion-card-content *ngIf="content">

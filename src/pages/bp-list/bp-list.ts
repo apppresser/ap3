@@ -28,6 +28,7 @@ export class BpList implements OnInit {
   header_logo_url: string;
   show_header_logo: boolean = false;
   customClasses: string = '';
+  login_data: any;
 
   constructor(
     public nav: NavController, 
@@ -61,6 +62,15 @@ export class BpList implements OnInit {
     events.subscribe('bp-add-activity', data => {
       this.items.unshift( data[0] )
     });
+
+    // get login data on first load
+	this.storage.get('user_login').then( data => {
+
+		if(data) {
+		  this.login_data = data
+		}
+
+	});
     
   }
 
@@ -213,9 +223,13 @@ export class BpList implements OnInit {
 
   doActivity() {
 
-  	const bpModal = this.modalCtrl.create('BpModal', { route: this.route });
-  	bpModal.present();
-
+  	if( !this.login_data ) {
+  		this.events.publish('login:force_login')
+  	} else {
+  		const bpModal = this.modalCtrl.create('BpModal', { route: this.route });
+  		bpModal.present();
+  	}
+  	
   }
 
   // Show alert in preview if not using https

@@ -127,10 +127,6 @@ export class BpModal {
 
 	}
 
-	openLoginModal() {
-		this.modalCtrl.create('LoginModal')
-	}
-
 	imageSheet() {
 
 		let options = {

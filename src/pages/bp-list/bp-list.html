@@ -23,7 +23,7 @@
         <ion-icon name="ios-create-outline"></ion-icon>
       </button>
     </ion-buttons>
-    
+
   </ion-navbar>
 </ion-header>
 
@@ -31,14 +31,14 @@
 
   <ion-list>
 
-  	<ion-card (click)="loadDetail(item)" *ngFor="let item of items">
+  	<ion-card *ngFor="let item of items">
 
-      <ion-item *ngIf="item.title">
+      <ion-item *ngIf="item.display_name">
         <ion-avatar item-start>
           <img *ngIf="item.user_avatar && item.user_avatar.thumb" src="https:{{item.user_avatar.thumb}}">
           <img *ngIf="!item.user_avatar || !item.user_avatar.thumb" src="assets/default.png">
         </ion-avatar>
-        <span class="comment-name" [innerHTML]="item.title"></span>
+        <span class="comment-name" [innerHTML]="item.display_name"></span>
       </ion-item>
 
       <ion-card-content>
@@ -55,7 +55,7 @@
           </button>
         </ion-col> -->
         <ion-col>
-          <button ion-button icon-start clear small>
+          <button ion-button icon-start clear small (click)="loadDetail(item)">
             <ion-icon name="text"></ion-icon>
             <div>Comments</div>
           </button>
