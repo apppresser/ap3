@@ -82,7 +82,12 @@ export class BpList implements OnInit {
       // if offline, get posts from storage
       this.getStoredPosts();
     } else {
-      this.loadPosts( this.route + '?display_comments=false&type=activity_update' );
+
+    	// fix error getting posts on reload
+    	if( typeof this.route != 'string' )
+    		return;
+
+		this.loadPosts( this.route + '?display_comments=false&type=activity_update' );
     }
 
   }
@@ -129,10 +134,12 @@ export class BpList implements OnInit {
       // Loads posts from WordPress API
       this.items = items;
 
+      console.log(this.items)
+
       this.storage.set( route.substr(-10, 10) + '_bp', items);
 
       // load more right away
-      this.loadMore(null);
+      // this.loadMore(null);
       loading.dismiss();
     }).catch((err) => {
 
@@ -161,7 +168,7 @@ export class BpList implements OnInit {
   }
 
   doRefresh(refresh) {
-    this.loadPosts( this.route );
+    this.loadPosts( this.route + '?display_comments=false&type=activity_update' );
     // refresh.complete should happen when posts are loaded, not timeout
     setTimeout( ()=> refresh.complete(), 500);
   }
@@ -174,6 +181,8 @@ export class BpList implements OnInit {
   loadMore(infiniteScroll) {
 
     this.page++;
+
+    console.log('load more ' + this.page + this.route )
 
     this.postService.load( this.route + '?display_comments=false&type=activity_update', this.page ).then(items => {
       // Loads posts from WordPress API
@@ -229,7 +238,7 @@ export class BpList implements OnInit {
   		const bpModal = this.modalCtrl.create('BpModal', { route: this.route });
   		bpModal.present();
   	}
-  	
+
   }
 
   // Show alert in preview if not using https

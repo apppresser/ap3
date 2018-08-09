@@ -60,13 +60,9 @@ export class BpDetailsPage implements OnInit {
 
     let url = this.navParams.get('route') + '/' + this.selectedItem.id
 
-    console.log(url)
-
     this.http.get( url )
       .map(res => res.json())
       .subscribe(response => {
-
-        console.log(response)
 
         this.activityComments = this.formatComments( response.activities[0].children );
 
@@ -155,8 +151,14 @@ export class BpDetailsPage implements OnInit {
   }
 
   comment() {
-    let modal = this.modalCtrl.create('BpModal', {comment: true, parent: this.selectedItem.id });
-    modal.present();
+
+    if( !this.login_data ) {
+      this.events.publish('login:force_login')
+    } else {
+      let modal = this.modalCtrl.create('BpModal', {comment: true, parent: this.selectedItem.id });
+      modal.present();
+    }
+    
   }
 
   share() {
