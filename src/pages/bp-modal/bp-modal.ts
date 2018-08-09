@@ -21,6 +21,7 @@ export class BpModal {
 	uploadedImage: string;
 	route: any;
 	isReply: boolean = false;
+	groupId: any = null;
 
 	constructor(
 		public navParams: NavParams,
@@ -44,10 +45,12 @@ export class BpModal {
 
 		this.route = this.navParams.get('route');
 
-		console.log( 'comment ' + this.navParams.get('comment') );
-
 		if( this.navParams.get('comment') == true ) {
 			this.isReply = true;
+		}
+
+		if( this.navParams.get('group') ) {
+			this.groupId = this.navParams.get('group')
 		}
 
 		// get login data on first load
@@ -72,7 +75,7 @@ export class BpModal {
 
 		if( this.uploadedImage ) {
 
-			this.bpProvider.postWithImage( this.login_data, this.activity, this.uploadedImage )
+			this.bpProvider.postWithImage( this.login_data, this.activity, this.uploadedImage, this.groupId )
 
 				.then( ret => {
 
@@ -97,7 +100,7 @@ export class BpModal {
 				this.activity.parent = this.navParams.get('parent');
 			}
 
-			this.bpProvider.postTextOnly( this.login_data, this.activity )
+			this.bpProvider.postTextOnly( this.login_data, this.activity, this.groupId )
 
 				.then( ret => {
 

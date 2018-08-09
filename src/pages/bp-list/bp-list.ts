@@ -23,6 +23,7 @@ export class BpList implements OnInit {
   page: number = 1;
   siteurl: string;
   route: string;
+  args: string;
   title: string;
   rtlBack: boolean = false;
   networkState: any;
@@ -30,6 +31,7 @@ export class BpList implements OnInit {
   show_header_logo: boolean = false;
   customClasses: string = '';
   login_data: any;
+  groupId: any;
 
   constructor(
     public nav: NavController, 
@@ -51,6 +53,22 @@ export class BpList implements OnInit {
 
     this.route = navParams.data.list_route;
 
+    let concat;
+
+	// check if url already has a query param
+	if( this.route && this.route.indexOf('?') > 0 ) {
+		concat = '&';
+	} else {
+		concat = '?';
+	}
+
+    this.args = concat + 'type=activity_update';
+
+    if( navParams.data.group_id ) {
+		this.groupId = navParams.data.group_id
+		this.args += '&primary_id=' + this.groupId
+	}
+
     this.title = navParams.data.title;
 
     this.customClasses = 'post-list' + ((navParams.data.slug) ? ' page-' + navParams.data.slug : '');
@@ -62,7 +80,7 @@ export class BpList implements OnInit {
     this.previewAlert(this.route);
 
     events.subscribe('bp-add-activity', data => {
-      this.items.unshift( data[0] )
+		this.items.unshift( data[0] )
     });
 
     // get login data on first load
@@ -89,7 +107,7 @@ export class BpList implements OnInit {
     	if( typeof this.route != 'string' )
     		return;
 
-		this.loadPosts( this.route + '?display_comments=false&type=activity_update' );
+		this.loadPosts( this.route + this.args );
     }
 
   }
@@ -165,12 +183,13 @@ export class BpList implements OnInit {
 
     this.nav.push('BpDetailsPage', {
       item: item,
-      route: this.route
+      route: this.route,
+      login_data: this.login_data
     }, opt);
   }
 
   doRefresh(refresh) {
-    this.loadPosts( this.route + '?display_comments=false&type=activity_update' );
+    this.loadPosts( this.route + this.args );
     // refresh.complete should happen when posts are loaded, not timeout
     setTimeout( ()=> refresh.complete(), 500);
   }
@@ -186,7 +205,7 @@ export class BpList implements OnInit {
 
     console.log('load more ' + this.page + this.route )
 
-    this.postService.load( this.route + '?display_comments=false&type=activity_update', this.page ).then(items => {
+    this.postService.load( this.route + this.args, this.page ).then(items => {
       // Loads posts from WordPress API
       let length = items["length"];
 
@@ -239,12 +258,12 @@ export class BpList implements OnInit {
   		return;
   	}
 
-  	console.log('favorite', item)
-
   	this.bpProvider.favorite( this.login_data, item.id ).then( ret => {
-  		console.log(ret)
+
   		if( ret ) {
   			this.doFavCount(item)
+  		} else {
+  			this.presentToast('Cannot favorite this item.')
   		}
   	})
   	
@@ -265,7 +284,7 @@ export class BpList implements OnInit {
   	if( !this.login_data ) {
   		this.events.publish('login:force_login')
   	} else {
-  		const bpModal = this.modalCtrl.create('BpModal', { route: this.route });
+  		const bpModal = this.modalCtrl.create('BpModal', { route: this.route, group: this.groupId });
   		bpModal.present();
   	}
 

@@ -66,7 +66,7 @@ export class BpProvider {
 
   /* Returns promise. 
    */
-  postWithImage( login_data, activity, camImage ) {
+  postWithImage( login_data, activity, camImage, group_id ) {
 
     if( !activity.content && camImage ) {
       // let people post only an image
@@ -117,11 +117,14 @@ export class BpProvider {
         user_id: login_data.user_id
       }
 
+      if( group_id ) {
+        params['primary_id'] = group_id
+      }
+
       options.params = params;
 
       fileTransfer.upload(imageURI, route, options, true).then((data) => {
         console.log(data)
-        console.log( JSON.parse( data.response ) )
         resolve( JSON.parse( data.response ) )
       }).catch((FileTransferError) => {
         this.handleError(FileTransferError);
@@ -134,15 +137,19 @@ export class BpProvider {
 
   /* Returns promise. 
    */
-  postTextOnly( login_data, activity ) {
+  postTextOnly( login_data, activity, group_id ) {
 
     let item = window.localStorage.getItem( 'myappp' );
-    let route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/activity';
+    let route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/activity';
 
     let data = 'user_id=' + login_data.user_id + '&content=' + activity.content;
 
     if( activity.parent ) {
       data += '&type=activity_comment&parent=' + activity.parent + '&id=' + activity.parent
+    }
+
+    if( group_id ) {
+      data += '&type=activity_update&primary_id=' + group_id
     }
 
     return new Promise( (resolve, reject) => {

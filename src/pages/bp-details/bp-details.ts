@@ -58,7 +58,11 @@ export class BpDetailsPage implements OnInit {
 
   getComments() {
 
-    let url = this.navParams.get('route') + '/' + this.selectedItem.id
+    let route = this.navParams.get('route')
+    // remove params
+    route = route.split('?')[0]
+
+    let url = route + '/' + this.selectedItem.id
 
     this.http.get( url )
       .map(res => res.json())
@@ -152,7 +156,7 @@ export class BpDetailsPage implements OnInit {
 
   comment() {
 
-    if( !this.login_data ) {
+    if( !this.navParams.get('login_data') ) {
       this.events.publish('login:force_login')
     } else {
       let modal = this.modalCtrl.create('BpModal', {comment: true, parent: this.selectedItem.id });
