@@ -52,12 +52,6 @@
       </ion-card-content>
 
       <ion-row>
-        <!-- <ion-col>
-          <button ion-button icon-start clear small>
-            <ion-icon name="thumbs-up"></ion-icon>
-            <div>Like</div>
-          </button>
-        </ion-col> -->
         <ion-col>
           <button ion-button icon-start clear small (click)="loadDetail(item)">
             <ion-icon name="text"></ion-icon>
@@ -65,9 +59,9 @@
           </button>
         </ion-col>
         <ion-col text-right>
-          <button ion-button icon-start clear small>
-            <ion-icon name="flag"></ion-icon>
-            <div>Flag</div>
+          <button ion-button icon-start clear small (tap)="favorite(item)">
+            <ion-icon name="thumbs-up"></ion-icon>
+            <ion-badge item-end *ngIf="item.favorites">{{item.favorites}}</ion-badge>
           </button>
         </ion-col>
       </ion-row>

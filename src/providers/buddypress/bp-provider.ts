@@ -74,7 +74,7 @@ export class BpProvider {
     }
 
     let item = window.localStorage.getItem( 'myappp' );
-    let route = JSON.parse( item ).wordpress_url + 'wp-json/buddypress/v1/activity';
+    let route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/activity';
 
     return new Promise( (resolve, reject) => {
 
@@ -137,7 +137,7 @@ export class BpProvider {
   postTextOnly( login_data, activity ) {
 
     let item = window.localStorage.getItem( 'myappp' );
-    let route = JSON.parse( item ).wordpress_url + 'wp-json/buddypress/v1/activity';
+    let route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/activity';
 
     let data = 'user_id=' + login_data.user_id + '&content=' + activity.content;
 
@@ -148,6 +148,35 @@ export class BpProvider {
     return new Promise( (resolve, reject) => {
 
       this.http.post( route + '?' + data, null )
+        .map(res => res.json())
+        .subscribe(data => {
+          
+            resolve(data)
+
+          },
+          error => {
+
+            console.log(error)
+
+            reject(error);
+
+          }
+        )
+
+    }) // end promise
+
+  }
+
+  favorite( login_data, activity_id ) {
+
+    let item = window.localStorage.getItem( 'myappp' );
+    let route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/activity/' + activity_id;
+
+    let data = 'user_id=' + login_data.user_id + '&action=activity_favorite';
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.put( route + '?' + data, null )
         .map(res => res.json())
         .subscribe(data => {
           

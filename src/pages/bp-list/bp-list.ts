@@ -6,6 +6,7 @@ import {HeaderLogo} from '../../providers/header-logo/header-logo';
 import {Storage} from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {Network} from '@ionic-native/network';
+import {BpProvider} from '../../providers/buddypress/bp-provider';
 
 @IonicPage()
 @Component({
@@ -44,7 +45,8 @@ export class BpList implements OnInit {
     private Network: Network,
     private Device: Device,
     public modalCtrl: ModalController,
-    private events: Events
+    private events: Events,
+    public bpProvider: BpProvider
   ) {
 
     this.route = navParams.data.list_route;
@@ -227,6 +229,34 @@ export class BpList implements OnInit {
     });
 
     toast.present();
+
+  }
+
+  favorite( item ) {
+
+  	if( !this.login_data ) {
+  		this.presentToast('Please login')
+  		return;
+  	}
+
+  	console.log('favorite', item)
+
+  	this.bpProvider.favorite( this.login_data, item.id ).then( ret => {
+  		console.log(ret)
+  		if( ret ) {
+  			this.doFavCount(item)
+  		}
+  	})
+  	
+  }
+
+  doFavCount(item) {
+
+  	if( !item.favorites ) {
+  		item.favorites = 1
+  	} else {
+  		item.favorites = parseInt( item.favorites ) + 1
+  	}
 
   }
 
