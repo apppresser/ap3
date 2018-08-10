@@ -32,6 +32,10 @@ export class BpList implements OnInit {
   customClasses: string = '';
   login_data: any;
   groupId: any;
+  groupList: boolean = false;
+  memberList: boolean = false;
+  activityList: boolean = false;
+  groupLink: any;
 
   constructor(
     public nav: NavController, 
@@ -51,22 +55,35 @@ export class BpList implements OnInit {
     public bpProvider: BpProvider
   ) {
 
+  	console.log( navParams )
+
     this.route = navParams.data.list_route;
 
-    let concat;
+ //    let concat;
 
-	// check if url already has a query param
-	if( this.route && this.route.indexOf('?') > 0 ) {
-		concat = '&';
-	} else {
-		concat = '?';
-	}
+	// // check if url already has a query param
+	// if( this.route && this.route.indexOf('?') > 0 ) {
+	// 	concat = '&';
+	// } else {
+	// 	concat = '?';
+	// }
 
-    this.args = concat + 'type=activity_update';
+ //    this.args = concat + 'type=activity_update';
 
     if( navParams.data.group_id ) {
 		this.groupId = navParams.data.group_id
+		// this.groupId = 1
 		this.args += '&primary_id=' + this.groupId
+		this.groupLink = navParams.data.group_link
+	}
+
+	// show activity, group, or members list
+	if( this.route.indexOf('groups') >= 0 ) {
+		this.groupList = true
+	} else if( this.route.indexOf('members') >= 0 ) {
+		this.memberList = true
+	} else {
+		this.activityList = true
 	}
 
     this.title = navParams.data.title;
@@ -79,8 +96,18 @@ export class BpList implements OnInit {
 
     this.previewAlert(this.route);
 
+    // push new activity item after posted
     events.subscribe('bp-add-activity', data => {
-		this.items.unshift( data[0] )
+
+    	if( this.activityList ) {
+			this.items.unshift( data[0] )
+    	}
+
+    });
+
+    // set login data after modal login
+    events.subscribe('user:login', data => {
+      this.login_data = data
     });
 
     // get login data on first load
@@ -107,7 +134,7 @@ export class BpList implements OnInit {
     	if( typeof this.route != 'string' )
     		return;
 
-		this.loadPosts( this.route + this.args );
+		this.loadPosts( this.route );
     }
 
   }
@@ -189,7 +216,7 @@ export class BpList implements OnInit {
   }
 
   doRefresh(refresh) {
-    this.loadPosts( this.route + this.args );
+    this.loadPosts( this.route );
     // refresh.complete should happen when posts are loaded, not timeout
     setTimeout( ()=> refresh.complete(), 500);
   }
@@ -205,7 +232,7 @@ export class BpList implements OnInit {
 
     console.log('load more ' + this.page + this.route )
 
-    this.postService.load( this.route + this.args, this.page ).then(items => {
+    this.postService.load( this.route, this.page ).then(items => {
       // Loads posts from WordPress API
       let length = items["length"];
 
@@ -301,6 +328,25 @@ export class BpList implements OnInit {
           alert('Cannot display http pages in browser preview. Please build app for device or use https.');
       }
 
+  }
+
+  openGroup(item) {
+
+  	// switch route from /groups to /activity to get group activity
+  	let route = this.route.split('groups')[0] + 'activity?type=activity_update&primary_id=' + item.id
+
+  	console.log(route)
+
+  	this.nav.push('BpList', {
+  		list_route: route,
+  		title: item.name,
+  		group_id: item.id,
+  		group_link: item.link
+  	});
+  }
+
+  iabLink(link) {
+  	window.open( link, '_blank' );
   }
 
   // changes the back button transition direction if app is RTL

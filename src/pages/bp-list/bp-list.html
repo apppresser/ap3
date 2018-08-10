@@ -33,7 +33,24 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <ion-list>
+  <ion-toolbar *ngIf="activityList && groupId" color="light">
+    <ion-row>
+      <ion-col text-center>
+        <button ion-button block clear icon-start (click)="iabLink(groupLink)">
+          <ion-icon name="cog"></ion-icon>
+           Group Settings
+        </button>
+      </ion-col>
+      <!-- <ion-col text-center>
+        <button ion-button block icon-start clear>
+          <ion-icon name="cog"></ion-icon>
+           Group Settings
+        </button>
+      </ion-col> -->
+    </ion-row>
+  </ion-toolbar>
+
+  <ion-list *ngIf="activityList">
 
   	<ion-card *ngFor="let item of items">
 
@@ -67,6 +84,25 @@
       </ion-row>
 
     </ion-card>
+
+  </ion-list>
+
+  <ion-list *ngIf="groupList">
+
+    <ion-item *ngFor="let item of items">
+
+      <ion-avatar item-start *ngIf="item.avatar_urls" (tap)="openGroup(item)">
+        <img *ngIf="item.avatar_urls && item.avatar_urls.thumb" src="{{item.avatar_urls.thumb}}">
+        <img *ngIf="!item.avatar_urls || !item.avatar_urls.thumb" src="assets/default.png">
+      </ion-avatar>
+
+      <span (tap)="openGroup(item)" class="comment-name" [innerHTML]="item.name"></span>
+        
+      <div class="item-content" *ngIf="item.description" (tap)="openGroup(item)" [innerHTML]="item.description"></div>
+
+      <!-- <button ion-button color="light" (tap)="joinGroup(item)" item-end>Join Group</button> -->
+
+    </ion-item>
 
   </ion-list>
 
