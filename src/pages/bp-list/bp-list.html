@@ -18,7 +18,7 @@
 
     <ion-title *ngIf="!show_header_logo">{{title | translate}}</ion-title>
 
-    <ion-buttons end>
+    <ion-buttons end *ngIf="activityList">
       <button ion-button (click)="doActivity()">
         <ion-icon name="ios-create-outline"></ion-icon>
       </button>
@@ -101,6 +101,21 @@
       <div class="item-content" *ngIf="item.description" (tap)="openGroup(item)" [innerHTML]="item.description"></div>
 
       <!-- <button ion-button color="light" (tap)="joinGroup(item)" item-end>Join Group</button> -->
+
+    </ion-item>
+
+  </ion-list>
+
+  <ion-list *ngIf="memberList">
+
+    <ion-item *ngFor="let item of items">
+
+      <ion-avatar item-start *ngIf="item.avatar" (tap)="openMember(item)" [innerHTML]="item.avatar">
+      </ion-avatar>
+
+      <span (tap)="openMember(item)" class="comment-name" [innerHTML]="item.name"></span>
+
+      <!-- <button ion-button color="light" (tap)="AddFriend(item)" item-end>Add Friend</button> -->
 
     </ion-item>
 

@@ -345,6 +345,12 @@ export class BpList implements OnInit {
   	});
   }
 
+  openMember( item ) {
+  	this.nav.push('BpDetailsPage', {
+  		user_profile: item
+  	});
+  }
+
   iabLink(link) {
   	window.open( link, '_blank' );
   }

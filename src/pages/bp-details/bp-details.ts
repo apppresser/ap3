@@ -7,6 +7,7 @@ import 'rxjs/add/operator/map';
 
 import {MediaPlayer} from '../media-player/media-player';
 import { VideoUtils } from "../../providers/video/video-utils";
+import {BpProvider} from '../../providers/buddypress/bp-provider';
 
 @IonicPage()
 @Component({
@@ -21,6 +22,8 @@ export class BpDetailsPage implements OnInit {
   listenFunc: Function;
   rtlBack: boolean = false;
   showShare: boolean = true;
+  user: any;
+  userData: any;
 
   constructor(
     public nav: NavController, 
@@ -34,25 +37,32 @@ export class BpDetailsPage implements OnInit {
     private SocialSharing: SocialSharing,
     private videoUtils: VideoUtils,
     public http: Http,
-    public events: Events
+    public events: Events,
+    public bpProvider: BpProvider
     ) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = this.navParams.get('item');
 
-    if( !this.selectedItem )
-      return;
+    this.user = this.navParams.get('user_profile');
 
-    events.subscribe('bp-add-comment', data => {
-      this.activityComments.push( data[0] )
-    });
+    if( !this.selectedItem && !this.user )
+      return;
 
   }
 
   ngOnInit() {
 
-    this.setupContent()
+    if( this.selectedItem ) {
+      this.setupContent()
     
-    this.getComments()
+      this.getComments()
+
+      this.events.subscribe('bp-add-comment', data => {
+        this.activityComments.push( data[0] )
+      });
+    } else if( this.user ) {
+      this.setupUser()
+    }
 
   }
 
@@ -111,6 +121,15 @@ export class BpDetailsPage implements OnInit {
 
     return ret;
     
+  }
+
+  setupUser() {
+
+    this.bpProvider.getItem( 'members/' + this.user.id ).then( data => {
+      console.log(data)
+      this.userData = data
+    })
+
   }
 
   iabLinks( el ) {

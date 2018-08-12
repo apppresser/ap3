@@ -203,6 +203,26 @@ export class BpProvider {
 
   }
 
+  getItem( route ) {
+
+    let item = window.localStorage.getItem( 'myappp' );
+    let url = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/' + route;
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.get( url )
+          .map(res => res.json())
+          .subscribe(data => {
+              resolve(data);
+          },
+          error => {
+            // probably a bad url or 404
+            reject(error);
+          })
+    });
+
+  }
+
   handleError(err) {
     console.warn(err);
   }
