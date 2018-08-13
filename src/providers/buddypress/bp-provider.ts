@@ -114,7 +114,8 @@ export class BpProvider {
 
       let params = {
         content: activity.content,
-        user_id: login_data.user_id
+        user_id: login_data.user_id,
+        token: login_data.token
       }
 
       if( group_id ) {
@@ -142,7 +143,7 @@ export class BpProvider {
     let item = window.localStorage.getItem( 'myappp' );
     let route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/activity';
 
-    let data = 'user_id=' + login_data.user_id + '&content=' + activity.content;
+    let data = 'user_id=' + login_data.user_id + '&content=' + activity.content + '&token=' + login_data.token;
 
     if( activity.parent ) {
       data += '&type=activity_comment&parent=' + activity.parent + '&id=' + activity.parent
@@ -179,7 +180,7 @@ export class BpProvider {
     let item = window.localStorage.getItem( 'myappp' );
     let route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/activity/' + activity_id;
 
-    let data = 'user_id=' + login_data.user_id + '&action=activity_favorite';
+    let data = 'user_id=' + login_data.user_id + '&action=activity_favorite&token=' + login_data.token;
 
     return new Promise( (resolve, reject) => {
 
