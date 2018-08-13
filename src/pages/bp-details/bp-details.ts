@@ -22,8 +22,6 @@ export class BpDetailsPage implements OnInit {
   listenFunc: Function;
   rtlBack: boolean = false;
   showShare: boolean = true;
-  user: any;
-  userData: any;
 
   constructor(
     public nav: NavController, 
@@ -43,26 +41,20 @@ export class BpDetailsPage implements OnInit {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = this.navParams.get('item');
 
-    this.user = this.navParams.get('user_profile');
-
-    if( !this.selectedItem && !this.user )
+    if( !this.selectedItem )
       return;
 
   }
 
   ngOnInit() {
 
-    if( this.selectedItem ) {
-      this.setupContent()
-    
-      this.getComments()
+    this.setupContent()
+  
+    this.getComments()
 
-      this.events.subscribe('bp-add-comment', data => {
-        this.activityComments.push( data[0] )
-      });
-    } else if( this.user ) {
-      this.setupUser()
-    }
+    this.events.subscribe('bp-add-comment', data => {
+      this.activityComments.push( data[0] )
+    });
 
   }
 
@@ -121,15 +113,6 @@ export class BpDetailsPage implements OnInit {
 
     return ret;
     
-  }
-
-  setupUser() {
-
-    this.bpProvider.getItem( 'members/' + this.user.id ).then( data => {
-      console.log(data)
-      this.userData = data
-    })
-
   }
 
   iabLinks( el ) {

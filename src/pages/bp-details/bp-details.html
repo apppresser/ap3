@@ -77,17 +77,6 @@
 
 	</ion-list>
 
-	<ion-spinner class="comments-spinner" *ngIf="!commentsLoaded && !userData"></ion-spinner>
-
-	<ion-card *ngIf="userData">
-
-		<div *ngIf="userData.avatar_urls">
-			<img *ngIf="userData.avatar_urls && userData.avatar_urls.full" src="{{userData.avatar_urls.full}}">
-			<img *ngIf="!userData.avatar_urls.full" src="{{userData.avatar_urls.thumb}}">
-		</div>
-
-		<span class="comment-name" *ngIf="userData.name" [innerHTML]="userData.name"></span>
-
-	</ion-card>
+	<ion-spinner class="comments-spinner" *ngIf="!commentsLoaded"></ion-spinner>
 
 </ion-content>

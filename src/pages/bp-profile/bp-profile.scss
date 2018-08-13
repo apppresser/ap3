@@ -1,0 +1,22 @@
+bp-profile {
+	.user-name {
+		font-weight: 500;
+		margin-right:8px;
+		margin-bottom: 10px;
+		font-size: 1.6rem;
+	}
+
+	.mention-name {
+		margin-bottom: 10px;
+	}
+
+	.item ion-avatar img {
+		width: 100px;
+		height: 100px;
+	}
+
+	.card {
+		box-shadow: none;
+		border: none;
+	}
+}

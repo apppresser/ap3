@@ -346,8 +346,16 @@ export class BpList implements OnInit {
   }
 
   openMember( item ) {
-  	this.nav.push('BpDetailsPage', {
-  		user_profile: item
+  	
+  	let id;
+  	if( this.activityList ) {
+  		id = item.user
+  	} else {
+  		id = item.id
+  	}
+
+  	this.nav.push('BpProfilePage', {
+  		user_id: id
   	});
   }
 

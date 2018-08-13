@@ -1,0 +1,39 @@
+<ion-header>
+	<ion-navbar>
+
+		<ion-buttons start>
+			<button *ngIf="rtlBack" (click)="backRtlTransition()" ion-button class="custom-back-button">
+			    <ion-icon name="arrow-back"></ion-icon>
+			    {{'Back' | translate }}
+			</button>
+
+			<button ion-button menuToggle *ngIf="!selectedItem">
+			  <ion-icon name="menu"></ion-icon>
+			</button>
+
+		</ion-buttons>
+
+		<ion-title></ion-title>
+		
+	</ion-navbar>
+</ion-header>
+
+<ion-content>
+
+	<ion-card *ngIf="userData">
+
+		<ion-item *ngIf="userData.avatar_urls">
+			<ion-avatar item-start>
+				<img *ngIf="userData.avatar_urls && userData.avatar_urls.full" src="{{userData.avatar_urls.full}}">
+				<img *ngIf="!userData.avatar_urls.full" src="{{userData.avatar_urls.thumb}}">
+			</ion-avatar>
+			<p class="user-name" *ngIf="userData.name" [innerHTML]="userData.name"></p>
+			<p class="mention-name" *ngIf="userData.mention_name" [innerHTML]="'@' + userData.mention_name"></p>
+			<button ion-button block (click)="iabLink(userData.link + '?appp=3')" color="light">Edit Profile</button>
+		</ion-item>
+
+		
+
+	</ion-card>
+
+</ion-content>

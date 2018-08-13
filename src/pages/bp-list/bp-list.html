@@ -55,7 +55,7 @@
   	<ion-card *ngFor="let item of items">
 
       <ion-item *ngIf="item.display_name">
-        <ion-avatar item-start>
+        <ion-avatar item-start (tap)="openMember(item)">
           <img *ngIf="item.user_avatar && item.user_avatar.thumb" src="https:{{item.user_avatar.thumb}}">
           <img *ngIf="!item.user_avatar || !item.user_avatar.thumb" src="assets/default.png">
         </ion-avatar>
