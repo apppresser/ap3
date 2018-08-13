@@ -108,12 +108,13 @@
 
   <ion-list *ngIf="memberList">
 
-    <ion-item *ngFor="let item of items">
+    <ion-item *ngFor="let item of items" (tap)="openMember(item)">
 
-      <ion-avatar item-start *ngIf="item.avatar" (tap)="openMember(item)" [innerHTML]="item.avatar">
+      <ion-avatar item-start *ngIf="item.avatar">
+        <img src="https:{{item.avatar}}">
       </ion-avatar>
 
-      <span (tap)="openMember(item)" class="comment-name" [innerHTML]="item.name"></span>
+      <span class="comment-name" [innerHTML]="item.name"></span>
 
       <!-- <button ion-button color="light" (tap)="AddFriend(item)" item-end>Add Friend</button> -->
 

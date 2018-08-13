@@ -24,8 +24,8 @@
 
 		<ion-item *ngIf="userData.avatar_urls">
 			<ion-avatar item-start>
-				<img *ngIf="userData.avatar_urls && userData.avatar_urls.full" src="{{userData.avatar_urls.full}}">
-				<img *ngIf="!userData.avatar_urls.full" src="{{userData.avatar_urls.thumb}}">
+				<img *ngIf="userData.avatar_urls && userData.avatar_urls.full" src="https:{{userData.avatar_urls.full}}">
+				<img *ngIf="!userData.avatar_urls.full" src="https:{{userData.avatar_urls.thumb}}">
 			</ion-avatar>
 			<p class="user-name" *ngIf="userData.name" [innerHTML]="userData.name"></p>
 			<p class="mention-name" *ngIf="userData.mention_name" [innerHTML]="'@' + userData.mention_name"></p>
