@@ -29,10 +29,8 @@
 			</ion-avatar>
 			<p class="user-name" *ngIf="userData.name" [innerHTML]="userData.name"></p>
 			<p class="mention-name" *ngIf="userData.mention_name" [innerHTML]="'@' + userData.mention_name"></p>
-			<button ion-button block (click)="iabLink(userData.link + '?appp=3')" color="light">Edit Profile</button>
+			<button ion-button block (click)="iabLink(userData.link + '?appp=3')" color="light">View Full Profile</button>
 		</ion-item>
-
-		
 
 	</ion-card>
 
