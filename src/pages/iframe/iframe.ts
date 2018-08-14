@@ -247,11 +247,15 @@ export class Iframe implements OnInit {
                 this.mediaModal( parsed.media, parsed.img );
             } else if ( parsed.activity_modal ) {
 
+                // console.log('parsed.iframe_url', parsed.iframe_url);
+                // console.log('this.iframe.src', this.iframe.src);
+                // console.log('this.navParams.data', this.navParams.data);
+
                 // only add the activity_modal icon to this iframe
-                if( typeof(this.navParams.data.root) !== 'undefined'  || // always show if this is a root page
-                    this.iframe.src.indexOf(parsed.iframe_url) !== -1 || // show even if one of the URL is missing lang=en
-                    this.iframe.src.indexOf('/me?') || // always show if me page
-                    this.iframe.src.indexOf('/me/') || // always show if me page
+                if( ( typeof(this.navParams.data.extra_clases) !== 'undefined' && this.navParams.data.extra_clases.indexOf('bp-activity-icon') >= 0 ) || // show if has extra_class of bp-activity-icon
+                    this.iframe.src.indexOf(parsed.iframe_url) == 0 || // show even if one of the URL is missing lang=en
+                    this.iframe.src.indexOf('/me?') > 0 || // always show if me page
+                    this.iframe.src.indexOf('/me/') > 0 || // always show if me page
                     this.iframe.src == parsed.iframe_url // show if the current iframe sent the message, but don't affect other iframes that are in the stack
                 ) {
                     this.zone.run( () => {
@@ -334,7 +338,11 @@ export class Iframe implements OnInit {
 
         this.findIframeBySelector( event.target );
 
-        this.iframe.contentWindow.postMessage('activity', '*');
+        if(this.iframe && this.iframe.contentWindow) {
+            this.iframe.contentWindow.postMessage('activity', '*');
+        } else {
+            console.warn('contentWindow not found in iframe.ts doActivityModal()');
+        }
 
     }
 
@@ -343,7 +351,11 @@ export class Iframe implements OnInit {
         this.findIframeBySelector( event.target );
 
         // first message is to show modal, then we send through location
-        this.iframe.contentWindow.postMessage('checkin', '*');
+        if(this.iframe && this.iframe.contentWindow) {
+            this.iframe.contentWindow.postMessage('checkin', '*');
+        } else {
+            console.warn('contentWindow not found in iframe.ts doCheckinModal()');
+        }
 
         // Do this when checkin button clicked
         this.Geolocation.getCurrentPosition().then((position) => {
