@@ -13,8 +13,7 @@ import { Device } from "@ionic-native/device";
 import { Transfer } from "@ionic-native/transfer";
 import { FileTransfer } from "@ionic-native/file-transfer";
 import { File } from "@ionic-native/file";
-import { AdMob } from "@ionic-native/admob";
-import { AdMobPro } from "@ionic-native/admob-pro";
+import { AdMobFree } from '@ionic-native/admob-free';
 import { Facebook } from "@ionic-native/facebook";
 import { InAppBrowser } from "@ionic-native/in-app-browser";
 import { Keyboard } from "@ionic-native/keyboard";
@@ -113,8 +112,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     Transfer,
     File,
     FileTransfer,
-    AdMob,
-    AdMobPro,
+    AdMobFree,
     Facebook,
     InAppBrowser,
     Keyboard,
