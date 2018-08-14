@@ -19,6 +19,11 @@
     <ion-title *ngIf="!show_header_logo">{{title | translate}}</ion-title>
 
     <ion-buttons end *ngIf="activityList">
+
+        <button *ngIf="groupId" ion-button (click)="iabLink(groupLink)">
+          <ion-icon name="cog"></ion-icon>
+        </button>
+
       <button ion-button (click)="doActivity()">
         <ion-icon name="ios-create-outline"></ion-icon>
       </button>
@@ -32,23 +37,6 @@
   <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-
-  <ion-toolbar *ngIf="activityList && groupId" color="light">
-    <ion-row>
-      <ion-col text-center>
-        <button ion-button block clear icon-start (click)="iabLink(groupLink)">
-          <ion-icon name="cog"></ion-icon>
-           Group Settings
-        </button>
-      </ion-col>
-      <!-- <ion-col text-center>
-        <button ion-button block icon-start clear>
-          <ion-icon name="cog"></ion-icon>
-           Group Settings
-        </button>
-      </ion-col> -->
-    </ion-row>
-  </ion-toolbar>
 
   <ion-list *ngIf="activityList">
 

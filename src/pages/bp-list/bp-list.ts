@@ -59,32 +59,24 @@ export class BpList implements OnInit {
 
     this.route = navParams.data.list_route;
 
- //    let concat;
-
-	// // check if url already has a query param
-	// if( this.route && this.route.indexOf('?') > 0 ) {
-	// 	concat = '&';
-	// } else {
-	// 	concat = '?';
-	// }
-
- //    this.args = concat + 'type=activity_update';
+    if( !this.route )
+      return;
 
     if( navParams.data.group_id ) {
-		this.groupId = navParams.data.group_id
-		// this.groupId = 1
-		this.args += '&primary_id=' + this.groupId
-		this.groupLink = navParams.data.group_link
-	}
+  		this.groupId = navParams.data.group_id
+  		// this.groupId = 1
+  		this.args += '&primary_id=' + this.groupId
+  		this.groupLink = navParams.data.group_link
+  	}
 
-	// show activity, group, or members list
-	if( this.route.indexOf('groups') >= 0 ) {
-		this.groupList = true
-	} else if( this.route.indexOf('members') >= 0 ) {
-		this.memberList = true
-	} else {
-		this.activityList = true
-	}
+  	// show activity, group, or members list
+  	if( this.route.indexOf('groups') >= 0 ) {
+  		this.groupList = true
+  	} else if( this.route.indexOf('members') >= 0 ) {
+  		this.memberList = true
+  	} else {
+  		this.activityList = true
+  	}
 
     this.title = navParams.data.title;
 
@@ -110,14 +102,18 @@ export class BpList implements OnInit {
       this.login_data = data
     });
 
+    events.subscribe('user:logout', data => {
+      this.login_data = null;
+    });
+
     // get login data on first load
-	this.storage.get('user_login').then( data => {
+    this.storage.get('user_login').then( data => {
 
-		if(data) {
-		  this.login_data = data
-		}
+    	if(data) {
+    	  this.login_data = data
+    	}
 
-	});
+    });
     
   }
 

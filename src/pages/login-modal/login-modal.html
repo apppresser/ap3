@@ -16,7 +16,7 @@
 
 <ion-content>
 
-	<form (ngSubmit)="doLogin()" padding *ngIf="!login_data">
+	<form (ngSubmit)="doLogin()" padding *ngIf="!login_data && !show_registration">
 
       <ion-item>
         <ion-label stacked>{{ 'Username' | translate }}</ion-label>
@@ -54,11 +54,8 @@
 
       <ion-grid class="modal-footer">
         <ion-row>
-          <!-- <ion-col>
-            <button ion-button color="light" full class="lost-password" (click)="lostpw( $event )">{{ 'Lost Password' | translate }}</button>
-          </ion-col> -->
 
-          <ion-col *ngIf="register_link">
+          <ion-col *ngIf="api_register_setting">
 
             <button type="button" ion-button color="light" class="register-link" full (click)="register( $event )">{{ 'Sign Up' | translate }}</button>
 
@@ -67,11 +64,48 @@
         </ion-row>
 
       </ion-grid>
-    </form>
+  </form>
+
+  <div *ngIf="show_registration">
+
+  <form (ngSubmit)="doApiRegistration()" padding>
+
+    <p>{{ 'Enter your details to register.' | translate }}</p>
+    
+    <ion-item>
+      <ion-label stacked>{{ 'First name' | translate }}</ion-label>
+      <ion-input type="text" [(ngModel)]="user_data.first_name" name="pass" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label stacked>{{ 'Last name' | translate }}</ion-label>
+      <ion-input type="text" [(ngModel)]="user_data.last_name" name="pass" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label stacked>{{ 'Email' | translate }}</ion-label>
+      <ion-input type="email" [(ngModel)]="user_data.email" name="pass" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label stacked>{{ 'Create a username' | translate }}</ion-label>
+      <ion-input type="text" [(ngModel)]="user_data.username" name="user" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label stacked>{{ 'Create a password' | translate }}</ion-label>
+      <ion-input type="password" [(ngModel)]="user_data.password" name="pass" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+    </ion-item>
+    
+    <div padding>
+    <button ion-button type="submit" block>{{ 'Submit' | translate }}</button>
+    </div>
+
+  </form>
+
+  <p text-center (click)="showLoginForm()">Show Login</p>
+
+  </div>
 
 	<div padding *ngIf="login_data">
 		<p>{{login_data.message}}</p>
     	<button ion-button block (click)="doLogout()">{{ 'Click here to logout' | translate }}</button>
-    </div>
+  </div>
 
 </ion-content>

@@ -9,6 +9,7 @@ import {Storage} from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {TranslateService} from '@ngx-translate/core';
 import { LoginService } from '../../providers/logins/login.service';
+import {BpProvider} from '../../providers/buddypress/bp-provider';
 
 @IonicPage()
 @Component({
@@ -18,14 +19,16 @@ import { LoginService } from '../../providers/logins/login.service';
 export class LoginModal {
 
 	login:any = {}
+	user_data: any = {}
 	login_data: any
 	spinner: any
 	force_login: any = false;
 	is_preview: boolean = false;
 	fb_login: boolean = false;
 	fb_login_data: any
-	register_link: string = ''
+	api_register_setting: any;
 	title: string = '';
+	show_registration: boolean = false;
 
 	constructor(
 		public navParams: NavParams,
@@ -40,7 +43,8 @@ export class LoginModal {
 		private fbconnectvars: FBConnectAppSettings,
 		private toastCtrl: ToastController,
 		private loginservice: LoginService,
-		private Device: Device
+		private Device: Device,
+		private bpProvider: BpProvider
 		) {
       
 		if(this.navParams.get('title')) {
@@ -69,13 +73,12 @@ export class LoginModal {
 			}
 		})
 
-		this.storage.get('registration_url').then( data => {
+		this.storage.get('api_register_setting').then( data => {
 
-			if(data) {
-				this.register_link = data;
-			} else {
-				this.register_link = null
+			if( data ) {
+				this.api_register_setting = data
 			}
+
 		})
 
 		this.initFBLogin();
@@ -139,11 +142,7 @@ export class LoginModal {
 			if(login_data && login_data.avatar)
 				login_data.avatar = this.logins.fixProtocolRelativeUrl(login_data.avatar);
 
-			this.storage.set( 'user_login', login_data )
-			this.events.publish('user:login', login_data )
-			this.login_data = login_data
-			this.dismiss()
-
+			this.loginSuccess( login_data )
 			this.hideSpinner()
 
 		}, (err) => {
@@ -157,6 +156,15 @@ export class LoginModal {
 				this.presentToast(text);
 			});
 		})
+	}
+
+	loginSuccess( login_data ) {
+
+		this.storage.set( 'user_login', login_data )
+		this.events.publish('user:login', login_data )
+		this.login_data = login_data
+		this.dismiss()
+
 	}
 
 	loginErr( err ) {
@@ -258,12 +266,48 @@ export class LoginModal {
 
 	register( e ) {
 
-		let title = e.target.innerText
+		if( this.api_register_setting && this.api_register_setting.url === "" ) {
+			this.show_registration = true
+		} else {
 
-		this.dismiss()
+			let title = e.target.innerText
 
-		this.events.publish('pushpage', { url: this.register_link, title: title, is_register_page: true } )
+			this.dismiss()
 
+			this.events.publish('pushpage', { url: this.api_register_setting.url, title: title, is_register_page: true } )
+
+		}
+
+	}
+
+	doApiRegistration() {
+
+		console.log(this.user_data)
+
+		if( !this.user_data.email || !this.user_data.username ) {
+			alert("Please fill out required fields.")
+			return;
+		}
+
+		this.showSpinner()
+
+		this.bpProvider.register( this.user_data ).then( data => {
+			console.log(data)
+			if( (<any>data).success ) {
+				this.presentToast('Success! You are registered and logged in.')
+				this.loginSuccess( data )
+			}
+			this.hideSpinner()
+
+		}).catch( e => {
+			this.presentToast('There seems to be an issue, please try again.')
+			console.warn(e)
+			this.hideSpinner()
+		})
+	}
+
+	showLoginForm() {
+		this.show_registration = false;
 	}
 
 	lostpw( e ) {

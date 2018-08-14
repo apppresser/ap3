@@ -267,8 +267,8 @@ export class MyApp {
 
     })
 
-    if( data.show_registration_link === 'on' && data.registration_url ) {
-      this.storage.set( 'registration_url', data.registration_url );
+    if( data.show_registration_link === 'on' ) {
+      this.storage.set( 'api_register_setting', { "registration": true, "url": data.registration_url } );
     }
 
   }

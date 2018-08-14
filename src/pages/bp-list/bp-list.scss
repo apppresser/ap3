@@ -27,6 +27,7 @@ bp-list {
 		box-shadow: none;
 		border: none;
 		border-bottom: 1px solid #eee;
+		overflow: visible;
 	}
 
 	.comment-name {
@@ -35,8 +36,19 @@ bp-list {
 		font-size: 1.4rem;
 	}
 
-}
+	.card .card-content img {
+		margin: 10px -26px;
+		width: auto;
+		max-width: calc( 100% + 52px);
+	}
 
-.card .activity-image {
-	margin: 10px 0;
+	@media only screen 
+	and (min-width : 768px) {
+		.card .card-content img {
+			margin: 10px auto;
+			width: 100%;
+			max-width: 100%;
+		}
+	}
+
 }
