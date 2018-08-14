@@ -248,7 +248,12 @@ export class Iframe implements OnInit {
             } else if ( parsed.activity_modal ) {
 
                 // only add the activity_modal icon to this iframe
-                if( parsed.iframe_url == this.iframe.src ) {
+                if( typeof(this.navParams.data.root) !== 'undefined'  || // always show if this is a root page
+                    this.iframe.src.indexOf(parsed.iframe_url) !== -1 || // show even if one of the URL is missing lang=en
+                    this.iframe.src.indexOf('/me?') || // always show if me page
+                    this.iframe.src.indexOf('/me/') || // always show if me page
+                    this.iframe.src == parsed.iframe_url // show if the current iframe sent the message, but don't affect other iframes that are in the stack
+                ) {
                     this.zone.run( () => {
                         this.activityModal = true;
                     } );
