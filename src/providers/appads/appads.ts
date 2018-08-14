@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import { AdMobPro, AdMobOptions, AdSize, AdExtras } from '@ionic-native/admob-pro';
+import { AdMobFree } from '@ionic-native/admob-free';
 
 /*
   Admob
@@ -10,56 +10,52 @@ import { AdMobPro, AdMobOptions, AdSize, AdExtras } from '@ionic-native/admob-pr
 @Injectable()
 export class AppAds {
 
-  constructor(private admob: AdMobPro) {
+  constructor(private admobFree: AdMobFree) {
   }
 
   setOptions() {
 
-  	if( !this.admob )
+  	if( !this.admobFree )
   		return;
 
-  	let isTesting = false;
-  	// set position to top (2) or bottom (8) https://github.com/floatinghotpot/cordova-admob-pro/wiki/1.2-Method:-AdMob.setOptions()
-  	let pos = 8;
-
-  	this.admob.setOptions( {
-      position: pos,
-      isTesting: isTesting // receiving test ad
-    });
   }
 
   createBanner( id ) {
 
     console.log('create banner ' + id);
 
-  	if( !this.admob )
-      return;
+    this.admobFree.banner.config( {
+     id: id,
+     isTesting: false,
+     autoShow: true
+    } );
 
-  	this.admob.createBanner({
-  	  adId: id,
-  	  autoShow: true
-  	});
-
-  }
-
-  interstitial( id ) {
-
-  	if( !this.admob )
-      return;
-
-  	this.admob.prepareInterstitial({
-  		adId: id, 
-  		autoShow: true,
-  		adSize: 'SMART_BANNER'
-  	});
+  	this.admobFree.banner.prepare()
+    .then(() => {
+      console.log('show banner')
+    })
+    .catch(e => console.log(e));
 
   }
+
+  // interstitial( id ) {
+
+  // 	if( !this.admob )
+  //     return;
+
+  // 	this.admob.prepareInterstitial({
+  // 		adId: id, 
+  // 		autoShow: true,
+  // 		adSize: 'SMART_BANNER'
+  // 	});
+
+  // }
 
   hideAll() {
 
     console.log('hiding ads')
 
-    this.admob.hideBanner();
+    this.admobFree.banner.hide()
     
   }
 

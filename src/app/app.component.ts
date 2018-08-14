@@ -992,7 +992,7 @@ export class MyApp {
       return;
     }
 
-    this.appads.setOptions();
+    // this.appads.setOptions();
 
     if( this.Device.platform === 'iOS' && data.ads.ios.banner != '' ) {
       this.appads.createBanner( data.ads.ios.banner );
