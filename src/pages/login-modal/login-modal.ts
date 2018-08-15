@@ -144,12 +144,14 @@ export class LoginModal {
 
 		this.wplogin.login( this.login ).then( response => {
 
+			console.log(response)
+
 			if( !response || (<any>response).success === false ) {
 				this.loginErr( response )
 				return;
 			}
 
-			let login_data = (<any>response).data;
+			let login_data = (<any>response);
 			if(login_data && login_data.avatar)
 				login_data.avatar = this.logins.fixProtocolRelativeUrl(login_data.avatar);
 
@@ -351,7 +353,11 @@ export class LoginModal {
 		this.wplogin.resendCode( this.user_data ).then( data => {
 			console.log(data)
 			
-			this.presentToast('Verification code resent.')
+			if( data ) {
+				this.presentToast('Verification code resent.')
+			} else {
+				this.presentToast('Verification code was not sent, please check your server email settings.')
+			}
 
 			this.hideSpinner()
 

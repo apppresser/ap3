@@ -32,12 +32,7 @@ export class WPlogin {
       if( !this.url )
         reject({ data: { message: "No WordPress URL set. " } })
 
-      let url = this.url + 'wp-admin/admin-ajax.php?action=apppajaxlogin';
-      const data = {
-        action: 'apppajaxlogin',
-        username: form.user,
-        password: form.pass
-      };
+      let url = this.url + 'wp-json/appp/v1/login';
 
       var formData = new FormData();
 
@@ -50,7 +45,7 @@ export class WPlogin {
       request.onload = (e) => {
         if (request.readyState === 4) {
           if (request.status === 200) {
-
+            console.log(request.responseText)
             try {
               let login_data = (<any>JSON.parse(request.responseText)).data;
               if(typeof login_data.username !== 'undefined') {
@@ -75,11 +70,13 @@ export class WPlogin {
 
     return new Promise( (resolve, reject) => {
 
-      let url = this.url + 'wp-admin/admin-ajax.php?action=apppajaxlogout';
+      let url = this.url + 'wp-json/appp/v1/logout';
 
       this.http.get( url )
         .map(res => res.json())
         .subscribe(data => {
+
+          console.log(data)
           
             if( data.success == true )
               resolve(data)
@@ -100,8 +97,7 @@ export class WPlogin {
 
   register( data ) {
 
-    let item = window.localStorage.getItem( 'myappp' );
-    let url = JSON.parse( item ).wordpress_url + 'wp-json/appp/v1/register';
+    let url = this.url + 'wp-json/appp/v1/register';
     let params = Object.keys(data).map(function(k) {
         return encodeURIComponent(k) + "=" + encodeURIComponent(data[k]);
     }).join('&');
@@ -131,8 +127,7 @@ export class WPlogin {
 
   verifyUser( data ) {
 
-    let item = window.localStorage.getItem( 'myappp' );
-    let url = JSON.parse( item ).wordpress_url + 'wp-json/appp/v1/verify';
+    let url = this.url + 'wp-json/appp/v1/verify';
     let params = Object.keys(data).map(function(k) {
         return encodeURIComponent(k) + "=" + encodeURIComponent(data[k]);
     }).join('&');
@@ -162,8 +157,7 @@ export class WPlogin {
 
   resendCode( data ) {
 
-    let item = window.localStorage.getItem( 'myappp' );
-    let url = JSON.parse( item ).wordpress_url + 'wp-json/appp/v1/verify-resend';
+    let url = this.url + 'wp-json/appp/v1/verify-resend';
     let params = Object.keys(data).map(function(k) {
         return encodeURIComponent(k) + "=" + encodeURIComponent(data[k]);
     }).join('&');
