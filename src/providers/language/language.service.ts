@@ -45,6 +45,33 @@ export class LanguageService {
 		return this.langObs;
 	}
 
+	removeAppParams(url, use_language) {
+		
+		// gather any #
+		let url_parts = url.split('#');
+		let hash = (url_parts[1]) ? '#'+url_parts[1]:'';
+	
+		// gather any ?
+		url_parts = url_parts[0].split('?');
+		let base_url = url_parts[0];
+		let query = url_parts[1];
+		
+		query = query.replace('appp=3','');
+	
+		// maybe remove the existing language
+		if(use_language === false) {
+			query = query.replace(new RegExp("lang=[a-z]{2}","gm"), '');
+		}
+	
+		// trim the ampersands
+		query = query.replace(/^\&+|\&+$/g, '');
+		query = query.replace('&&', '&');
+	
+		url = (query) ? base_url+"?"+query : base_url;
+	
+		return url + hash;
+	}
+
 	appendUrlLang(url) {
 
 		// console.log('LanguageService appendUrlLang start', url);
