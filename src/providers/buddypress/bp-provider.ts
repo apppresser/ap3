@@ -73,8 +73,7 @@ export class BpProvider {
       activity.content = '';
     }
 
-    let item = window.localStorage.getItem( 'myappp' );
-    let route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/activity';
+    let route = this.url + 'wp-json/ap-bp/v1/activity';
 
     return new Promise( (resolve, reject) => {
 
@@ -140,8 +139,7 @@ export class BpProvider {
    */
   postTextOnly( login_data, activity, group_id ) {
 
-    let item = window.localStorage.getItem( 'myappp' );
-    let route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/activity';
+    let route = this.url + 'wp-json/ap-bp/v1/activity';
 
     let data = 'user_id=' + login_data.user_id + '&content=' + activity.content + '&token=' + login_data.token;
 
@@ -177,14 +175,41 @@ export class BpProvider {
 
   favorite( login_data, activity_id ) {
 
-    let item = window.localStorage.getItem( 'myappp' );
-    let route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/activity/' + activity_id;
+    let route = this.url + 'wp-json/ap-bp/v1/activity/' + activity_id;
 
     let data = 'user_id=' + login_data.user_id + '&action=activity_favorite&token=' + login_data.token;
 
     return new Promise( (resolve, reject) => {
 
       this.http.put( route + '?' + data, null )
+        .map(res => res.json())
+        .subscribe(data => {
+          
+            resolve(data)
+
+          },
+          error => {
+
+            console.log(error)
+
+            reject(error);
+
+          }
+        )
+
+    }) // end promise
+
+  }
+
+  joinGroup( item, login_data ) {
+
+    let route = this.url + 'wp-json/ap-bp/v1/groups/join-group';
+
+    let data = 'user_id=' + login_data.user_id + '&group_id=' + item.id + '&token=' + login_data.token;
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.post( route + '?' + data, null )
         .map(res => res.json())
         .subscribe(data => {
           

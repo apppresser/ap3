@@ -355,6 +355,19 @@ export class BpList implements OnInit {
   	});
   }
 
+  joinGroup( item ) {
+
+    this.bpProvider.joinGroup( item, this.login_data ).then( data => {
+      if( data ) {
+        this.presentToast('Joined group!')
+      }
+    }).catch( e => {
+      this.presentToast('Could not join group.')
+      console.warn(e)
+    })
+
+  }
+
   iabLink(link) {
   	window.open( link, '_blank' );
   }
