@@ -39,7 +39,7 @@ bp-list {
 	.card .card-content img {
 		margin: 10px -28px;
 		width: auto;
-		max-width: calc( 100% + 56px);
+		min-width: calc( 100% + 56px);
 	}
 
 	@media only screen 
@@ -47,6 +47,7 @@ bp-list {
 		.card .card-content img {
 			margin: 10px auto;
 			width: 100%;
+			min-width: auto;
 			max-width: 100%;
 		}
 	}
