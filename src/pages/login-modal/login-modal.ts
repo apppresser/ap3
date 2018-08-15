@@ -27,6 +27,7 @@ export class LoginModal {
 	fb_login: boolean = false;
 	fb_login_data: any
 	api_register_setting: any;
+	show_verification_field: boolean = false;
 	title: string = '';
 	show_registration: boolean = false;
 
@@ -291,12 +292,35 @@ export class LoginModal {
 
 		this.showSpinner()
 
-		this.bpProvider.register( this.user_data ).then( data => {
+		if( this.user_data.verification ) {
+			this.verify(this.user_data)
+		} else {
+			this.wplogin.register( this.user_data ).then( data => {
+				console.log(data)
+				this.presentToast(data)
+				this.show_verification_field = true;
+				this.hideSpinner()
+
+			}).catch( e => {
+				this.presentToast('There seems to be an issue, please try again.')
+				console.warn(e)
+				this.hideSpinner()
+			})
+		}
+
+	}
+
+	verify( user_data ) {
+
+		this.wplogin.verifyUser( this.user_data ).then( data => {
 			console.log(data)
+			
 			if( (<any>data).success ) {
 				this.presentToast('Success! You are registered and logged in.')
 				this.loginSuccess( data )
+				this.show_verification_field = false;
 			}
+			
 			this.hideSpinner()
 
 		}).catch( e => {
@@ -304,6 +328,7 @@ export class LoginModal {
 			console.warn(e)
 			this.hideSpinner()
 		})
+
 	}
 
 	showLoginForm() {

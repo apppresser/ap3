@@ -16,7 +16,7 @@
 
 <ion-content>
 
-	<form (ngSubmit)="doLogin()" padding *ngIf="!login_data && !show_registration">
+	<form (ngSubmit)="doLogin()" padding *ngIf="!login_data && !show_registration" class="fade-in">
 
       <ion-item>
         <ion-label stacked>{{ 'Username' | translate }}</ion-label>
@@ -66,32 +66,47 @@
       </ion-grid>
   </form>
 
-  <div *ngIf="show_registration">
+  <div *ngIf="show_registration" id="registration-form" class="fade-in">
 
   <form (ngSubmit)="doApiRegistration()" padding>
+
+    <div [hidden]="show_verification_field">
 
     <p>{{ 'Enter your details to register.' | translate }}</p>
     
     <ion-item>
       <ion-label stacked>{{ 'First name' | translate }}</ion-label>
-      <ion-input type="text" [(ngModel)]="user_data.first_name" name="pass" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+      <ion-input type="text" [(ngModel)]="user_data.first_name" name="first_name" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label stacked>{{ 'Last name' | translate }}</ion-label>
-      <ion-input type="text" [(ngModel)]="user_data.last_name" name="pass" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+      <ion-input type="text" [(ngModel)]="user_data.last_name" name="last_name" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label stacked>{{ 'Email' | translate }}</ion-label>
-      <ion-input type="email" [(ngModel)]="user_data.email" name="pass" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+      <ion-input type="email" [(ngModel)]="user_data.email" name="email" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label stacked>{{ 'Create a username' | translate }}</ion-label>
-      <ion-input type="text" [(ngModel)]="user_data.username" name="user" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+      <ion-input type="text" [(ngModel)]="user_data.username" name="username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label stacked>{{ 'Create a password' | translate }}</ion-label>
-      <ion-input type="password" [(ngModel)]="user_data.password" name="pass" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+      <ion-input type="password" [(ngModel)]="user_data.password" name="password" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
     </ion-item>
+
+  </div>
+
+  <div *ngIf="show_verification_field" class="fade-in">
+    
+    <p>{{ 'Check your email for your verification code to complete registration.' | translate }}</p>
+
+    <ion-item>
+      <ion-label stacked>{{ 'Enter Verification Code' | translate }}</ion-label>
+      <ion-input type="text" [(ngModel)]="user_data.verification" name="verification" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+    </ion-item>
+
+  </div>
     
     <div padding>
     <button ion-button type="submit" block>{{ 'Submit' | translate }}</button>
@@ -99,7 +114,7 @@
 
   </form>
 
-  <p text-center (click)="showLoginForm()">Show Login</p>
+  <p text-center (click)="showLoginForm()" class="gray-text">Show Login</p>
 
   </div>
 
