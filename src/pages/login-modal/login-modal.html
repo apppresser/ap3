@@ -52,21 +52,9 @@
 
       </div>
 
-      <ion-grid class="modal-footer">
-        <ion-row>
-
-          <ion-col *ngIf="api_register_setting">
-
-            <button type="button" ion-button color="light" class="register-link" full (click)="register( $event )">{{ 'Sign Up' | translate }}</button>
-
-          </ion-col>
-
-        </ion-row>
-
-      </ion-grid>
   </form>
 
-  <div *ngIf="show_registration" id="registration-form" class="fade-in">
+  <div *ngIf="show_registration && !login_data" id="registration-form" class="fade-in">
 
   <form (ngSubmit)="doApiRegistration()" padding>
 
@@ -76,15 +64,15 @@
     
     <ion-item>
       <ion-label stacked>{{ 'First name' | translate }}</ion-label>
-      <ion-input type="text" [(ngModel)]="user_data.first_name" name="first_name" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+      <ion-input type="text" [(ngModel)]="user_data.first_name" name="first_name" autocorrect="off" autocapitalize="on" spellcheck="false"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label stacked>{{ 'Last name' | translate }}</ion-label>
-      <ion-input type="text" [(ngModel)]="user_data.last_name" name="last_name" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+      <ion-input type="text" [(ngModel)]="user_data.last_name" name="last_name" autocorrect="off" autocapitalize="on" spellcheck="false"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label stacked>{{ 'Email' | translate }}</ion-label>
-      <ion-input type="email" [(ngModel)]="user_data.email" name="email" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+      <ion-input type="email" [(ngModel)]="user_data.email" name="email" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label stacked>{{ 'Create a username' | translate }}</ion-label>
@@ -114,7 +102,7 @@
 
   </form>
 
-  <p text-center (click)="showLoginForm()" class="gray-text">Show Login</p>
+  <p text-center *ngIf="show_verification_field" (click)="resendCode()" class="gray-text">{{ 'Re-send verification code' | translate }}</p>
 
   </div>
 
@@ -122,5 +110,30 @@
 		<p>{{login_data.message}}</p>
     	<button ion-button block (click)="doLogout()">{{ 'Click here to logout' | translate }}</button>
   </div>
+
+  <ion-grid class="modal-footer" *ngIf="!login_data">
+    <ion-row>
+
+      <ion-col *ngIf="api_register_setting && !show_registration">
+
+        <button type="button" ion-button color="light" class="register-link" full (click)="register( $event )">{{ 'Sign Up' | translate }}</button>
+
+      </ion-col>
+
+      <ion-col *ngIf="api_register_setting && show_registration">
+
+        <button type="button" ion-button color="light" class="register-link" full (click)="showLoginForm()">{{ 'Log In' | translate }}</button>
+
+      </ion-col>
+
+      <ion-col *ngIf="api_register_setting && show_registration && show_verification_field">
+
+        <button type="button" ion-button color="light" class="register-link" full (click)="resetRegistration()">{{ 'Start Over' | translate }}</button>
+
+      </ion-col>
+
+    </ion-row>
+
+  </ion-grid>
 
 </ion-content>

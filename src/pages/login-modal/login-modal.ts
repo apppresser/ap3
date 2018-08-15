@@ -82,6 +82,16 @@ export class LoginModal {
 
 		})
 
+		this.storage.get( 'unverified_user' ).then( data => {
+
+			if( data ){
+				this.show_verification_field = true;
+				this.show_registration = true;
+				this.user_data = data
+			}
+
+		})
+
 		this.initFBLogin();
 
 		this.is_preview = (location.href.indexOf('myapppresser') > 0);
@@ -299,6 +309,7 @@ export class LoginModal {
 				console.log(data)
 				this.presentToast(data)
 				this.show_verification_field = true;
+				this.storage.set( 'unverified_user', this.user_data )
 				this.hideSpinner()
 
 			}).catch( e => {
@@ -316,9 +327,11 @@ export class LoginModal {
 			console.log(data)
 			
 			if( (<any>data).success ) {
-				this.presentToast('Success! You are registered and logged in.')
+				this.presentToast('Success! You have been registered.')
 				this.loginSuccess( data )
 				this.show_verification_field = false;
+				this.show_registration = false;
+				this.storage.remove( 'unverified_user' )
 			}
 			
 			this.hideSpinner()
@@ -329,6 +342,31 @@ export class LoginModal {
 			this.hideSpinner()
 		})
 
+	}
+
+	resendCode() {
+
+		this.showSpinner()
+
+		this.wplogin.resendCode( this.user_data ).then( data => {
+			console.log(data)
+			
+			this.presentToast('Verification code resent.')
+
+			this.hideSpinner()
+
+		}).catch( e => {
+			this.presentToast('There seems to be an issue, please contact support.')
+			console.warn(e)
+			this.hideSpinner()
+		})
+
+	}
+
+	resetRegistration() {
+		this.storage.remove( 'unverified_user' ).then( data => {
+			this.show_verification_field = false
+		})
 	}
 
 	showLoginForm() {

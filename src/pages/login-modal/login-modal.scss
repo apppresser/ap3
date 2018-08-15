@@ -12,6 +12,16 @@ page-login-modal {
 	    from { opacity: 0; }
 	    to   { opacity: 1; }
 	}
+
+	.resend-text {
+		text-decoration: underline;
+		color: #777;
+	}
+
+	.modal-footer {
+		margin-left: 0;
+	}
+
 }
 
 .appforgotpassword {
