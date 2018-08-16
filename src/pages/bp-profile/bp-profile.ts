@@ -50,6 +50,8 @@ export class BpProfilePage implements OnInit {
     this.bpProvider.getItem( 'members/' + this.user_id, this.login_data ).then( data => {
       console.log(data)
       this.userData = data
+    }).catch( e => {
+      console.warn(e)
     })
 
   }

@@ -144,8 +144,6 @@ export class LoginModal {
 
 		this.wplogin.login( this.login ).then( response => {
 
-			console.log(response)
-
 			if( !response || (<any>response).success === false ) {
 				this.loginErr( response )
 				return;

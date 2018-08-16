@@ -47,7 +47,7 @@ export class BpProvider {
       let page = '1';
     }
 
-    let user_id = ( login_data ? '&user_id=' + login_data.user_id : '' );
+    let user_id = ( login_data && login_data.user_id ? '&user_id=' + login_data.user_id : '' );
     let token = ( login_data ? '&token=' +login_data.token : '' );
 
     let concat;
@@ -78,11 +78,18 @@ export class BpProvider {
 
   getItem( route, login_data ) {
 
-    let user_id = ( login_data ? '&user_id=' + login_data.user_id : '' );
-    let token = ( login_data ? '&token=' + login_data.token : '' );
+    let concat;
+    if( route.indexOf('?') >= 0 ) {
+      concat = '&'
+    } else {
+      concat = '?'
+    }
+
+    let user_id = ( login_data && login_data.user_id ? 'user_id=' + login_data.user_id : '' );
+    let token = ( login_data && login_data.token && login_data.user_id ? '&token=' + login_data.token : '' );
 
     let url = this.url + this.restBase + route;
-    url = url + + user_id + token;
+    url = url + concat + user_id + token;
 
     console.log( url )
 

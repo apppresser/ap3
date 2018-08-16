@@ -172,7 +172,7 @@ export class BpList implements OnInit {
     this.page = 1;
     
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
-    this.bpProvider.getItems( route, this.login_data = null, this.page ).then(items => {
+    this.bpProvider.getItems( route, this.login_data, this.page ).then(items => {
 
       // Loads posts from WordPress API
       this.items = items;
@@ -182,7 +182,7 @@ export class BpList implements OnInit {
       this.storage.set( route.substr(-10, 10) + '_bp', items);
 
       // load more right away
-      // this.loadMore(null);
+      this.loadMore(null);
       loading.dismiss();
     }).catch((err) => {
 
@@ -229,7 +229,7 @@ export class BpList implements OnInit {
 
     console.log('load more ' + this.page + this.route )
 
-    this.bpProvider.getItems( this.route, this.login_data = null, this.page ).then(items => {
+    this.bpProvider.getItems( this.route, this.login_data, this.page ).then(items => {
       // Loads posts from WordPress API
       let length = items["length"];
 
@@ -282,12 +282,16 @@ export class BpList implements OnInit {
 
   	this.bpProvider.favorite( this.login_data, item.id ).then( ret => {
 
+      console.log(ret)
+
   		if( ret ) {
   			this.doFavCount(item)
   		} else {
   			this.presentToast('Cannot favorite this item.')
   		}
-  	})
+  	}).catch( e => {
+      console.warn(e)
+    })
   	
   }
 

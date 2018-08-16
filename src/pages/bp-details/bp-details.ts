@@ -16,6 +16,7 @@ import {BpProvider} from '../../providers/buddypress/bp-provider';
 })
 export class BpDetailsPage implements OnInit {
   selectedItem: any;
+  login_data: any;
   activityComments: any;
   commentsLoaded: boolean = false;
   content: any;
@@ -41,6 +42,8 @@ export class BpDetailsPage implements OnInit {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = this.navParams.get('item');
 
+    this.login_data = this.navParams.get('login_data');
+
     if( !this.selectedItem )
       return;
 
@@ -60,25 +63,17 @@ export class BpDetailsPage implements OnInit {
 
   getComments() {
 
-    let route = this.navParams.get('route')
-    // remove params
-    route = route.split('?')[0]
+    this.bpProvider.getItem( 'activity/' + this.selectedItem.id, this.login_data ).then(response => {
 
-    let url = route + '/' + this.selectedItem.id
-
-    this.http.get( url )
-      .map(res => res.json())
-      .subscribe(response => {
-
-        this.activityComments = this.formatComments( response.activities[0].children );
+        this.activityComments = this.formatComments( (<any>response).activities[0].children );
 
         this.commentsLoaded = true
 
-      },
-      error => {
-        // probably a bad url or 404
-        console.warn(error)
+      }).catch( e => {
+
+        console.warn(e)
         this.commentsLoaded = true
+
       })
 
   }
