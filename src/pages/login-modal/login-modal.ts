@@ -178,6 +178,9 @@ export class LoginModal {
 		this.login_data = login_data
 		this.dismiss()
 
+		// clean up
+		this.resetRegistration()
+
 	}
 
 	loginErr( err ) {
