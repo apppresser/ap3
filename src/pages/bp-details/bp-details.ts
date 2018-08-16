@@ -1,4 +1,4 @@
-import {NavController, NavParams, ModalController, Platform, ViewController, IonicPage, Events} from 'ionic-angular';
+import {NavController, NavParams, ModalController, Platform, ViewController, IonicPage, Events, ToastController} from 'ionic-angular';
 import {Component, Renderer, ElementRef, OnInit} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SocialSharing} from '@ionic-native/social-sharing';
@@ -37,7 +37,8 @@ export class BpDetailsPage implements OnInit {
     private videoUtils: VideoUtils,
     public http: Http,
     public events: Events,
-    public bpProvider: BpProvider
+    public bpProvider: BpProvider,
+    public toastCtrl: ToastController
     ) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = this.navParams.get('item');
@@ -162,6 +163,18 @@ export class BpDetailsPage implements OnInit {
     
   }
 
+  flag() {
+
+    this.bpProvider.updateItem( 'activity_flag', this.login_data, this.selectedItem.id ).then( ret => {
+
+      this.presentToast('Activity has been marked as flagged.')
+
+    }).catch( e => {
+      console.warn(e)
+    })
+
+  }
+
   share() {
 
     this.SocialSharing.share( this.selectedItem.title.rendered, null, null, this.selectedItem.link ).then(() => {
@@ -169,6 +182,22 @@ export class BpDetailsPage implements OnInit {
     }).catch(() => {
       // Sharing via email is not possible
     });
+
+  }
+
+  presentToast(msg) {
+
+    let toast = this.toastCtrl.create({
+      message: msg,
+      duration: 3000,
+      position: 'bottom'
+    });
+
+    toast.onDidDismiss(() => {
+      // console.log('Dismissed toast');
+    });
+
+    toast.present();
 
   }
 

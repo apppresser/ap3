@@ -280,7 +280,7 @@ export class BpList implements OnInit {
   	if( false === this.loginCheck() )
       return;
 
-  	this.bpProvider.favorite( this.login_data, item.id ).then( ret => {
+  	this.bpProvider.updateItem( 'activity_favorite', this.login_data, item.id ).then( ret => {
 
       console.log(ret)
 

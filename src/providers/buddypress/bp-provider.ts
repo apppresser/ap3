@@ -244,17 +244,19 @@ export class BpProvider {
 
   }
 
-  favorite( login_data, activity_id ) {
+  updateItem( action, login_data, activity_id ) {
 
     let route = this.url + this.restBase + 'activity/' + activity_id;
 
-    let data = 'user_id=' + login_data.user_id + '&action=activity_favorite&token=' + login_data.token;
+    let data = 'user_id=' + login_data.user_id + '&action=' + action + '&token=' + login_data.token;
 
     return new Promise( (resolve, reject) => {
 
       this.http.put( route + '?' + data, null )
         .map(res => res.json())
         .subscribe(data => {
+
+            console.log(data)
           
             resolve(data)
 

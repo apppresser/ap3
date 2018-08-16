@@ -73,6 +73,8 @@ export class BpModal {
 			return;
 		}
 
+		this.showSpinner()
+
 		if( this.uploadedImage ) {
 
 			this.bpProvider.postWithImage( this.login_data, this.activity, this.uploadedImage, this.groupId )
@@ -87,10 +89,13 @@ export class BpModal {
 						this.dismiss()
 					}, 500 )
 
+					this.hideSpinner()
+
 				}).catch( e => {
 
 					console.warn(e)
 					this.presentToast('There was a problem, please try again.')
+					this.hideSpinner()
 
 				});
 
@@ -117,12 +122,15 @@ export class BpModal {
 					setTimeout( ()=> {
 						this.dismiss()
 					}, 100 )
+
+					this.hideSpinner()
 					
 
 				}).catch( e => {
 
 					console.warn(e)
 					this.presentToast('There was a problem, please try again.')
+					this.hideSpinner()
 
 				});
 
