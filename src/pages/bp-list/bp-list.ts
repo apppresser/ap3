@@ -92,7 +92,7 @@ export class BpList implements OnInit {
     events.subscribe('bp-add-activity', data => {
 
     	if( this.activityList ) {
-			this.items.unshift( data[0] )
+			  this.items.unshift( data[0] )
     	}
 
     });
@@ -130,7 +130,7 @@ export class BpList implements OnInit {
     	if( typeof this.route != 'string' )
     		return;
 
-		this.loadPosts( this.route );
+		  this.loadItems( this.route );
     }
 
   }
@@ -157,7 +157,7 @@ export class BpList implements OnInit {
 
   }
 
-  loadPosts( route ) {
+  loadItems( route ) {
 
   	if( !route )
   		return;
@@ -172,7 +172,7 @@ export class BpList implements OnInit {
     this.page = 1;
     
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
-    this.postService.load( route, this.page ).then(items => {
+    this.bpProvider.getItems( route, this.login_data = null, this.page ).then(items => {
 
       // Loads posts from WordPress API
       this.items = items;
@@ -187,11 +187,12 @@ export class BpList implements OnInit {
     }).catch((err) => {
 
       loading.dismiss();
-      console.error('Error getting posts', err);
-      this.presentToast('Error getting posts.');
+      this.handleErr(err)
+
     });
 
     setTimeout(() => {
+      if( loading )
         loading.dismiss();
     }, 8000);
 
@@ -212,7 +213,7 @@ export class BpList implements OnInit {
   }
 
   doRefresh(refresh) {
-    this.loadPosts( this.route );
+    this.loadItems( this.route );
     // refresh.complete should happen when posts are loaded, not timeout
     setTimeout( ()=> refresh.complete(), 500);
   }
@@ -228,7 +229,7 @@ export class BpList implements OnInit {
 
     console.log('load more ' + this.page + this.route )
 
-    this.postService.load( this.route, this.page ).then(items => {
+    this.bpProvider.getItems( this.route, this.login_data = null, this.page ).then(items => {
       // Loads posts from WordPress API
       let length = items["length"];
 
@@ -276,10 +277,8 @@ export class BpList implements OnInit {
 
   favorite( item ) {
 
-  	if( !this.login_data ) {
-  		this.presentToast('Please login')
-  		return;
-  	}
+  	if( false === this.loginCheck() )
+      return;
 
   	this.bpProvider.favorite( this.login_data, item.id ).then( ret => {
 
@@ -331,17 +330,19 @@ export class BpList implements OnInit {
   	// switch route from /groups to /activity to get group activity
   	let route = this.route.split('groups')[0] + 'activity?type=activity_update&primary_id=' + item.id
 
-  	console.log(route)
-
   	this.nav.push('BpList', {
   		list_route: route,
   		title: item.name,
   		group_id: item.id,
   		group_link: item.link
   	});
+
   }
 
   openMember( item ) {
+
+    if( false === this.loginCheck() )
+      return;
   	
   	let id;
   	if( this.activityList ) {
@@ -350,12 +351,17 @@ export class BpList implements OnInit {
   		id = item.id
   	}
 
-  	this.nav.push('BpProfilePage', {
-  		user_id: id
-  	});
+    this.nav.push('BpProfilePage', {
+      user_id: id,
+      login_data: this.login_data
+    });
+  	
   }
 
   joinGroup( item ) {
+
+    if( false === this.loginCheck() )
+      return;
 
     this.bpProvider.joinGroup( item, this.login_data ).then( data => {
       if( data ) {
@@ -391,6 +397,29 @@ export class BpList implements OnInit {
       // no logo, do nothing
       //console.log(e)
     })
+  }
+
+  // make sure user is logged in
+  loginCheck() {
+
+    if( !this.login_data ) {
+      this.presentToast('You must be logged in to do that.')
+      return false;
+    }
+
+    return true;
+      
+  }
+
+  handleErr( err ) {
+
+    console.error('Error getting posts', err);
+    let msg = "Cannot show items.";
+    if( err['_body'] && JSON.parse( err['_body'] ).message ) {
+      msg += ' ' + JSON.parse( err['_body'] ).message;
+    }
+    this.presentToast( msg );
+
   }
 
 }

@@ -13,7 +13,8 @@ import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
 @Injectable()
 export class BpProvider {
   data: any = null;
-  url: any;
+  url: string;
+  restBase: string;
 
   options: any = {
     quality: 50,
@@ -34,6 +35,69 @@ export class BpProvider {
 
     let item = window.localStorage.getItem( 'myappp' );
     this.url = JSON.parse( item ).wordpress_url;
+    this.restBase = 'wp-json/ap-bp/v1/'
+
+  }
+
+  // pass full route url with login data. Some routes do not require login.
+  getItems( route, login_data, page ) {
+
+    // set pagination
+    if( !page ) {
+      let page = '1';
+    }
+
+    let user_id = ( login_data ? '&user_id=' + login_data.user_id : '' );
+    let token = ( login_data ? '&token=' +login_data.token : '' );
+
+    let concat;
+    if( route.indexOf('?') >= 0 ) {
+      concat = '&'
+    } else {
+      concat = '?'
+    }
+
+    let url = route + concat + 'page=' + page + user_id + token;
+
+    console.log(url)
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.get( url )
+          .map(res => res.json())
+          .subscribe(data => {
+              resolve(data);
+          },
+          error => {
+            // probably a bad url or 404
+            reject(error);
+          })
+    });
+
+  }
+
+  getItem( route, login_data ) {
+
+    let user_id = ( login_data ? '&user_id=' + login_data.user_id : '' );
+    let token = ( login_data ? '&token=' + login_data.token : '' );
+
+    let url = this.url + this.restBase + route;
+    url = url + + user_id + token;
+
+    console.log( url )
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.get( url )
+          .map(res => res.json())
+          .subscribe(data => {
+              resolve(data);
+          },
+          error => {
+            // probably a bad url or 404
+            reject(error);
+          })
+    });
 
   }
 
@@ -73,7 +137,7 @@ export class BpProvider {
       activity.content = '';
     }
 
-    let route = this.url + 'wp-json/ap-bp/v1/activity';
+    let route = this.url + this.restBase + 'activity';
 
     return new Promise( (resolve, reject) => {
 
@@ -139,7 +203,7 @@ export class BpProvider {
    */
   postTextOnly( login_data, activity, group_id ) {
 
-    let route = this.url + 'wp-json/ap-bp/v1/activity';
+    let route = this.url + this.restBase + 'activity';
 
     let data = 'user_id=' + login_data.user_id + '&content=' + activity.content + '&token=' + login_data.token;
 
@@ -175,7 +239,7 @@ export class BpProvider {
 
   favorite( login_data, activity_id ) {
 
-    let route = this.url + 'wp-json/ap-bp/v1/activity/' + activity_id;
+    let route = this.url + this.restBase + 'activity/' + activity_id;
 
     let data = 'user_id=' + login_data.user_id + '&action=activity_favorite&token=' + login_data.token;
 
@@ -203,7 +267,7 @@ export class BpProvider {
 
   joinGroup( item, login_data ) {
 
-    let route = this.url + 'wp-json/ap-bp/v1/groups/join-group';
+    let route = this.url + this.restBase + 'groups/join-group';
 
     let data = 'user_id=' + login_data.user_id + '&group_id=' + item.id + '&token=' + login_data.token;
 
@@ -226,26 +290,6 @@ export class BpProvider {
         )
 
     }) // end promise
-
-  }
-
-  getItem( route ) {
-
-    let item = window.localStorage.getItem( 'myappp' );
-    let url = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/' + route;
-
-    return new Promise( (resolve, reject) => {
-
-      this.http.get( url )
-          .map(res => res.json())
-          .subscribe(data => {
-              resolve(data);
-          },
-          error => {
-            // probably a bad url or 404
-            reject(error);
-          })
-    });
 
   }
 

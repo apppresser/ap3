@@ -15,6 +15,7 @@ export class BpProfilePage implements OnInit {
   rtlBack: boolean = false;
   user_id: any;
   userData: any;
+  login_data: any;
 
   constructor(
     public nav: NavController, 
@@ -31,6 +32,8 @@ export class BpProfilePage implements OnInit {
 
     this.user_id = this.navParams.get('user_id');
 
+    this.login_data = this.navParams.get('login_data');
+
     if( !this.user_id )
       return;
 
@@ -44,7 +47,7 @@ export class BpProfilePage implements OnInit {
 
   setupUser() {
 
-    this.bpProvider.getItem( 'members/' + this.user_id ).then( data => {
+    this.bpProvider.getItem( 'members/' + this.user_id, this.login_data ).then( data => {
       console.log(data)
       this.userData = data
     })

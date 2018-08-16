@@ -297,7 +297,7 @@ export class LoginModal {
 
 		console.log(this.user_data)
 
-		if( !this.user_data.email || !this.user_data.username ) {
+		if( !this.user_data.email || !this.user_data.username || !this.user_data.password ) {
 			alert("Please fill out required fields.")
 			return;
 		}
@@ -315,8 +315,7 @@ export class LoginModal {
 				this.hideSpinner()
 
 			}).catch( e => {
-				this.presentToast('There seems to be an issue, please try again.')
-				console.warn(e)
+				this.handleErr( e )
 				this.hideSpinner()
 			})
 		}
@@ -329,18 +328,25 @@ export class LoginModal {
 			console.log(data)
 			
 			if( (<any>data).success ) {
+
 				this.presentToast('Success! You have been registered.')
 				this.loginSuccess( data )
 				this.show_verification_field = false;
 				this.show_registration = false;
 				this.storage.remove( 'unverified_user' )
+
+			} else if( (<any>data).message ) {
+
+				this.presentToast( (<any>data).message )
+
 			}
 			
 			this.hideSpinner()
 
 		}).catch( e => {
-			this.presentToast('There seems to be an issue, please try again.')
-			console.warn(e)
+
+			this.handleErr( e )
+
 			this.hideSpinner()
 		})
 
@@ -362,8 +368,7 @@ export class LoginModal {
 			this.hideSpinner()
 
 		}).catch( e => {
-			this.presentToast('There seems to be an issue, please contact support.')
-			console.warn(e)
+			this.handleErr( e )
 			this.hideSpinner()
 		})
 
@@ -372,6 +377,7 @@ export class LoginModal {
 	resetRegistration() {
 		this.storage.remove( 'unverified_user' ).then( data => {
 			this.show_verification_field = false
+			this.user_data.verification = null
 		})
 	}
 
@@ -416,5 +422,16 @@ export class LoginModal {
 	    toast.present();
 
 	}
+
+	handleErr( err ) {
+
+	    console.error('Error with registration', err);
+	    let msg = "There was a problem, please try again.";
+	    if( err['_body'] && JSON.parse( err['_body'] ).message ) {
+	      msg += ' ' + JSON.parse( err['_body'] ).message;
+	    }
+	    this.presentToast( msg );
+
+	  }
 
 }
