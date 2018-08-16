@@ -18,5 +18,26 @@ bp-details {
 	.card {
 		box-shadow: none;
 		border: none;
+		overflow: visible;
+	}
+
+	.card .item + .card-content {
+		padding-top: 13px;
+	}
+
+	.card .card-content img {
+		margin: 10px -28px;
+		width: auto;
+		min-width: calc( 100% + 56px);
+	}
+
+	@media only screen 
+	and (min-width : 768px) {
+		.card .card-content img {
+			margin: 10px auto;
+			width: 100%;
+			min-width: auto;
+			max-width: 100%;
+		}
 	}
 }
