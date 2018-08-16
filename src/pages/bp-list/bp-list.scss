@@ -30,6 +30,10 @@ bp-list {
 		overflow: visible;
 	}
 
+	.card .item + .card-content {
+		padding-top: 13px;
+	}
+
 	.comment-name {
 		font-weight: 500;
 		margin-right:8px;
