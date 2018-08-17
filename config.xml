@@ -68,6 +68,7 @@
         <splash height="480" src="resources/ios/splash/Default~iphone.png" width="320" />
         <splash height="2732" src="resources/ios/splash/Default@2x~universal~anyany.png" width="2732" />
     </platform>
+    <preference name="CordovaWebViewEngine" value="CDVUIWebViewEngine" />
     <preference name="webviewbounce" value="false" />
     <preference name="UIWebViewBounce" value="false" />
     <preference name="DisallowOverscroll" value="true" />
@@ -112,5 +113,5 @@
     <plugin name="cordova-plugin-camera" spec="~2.3.0" />
     <plugin name="cordova-plugin-file-transfer" spec="~1.6.0" />
     <plugin name="cordova-plugin-actionsheet" spec="~2.3.1" />
-    <engine name="ios" spec="^4.5.3" />
+    <engine name="ios" spec="4.5.5" />
 </widget>
