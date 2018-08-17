@@ -291,13 +291,7 @@ export class MyApp {
         // set component, default is Iframe
         var root:any = Iframe;
 
-        if( item.type === 'apppages' && item.page_type === 'list' ) {
-          root = 'PostList';
-        } else if( item.type === 'apppages' && item.page_type === 'media-list' ) {
-          root = 'MediaList';
-        } else if( item.type === 'apppages' ) {
-          root = this.getPageModuleName(item.page_id);
-        }
+        root = this.getPageType( item );
 
         // hide the tab if user added class of hide
         item.show = true;
@@ -337,15 +331,9 @@ export class MyApp {
         // used for custom logo
         data.menus.items[0].is_home = true;
 
-        // if it's a list page, use PostList component
-        if( data.menus.items[0].page_type === 'list' ) {
-          this.nav.setRoot( 'PostList', data.menus.items[0] );
-        } else if( data.menus.items[0].page_type === 'media-list' ) {
-          this.nav.setRoot( 'MediaList', data.menus.items[0] );
-        } else {
-          // otherwise use CustomPage
-          this.nav.setRoot( this.getPageModuleName(data.menus.items[0].page_id), data.menus.items[0] );
-        }
+        let root = this.getPageType( data.menus.items[0] );
+
+        this.nav.setRoot( root, data.menus.items[0] );
 
       } else {
 
@@ -587,15 +575,13 @@ export class MyApp {
       return;
     }
 
-    if( page.type === 'apppages' && page.page_type === 'list' ) {
-      this.nav.setRoot( 'PostList', page );
-    } else if( page.type === 'apppages' && page.page_type === 'media-list' ) {
-      this.nav.setRoot( 'MediaList', page );
-    } else if( page.type === 'apppages' ) {
-      this.nav.setRoot(this.getPageModuleName(page.page_id), page );
-    } else if( page.url && page.type === 'custom' ) {
-      this.nav.setRoot( Iframe, page );
+    let root = this.getPageType( page );
+
+    if( root ) {
+      this.nav.setRoot( root, page );
     } else if (page.url && page.root === "true") {
+
+      console.log('doing learndash')
 
       // for LearnDash post messages, specifically course completion redirects
 
@@ -619,10 +605,6 @@ export class MyApp {
 
       }
 
-    } else if (page.url) {
-      this.nav.setRoot( Iframe, page );
-    } else {
-      this.nav.setRoot(page.component, page.navparams);
     }
 
   }
@@ -655,17 +637,9 @@ export class MyApp {
     if( this.rtl === true && this.platform.is('ios') )
       opt = { direction: 'back' }
 
-    if( page.type === 'apppages' && page.page_type === 'list' ) {
-      this.nav.push( 'PostList', page, opt );
-    } else if( page.type === 'apppages' && page.page_type === 'media-list' ) {
-      this.nav.push( 'MediaList', page, opt );
-    }else if( page.type === 'apppages' ) {
-      this.nav.push(this.getPageModuleName(page.page_id), page, opt );
-    } else if (page.url) {
-      this.nav.push(Iframe, page, opt);
-    } else {
-      this.nav.push(page.component, page.navparams, opt);
-    }
+    let root = this.getPageType( page );
+
+    this.nav.push( root, page, opt );
   }
 
   openTab(tab_index: number) {
@@ -1330,13 +1304,7 @@ export class MyApp {
       // set component, default is Iframe
       var root:any = Iframe;
 
-      if( item.type === 'apppages' && item.page_type === 'list' ) {
-        root = 'PostList';
-      } else if( item.type === 'apppages' && item.page_type === 'media-list' ) {
-          root = 'MediaList';
-      } else if( item.type === 'apppages' ) {
-        root = this.getPageModuleName(item.page_id);
-      }
+      root = this.getPageType( item );
 
       // hide the tab if user added class of hide
       item.show = true;
@@ -1614,6 +1582,24 @@ export class MyApp {
         }
         
       }
+    }
+
+  }
+
+  getPageType( page ) {
+
+    if( page.type === 'apppages' && page.page_type === 'list' ) {
+      return 'PostList';
+    } else if( page.type === 'apppages' && page.page_type === 'media-list' ) {
+      return 'MediaList';
+    } else if( page.type === 'apppages' && page.page_type === 'bp-list' ) {
+      return 'BpList';
+    } else if( page.type === 'apppages' ) {
+      return this.getPageModuleName(page.page_id);
+    } else if( page.url && page.type === 'custom' && !page.root ) {
+      return Iframe;
+    } else {
+      return null;
     }
 
   }

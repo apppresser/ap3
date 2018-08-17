@@ -363,17 +363,9 @@ export class CustomPage implements OnInit, OnDestroy {
 	    if( this.platform.isRTL && this.platform.is('ios') )
 	      opt = { direction: 'back' }
 
-		if( page.type === 'apppages' && page.page_type === 'list' ) {
-			this.nav.push( 'PostList', page, opt );
-		} else if( page.type === 'apppages' && page.page_type === 'media-list' ) {
-			this.nav.push( 'MediaList', page, opt );
-		} else if( page.type === 'apppages' ) {
-			this.nav.push(this.getPageModuleName(page.page_id), page, opt );
-		} else if (page.url) {
-			this.nav.push(Iframe, page, opt);
-		} else {
-			this.nav.push(page.component, page.navparams, opt);
-		}
+	  	let root = this.getPageType( page );
+
+		this.nav.push( root, page, opt );
 	}
 
 	/**
@@ -410,17 +402,9 @@ export class CustomPage implements OnInit, OnDestroy {
 			return;
 		}
 
-		if( page.type === 'apppages' && page.page_type === 'list' ) {
-			this.nav.setRoot( 'PostList', page );
-		} else if( page.type === 'apppages' && page.page_type === 'media-list' ) {
-			this.nav.setRoot( 'MediaList', page );
-		} else if( page.type === 'apppages' ) {
-			this.nav.setRoot(this.getPageModuleName(page.page_id), page );
-		} else if (page.url) {
-			this.nav.setRoot(Iframe, page);
-		} else {
-			this.nav.setRoot(page.component, page.navparams);
-		}
+		let root = this.getPageType( page );
+
+		this.nav.setRoot( root, page );
 	}
 
 	back() {
@@ -561,6 +545,25 @@ export class CustomPage implements OnInit, OnDestroy {
 			return 'Page'+page_id;
 		else
 			return 'CustomPage';
+	}
+
+	// duplicate in app.component.ts if any updates are made
+	getPageType( page ) {
+
+		if( page.type === 'apppages' && page.page_type === 'list' ) {
+		  return 'PostList';
+		} else if( page.type === 'apppages' && page.page_type === 'media-list' ) {
+		  return 'MediaList';
+		} else if( page.type === 'apppages' && page.page_type === 'bp-list' ) {
+		  return 'BpList';
+		} else if( page.type === 'apppages' ) {
+		  return this.getPageModuleName(page.page_id);
+		} else if( page.url && page.type === 'custom' && !page.root ) {
+		  return Iframe;
+		} else {
+		  return null;
+		}
+
 	}
 
 	buyProduct( id ) {
