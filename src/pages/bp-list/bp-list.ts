@@ -55,27 +55,32 @@ export class BpList implements OnInit {
     public bpProvider: BpProvider
   ) {
 
-  	console.log( navParams )
+    let item = window.localStorage.getItem( 'myappp' );
+    let wp_url = JSON.parse( item ).wordpress_url;
+    let rest_base = 'wp-json/ap-bp/v1/';
 
-    this.route = navParams.data.list_route;
-
-    if( !this.route )
+  	// list route is actually a component for BuddyPress, for example 'activity'
+    let component = navParams.data.list_route;
+    if( !wp_url || !component )
       return;
+
+    this.route = wp_url + rest_base + component;
 
     if( navParams.data.group_id ) {
   		this.groupId = navParams.data.group_id
   		// this.groupId = 1
-  		this.args += '&primary_id=' + this.groupId
+  		this.route += '?type=activity_update&display_comments=false&primary_id=' + this.groupId
   		this.groupLink = navParams.data.group_link
   	}
 
   	// show activity, group, or members list
-  	if( this.route.indexOf('groups') >= 0 ) {
+  	if( component == 'groups' ) {
   		this.groupList = true
-  	} else if( this.route.indexOf('members') >= 0 ) {
+  	} else if( component == 'members' ) {
   		this.memberList = true
-  	} else {
+  	} else if( component == 'activity' ) {
   		this.activityList = true
+      this.route += '?type=activity_update&display_comments=false'
   	}
 
     this.title = navParams.data.title;
@@ -85,8 +90,6 @@ export class BpList implements OnInit {
     if(navParams.data.is_home == true) {
       this.doLogo()
     }
-
-    this.previewAlert(this.route);
 
     // push new activity item after posted
     events.subscribe('bp-add-activity', data => {
@@ -332,10 +335,8 @@ export class BpList implements OnInit {
   openGroup(item) {
 
   	// switch route from /groups to /activity to get group activity
-  	let route = this.route.split('groups')[0] + 'activity?type=activity_update&primary_id=' + item.id
-
   	this.nav.push('BpList', {
-  		list_route: route,
+  		list_route: 'activity',
   		title: item.name,
   		group_id: item.id,
   		group_link: item.link

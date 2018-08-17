@@ -165,6 +165,10 @@ export class BpDetailsPage implements OnInit {
 
   flag() {
 
+    if( !this.login_data ) {
+      this.presentToast('You must be logged in to do that.')
+    }
+
     this.bpProvider.updateItem( 'activity_flag', this.login_data, this.selectedItem.id ).then( ret => {
 
       this.presentToast('Activity has been marked as flagged.')
