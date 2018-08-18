@@ -36,6 +36,7 @@ export class BpList implements OnInit {
   memberList: boolean = false;
   activityList: boolean = false;
   groupLink: any;
+  bpSegments: any;
 
   constructor(
     public nav: NavController, 
@@ -55,59 +56,20 @@ export class BpList implements OnInit {
     public bpProvider: BpProvider
   ) {
 
-    let item = window.localStorage.getItem( 'myappp' );
-    let wp_url = JSON.parse( item ).wordpress_url;
-    let rest_base = 'wp-json/ap-bp/v1/';
-
-  	// list route is actually a component for BuddyPress, for example 'activity'
-    let component = navParams.data.list_route;
-    if( !wp_url || !component )
+    if( !navParams.data.list_route )
       return;
 
-    this.route = wp_url + rest_base + component;
-
-    if( navParams.data.group_id ) {
-  		this.groupId = navParams.data.group_id
-  		// this.groupId = 1
-  		this.route += '?type=activity_update&display_comments=false&primary_id=' + this.groupId
-  		this.groupLink = navParams.data.group_link
-  	}
-
-  	// show activity, group, or members list
-  	if( component == 'groups' ) {
-  		this.groupList = true
-  	} else if( component == 'members' ) {
-  		this.memberList = true
-  	} else if( component == 'activity' ) {
-  		this.activityList = true
-      this.route += '?type=activity_update&display_comments=false'
-  	}
+    this.getRoute()
 
     this.title = navParams.data.title;
 
-    this.customClasses = 'post-list' + ((navParams.data.slug) ? ' page-' + navParams.data.slug : '');
+    this.customClasses = 'bp-list' + ((navParams.data.slug) ? ' page-' + navParams.data.slug : '');
 
     if(navParams.data.is_home == true) {
       this.doLogo()
     }
 
-    // push new activity item after posted
-    events.subscribe('bp-add-activity', data => {
-
-    	if( this.activityList ) {
-			  this.items.unshift( data[0] )
-    	}
-
-    });
-
-    // set login data after modal login
-    events.subscribe('user:login', data => {
-      this.login_data = data
-    });
-
-    events.subscribe('user:logout', data => {
-      this.login_data = null;
-    });
+    this.eventSubscribe()
 
     // get login data on first load
     this.storage.get('user_login').then( data => {
@@ -118,6 +80,41 @@ export class BpList implements OnInit {
 
     });
     
+  }
+
+  // set this.route with correct url
+  getRoute() {
+
+    let item = window.localStorage.getItem( 'myappp' );
+    let wp_url = JSON.parse( item ).wordpress_url;
+    let rest_base = 'wp-json/ap-bp/v1/';
+
+    // list route is actually a component for BuddyPress, for example 'activity'
+    let component = this.navParams.data.list_route;
+
+    this.route = wp_url + rest_base + component;
+
+    if( this.navParams.data.group_id ) {
+      this.groupId = this.navParams.data.group_id
+      // this.groupId = 1
+      this.route += '?type=activity_update&display_comments=false&primary_id=' + this.groupId
+      this.groupLink = this.navParams.data.group_link
+    }
+
+    // show activity, group, or members list
+    if( component == 'groups' ) {
+      this.groupList = true
+      this.bpSegments = [ 'All', 'My Groups' ];
+    } else if( component == 'members' ) {
+      this.memberList = true
+    } else if( component == 'activity' ) {
+      this.activityList = true
+      this.route += '?type=activity_update&display_comments=false'
+      this.bpSegments = [ 'All', 'Friends' ];
+    }
+
+    console.log(this.route, this.bpSegments)
+
   }
 
   ngOnInit() {
@@ -145,6 +142,52 @@ export class BpList implements OnInit {
         this.rtlBack = true
     }
  
+  }
+
+  eventSubscribe() {
+
+    // push new activity item after posted
+    this.events.subscribe('bp-add-activity', data => {
+
+      if( this.activityList ) {
+        this.items.unshift( data[0] )
+      }
+
+    });
+
+    // set login data after modal login
+    this.events.subscribe('user:login', data => {
+      this.login_data = data
+    });
+
+    this.events.subscribe('user:logout', data => {
+      this.login_data = null;
+    });
+
+  }
+
+  doSegment(segment) {
+
+    console.log(segment)
+
+    if( false === this.loginCheck() )
+      return;
+
+    if( this.activityList ) {
+
+      switch(segment) {
+        case 'All':
+          this.loadItems(this.route)
+          break;
+        case 'Friends':
+          this.loadItems( this.route + '&scope=friends&user=' + this.login_data.user_id )
+          break;
+        default:
+          this.loadItems(this.route)
+      }
+
+    }
+    
   }
 
   // get posts from storage when we are offline
@@ -179,8 +222,6 @@ export class BpList implements OnInit {
 
       // Loads posts from WordPress API
       this.items = items;
-
-      console.log(this.items)
 
       this.storage.set( route.substr(-10, 10) + '_bp', items);
 

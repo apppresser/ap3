@@ -30,6 +30,15 @@
     </ion-buttons>
 
   </ion-navbar>
+
+  <ion-toolbar *ngIf="bpSegments" id="favorites-toolbar">
+
+    <button ion-button clear (click)="doSegment(segment)" *ngFor="let segment of bpSegments">
+      {{ segment }}
+    </button>
+
+  </ion-toolbar>
+
 </ion-header>
 
 <ion-content>
