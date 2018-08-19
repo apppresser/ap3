@@ -59,8 +59,6 @@ export class BpList implements OnInit {
     if( !navParams.data.list_route )
       return;
 
-    this.getRoute()
-
     this.title = navParams.data.title;
 
     this.customClasses = 'bp-list' + ((navParams.data.slug) ? ' page-' + navParams.data.slug : '');
@@ -70,67 +68,50 @@ export class BpList implements OnInit {
     }
 
     this.eventSubscribe()
-
-    // get login data on first load
-    this.storage.get('user_login').then( data => {
-
-    	if(data) {
-    	  this.login_data = data
-    	}
-
-    });
     
-  }
-
-  // set this.route with correct url
-  getRoute() {
-
-    let item = window.localStorage.getItem( 'myappp' );
-    let wp_url = JSON.parse( item ).wordpress_url;
-    let rest_base = 'wp-json/ap-bp/v1/';
-
-    // list route is actually a component for BuddyPress, for example 'activity'
-    let component = this.navParams.data.list_route;
-
-    this.route = wp_url + rest_base + component;
-
-    if( this.navParams.data.group_id ) {
-      this.groupId = this.navParams.data.group_id
-      // this.groupId = 1
-      this.route += '?type=activity_update&display_comments=false&primary_id=' + this.groupId
-      this.groupLink = this.navParams.data.group_link
-    }
-
-    // show activity, group, or members list
-    if( component == 'groups' ) {
-      this.groupList = true
-      this.bpSegments = [ 'All', 'My Groups' ];
-    } else if( component == 'members' ) {
-      this.memberList = true
-    } else if( component == 'activity' ) {
-      this.activityList = true
-      this.route += '?type=activity_update&display_comments=false'
-      this.bpSegments = [ 'All', 'Friends' ];
-    }
-
-    console.log(this.route, this.bpSegments)
-
   }
 
   ngOnInit() {
 
+    // get login data on first load
+    this.storage.get('user_login').then( data => {
+
+      if(data) {
+        this.login_data = data
+      }
+
+      this.getStarted()
+
+    });
+
+  }
+
+  getStarted() {
+
     this.networkState = this.Network.type;
 
     if( this.networkState === 'none' || this.networkState === 'unknown' ) {
+
       // if offline, get posts from storage
       this.getStoredPosts();
+
     } else {
 
-    	// fix error getting posts on reload
-    	if( typeof this.route != 'string' )
-    		return;
+      this.getRoute().then( route => {
 
-		  this.loadItems( this.route );
+        // fix error getting posts on reload
+        if( typeof this.route != 'string' )
+          return;
+
+        if( this.login_data && this.activityList ) {
+          // default to friends only
+          route += '&scope=friends&user=' + this.login_data.user_id
+        }
+
+        this.loadItems( route );
+
+      })
+		  
     }
 
   }
@@ -142,6 +123,50 @@ export class BpList implements OnInit {
         this.rtlBack = true
     }
  
+  }
+
+  // set this.route with correct url
+  getRoute() {
+
+    return new Promise( resolve => {
+
+      let item = window.localStorage.getItem( 'myappp' );
+      let wp_url = JSON.parse( item ).wordpress_url;
+      let rest_base = 'wp-json/ap-bp/v1/';
+
+      // list route is actually a component for BuddyPress, for example 'activity'
+      let component = this.navParams.data.list_route;
+
+      this.route = wp_url + rest_base + component;
+
+      if( this.navParams.data.group_id ) {
+        this.groupId = this.navParams.data.group_id
+        // this.groupId = 1
+        this.route += '?type=activity_update&display_comments=false&primary_id=' + this.groupId
+        this.groupLink = this.navParams.data.group_link
+      }
+
+      // show activity, group, or members list
+      if( component == 'groups' ) {
+        this.groupList = true
+        this.bpSegments = [ 'All', 'My Groups' ];
+      } else if( component == 'members' ) {
+        this.memberList = true
+      } else if( component == 'activity' ) {
+
+        this.activityList = true
+        this.route += '?type=activity_update&display_comments=false';
+
+        this.bpSegments = [ 'Friends', 'All' ];
+
+      }
+
+      console.log(this.route, this.bpSegments)
+
+      resolve( this.route )
+
+    })
+
   }
 
   eventSubscribe() {
@@ -177,13 +202,22 @@ export class BpList implements OnInit {
 
       switch(segment) {
         case 'All':
-          this.loadItems(this.route)
+          this.loadItems( this.route )
           break;
         case 'Friends':
           this.loadItems( this.route + '&scope=friends&user=' + this.login_data.user_id )
+      }
+
+    } else if( this.groupList ) {
+
+      switch(segment) {
+        case 'All':
+          // for all groups, we don't want user_id
+          this.loadItems( this.route )
           break;
-        default:
-          this.loadItems(this.route)
+        case 'My Groups':
+          // add user_id to show my groups
+          this.loadItems( this.route + '?user_id=' + this.login_data.user_id )
       }
 
     }
@@ -216,9 +250,18 @@ export class BpList implements OnInit {
     loading.present(loading);
 
     this.page = 1;
+
+    let login;
+
+    // for some requests, we don't want to send login data
+    if( !this.groupList ) {  
+      login = this.login_data
+    }
+
+    console.log('route')
     
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
-    this.bpProvider.getItems( route, this.login_data, this.page ).then(items => {
+    this.bpProvider.getItems( route, login, this.page ).then(items => {
 
       // Loads posts from WordPress API
       this.items = items;
@@ -271,9 +314,16 @@ export class BpList implements OnInit {
 
     this.page++;
 
+    let login;
+
+    // for some requests, we don't want to send login data
+    if( !this.groupList ) {  
+      login = this.login_data
+    }
+
     console.log('load more ' + this.page + this.route )
 
-    this.bpProvider.getItems( this.route, this.login_data, this.page ).then(items => {
+    this.bpProvider.getItems( this.route, login, this.page ).then(items => {
       // Loads posts from WordPress API
       let length = items["length"];
 

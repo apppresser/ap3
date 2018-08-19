@@ -48,7 +48,7 @@ export class BpProvider {
     }
 
     let user_id = ( login_data && login_data.user_id ? '&user_id=' + login_data.user_id : '' );
-    let token = ( login_data ? '&token=' +login_data.token : '' );
+    let token = ( login_data ? '&token=' + login_data.token : '' );
 
     let concat;
     if( route.indexOf('?') >= 0 ) {
