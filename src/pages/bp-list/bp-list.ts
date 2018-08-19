@@ -37,6 +37,7 @@ export class BpList implements OnInit {
   activityList: boolean = false;
   groupLink: any;
   bpSegments: any;
+  myGroups: boolean = false;
 
   constructor(
     public nav: NavController, 
@@ -99,17 +100,13 @@ export class BpList implements OnInit {
 
       this.getRoute().then( route => {
 
-        // fix error getting posts on reload
-        if( typeof this.route != 'string' )
-          return;
+        // add any extra parameters
+        let preparedRoute = this.addParams( route );
 
-        if( this.login_data && this.activityList ) {
-          // default to friends only
-          route += '&scope=friends&user=' + this.login_data.user_id
-        }
+        this.loadItems( preparedRoute )
 
-        this.loadItems( route );
-
+      }).catch( err => {
+        console.warn(err)
       })
 		  
     }
@@ -128,11 +125,16 @@ export class BpList implements OnInit {
   // set this.route with correct url
   getRoute() {
 
-    return new Promise( resolve => {
+    return new Promise( ( resolve, reject ) => {
 
       let item = window.localStorage.getItem( 'myappp' );
       let wp_url = JSON.parse( item ).wordpress_url;
       let rest_base = 'wp-json/ap-bp/v1/';
+
+      if( !wp_url ) {
+        alert('Please add a WordPress URL in your app settings.')
+        reject('No WordPress URL set.')
+      }
 
       // list route is actually a component for BuddyPress, for example 'activity'
       let component = this.navParams.data.list_route;
@@ -149,7 +151,7 @@ export class BpList implements OnInit {
       // show activity, group, or members list
       if( component == 'groups' ) {
         this.groupList = true
-        this.bpSegments = [ 'All', 'My Groups' ];
+        this.bpSegments = [ 'My Groups', 'All' ];
       } else if( component == 'members' ) {
         this.memberList = true
       } else if( component == 'activity' ) {
@@ -212,10 +214,12 @@ export class BpList implements OnInit {
 
       switch(segment) {
         case 'All':
+          this.myGroups = false
           // for all groups, we don't want user_id
           this.loadItems( this.route )
           break;
         case 'My Groups':
+          this.myGroups = true
           // add user_id to show my groups
           this.loadItems( this.route + '?user_id=' + this.login_data.user_id )
       }
@@ -234,6 +238,26 @@ export class BpList implements OnInit {
         this.presentToast('No data available, pull to refresh when you are online.');
       }
     });
+
+  }
+
+  // add params for filtering activity
+  addParams( route ) {
+
+    // fix error getting posts on reload
+    if( typeof this.route != 'string' )
+      return;
+
+    if( this.login_data && this.activityList ) {
+      // default to friends only
+      route += '&scope=friends&user=' + this.login_data.user_id
+    } else if( this.groupList && this.login_data ) {
+      // default to my groups
+      route += '?user_id=' + this.login_data.user_id
+      this.myGroups = true
+    }
+
+    return route;
 
   }
 
@@ -315,15 +339,18 @@ export class BpList implements OnInit {
     this.page++;
 
     let login;
+    let route = this.route
 
     // for some requests, we don't want to send login data
     if( !this.groupList ) {  
       login = this.login_data
+    } else if( this.myGroups ) {
+      route += '?user_id=' + this.login_data.user_id
     }
 
     console.log('load more ' + this.page + this.route )
 
-    this.bpProvider.getItems( this.route, login, this.page ).then(items => {
+    this.bpProvider.getItems( route, login, this.page ).then(items => {
       // Loads posts from WordPress API
       let length = items["length"];
 
