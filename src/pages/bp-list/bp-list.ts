@@ -98,12 +98,13 @@ export class BpList implements OnInit {
 
     } else {
 
+      this.setupComponent()
+
       this.getRoute().then( route => {
 
-        // add any extra parameters
-        let preparedRoute = this.addParams( route );
+        this.setupSegments()
 
-        this.loadItems( preparedRoute )
+        this.loadItems( route )
 
       }).catch( err => {
         console.warn(err)
@@ -141,31 +142,9 @@ export class BpList implements OnInit {
 
       this.route = wp_url + rest_base + component;
 
-      if( this.navParams.data.group_id ) {
-        this.groupId = this.navParams.data.group_id
-        // this.groupId = 1
-        this.route += '?type=activity_update&display_comments=false&primary_id=' + this.groupId
-        this.groupLink = this.navParams.data.group_link
-      }
+      let route = this.addParams( this.route );
 
-      // show activity, group, or members list
-      if( component == 'groups' ) {
-        this.groupList = true
-        this.bpSegments = [ 'My Groups', 'All' ];
-      } else if( component == 'members' ) {
-        this.memberList = true
-      } else if( component == 'activity' ) {
-
-        this.activityList = true
-        this.route += '?type=activity_update&display_comments=false';
-
-        this.bpSegments = [ 'Friends', 'All' ];
-
-      }
-
-      console.log(this.route, this.bpSegments)
-
-      resolve( this.route )
+      resolve( route )
 
     })
 
@@ -193,9 +172,40 @@ export class BpList implements OnInit {
 
   }
 
-  doSegment(segment) {
+  setupComponent() {
 
-    console.log(segment)
+    let component = this.navParams.data.list_route;
+
+    // show activity, group, or members list
+    if( component == 'groups' ) {
+
+      this.groupList = true
+
+    } else if( component == 'members' ) {
+
+      this.memberList = true
+
+    } else if( component == 'activity' ) {
+
+      this.activityList = true
+
+    }
+
+  }
+
+  setupSegments() {
+
+    if( this.navParams.data.user_activity ) {
+      this.bpSegments = null;
+    } else if( this.groupList ) {
+      this.bpSegments = [ 'My Groups', 'All' ];
+    } else if( this.activityList ) {
+      this.bpSegments = [ 'Friends', 'All' ];
+    }
+
+  }
+
+  doSegment(segment) {
 
     if( false === this.loginCheck() )
       return;
@@ -248,13 +258,50 @@ export class BpList implements OnInit {
     if( typeof this.route != 'string' )
       return;
 
-    if( this.login_data && this.activityList ) {
-      // default to friends only
-      route += '&scope=friends&user=' + this.login_data.user_id
+    // display activities
+    if( this.activityList ) {
+
+      route += '?type=activity_update&display_comments=false'
+
+      // add this to the global route also
+      this.route += '?type=activity_update&display_comments=false'
+
+      route = this.addActivityParams( route )
+
     } else if( this.groupList && this.login_data ) {
+
       // default to my groups
       route += '?user_id=' + this.login_data.user_id
       this.myGroups = true
+
+    }
+
+    return route;
+
+  }
+
+  // the logic that tells us what activity to display
+  addActivityParams( route ) {
+
+    // maybe add the type of activity. group, member, etc
+    if( this.navParams.data.group_id ) {
+
+      route += '&primary_id=' + this.navParams.data.group_id
+      this.groupId = this.navParams.data.group_id
+      this.groupLink = this.navParams.data.group_link
+
+    } else if( this.navParams.data.user_activity ) {
+
+      route += '&user=' + this.navParams.data.user_activity
+
+    }
+
+    // maybe add extra params if we are logged in
+    if( this.login_data && !this.navParams.data.user_activity ) {
+
+      // show friends activity
+      route += '&scope=friends&user=' + this.login_data.user_id
+
     }
 
     return route;
@@ -282,7 +329,7 @@ export class BpList implements OnInit {
       login = this.login_data
     }
 
-    console.log('route')
+    console.log('loadItems route ' + route)
     
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
     this.bpProvider.getItems( route, login, this.page ).then(items => {
@@ -324,7 +371,11 @@ export class BpList implements OnInit {
   }
 
   doRefresh(refresh) {
-    this.loadItems( this.route );
+
+    this.getRoute().then( route => {
+      this.loadItems( route );
+    })
+
     // refresh.complete should happen when posts are loaded, not timeout
     setTimeout( ()=> refresh.complete(), 500);
   }

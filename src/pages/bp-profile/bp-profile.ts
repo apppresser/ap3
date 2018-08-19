@@ -81,6 +81,15 @@ export class BpProfilePage implements OnInit {
 
   }
 
+  userActivity( userData ) {
+
+    this.nav.push('BpList', {
+      list_route: 'activity',
+      user_activity: userData.id
+    })
+    
+  }
+
   iabLink(link) {
     window.open( link, '_blank' );
   }
