@@ -24,7 +24,7 @@
           <ion-icon name="cog"></ion-icon>
         </button>
 
-      <button ion-button (click)="doActivity()">
+      <button ion-button *ngIf="!isUserActivity" (click)="doActivity()">
         <ion-icon name="ios-create-outline"></ion-icon>
       </button>
     </ion-buttons>
@@ -41,7 +41,7 @@
 
 </ion-header>
 
-<ion-content>
+<ion-content [ngClass]="customClasses">
 
   <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>

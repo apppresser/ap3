@@ -20,6 +20,8 @@ export class Posts {
 
   load(url:string, page) {
 
+    console.log('lost posts ' + url)
+
     // set pagination
     if( !page ) {
       let page = '1';
@@ -35,7 +37,7 @@ export class Posts {
       var concat;
 
       // check if url already has a query param
-      if( url.indexOf('?') > 0 ) {
+      if( url && url.indexOf('?') > 0 ) {
         concat = '&';
       } else {
         concat = '?';

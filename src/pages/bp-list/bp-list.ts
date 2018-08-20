@@ -38,6 +38,7 @@ export class BpList implements OnInit {
   groupLink: any;
   bpSegments: any;
   myGroups: boolean = false;
+  isUserActivity: boolean = false;
 
   constructor(
     public nav: NavController, 
@@ -199,10 +200,16 @@ export class BpList implements OnInit {
 
     if( this.navParams.data.user_activity ) {
       this.bpSegments = null;
+      this.isUserActivity = true;
     } else if( this.groupList ) {
       this.bpSegments = [ 'My Groups', 'All' ];
     } else if( this.activityList ) {
       this.bpSegments = [ 'Friends', 'All' ];
+    }
+
+    if( this.bpSegments ) {
+      // fixes iphoneX status bar padding
+      this.customClasses += ' has-favorites';
     }
 
   }
@@ -296,10 +303,7 @@ export class BpList implements OnInit {
 
       route += '&user=' + this.navParams.data.user_activity
 
-    }
-
-    // maybe add extra params if we are logged in
-    if( this.login_data && !this.navParams.data.user_activity ) {
+    } else if( this.login_data && !this.navParams.data.user_activity && !this.navParams.data.group_id ) {
 
       // show friends activity
       route += '&scope=friends&user=' + this.login_data.user_id
@@ -380,11 +384,6 @@ export class BpList implements OnInit {
 
     // refresh.complete should happen when posts are loaded, not timeout
     setTimeout( ()=> refresh.complete(), 500);
-  }
-
-  addQueryParam(url, param) {
-    const separator = (url.indexOf('?') > 0) ? '&' : '?';
-    return url + separator + param;
   }
 
   loadMore(infiniteScroll) {
