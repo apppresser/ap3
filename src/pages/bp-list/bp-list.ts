@@ -38,6 +38,7 @@ export class BpList implements OnInit {
   groupLink: any;
   bpSegments: any;
   myGroups: boolean = false;
+  showAllGroups: boolean = false;
   isUserActivity: boolean = false;
 
   constructor(
@@ -205,6 +206,8 @@ export class BpList implements OnInit {
       this.bpSegments = [ 'My Groups', 'All' ];
     } else if( this.activityList ) {
       this.bpSegments = [ 'Friends', 'All' ];
+    } else if( this.memberList ) {
+      this.bpSegments = [ 'All', 'My Profile' ];
     }
 
     if( this.bpSegments ) {
@@ -234,6 +237,7 @@ export class BpList implements OnInit {
       switch(segment) {
         case 'All':
           this.myGroups = false
+          this.showAllGroups = true;
           // for all groups, we don't want user_id
           this.loadItems( this.route )
           break;
@@ -277,7 +281,7 @@ export class BpList implements OnInit {
 
       route = this.addActivityParams( route )
 
-    } else if( this.groupList && this.login_data ) {
+    } else if( this.groupList && this.login_data && !this.showAllGroups ) {
 
       // default to my groups
       route += '?user_id=' + this.login_data.user_id
@@ -391,7 +395,7 @@ export class BpList implements OnInit {
     this.page++;
 
     let login;
-    let route = this.getRoute().then( route => {
+    this.getRoute().then( route => {
 
       // for some requests, we don't want to send login data
       if( !this.groupList ) {  
