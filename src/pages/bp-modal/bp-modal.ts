@@ -174,9 +174,11 @@ export class BpModal {
 	}
 
 	showSpinner() {
-		this.spinner = this.loadingCtrl.create();
+		this.spinner = this.loadingCtrl.create({
+	        showBackdrop: false
+	    });
 
-		this.spinner.present();
+		this.spinner.present( this.spinner );
 	}
 
 	hideSpinner() {

@@ -1316,8 +1316,6 @@ export class MyApp {
         root = this.getPageType( item );
       }
 
-      console.log('root in resetTabs', root)
-
       // hide the tab if user added class of hide
       item.show = true;
       if( item.extra_classes.indexOf('hide') >= 0 ) {
@@ -1608,7 +1606,7 @@ export class MyApp {
       return 'BpList';
     } else if( page.type === 'apppages' ) {
       return this.getPageModuleName(page.page_id);
-    } else if( page.url && page.type === 'custom' && !page.root ) {
+    } else if( page.url && !page.root ) {
       return Iframe;
     } else {
       return null;
