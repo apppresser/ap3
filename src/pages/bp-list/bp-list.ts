@@ -85,6 +85,12 @@ export class BpList implements OnInit {
 
     });
 
+    // is this activity, members, groups, etc
+    this.setupComponent()
+
+    // add toolbar for Friends, All, etc
+    this.setupSegments()
+
   }
 
   getStarted() {
@@ -98,11 +104,7 @@ export class BpList implements OnInit {
 
     } else {
 
-      this.setupComponent()
-
       this.getRoute().then( route => {
-
-        this.setupSegments()
 
         this.loadItems( route )
 

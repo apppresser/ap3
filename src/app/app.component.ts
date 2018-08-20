@@ -576,6 +576,7 @@ export class MyApp {
     }
 
     let root = this.getPageType( page );
+    console.log('open page root', root, page)
 
     if( root ) {
       this.nav.setRoot( root, page );
@@ -639,12 +640,15 @@ export class MyApp {
 
     let root = this.getPageType( page );
 
+    console.log('push page type', root)
+
     this.nav.push( root, page, opt );
   }
 
   openTab(tab_index: number) {
     this.restoreTabs();
     let tabs = this.nav.getActiveChildNav();
+
     if(tabs) {
       this.nav.popToRoot({animate:true}).then(() => { // close any transitioned pages
           tabs.select(tab_index);
@@ -657,6 +661,7 @@ export class MyApp {
    * @param page object
    */
   openNewTab(page) {
+
     this.nav.popToRoot({animate:true}).then(() => { // close any transitioned pages
       this.restoreTabs();
       this.tabs.unshift(page);
@@ -674,6 +679,7 @@ export class MyApp {
   }
 
   openMenuLink(data: {menulink}) {
+
     let page: any;
     let menu_index: number;
 
@@ -1304,7 +1310,13 @@ export class MyApp {
       // set component, default is Iframe
       var root:any = Iframe;
 
-      root = this.getPageType( item );
+      if( item.root ) {
+        root = item.root
+      } else {
+        root = this.getPageType( item );
+      }
+
+      console.log('root in resetTabs', root)
 
       // hide the tab if user added class of hide
       item.show = true;
