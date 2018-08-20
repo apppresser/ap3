@@ -120,6 +120,15 @@ export class BpList implements OnInit {
 
   ionViewWillEnter() {
 
+    // fixes missing login data after iframe login
+    this.storage.get('user_login').then( data => {
+
+      if(data) {
+        this.login_data = data
+      }
+
+    })
+
     if( this.platform.isRTL && this.viewCtrl.enableBack() ) {
         this.viewCtrl.showBackButton(false)
         this.rtlBack = true
@@ -207,7 +216,7 @@ export class BpList implements OnInit {
     } else if( this.activityList ) {
       this.bpSegments = [ 'Friends', 'All' ];
     } else if( this.memberList ) {
-      this.bpSegments = [ 'All', 'My Profile' ];
+      this.bpSegments = [ 'My Profile' ];
     }
 
     if( this.bpSegments ) {
@@ -245,6 +254,21 @@ export class BpList implements OnInit {
           this.myGroups = true
           // add user_id to show my groups
           this.loadItems( this.route + '?user_id=' + this.login_data.user_id )
+      }
+
+    } else if( this.memberList ) {
+
+      switch(segment) {
+        case 'My Profile':
+
+          if( false === this.loginCheck() )
+            return;
+
+          this.nav.push('BpProfilePage', {
+            user_id: this.login_data.user_id,
+            login_data: this.login_data
+          });
+
       }
 
     }

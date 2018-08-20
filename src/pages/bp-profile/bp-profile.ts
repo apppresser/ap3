@@ -1,4 +1,4 @@
-import {NavController, NavParams, LoadingController, Platform, ViewController, IonicPage, Events, ToastController} from 'ionic-angular';
+import {NavController, NavParams, LoadingController, Platform, ViewController, IonicPage, Events, ToastController, ModalController} from 'ionic-angular';
 import {Component, Renderer, ElementRef, OnInit} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {BpProvider} from '../../providers/buddypress/bp-provider';
@@ -17,6 +17,7 @@ export class BpProfilePage implements OnInit {
   userData: any;
   login_data: any;
   spinner: any;
+  isMyProfile: boolean = false;
 
   constructor(
     public nav: NavController, 
@@ -29,7 +30,8 @@ export class BpProfilePage implements OnInit {
     public events: Events,
     public bpProvider: BpProvider,
     public toastCtrl: ToastController,
-    public loadingCtrl: LoadingController
+    public loadingCtrl: LoadingController,
+    public modalCtrl: ModalController
     ) {
 
     this.user_id = this.navParams.get('user_id');
@@ -48,6 +50,10 @@ export class BpProfilePage implements OnInit {
   }
 
   setupUser() {
+
+    if( this.user_id === this.login_data.user_id ) {
+      this.isMyProfile = true
+    }
 
     this.bpProvider.getItem( 'members/' + this.user_id, this.login_data ).then( data => {
       console.log(data)
@@ -122,6 +128,13 @@ export class BpProfilePage implements OnInit {
         this.rtlBack = true
     }
  
+  }
+
+  openLoginModal() {
+
+    const loginModal = this.modalCtrl.create('LoginModal' );
+    loginModal.present();
+
   }
 
   presentToast(msg) {

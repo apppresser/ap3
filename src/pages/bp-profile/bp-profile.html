@@ -30,9 +30,11 @@
 			<p class="user-name" *ngIf="userData.name" [innerHTML]="userData.name"></p>
 			<p class="mention-name" *ngIf="userData.mention_name" [innerHTML]="'@' + userData.mention_name"></p>
 			<button ion-button block (click)="iabLink(userData.link + '?appp=3')" color="light">View Full Profile</button>
+			<button ion-button *ngIf="isMyProfile" block (click)="openLoginModal()" color="light">Logout</button>
+			
 		</ion-item>
 
-		<ion-row>
+		<ion-row *ngIf="!isMyProfile">
     		<ion-col text-center>
 				<button ion-button icon-start small clear (click)="doFriend(userData.id )"><ion-icon name="add"></ion-icon> Friend</button>
 			</ion-col>
