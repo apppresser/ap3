@@ -392,44 +392,47 @@ export class BpList implements OnInit {
     this.page++;
 
     let login;
-    let route = this.route
+    let route = this.getRoute().then( route => {
 
-    // for some requests, we don't want to send login data
-    if( !this.groupList ) {  
-      login = this.login_data
-    } else if( this.myGroups ) {
-      route += '?user_id=' + this.login_data.user_id
-    }
+      // for some requests, we don't want to send login data
+      if( !this.groupList ) {  
+        login = this.login_data
+      } else if( this.myGroups ) {
+        route += '?user_id=' + this.login_data.user_id
+      }
 
-    console.log('load more ' + this.page + this.route )
+      console.log('load more ' + this.page + route )
 
-    this.bpProvider.getItems( route, login, this.page ).then(items => {
-      // Loads posts from WordPress API
-      let length = items["length"];
+      this.bpProvider.getItems( route, login, this.page ).then(items => {
+        // Loads posts from WordPress API
+        let length = items["length"];
 
-      if( length === 0 ) {
+        if( length === 0 ) {
+          if(infiniteScroll)
+            infiniteScroll.complete();
+          return;
+        }
+
+        for (var i = 0; i < length; ++i) {
+          this.items.push( items[i] );
+        }
+
+        this.storage.set( this.route.substr(-10, 10) + '_bp', this.items);
+
         if(infiniteScroll)
           infiniteScroll.complete();
-        return;
-      }
 
-      for (var i = 0; i < length; ++i) {
-        this.items.push( items[i] );
-      }
+      }).catch( e => {
+        // promise was rejected, usually a 404 or error response from API
+        if(infiniteScroll)
+          infiniteScroll.complete();
 
-      this.storage.set( this.route.substr(-10, 10) + '_bp', this.items);
+        console.warn('load more error', e)
 
-      if(infiniteScroll)
-        infiniteScroll.complete();
+      });
 
-    }).catch( e => {
-      // promise was rejected, usually a 404 or error response from API
-      if(infiniteScroll)
-        infiniteScroll.complete();
 
-      console.warn('load more error', e)
-
-    });
+    })
 
   }
 

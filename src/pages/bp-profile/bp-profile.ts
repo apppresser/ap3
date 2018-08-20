@@ -1,4 +1,4 @@
-import {NavController, NavParams, ModalController, Platform, ViewController, IonicPage, Events} from 'ionic-angular';
+import {NavController, NavParams, LoadingController, Platform, ViewController, IonicPage, Events, ToastController} from 'ionic-angular';
 import {Component, Renderer, ElementRef, OnInit} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {BpProvider} from '../../providers/buddypress/bp-provider';
@@ -16,18 +16,20 @@ export class BpProfilePage implements OnInit {
   user_id: any;
   userData: any;
   login_data: any;
+  spinner: any;
 
   constructor(
     public nav: NavController, 
     public navParams: NavParams, 
     public sanitizer: DomSanitizer,
-    public modalCtrl: ModalController,
     public renderer: Renderer,
     public elementRef: ElementRef,
     public viewCtrl: ViewController,
     public platform: Platform,
     public events: Events,
-    public bpProvider: BpProvider
+    public bpProvider: BpProvider,
+    public toastCtrl: ToastController,
+    public loadingCtrl: LoadingController
     ) {
 
     this.user_id = this.navParams.get('user_id');
@@ -87,7 +89,26 @@ export class BpProfilePage implements OnInit {
       list_route: 'activity',
       user_activity: userData.id
     })
-    
+
+  }
+
+  doFriend( friendId ) {
+
+    this.showSpinner()
+
+    this.bpProvider.addFriend( friendId, this.login_data ).then( response => {
+      
+      this.presentToast( response )
+
+      this.hideSpinner()
+    }).catch( e => {
+
+      console.warn(e)
+      this.presentToast('There was a problem.')
+      this.hideSpinner()
+
+    })
+
   }
 
   iabLink(link) {
@@ -101,6 +122,32 @@ export class BpProfilePage implements OnInit {
         this.rtlBack = true
     }
  
+  }
+
+  presentToast(msg) {
+
+    let toast = this.toastCtrl.create({
+      message: msg,
+      duration: 3000,
+      position: 'bottom'
+    });
+
+    toast.onDidDismiss(() => {
+      // console.log('Dismissed toast');
+    });
+
+    toast.present();
+
+  }
+
+  showSpinner() {
+    this.spinner = this.loadingCtrl.create();
+
+    this.spinner.present();
+  }
+
+  hideSpinner() {
+    this.spinner.dismiss();
   }
 
   // changes the back button transition direction if app is RTL

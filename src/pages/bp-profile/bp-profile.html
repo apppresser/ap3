@@ -32,11 +32,17 @@
 			<button ion-button block (click)="iabLink(userData.link + '?appp=3')" color="light">View Full Profile</button>
 		</ion-item>
 
-		<ion-list>
-			<!-- <button ion-item icon-start (click)="iabLink(userData.link + '?appp=3')"><ion-icon name="add"></ion-icon> Add Friend</button> -->
-			<!-- <button ion-item icon-start (click)="iabLink(userData.link + '?appp=3')"><ion-icon name="chatbubbles"></ion-icon> Send Message</button> -->
-			<button ion-item icon-start (click)="userActivity(userData )"><ion-icon name="list"></ion-icon> View Activity</button>
-		</ion-list>
+		<ion-row>
+    		<ion-col text-center>
+				<button ion-button icon-start small clear (click)="doFriend(userData.id )"><ion-icon name="add"></ion-icon> Friend</button>
+			</ion-col>
+			<ion-col text-center>
+				<button ion-button icon-start small clear (click)="iabLink(userData.link + '?appp=3')"><ion-icon name="chatbubbles"></ion-icon> Message</button>
+			</ion-col>
+			<ion-col text-center>
+				<button ion-button icon-start small clear (click)="userActivity(userData )"><ion-icon name="list"></ion-icon> Activity</button>
+			</ion-col>
+		</ion-row>
 
 	</ion-card>
 

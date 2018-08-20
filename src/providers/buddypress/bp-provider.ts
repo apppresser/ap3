@@ -302,6 +302,34 @@ export class BpProvider {
 
   }
 
+  addFriend( friendId, login_data ) {
+
+    let route = this.url + this.restBase + 'members/' + friendId;
+
+    let data = 'user_id=' + login_data.user_id + '&token=' + login_data.token;
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.post( route + '?' + data, null )
+        .map(res => res.json())
+        .subscribe(data => {
+          
+            resolve(data)
+
+          },
+          error => {
+
+            console.log(error)
+
+            reject(error);
+
+          }
+        )
+
+    }) // end promise
+
+  }
+
   handleError(err) {
     console.warn(err);
   }
