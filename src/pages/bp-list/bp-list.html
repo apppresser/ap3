@@ -33,8 +33,8 @@
 
   <ion-toolbar *ngIf="bpSegments" id="favorites-toolbar">
 
-    <button ion-button clear (click)="doSegment(segment)" *ngFor="let segment of bpSegments">
-      {{ segment }}
+    <button ion-button clear (click)="doSegment(segment)" *ngFor="let segment of bpSegments" [ngClass]="segment.selected ? 'item-selected' : ''">
+      {{ segment.name }}
     </button>
 
   </ion-toolbar>

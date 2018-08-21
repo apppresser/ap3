@@ -212,11 +212,11 @@ export class BpList implements OnInit {
       this.bpSegments = null;
       this.isUserActivity = true;
     } else if( this.groupList ) {
-      this.bpSegments = [ 'My Groups', 'All' ];
+      this.bpSegments = [ { name: 'My Groups', selected: true },{ name: 'All' } ];
     } else if( this.activityList ) {
-      this.bpSegments = [ 'Friends', 'All' ];
+      this.bpSegments = [ { name: 'Friends', selected: true }, { name: 'All' } ];
     } else if( this.memberList ) {
-      this.bpSegments = [ 'My Profile' ];
+      this.bpSegments = [ { name: 'My Profile' } ];
     }
 
     if( this.bpSegments ) {
@@ -231,34 +231,43 @@ export class BpList implements OnInit {
     if( false === this.loginCheck() )
       return;
 
+    // first clear out selections
+    for (var i = 0; i < this.bpSegments.length; ++i) {
+      this.bpSegments[i].selected = false
+    }
+
     if( this.activityList ) {
 
-      switch(segment) {
+      switch(segment.name) {
         case 'All':
+          segment.selected = true
           this.loadItems( this.route )
           break;
         case 'Friends':
+          segment.selected = true
           this.loadItems( this.route + '&scope=friends&user=' + this.login_data.user_id )
       }
 
     } else if( this.groupList ) {
 
-      switch(segment) {
+      switch(segment.name) {
         case 'All':
           this.myGroups = false
-          this.showAllGroups = true;
+          this.showAllGroups = true
+          segment.selected = true
           // for all groups, we don't want user_id
           this.loadItems( this.route )
           break;
         case 'My Groups':
           this.myGroups = true
+          segment.selected = true
           // add user_id to show my groups
           this.loadItems( this.route + '?user_id=' + this.login_data.user_id )
       }
 
     } else if( this.memberList ) {
 
-      switch(segment) {
+      switch(segment.name) {
         case 'My Profile':
 
           if( false === this.loginCheck() )
@@ -406,9 +415,19 @@ export class BpList implements OnInit {
 
   doRefresh(refresh) {
 
-    this.getRoute().then( route => {
-      this.loadItems( route );
-    })
+    if( this.bpSegments ) {
+      for (var i = 0; i < this.bpSegments.length; ++i) {
+        if( this.bpSegments[i].selected === true ) {
+          this.doSegment( this.bpSegments[i] )
+        }
+      }
+    } else {
+      this.getRoute().then( route => {
+        this.loadItems( route );
+      })
+    }
+
+    
 
     // refresh.complete should happen when posts are loaded, not timeout
     setTimeout( ()=> refresh.complete(), 500);
