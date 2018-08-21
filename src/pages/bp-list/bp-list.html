@@ -31,13 +31,15 @@
 
   </ion-navbar>
 
-  <ion-toolbar *ngIf="bpSegments" id="favorites-toolbar">
+  <ion-item *ngIf="bpSegments" id="favorites-toolbar" color="light">
 
-    <button ion-button clear (click)="doSegment(segment)" *ngFor="let segment of bpSegments" [ngClass]="segment.selected ? 'item-selected' : ''">
-      {{ segment.name }}
-    </button>
+    <ion-select [(ngModel)]="segments" (ionChange)="segmentChanged()" placeholder="Filter">
 
-  </ion-toolbar>
+      <ion-option *ngFor="let segment of bpSegments" [value]="segment.name">{{segment.name}}</ion-option>
+
+    </ion-select>
+
+  </ion-item>
 
 </ion-header>
 
@@ -104,6 +106,11 @@
   </ion-list>
 
   <ion-list *ngIf="memberList">
+
+    <ion-item-divider color="light" (tap)="myProfile()" *ngIf="login_data">
+      {{ 'My Profile' || translate }}
+      <ion-icon item-end name="ios-arrow-forward"></ion-icon>
+    </ion-item-divider>
 
     <ion-item *ngFor="let item of items" (tap)="openMember(item)">
 

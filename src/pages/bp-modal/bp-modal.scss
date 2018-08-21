@@ -1,18 +1,25 @@
 bp-modal {
 
 	.activity-texarea textarea {
-		height: 100px;
+		height: 90px;
 	}
 
 	.button {
 		height: 44px;
 	}
 
-	.uploaded-image {
-		display: block;
-		margin: 10px auto;
-		max-height: 200px;
+	ion-thumbnail img.uploaded-image {
 		width: auto;
+    	height: 90px;
+    	max-width: 120px;
+	}
+
+	.item-textarea .item-inner {
+		border-bottom: none !important;
+	}
+
+	form .item {
+		border-bottom: 1px solid #eee;
 	}
 
 	.fake-button {
@@ -27,5 +34,10 @@ bp-modal {
 		.item-inner {
 			border: none !important;
 		}
+	}
+
+	.item-ios.fake-button {
+		box-shadow: none;
+		border-radius: 3px;
 	}
 }

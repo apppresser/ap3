@@ -40,6 +40,7 @@ export class BpList implements OnInit {
   myGroups: boolean = false;
   showAllGroups: boolean = false;
   isUserActivity: boolean = false;
+  segments: any;
 
   constructor(
     public nav: NavController, 
@@ -216,7 +217,12 @@ export class BpList implements OnInit {
     } else if( this.activityList ) {
       this.bpSegments = [ { name: 'Friends', selected: true }, { name: 'All' } ];
     } else if( this.memberList ) {
-      this.bpSegments = [ { name: 'My Profile' } ];
+      this.bpSegments = null
+    }
+
+    // no segments in group activity
+    if( this.activityList && this.navParams.data.group_id ) {
+      this.bpSegments = null;
     }
 
     if( this.bpSegments ) {
@@ -226,58 +232,38 @@ export class BpList implements OnInit {
 
   }
 
-  doSegment(segment) {
+  segmentChanged() {
+
+    this.segments = this.segments.trim()
+
+    console.log( this.segments.trim() )
 
     if( false === this.loginCheck() )
       return;
 
-    // first clear out selections
-    for (var i = 0; i < this.bpSegments.length; ++i) {
-      this.bpSegments[i].selected = false
-    }
-
     if( this.activityList ) {
 
-      switch(segment.name) {
+      switch(this.segments) {
         case 'All':
-          segment.selected = true
           this.loadItems( this.route )
           break;
         case 'Friends':
-          segment.selected = true
           this.loadItems( this.route + '&scope=friends&user=' + this.login_data.user_id )
       }
 
     } else if( this.groupList ) {
 
-      switch(segment.name) {
+      switch(this.segments) {
         case 'All':
           this.myGroups = false
           this.showAllGroups = true
-          segment.selected = true
           // for all groups, we don't want user_id
           this.loadItems( this.route )
           break;
         case 'My Groups':
           this.myGroups = true
-          segment.selected = true
           // add user_id to show my groups
           this.loadItems( this.route + '?user_id=' + this.login_data.user_id )
-      }
-
-    } else if( this.memberList ) {
-
-      switch(segment.name) {
-        case 'My Profile':
-
-          if( false === this.loginCheck() )
-            return;
-
-          this.nav.push('BpProfilePage', {
-            user_id: this.login_data.user_id,
-            login_data: this.login_data
-          });
-
       }
 
     }
@@ -413,12 +399,21 @@ export class BpList implements OnInit {
     }, opt);
   }
 
+  myProfile() {
+
+    this.nav.push('BpProfilePage', {
+      user_id: this.login_data.user_id,
+      login_data: this.login_data
+    });
+    
+  }
+
   doRefresh(refresh) {
 
-    if( this.bpSegments ) {
+    if( this.bpSegments && this.segments ) {
       for (var i = 0; i < this.bpSegments.length; ++i) {
         if( this.bpSegments[i].selected === true ) {
-          this.doSegment( this.bpSegments[i] )
+          this.segmentChanged()
         }
       }
     } else {
@@ -426,8 +421,6 @@ export class BpList implements OnInit {
         this.loadItems( route );
       })
     }
-
-    
 
     // refresh.complete should happen when posts are loaded, not timeout
     setTimeout( ()=> refresh.complete(), 500);
