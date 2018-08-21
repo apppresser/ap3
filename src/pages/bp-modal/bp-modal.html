@@ -17,6 +17,10 @@
 <ion-content>
 
   <form (ngSubmit)="submitForm()" padding *ngIf="login_data">
+
+    <ion-item *ngIf="isMessage">
+      <ion-input type="text" [(ngModel)]="activity.subject" name="subject" placeholder="Subject"></ion-input>
+    </ion-item>
     
     <ion-item>
 
@@ -32,12 +36,10 @@
     <ion-grid>
       <ion-row>
         <ion-col>
-          <button *ngIf="!isReply" ion-button type="submit" block>{{ 'Post update' | translate }}</button>
-
-          <button *ngIf="isReply" ion-button type="submit" block>{{ 'Post comment' | translate }}</button>
+          <button *ngIf="!isReply" ion-button type="submit" block>{{ isReply ? 'Post comment' : isMessage ? 'Send Message' : 'Post update' | translate }}</button>
         </ion-col>
 
-        <ion-col *ngIf="!isReply">
+        <ion-col *ngIf="!isReply && !isMessage">
 
           <ion-item class="fake-button" icon-start color="light" (tap)="imageSheet()">
             <ion-icon name="camera"></ion-icon>

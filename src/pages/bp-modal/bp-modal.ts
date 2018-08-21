@@ -21,6 +21,7 @@ export class BpModal {
 	uploadedImage: string;
 	route: any;
 	isReply: boolean = false;
+	isMessage: boolean = false;
 	groupId: any = null;
 
 	constructor(
@@ -47,6 +48,10 @@ export class BpModal {
 
 		if( this.navParams.get('comment') == true ) {
 			this.isReply = true;
+		}
+
+		if( this.navParams.get('message') == true ) {
+			this.isMessage = true;
 		}
 
 		if( this.navParams.get('group') ) {
@@ -98,6 +103,27 @@ export class BpModal {
 					this.hideSpinner()
 
 				});
+
+		} else if( this.isMessage ) {
+
+			this.bpProvider.sendMessage( this.navParams.data.friendId, this.login_data, this.activity.subject, this.activity.content ).then( ret => {
+
+				console.log(ret)
+				if( typeof ret == 'string' ) {
+					this.presentToast( ret )
+				}
+
+				this.dismiss()
+				
+				this.hideSpinner()
+
+			}).catch( e => {
+
+				console.warn(e)
+				this.presentToast('There was a problem, please try again.')
+				this.hideSpinner()
+
+			});
 
 		} else {
 

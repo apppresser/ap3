@@ -117,6 +117,12 @@ export class BpProfilePage implements OnInit {
 
   }
 
+  message( userData ) {
+    let data = { friendId: userData.id, message: true }
+    let bpModal = this.modalCtrl.create( 'BpModal', data );
+    bpModal.present();
+  }
+
   iabLink(link) {
     window.open( link, '_blank' );
   }
