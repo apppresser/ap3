@@ -106,11 +106,14 @@ export class BpModal {
 
 		} else if( this.isMessage ) {
 
-			this.bpProvider.sendMessage( this.navParams.data.friendId, this.login_data, this.activity.subject, this.activity.content ).then( ret => {
+			let threadId = ( this.navParams.data.threadId ? this.navParams.data.threadId : null )
+
+			this.bpProvider.sendMessage( this.navParams.data.recipients, this.login_data, this.activity.subject, this.activity.content, threadId ).then( ret => {
 
 				console.log(ret)
 				if( typeof ret == 'string' ) {
 					this.presentToast( ret )
+					this.events.publish('bp-add-message', { subject: this.activity.subject, content: this.activity.content, thread: threadId } )
 				}
 
 				this.dismiss()

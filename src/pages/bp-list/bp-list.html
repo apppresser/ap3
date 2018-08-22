@@ -89,6 +89,8 @@
 
     </ion-card>
 
+    <ion-item *ngIf="!items">{{ 'No items to show.' | translate }}</ion-item>
+
   </ion-list>
 
   <ion-list *ngIf="groupList">
@@ -107,6 +109,8 @@
       <button *ngIf="!myGroups" ion-button color="light" (tap)="joinGroup(item)" item-end>Join Group</button>
 
     </ion-item>
+
+    <ion-item *ngIf="!items">{{ 'No items to show.' | translate }}</ion-item>
 
   </ion-list>
 
@@ -128,6 +132,8 @@
       <!-- <button ion-button color="light" (tap)="AddFriend(item)" item-end>Add Friend</button> -->
 
     </ion-item>
+
+    <ion-item *ngIf="!items">{{ 'No items to show.' | translate }}</ion-item>
 
   </ion-list>
 

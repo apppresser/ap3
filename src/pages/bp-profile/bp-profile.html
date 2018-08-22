@@ -30,19 +30,30 @@
 			<p class="user-name" *ngIf="userData.name" [innerHTML]="userData.name"></p>
 			<p class="mention-name" *ngIf="userData.mention_name" [innerHTML]="'@' + userData.mention_name"></p>
 			<button ion-button block (click)="iabLink(userData.link )" color="light">View Full Profile</button>
-			<button ion-button *ngIf="isMyProfile" block (click)="openLoginModal()" color="light">Logout</button>
 			
 		</ion-item>
 
 		<ion-row *ngIf="!isMyProfile">
+			<ion-col text-center>
+				<button ion-button icon-start small clear (click)="message( userData )"><ion-icon name="chatbubbles"></ion-icon> {{ 'Message' | translate }}</button>
+			</ion-col>
+			<ion-col text-center>
+				<button ion-button icon-start small clear (click)="userActivity(userData )"><ion-icon name="list"></ion-icon> {{ 'Activity' | translate }}</button>
+			</ion-col>
+			<ion-col text-center>
+				<button ion-button icon-start small clear (click)="doFriend(userData.id )"><ion-icon name="add"></ion-icon> {{ 'Friend' | translate }}</button>
+			</ion-col>
+		</ion-row>
+
+		<ion-row *ngIf="isMyProfile">
     		<ion-col text-center>
-				<button ion-button icon-start small clear (click)="doFriend(userData.id )"><ion-icon name="add"></ion-icon> Friend</button>
+				<button ion-button icon-start small clear *ngIf="isMyProfile" block (click)="showMessages()"><ion-icon name="chatbubbles"></ion-icon> {{ 'Messages' | translate }}</button>
 			</ion-col>
 			<ion-col text-center>
-				<button ion-button icon-start small clear (click)="message( userData )"><ion-icon name="chatbubbles"></ion-icon> Message</button>
+				<button ion-button icon-start small clear (click)="userActivity(userData )"><ion-icon name="list"></ion-icon> {{ 'Activity' | translate }}</button>
 			</ion-col>
 			<ion-col text-center>
-				<button ion-button icon-start small clear (click)="userActivity(userData )"><ion-icon name="list"></ion-icon> Activity</button>
+				<button ion-button icon-start small clear (click)="openLoginModal()"><ion-icon name="log-in"></ion-icon> {{ 'Login/out' | translate }}</button>
 			</ion-col>
 		</ion-row>
 

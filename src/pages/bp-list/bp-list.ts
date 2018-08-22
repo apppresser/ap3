@@ -80,7 +80,7 @@ export class BpList implements OnInit {
     // get login data on first load
     this.storage.get('user_login').then( data => {
 
-      if(data) {
+      if( data ) {
         this.login_data = data
       }
 
@@ -93,6 +93,18 @@ export class BpList implements OnInit {
 
     // add toolbar for Friends, All, etc
     this.setupSegments()
+
+  }
+
+  getLoginData() {
+
+    this.storage.get('user_login').then( data => {
+
+      if( data ) {
+        this.login_data = data
+      }
+
+    });
 
   }
 
@@ -121,14 +133,7 @@ export class BpList implements OnInit {
 
   ionViewWillEnter() {
 
-    // fixes missing login data after iframe login
-    this.storage.get('user_login').then( data => {
-
-      if(data) {
-        this.login_data = data
-      }
-
-    })
+    this.getLoginData()
 
     if( this.platform.isRTL && this.viewCtrl.enableBack() ) {
         this.viewCtrl.showBackButton(false)
@@ -213,9 +218,9 @@ export class BpList implements OnInit {
       this.bpSegments = null;
       this.isUserActivity = true;
     } else if( this.groupList ) {
-      this.bpSegments = [ { name: 'My Groups', selected: true },{ name: 'All' } ];
+      this.bpSegments = [ { name: 'My Groups' },{ name: 'All' } ];
     } else if( this.activityList ) {
-      this.bpSegments = [ { name: 'Friends', selected: true }, { name: 'All' } ];
+      this.bpSegments = [ { name: 'Friends' }, { name: 'All' } ];
     } else if( this.memberList ) {
       this.bpSegments = null
     }
@@ -236,19 +241,19 @@ export class BpList implements OnInit {
 
     this.segments = this.segments.trim()
 
-    console.log( this.segments.trim() )
-
     if( false === this.loginCheck() )
       return;
 
     if( this.activityList ) {
 
-      switch(this.segments) {
-        case 'All':
-          this.loadItems( this.route )
-          break;
-        case 'Friends':
-          this.loadItems( this.route + '&scope=friends&user=' + this.login_data.user_id )
+      if( this.segments === 'Friends' && this.login_data && this.login_data.user_id ) {
+
+        this.loadItems( this.route + '&scope=friends&user=' + this.login_data.user_id )
+
+      } else {
+
+        this.loadItems( this.route )
+
       }
 
     } else if( this.groupList ) {
@@ -405,7 +410,7 @@ export class BpList implements OnInit {
       user_id: this.login_data.user_id,
       login_data: this.login_data
     });
-    
+
   }
 
   doRefresh(refresh) {
@@ -620,8 +625,8 @@ export class BpList implements OnInit {
   // make sure user is logged in
   loginCheck() {
 
-    if( !this.login_data ) {
-      this.presentToast('You must be logged in to do that.')
+    if( !this.login_data || !this.login_data.user_id ) {
+      this.presentToast('Please log in.')
       return false;
     }
 

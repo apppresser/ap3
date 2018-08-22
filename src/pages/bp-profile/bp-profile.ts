@@ -98,6 +98,12 @@ export class BpProfilePage implements OnInit {
 
   }
 
+  showMessages() {
+
+    this.nav.push( 'BpMessages' )
+
+  }
+
   doFriend( friendId ) {
 
     this.showSpinner()
@@ -118,7 +124,7 @@ export class BpProfilePage implements OnInit {
   }
 
   message( userData ) {
-    let data = { friendId: userData.id, message: true, title: 'Message' }
+    let data = { recipients: userData.id, message: true, title: 'Message' }
     let bpModal = this.modalCtrl.create( 'BpModal', data );
     bpModal.present();
   }

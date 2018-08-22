@@ -1,0 +1,96 @@
+<ion-header>
+
+  <ion-navbar>
+    
+    <ion-buttons start>
+    <button *ngIf="rtlBack||is_registration_page" (click)="backRtlTransition()" ion-button class="custom-back-button">
+        <ion-icon name="arrow-back"></ion-icon>
+        {{ 'Back' | translate }}
+    </button>
+
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+
+    </ion-buttons>
+
+    <img class="header-logo" *ngIf="show_header_logo" [src]="header_logo_url" />
+
+    <ion-title *ngIf="!show_header_logo">{{title | translate}}</ion-title>
+
+    <ion-buttons end>
+
+      <button ion-button *ngIf="singleThread" (tap)="replyToThread()">
+        <ion-icon name="ios-create-outline"></ion-icon>
+      </button>
+    </ion-buttons>
+
+  </ion-navbar>
+
+  <ion-item *ngIf="messageSegments" id="favorites-toolbar" color="light">
+
+    <ion-select [(ngModel)]="segment" (ionChange)="segmentChanged()" placeholder="Inbox">
+
+      <ion-option *ngFor="let segment of messageSegments" [value]="segment.name">{{segment.name}}</ion-option>
+
+    </ion-select>
+
+  </ion-item>
+
+</ion-header>
+
+<ion-content [ngClass]="customClasses">
+
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="threads && !singleThread">
+
+    <ion-list>
+
+        <ion-item *ngFor="let thread of threads" (tap)="loadThread(thread.id)">
+          <ion-avatar item-start>
+              <img src="icon.png" />
+            </ion-avatar>
+          <p *ngIf="thread.subject && thread.subject != 'undefined'"><strong>{{ thread.subject }}</strong></p>
+          <p class="message-preview">{{ thread.message }}</p>
+        </ion-item>
+
+    </ion-list>
+
+  </div>
+
+  <div *ngIf="threads && singleThread">
+
+    <ion-list>
+
+        <ion-item *ngFor="let message of threads.messages">
+          <ion-avatar item-start>
+            <img [src]="login_data.avatar" *ngIf="login_data.avatar && message.sender_id == login_data.user_id">
+            <img src="icon.png" *ngIf="!login_data.avatar || message.sender_id != login_data.user_id" />
+          </ion-avatar>
+          <p *ngIf="login_data.username && message.sender_id == login_data.user_id"><strong>{{ login_data.username }}</strong></p>
+          
+          <p class="message-preview"><span *ngIf="message.subject && message.subject != 'undefined'"><strong>{{ message.subject }}:</strong></span> {{ message.message }}</p>
+        </ion-item>
+
+        <div padding>
+
+          <button block ion-button (tap)="replyToThread()">
+            Reply
+          </button>
+
+        </div>
+
+    </ion-list>
+
+  </div>
+
+  <ion-item *ngIf="!threads">{{ 'No items to show.' | translate }}</ion-item>
+
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+</ion-content>

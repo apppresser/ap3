@@ -330,11 +330,13 @@ export class BpProvider {
 
   }
 
-  sendMessage( friendId, login_data, subject, content ) {
+  sendMessage( recipients, login_data, subject, content, threadId ) {
 
-    let route = this.url + this.restBase + 'members/' + friendId;
+    let route = this.url + this.restBase + 'messages/send';
 
-    let data = 'action=new_message&subject=' + subject + '&content=' + content + '&user_id=' + login_data.user_id + '&token=' + login_data.token;
+    let threadid = ( threadId ? "&thread_id=" + threadId : '' )
+
+    let data = 'recipients=' + recipients + '&subject=' + subject + '&content=' + content + '&user_id=' + login_data.user_id + '&token=' + login_data.token + threadid;
 
     console.log('sendMessage', route + '?' + data )
 
