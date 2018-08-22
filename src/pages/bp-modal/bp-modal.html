@@ -36,7 +36,7 @@
     <ion-grid>
       <ion-row>
         <ion-col>
-          <button *ngIf="!isReply" ion-button type="submit" block>{{ isReply ? 'Post comment' : isMessage ? 'Send Message' : 'Post update' | translate }}</button>
+          <button ion-button type="submit" block>{{ isReply ? 'Post comment' : isMessage ? 'Send Message' : 'Post update' | translate }}</button>
         </ion-col>
 
         <ion-col *ngIf="!isReply && !isMessage">

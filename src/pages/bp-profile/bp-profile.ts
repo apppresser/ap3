@@ -118,7 +118,7 @@ export class BpProfilePage implements OnInit {
   }
 
   message( userData ) {
-    let data = { friendId: userData.id, message: true }
+    let data = { friendId: userData.id, message: true, title: 'Message' }
     let bpModal = this.modalCtrl.create( 'BpModal', data );
     bpModal.present();
   }
