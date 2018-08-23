@@ -23,6 +23,10 @@
       <button ion-button *ngIf="singleThread" (tap)="replyToThread()">
         <ion-icon name="ios-create-outline"></ion-icon>
       </button>
+
+      <button ion-button *ngIf="!singleThread" (tap)="newMessage()">
+        <ion-icon name="ios-send"></ion-icon>
+      </button>
     </ion-buttons>
 
   </ion-navbar>
@@ -51,7 +55,7 @@
 
         <ion-item *ngFor="let thread of threads" (tap)="loadThread(thread.id)">
           <ion-avatar item-start>
-            <img *ngIf="thread.sender_data && thread.sender_data.avatar" src="https:{{thread.sender_data.avatar}}">
+            <img *ngIf="thread.sender_data && thread.sender_data.avatar" src="{{thread.sender_data.avatar}}">
             <img *ngIf="!thread.sender_data || !thread.sender_data.avatar" src="assets/default.png">
           </ion-avatar>
           <p *ngIf="thread.sender_data && thread.sender_data.name"><strong>{{ thread.sender_data.name }}</strong></p>
@@ -69,7 +73,7 @@
 
         <ion-item *ngFor="let message of threads.messages">
           <ion-avatar item-start>
-            <img *ngIf="message.sender_data && message.sender_data.avatar" src="https:{{message.sender_data.avatar}}">
+            <img *ngIf="message.sender_data && message.sender_data.avatar" src="{{message.sender_data.avatar}}">
             <img *ngIf="!message.sender_data || !message.sender_data.avatar" src="assets/default.png">
           </ion-avatar>
           <p *ngIf="message.sender_data && message.sender_data.name"><strong>{{ message.sender_data.name }}</strong></p>

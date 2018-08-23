@@ -80,7 +80,13 @@ export class BpMessages {
     this.events.subscribe('bp-add-message', data => {
 
       if( this.threads && this.singleThread ) {
-        this.threads.messages.unshift( { "subject": data.subject, "message": data.content } )
+        this.threads.messages.unshift( { 
+          "subject": data.subject, 
+          "message": data.content,
+          "sender_data": {
+            name: this.login_data.username,
+            avatar: this.login_data.avatar
+          } } )
       }
 
     });
@@ -271,11 +277,15 @@ export class BpMessages {
 
     let recipients = Object.keys( this.threads.recipients )
 
-    console.log(recipients)
-
     let data = { recipients: recipients, message: true, title: 'Message', threadId: this.threads.thread_id }
     let bpModal = this.modalCtrl.create( 'BpModal', data );
     bpModal.present();
+
+  }
+
+  newMessage() {
+
+    this.presentToast('Visit a member profile to send a new message.')
 
   }
 
