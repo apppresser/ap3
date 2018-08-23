@@ -51,10 +51,12 @@
 
         <ion-item *ngFor="let thread of threads" (tap)="loadThread(thread.id)">
           <ion-avatar item-start>
-              <img src="icon.png" />
-            </ion-avatar>
-          <p *ngIf="thread.subject && thread.subject != 'undefined'"><strong>{{ thread.subject }}</strong></p>
-          <p class="message-preview">{{ thread.message }}</p>
+            <img *ngIf="thread.sender_data && thread.sender_data.avatar" src="https:{{thread.sender_data.avatar}}">
+            <img *ngIf="!thread.sender_data || !thread.sender_data.avatar" src="assets/default.png">
+          </ion-avatar>
+          <p *ngIf="thread.sender_data && thread.sender_data.name"><strong>{{ thread.sender_data.name }}</strong></p>
+          <p class="message-preview"><span *ngIf="thread.subject && thread.subject != 'undefined'"><strong>{{ thread.subject }}:</strong></span> {{ thread.message }}</p>
+          
         </ion-item>
 
     </ion-list>
@@ -67,10 +69,10 @@
 
         <ion-item *ngFor="let message of threads.messages">
           <ion-avatar item-start>
-            <img [src]="login_data.avatar" *ngIf="login_data.avatar && message.sender_id == login_data.user_id">
-            <img src="icon.png" *ngIf="!login_data.avatar || message.sender_id != login_data.user_id" />
+            <img *ngIf="message.sender_data && message.sender_data.avatar" src="https:{{message.sender_data.avatar}}">
+            <img *ngIf="!message.sender_data || !message.sender_data.avatar" src="assets/default.png">
           </ion-avatar>
-          <p *ngIf="login_data.username && message.sender_id == login_data.user_id"><strong>{{ login_data.username }}</strong></p>
+          <p *ngIf="message.sender_data && message.sender_data.name"><strong>{{ message.sender_data.name }}</strong></p>
           
           <p class="message-preview"><span *ngIf="message.subject && message.subject != 'undefined'"><strong>{{ message.subject }}:</strong></span> {{ message.message }}</p>
         </ion-item>
