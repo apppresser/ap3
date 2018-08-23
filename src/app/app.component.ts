@@ -1603,7 +1603,14 @@ export class MyApp {
     } else if( page.type === 'apppages' && page.page_type === 'media-list' ) {
       return 'MediaList';
     } else if( page.type === 'apppages' && page.page_type === 'bp-list' ) {
-      return 'BpList';
+      
+      // maybe load profile page. It has type of bp-list even though it's not a bp-list page. Awkward I know.
+      if( page.list_route === 'profile' ) {
+        return 'BpProfilePage';
+      } else {
+        return 'BpList';
+      }
+      
     } else if( page.type === 'apppages' ) {
       return this.getPageModuleName(page.page_id);
     } else if( page.url && !page.root ) {

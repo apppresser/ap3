@@ -142,6 +142,12 @@ export class LoginModal {
 
 		this.showSpinner()
 
+		// safety just in case
+		setTimeout( () => {
+			if( this.spinner )
+				this.hideSpinner()
+		}, 10000 );
+
 		this.wplogin.login( this.login ).then( response => {
 
 			if( !response || (<any>response).success === false ) {

@@ -1,14 +1,15 @@
 import {NavController, NavParams, LoadingController, Platform, ViewController, IonicPage, Events, ToastController, ModalController} from 'ionic-angular';
-import {Component, Renderer, ElementRef, OnInit} from '@angular/core';
+import {Component, Renderer, ElementRef} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {BpProvider} from '../../providers/buddypress/bp-provider';
+import {Storage} from '@ionic/storage';
 
 @IonicPage()
 @Component({
   templateUrl: 'bp-profile.html',
   selector: 'bp-profile'
 })
-export class BpProfilePage implements OnInit {
+export class BpProfilePage {
 
   content: any;
   listenFunc: Function;
@@ -31,22 +32,54 @@ export class BpProfilePage implements OnInit {
     public bpProvider: BpProvider,
     public toastCtrl: ToastController,
     public loadingCtrl: LoadingController,
-    public modalCtrl: ModalController
+    public modalCtrl: ModalController,
+    public storage: Storage
     ) {
 
-    this.user_id = this.navParams.get('user_id');
-
-    this.login_data = this.navParams.get('login_data');
-
-    if( !this.user_id )
-      return;
+    // set login data after modal login
+    events.subscribe('user:login', data => {
+      this.login_data = data
+      this.user_id = this.login_data.user_id
+      this.setupUser()
+    });
 
   }
 
-  ngOnInit() {
+  ionViewWillEnter() {
 
-    this.setupUser()
+    if( this.platform.isRTL && this.viewCtrl.enableBack() ) {
+        this.viewCtrl.showBackButton(false)
+        this.rtlBack = true
+    }
 
+    if( this.navParams ) {
+      this.user_id = this.navParams.get('user_id');
+
+      this.login_data = this.navParams.get('login_data');
+    }
+
+    if( !this.user_id && !this.login_data ) {
+      this.checkLogin()
+    } else {
+      this.setupUser()
+    }    
+
+  }
+
+  checkLogin() {
+
+    // if we are here it's probably because this page was loaded from the menu, not from the members list page
+    this.storage.get( 'user_login' ).then( login_data => {
+
+      if( login_data ) {
+        this.login_data = login_data
+        this.user_id = this.login_data.user_id
+        this.setupUser()
+      } else {
+        this.openLoginModal()
+      }
+
+    })
   }
 
   setupUser() {
@@ -131,15 +164,6 @@ export class BpProfilePage implements OnInit {
 
   iabLink(link) {
     window.open( link, '_blank' );
-  }
-
-  ionViewWillEnter() {
-
-    if( this.platform.isRTL && this.viewCtrl.enableBack() ) {
-        this.viewCtrl.showBackButton(false)
-        this.rtlBack = true
-    }
- 
   }
 
   openLoginModal() {
