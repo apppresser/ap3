@@ -553,11 +553,8 @@ export class BpList implements OnInit {
   openGroup(item) {
 
   	// switch route from /groups to /activity to get group activity
-  	this.nav.push('BpList', {
-  		list_route: 'activity',
-  		title: item.name,
-  		group_id: item.id,
-  		group_link: item.link
+  	this.nav.push('BpGroupPage', {
+  		group_id: item.id
   	});
 
   }
@@ -579,22 +576,6 @@ export class BpList implements OnInit {
       login_data: this.login_data
     });
   	
-  }
-
-  joinGroup( item ) {
-
-    if( false === this.loginCheck() )
-      return;
-
-    this.bpProvider.joinGroup( item, this.login_data ).then( data => {
-      if( data ) {
-        this.presentToast('Joined group!')
-      }
-    }).catch( e => {
-      this.presentToast('Could not join group.')
-      console.warn(e)
-    })
-
   }
 
   iabLink(link) {

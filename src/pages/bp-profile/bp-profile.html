@@ -7,13 +7,9 @@
 			    {{'Back' | translate }}
 			</button>
 
-			<button ion-button menuToggle *ngIf="!selectedItem">
-			  <ion-icon name="menu"></ion-icon>
-			</button>
-
 		</ion-buttons>
 
-		<ion-title></ion-title>
+		<ion-title *ngIf="userData">{{ userData.name }}</ion-title>
 		
 	</ion-navbar>
 </ion-header>
@@ -22,8 +18,8 @@
 
 	<ion-card *ngIf="userData">
 
-		<ion-item *ngIf="userData.avatar_urls">
-			<ion-avatar item-start>
+		<ion-item>
+			<ion-avatar item-start *ngIf="userData.avatar_urls">
 				<img *ngIf="userData.avatar_urls && userData.avatar_urls.full" src="https:{{userData.avatar_urls.full}}">
 				<img *ngIf="!userData.avatar_urls.full" src="https:{{userData.avatar_urls.thumb}}">
 			</ion-avatar>

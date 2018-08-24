@@ -21,12 +21,12 @@
     <ion-buttons end>
 
       <button ion-button *ngIf="singleThread" (tap)="replyToThread()">
-        <ion-icon name="ios-create-outline"></ion-icon>
-      </button>
-
-      <button ion-button *ngIf="!singleThread" (tap)="newMessage()">
         <ion-icon name="ios-send"></ion-icon>
       </button>
+
+      <!-- <button ion-button *ngIf="!singleThread" (tap)="newMessage()">
+        <ion-icon name="ios-send"></ion-icon>
+      </button> -->
     </ion-buttons>
 
   </ion-navbar>

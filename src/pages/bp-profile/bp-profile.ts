@@ -1,6 +1,5 @@
 import {NavController, NavParams, LoadingController, Platform, ViewController, IonicPage, Events, ToastController, ModalController} from 'ionic-angular';
-import {Component, Renderer, ElementRef} from '@angular/core';
-import {DomSanitizer} from '@angular/platform-browser';
+import {Component} from '@angular/core';
 import {BpProvider} from '../../providers/buddypress/bp-provider';
 import {Storage} from '@ionic/storage';
 
@@ -23,9 +22,6 @@ export class BpProfilePage {
   constructor(
     public nav: NavController, 
     public navParams: NavParams, 
-    public sanitizer: DomSanitizer,
-    public renderer: Renderer,
-    public elementRef: ElementRef,
     public viewCtrl: ViewController,
     public platform: Platform,
     public events: Events,
@@ -94,31 +90,6 @@ export class BpProfilePage {
     }).catch( e => {
       console.warn(e)
     })
-
-  }
-
-  iabLinks( el ) {
-
-    var target = '_blank'
-      
-    if( el.href && el.href.indexOf('http') >= 0 ) {
-
-      if( el.classList && el.classList.contains('system') )
-        target = '_system'
-
-      event.preventDefault()
-      window.open( el.href, target )
-
-    } else if( el.tagName == 'IMG' && el.parentNode.href && el.parentNode.href.indexOf('http') >= 0 ) {
-
-      // handle image tags that have link as the parent
-      if( el.parentNode.classList && el.parentNode.classList.contains('system') )
-        target = '_system'
-
-      event.preventDefault()
-      window.open( el.parentNode.href, target )
-
-    }
 
   }
 

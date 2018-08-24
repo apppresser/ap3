@@ -1,0 +1,51 @@
+<ion-header>
+	<ion-navbar>
+
+		<ion-buttons start>
+			<button *ngIf="rtlBack" (click)="backRtlTransition()" ion-button class="custom-back-button">
+			    <ion-icon name="arrow-back"></ion-icon>
+			    {{'Back' | translate }}
+			</button>
+
+			<button ion-button menuToggle>
+			  <ion-icon name="menu"></ion-icon>
+			</button>
+
+		</ion-buttons>
+
+		<ion-title *ngIf="groupData">{{ groupData.name }}</ion-title>
+		
+	</ion-navbar>
+</ion-header>
+
+<ion-content>
+
+	<div *ngIf="groupData">
+
+		<img *ngIf="groupData.cover_image" [src]="groupData.cover_image" />
+
+		<ion-item>
+			<ion-avatar item-start *ngIf="groupData.avatar_urls">
+				<img *ngIf="groupData.avatar_urls && groupData.avatar_urls.full" src="{{groupData.avatar_urls.full}}">
+				<img *ngIf="!groupData.avatar_urls.full" src="{{groupData.avatar_urls.thumb}}">
+			</ion-avatar>
+			<h2 class="group-name" *ngIf="groupData.name" [innerHTML]="groupData.name"></h2>
+			<p *ngIf="groupData.description" [innerHTML]="groupData.description"></p>
+			<p class="member-count">{{ groupData.total_member_count }} members</p>
+		</ion-item>
+
+		<ion-row>
+			<ion-col *ngIf="!groupData.is_user_member" text-center>
+				<button ion-button icon-start small clear (click)="joinGroup()"><ion-icon name="add"></ion-icon> {{ 'Join Group' | translate }}</button>
+			</ion-col>
+			<ion-col text-center *ngIf="groupData.is_user_member">
+				<button ion-button icon-start small clear (click)="groupActivity()"><ion-icon name="list"></ion-icon> {{ 'Group Activity' | translate }}</button>
+			</ion-col>
+			<ion-col text-center>
+				<button ion-button icon-start small clear (click)="iabLink(groupData.link)"><ion-icon name="cog"></ion-icon> Group Details</button>
+			</ion-col>
+		</ion-row>
+
+	</div>
+
+</ion-content>
