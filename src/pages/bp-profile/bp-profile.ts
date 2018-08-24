@@ -108,11 +108,11 @@ export class BpProfilePage {
 
   }
 
-  doFriend( friendId ) {
+  doFriend( friendId, unfriend ) {
 
     this.showSpinner()
 
-    this.bpProvider.addFriend( friendId, this.login_data ).then( response => {
+    this.bpProvider.doFriend( friendId, this.login_data, unfriend ).then( response => {
       
       this.presentToast( response )
 

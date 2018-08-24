@@ -29,7 +29,7 @@
 	<ion-card *ngIf="selectedItem">
 
 		<ion-item>
-			<ion-avatar item-start *ngIf="selectedItem.user_avatar">
+			<ion-avatar item-start *ngIf="selectedItem.user_avatar" (click)="openMember()">
 				<img *ngIf="selectedItem.user_avatar.thumb" src="https:{{selectedItem.user_avatar.thumb}}">
 		  		<img *ngIf="!selectedItem.user_avatar.thumb" src="assets/default.png">
 			</ion-avatar>

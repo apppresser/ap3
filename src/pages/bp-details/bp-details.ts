@@ -189,6 +189,15 @@ export class BpDetailsPage implements OnInit {
 
   }
 
+  openMember( item ) {
+
+    this.nav.push('BpProfilePage', {
+      user_id: this.selectedItem.user,
+      login_data: this.login_data
+    });
+    
+  }
+
   presentToast(msg) {
 
     let toast = this.toastCtrl.create({

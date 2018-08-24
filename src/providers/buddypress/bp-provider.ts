@@ -302,11 +302,19 @@ export class BpProvider {
 
   }
 
-  addFriend( friendId, login_data ) {
+  doFriend( friendId, login_data, unfriend ) {
 
     let route = this.url + this.restBase + 'members/' + friendId;
 
-    let data = 'action=add_friend&user_id=' + login_data.user_id + '&token=' + login_data.token;
+    let action;
+
+    if( unfriend ) {
+      action = 'remove_friend'
+    } else {
+      action = 'add_friend'
+    }
+
+    let data = 'action=' + action + '&user_id=' + login_data.user_id + '&token=' + login_data.token;
 
     return new Promise( (resolve, reject) => {
 
