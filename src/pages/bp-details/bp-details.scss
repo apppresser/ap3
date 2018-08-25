@@ -31,6 +31,11 @@ bp-details {
 		min-width: calc( 100% + 56px);
 	}
 
+	.button.item-flagged {
+		color: white;
+		background: red;
+	}
+
 	@media only screen 
 	and (min-width : 768px) {
 		.card .card-content img {

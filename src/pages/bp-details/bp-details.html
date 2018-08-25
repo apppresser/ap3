@@ -50,7 +50,7 @@
 			  </button>
 			</ion-col>
 			<ion-col text-right>
-			  <button ion-button icon-start clear small (click)="flag()">
+			  <button ion-button [ngClass]="selectedItem.flagged ? 'item-flagged' : ''" icon-start clear small (click)="flag()">
 			    <ion-icon name="flag"></ion-icon>
 			    <div>Flag</div>
 			  </button>

@@ -519,16 +519,21 @@ export class BpList implements OnInit {
   	if( false === this.loginCheck() )
       return;
 
+    // increment the count early, we undo this if it fails
+    this.doFavCount(item)
+
   	this.bpProvider.updateItem( 'activity_favorite', this.login_data, item.id ).then( ret => {
 
       console.log(ret)
 
-  		if( ret ) {
-  			this.doFavCount(item)
-  		} else {
+  		if( !ret ) {
+        this.undoFavCount(item)
   			this.presentToast('Cannot favorite this item.')
   		}
+      
   	}).catch( e => {
+      this.presentToast('There was a problem favoriting this item.')
+      this.undoFavCount(item)
       console.warn(e)
     })
   	
@@ -541,6 +546,16 @@ export class BpList implements OnInit {
   	} else {
   		item.favorites = parseInt( item.favorites ) + 1
   	}
+
+  }
+
+  undoFavCount(item) {
+
+    if( !item.favorites ) {
+      return;
+    } else {
+      item.favorites = parseInt( item.favorites ) - 1
+    }
 
   }
 
