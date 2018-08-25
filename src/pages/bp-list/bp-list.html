@@ -55,7 +55,7 @@
 
       <ion-item *ngIf="item.display_name">
         <ion-avatar item-start (tap)="openMember(item)">
-          <img *ngIf="item.user_avatar && item.user_avatar.thumb" src="https:{{item.user_avatar.thumb}}">
+          <img *ngIf="item.user_avatar && item.user_avatar.thumb" [src]="formatUrl( item.user_avatar.thumb )">
           <img *ngIf="!item.user_avatar || !item.user_avatar.thumb" src="assets/default.png">
         </ion-avatar>
         <span class="comment-name" [innerHTML]="item.display_name"></span>
@@ -89,7 +89,7 @@
 
     </ion-card>
 
-    <ion-item *ngIf="!items">{{ 'No items to show.' | translate }}</ion-item>
+    <ion-item *ngIf="noItems">{{ 'No items to show.' | translate }}</ion-item>
 
   </ion-list>
 
@@ -98,7 +98,7 @@
     <ion-item *ngFor="let item of items">
 
       <ion-avatar item-start *ngIf="item.avatar_urls" (tap)="openGroup(item)">
-        <img *ngIf="item.avatar_urls && item.avatar_urls.thumb" src="{{item.avatar_urls.thumb}}">
+        <img *ngIf="item.avatar_urls && item.avatar_urls.thumb" [src]="formatUrl( item.avatar_urls.thumb )">
         <img *ngIf="!item.avatar_urls || !item.avatar_urls.thumb" src="assets/default.png">
       </ion-avatar>
 
@@ -110,7 +110,7 @@
 
     </ion-item>
 
-    <ion-item *ngIf="!items">{{ 'No items to show.' | translate }}</ion-item>
+    <ion-item *ngIf="noItems">{{ 'No items to show.' | translate }}</ion-item>
 
   </ion-list>
 
@@ -124,7 +124,7 @@
     <ion-item *ngFor="let item of items" (tap)="openMember(item)">
 
       <ion-avatar item-start *ngIf="item.avatar">
-        <img src="https:{{item.avatar}}">
+        <img [src]="formatUrl( item.avatar )">
       </ion-avatar>
 
       <span class="comment-name" [innerHTML]="item.name"></span>
@@ -133,7 +133,7 @@
 
     </ion-item>
 
-    <ion-item *ngIf="!items">{{ 'No items to show.' | translate }}</ion-item>
+    <ion-item *ngIf="noItems">{{ 'No items to show.' | translate }}</ion-item>
 
   </ion-list>
 

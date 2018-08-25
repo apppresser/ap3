@@ -198,6 +198,20 @@ export class BpDetailsPage implements OnInit {
     
   }
 
+  // maybe add https to avatar url
+  formatUrl( url ) {
+
+    if( !url )
+      return;
+
+    if( url.indexOf('http') >= 0 ) {
+      return url;
+    } else {
+      return 'https:' + url;
+    }
+
+  }
+
   presentToast(msg) {
 
     let toast = this.toastCtrl.create({

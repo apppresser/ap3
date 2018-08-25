@@ -102,6 +102,20 @@ export class BpProfilePage {
 
   }
 
+  // maybe add https to avatar url
+  formatUrl( url ) {
+
+    if( !url )
+      return;
+
+    if( url.indexOf('http') >= 0 ) {
+      return url;
+    } else {
+      return 'https:' + url;
+    }
+
+  }
+
   showMessages() {
 
     this.nav.push( 'BpMessages' )

@@ -20,6 +20,7 @@ export class BpList implements OnInit {
   selectedItem: any;
   icons: string[];
   items: any;
+  noItems: boolean = false;
   page: number = 1;
   siteurl: string;
   route: string;
@@ -166,6 +167,20 @@ export class BpList implements OnInit {
       resolve( route )
 
     })
+
+  }
+
+  // maybe add https to avatar url
+  formatUrl( url ) {
+
+    if( !url )
+      return;
+
+    if( url.indexOf('http') >= 0 ) {
+      return url;
+    } else {
+      return 'https:' + url;
+    }
 
   }
 
@@ -370,6 +385,9 @@ export class BpList implements OnInit {
 
       // Loads posts from WordPress API
       this.items = items;
+
+      if( !(<any>items).length )
+        this.noItems = true
 
       this.storage.set( route.substr(-10, 10) + '_bp', items);
 

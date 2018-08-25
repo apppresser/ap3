@@ -106,6 +106,11 @@ export class BpModal {
 
 		} else if( this.isMessage ) {
 
+			if( !this.activity.content ) {
+				this.presentToast('Please enter some content.')
+				return;
+			}
+
 			let threadId = ( this.navParams.data.threadId ? this.navParams.data.threadId : null )
 
 			this.bpProvider.sendMessage( this.navParams.data.recipients, this.login_data, this.activity.subject, this.activity.content, threadId ).then( ret => {
@@ -131,7 +136,14 @@ export class BpModal {
 		} else {
 
 			if( this.isReply ) {
+
 				this.activity.parent = this.navParams.get('parent');
+
+				if( !this.activity.content ) {
+					this.presentToast('Please enter some content.')
+					return;
+				}
+
 			}
 
 			this.bpProvider.postTextOnly( this.login_data, this.activity, this.groupId )

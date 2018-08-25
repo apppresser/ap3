@@ -30,7 +30,7 @@
 
 		<ion-item>
 			<ion-avatar item-start *ngIf="selectedItem.user_avatar" (click)="openMember()">
-				<img *ngIf="selectedItem.user_avatar.thumb" src="https:{{selectedItem.user_avatar.thumb}}">
+				<img *ngIf="selectedItem.user_avatar.thumb" [src]="formatUrl( selectedItem.user_avatar.thumb )">
 		  		<img *ngIf="!selectedItem.user_avatar.thumb" src="assets/default.png">
 			</ion-avatar>
 			<span class="comment-name" *ngIf="selectedItem.display_name" [innerHTML]="selectedItem.display_name"></span>

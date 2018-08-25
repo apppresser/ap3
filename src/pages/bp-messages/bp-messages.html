@@ -55,7 +55,7 @@
 
         <ion-item *ngFor="let thread of threads" (tap)="loadThread(thread.id)">
           <ion-avatar item-start>
-            <img *ngIf="thread.sender_data && thread.sender_data.avatar" src="{{thread.sender_data.avatar}}">
+            <img *ngIf="thread.sender_data && thread.sender_data.avatar" [src]="formatUrl( thread.sender_data.avatar )">
             <img *ngIf="!thread.sender_data || !thread.sender_data.avatar" src="assets/default.png">
           </ion-avatar>
           <p *ngIf="thread.sender_data && thread.sender_data.name"><strong>{{ thread.sender_data.name }}</strong></p>
@@ -73,7 +73,7 @@
 
         <ion-item *ngFor="let message of threads.messages">
           <ion-avatar item-start>
-            <img *ngIf="message.sender_data && message.sender_data.avatar" src="{{message.sender_data.avatar}}">
+            <img *ngIf="message.sender_data && message.sender_data.avatar" [src]="formatUrl( message.sender_data.avatar )">
             <img *ngIf="!message.sender_data || !message.sender_data.avatar" src="assets/default.png">
           </ion-avatar>
           <p *ngIf="message.sender_data && message.sender_data.name"><strong>{{ message.sender_data.name }}</strong></p>
