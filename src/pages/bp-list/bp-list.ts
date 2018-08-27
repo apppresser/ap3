@@ -386,8 +386,11 @@ export class BpList implements OnInit {
       // Loads posts from WordPress API
       this.items = items;
 
-      if( !(<any>items).length )
+      if( !(<any>items).length ) {
         this.noItems = true
+      } else {
+        this.noItems = false
+      }
 
       this.storage.set( route.substr(-10, 10) + '_bp', items);
 
