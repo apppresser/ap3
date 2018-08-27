@@ -3,6 +3,7 @@ import {NavParams, IonicPage, ModalController, NavController, Events} from 'ioni
 
 import {Iframe} from "../iframe/iframe";
 import { LoginService } from '../../providers/logins/login.service';
+import { LanguageService } from "../../providers/language/language.service";
 import { User } from '../../models/user.model';
 
 class ModalOptions {
@@ -27,6 +28,7 @@ export class TabsPage implements OnInit {
     private navParams: NavParams,
     private events: Events,
     private loginservice: LoginService,
+    private languageservice: LanguageService,
     public nav: NavController
   ) {}
 
@@ -77,7 +79,15 @@ export class TabsPage implements OnInit {
     
 
     if(tab.url && tab.target) {
-      this.openIab(tab.url, tab.target);
+      
+      let url = tab.url;
+      
+      if(tab.target == '_system') {
+        let use_language = (typeof(tab.extra_classes) !== 'undefined' && (tab.extra_classes.indexOf('use-language') >= 0));
+        url = this.languageservice.removeAppParams(url, use_language);
+      }
+
+      this.openIab(url, tab.target);
     }
     if(typeof(tab.extra_classes) !== 'undefined' && (tab.extra_classes.indexOf('loginmodal') >= 0||tab.extra_classes.indexOf('logoutmodal') >= 0)) {
       this.loginModal({title:tab.title});
