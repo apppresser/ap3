@@ -235,7 +235,7 @@ export class BpList implements OnInit {
     } else if( this.groupList ) {
       this.bpSegments = [ { name: 'My Groups' },{ name: 'All' } ];
     } else if( this.activityList ) {
-      this.bpSegments = [ { name: 'Friends' }, { name: 'All' } ];
+      this.bpSegments = [ { name: 'All' }, { name: 'Friends' } ];
     } else if( this.memberList ) {
       this.bpSegments = null
     }
@@ -320,12 +320,6 @@ export class BpList implements OnInit {
 
       route = this.addActivityParams( route )
 
-    } else if( this.groupList && this.login_data && !this.showAllGroups ) {
-
-      // default to my groups
-      route += '?user_id=' + this.login_data.user_id
-      this.myGroups = true
-
     }
 
     return route;
@@ -345,11 +339,6 @@ export class BpList implements OnInit {
     } else if( this.navParams.data.user_activity ) {
 
       route += '&user=' + this.navParams.data.user_activity
-
-    } else if( this.login_data && !this.navParams.data.user_activity && !this.navParams.data.group_id ) {
-
-      // show friends activity
-      route += '&scope=friends&user=' + this.login_data.user_id
 
     }
 
@@ -378,7 +367,7 @@ export class BpList implements OnInit {
       login = this.login_data
     }
 
-    console.log('loadItems route ' + route)
+    // console.log('loadItems route ' + route)
     
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
     this.bpProvider.getItems( route, login, this.page ).then(items => {
@@ -466,7 +455,7 @@ export class BpList implements OnInit {
         route += '?user_id=' + this.login_data.user_id
       }
 
-      console.log('load more ' + this.page + route )
+      // console.log('load more ' + this.page + route )
 
       this.bpProvider.getItems( route, login, this.page ).then(items => {
         // Loads posts from WordPress API

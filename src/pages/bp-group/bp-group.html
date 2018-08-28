@@ -22,7 +22,7 @@
 
 	<div *ngIf="groupData">
 
-		<img *ngIf="groupData.cover_image" [src]="groupData.cover_image" />
+		<img class="group-cover-image" *ngIf="groupData.cover_image" [src]="groupData.cover_image" />
 
 		<ion-item>
 			<ion-avatar item-start *ngIf="groupData.avatar_urls">
