@@ -252,15 +252,21 @@ export class Iframe implements OnInit {
                 // console.log('this.navParams.data', this.navParams.data);
 
                 // only add the activity_modal icon to this iframe
-                if( ( typeof(this.navParams.data.extra_clases) !== 'undefined' && this.navParams.data.extra_clases.indexOf('bp-activity-icon') >= 0 ) || // show if has extra_class of bp-activity-icon
+                if( ( typeof(this.navParams.data.extra_classes) !== 'undefined' && this.navParams.data.extra_classes.indexOf('bp-activity-icon') >= 0 ) || // show if has extra_class of bp-activity-icon
                     this.iframe.src.indexOf(parsed.iframe_url) == 0 || // show even if one of the URL is missing lang=en
                     this.iframe.src.indexOf('/me?') > 0 || // always show if me page
                     this.iframe.src.indexOf('/me/') > 0 || // always show if me page
                     this.iframe.src == parsed.iframe_url // show if the current iframe sent the message, but don't affect other iframes that are in the stack
                 ) {
-                    this.zone.run( () => {
-                        this.activityModal = true;
-                    } );
+                    if( typeof(this.navParams.data.extra_classes) !== 'undefined' && this.navParams.data.extra_classes.indexOf('no-bp-activity-icon') >= 0 ) {
+                        this.zone.run( () => {
+                            this.activityModal = false;
+                        } );
+                    } else {
+                        this.zone.run( () => {
+                            this.activityModal = true;
+                        } );
+                    }
                 }
             } else if ( parsed.apppkeyboardhelper ) {
 
