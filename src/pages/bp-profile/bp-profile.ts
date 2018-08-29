@@ -1,5 +1,5 @@
 import {NavController, NavParams, LoadingController, Platform, ViewController, IonicPage, Events, ToastController, ModalController} from 'ionic-angular';
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {BpProvider} from '../../providers/buddypress/bp-provider';
 import {Storage} from '@ionic/storage';
 
@@ -8,7 +8,7 @@ import {Storage} from '@ionic/storage';
   templateUrl: 'bp-profile.html',
   selector: 'bp-profile'
 })
-export class BpProfilePage {
+export class BpProfilePage implements OnInit {
 
   content: any;
   listenFunc: Function;
@@ -16,6 +16,7 @@ export class BpProfilePage {
   user_id: any;
   userData: any;
   login_data: any;
+  isError: boolean = false;
   spinner: any;
   isMyProfile: boolean = false;
 
@@ -41,7 +42,7 @@ export class BpProfilePage {
 
   }
 
-  ionViewWillEnter() {
+  ngOnInit() {
 
     if( this.platform.isRTL && this.viewCtrl.enableBack() ) {
         this.viewCtrl.showBackButton(false)
@@ -67,18 +68,22 @@ export class BpProfilePage {
     // if we are here it's probably because this page was loaded from the menu, not from the members list page
     this.storage.get( 'user_login' ).then( login_data => {
 
-      if( login_data ) {
+      if( login_data && login_data.user_id ) {
         this.login_data = login_data
         this.user_id = this.login_data.user_id
         this.setupUser()
       } else {
-        this.openLoginModal()
+        this.isError = true
       }
 
     })
   }
 
   setupUser() {
+
+    this.isError = false
+
+    this.showSpinner()
 
     if( this.user_id === this.login_data.user_id ) {
       this.isMyProfile = true
@@ -87,8 +92,11 @@ export class BpProfilePage {
     this.bpProvider.getItem( 'members/' + this.user_id, this.login_data ).then( data => {
       console.log(data)
       this.userData = data
+      this.hideSpinner()
     }).catch( e => {
+      this.isError = true
       console.warn(e)
+      this.hideSpinner()
     })
 
   }

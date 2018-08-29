@@ -21,6 +21,14 @@ page-login-modal {
 	.modal-footer {
 		margin-left: 0;
 		position: fixed;
+		border-top: 1px solid rgba( 0,0,0,.1 );
+
+		.row {
+			min-height: 56px;
+		}
+		.button {
+			height: 100%;
+		}
 	}
 
 }

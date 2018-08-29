@@ -59,5 +59,10 @@
 		</ion-row>
 
 	</ion-card>
+	
+	<div *ngIf="isError">
+		<p>{{ 'There is a problem displaying your profile. Please logout then log back in.' | translate }}</p>
+		<button ion-button icon-start small clear (click)="openLoginModal()"><ion-icon name="log-in"></ion-icon> {{ 'Please logout' | translate }}</button>
+	</div>
 
 </ion-content>
