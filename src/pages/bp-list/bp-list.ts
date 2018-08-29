@@ -193,6 +193,8 @@ export class BpList implements OnInit {
         this.items.unshift( data[0] )
       }
 
+      this.noItems = false
+
     });
 
     // set login data after modal login

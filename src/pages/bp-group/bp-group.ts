@@ -95,6 +95,7 @@ export class BpGroupPage {
     this.bpProvider.joinGroup( this.groupData, this.login_data ).then( data => {
       if( data ) {
         this.presentToast('Joined group!')
+        this.groupData.is_user_member = true
       }
     }).catch( e => {
       this.presentToast('Could not join group.')
