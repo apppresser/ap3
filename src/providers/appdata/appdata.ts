@@ -27,58 +27,73 @@ export class AppData {
    *
    * App is built with app-data.json file, which is never updated. Only API data and localStorage are updated, so falling back to app-data.json might break stuff, so it's a last resort.
    * If we are not on a device, always get data from the API. This makes sure the preview shows latest changes.
+   * Update 8/18: need a way to update data when a new app version is released. If app-data.json ver is higher than local ver, we force an update.
    */
   load( apiurl ) {
 
-    let item = window.localStorage.getItem( 'myappp' );
-    this.local = JSON.parse( item );
-
-    this.updateNeeded = ( window.localStorage.getItem( 'myappp_update' ) == 'true' ) ? true : false;
-
-    if( this.Device.platform != 'iOS' && this.Device.platform != 'Android' ) {
-      // if we are not on a device, don't cache data. helps preview update faster
-      this.updateNeeded = true;
-    }
-
     return new Promise( (resolve, reject) => {
 
-      if( this.local && this.updateNeeded != true ) {
+      let item = window.localStorage.getItem( 'myappp' );
+      this.local = JSON.parse( item );
 
-        console.log('using localStorage data');
+      // convert to a constant to use in promise
+      const localData = this.local
+      const localVer = localData.meta.app_update_version
 
-        // send back localstorage item
-        resolve(this.local);
+      // get json data first
+      this.getData( 'app-data.json' ).then( jsonData => {
 
-      } else if( !this.local && this.updateNeeded != true ) {
+        this.updateNeeded = ( window.localStorage.getItem( 'myappp_update' ) == 'true' ) ? true : false;
 
-        console.log('using app-data.json');
-
-        // get local app-data file
-        this.getData( 'app-data.json' ).then( data => {
-          resolve(data);
-        });
-
-      } else {
-
-        console.log('get data from API');
-
-        // get data from api
-        this.getData( apiurl ).then( data => {
-          resolve(data);
-        })
-        .catch( (err) => {
-          // API is down, or bad url, so we need to get app-data.json file. Send back to app.component.ts line 78
-          if(err.status == 401) { // 401 not authorized
-            // membership expired
-            this.notAuthorized = true;
-          }
-          reject(err);
+        if( this.Device.platform != 'iOS' && this.Device.platform != 'Android' ) {
+          // if we are not on a device, don't cache data. helps preview update faster
+          this.updateNeeded = true;
         }
-        );
 
-      }
+        // if app-data.json version is higher, force update
+        if( jsonData && localVer && parseFloat( localVer ) < parseFloat( (<any>jsonData).meta.app_update_version ) ) {
 
-    });
+          console.log( 'get updated json' )
+
+          resolve( jsonData );
+
+        } else if( localData && this.updateNeeded != true ) {
+
+          console.log('using localStorage data');
+
+          // send back localstorage item
+          resolve( localData );
+
+        } else if( !localData && this.updateNeeded != true ) {
+
+          console.log('using app-data.json');
+
+          // get local app-data file
+          resolve( jsonData );
+
+        } else {
+
+          console.log('get data from API');
+
+          // get data from api
+          this.getData( apiurl ).then( data => {
+            resolve(data);
+          })
+          .catch( (err) => {
+              // API is down, or bad url, so we need to get app-data.json file. Send back to app.component.ts line 78
+              if(err.status == 401) { // 401 not authorized
+                // membership expired
+                this.notAuthorized = true;
+              }
+              reject(err);
+            }
+          );
+
+        } // end if statements
+        
+      }); // end this.getData()
+
+    }); // end promise
   }
 
   getData( url: string ) {
