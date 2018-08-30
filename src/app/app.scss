@@ -151,6 +151,17 @@ ion-content ion-card-content {
 
 }
 
+/**
+ * hides the homepage buttons with loggedin extra_class
+ */
+body ion-col.loggedin {
+	display: none;
+}
+body.loggedin ion-col.loggedin {
+	display: block;
+}
+
+
 .selection p {
 	font-size: 16px;
 	line-height: 1.3;
