@@ -800,7 +800,7 @@ export class MyApp {
     styles += "p, .item p { color: "  + data.meta.design.text_color + " }";
 
     // buttons
-    styles += ".button-primary, .menu-login-button { background: " + data.meta.design.button_background + "!important; color: "  + data.meta.design.button_text_color + " }";
+    styles += ".button-primary, .menu-login-button, page-login-modal div > .button, bp-modal .button { background: " + data.meta.design.button_background + "!important; color: "  + data.meta.design.button_text_color + " }";
 
     // headings
     styles += "ion-page h1, ion-page h2, ion-page h3, ion-page h4, ion-page h5, ion-page h6, ion-page ion-list .item h2, ion-page ion-list .item h3, ion-page ion-list .item h4 { color: "  + data.meta.design.headings_color + " }";
