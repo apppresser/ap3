@@ -32,6 +32,7 @@ import {Storage} from '@ionic/storage';
 import { User } from '../models/user.model';
 import { LoginService } from '../providers/logins/login.service';
 import { LanguageService } from "../providers/language/language.service";
+import { MenuService } from "../providers/menus/menu.service";
 
 import {Iframe} from "../pages/iframe/iframe";
 
@@ -110,6 +111,7 @@ export class MyApp {
     private Dialogs: Dialogs,
     private zone: NgZone,
     private config: Config,
+    private menuservice: MenuService,
     private download: Download
   ) {
 
@@ -310,6 +312,7 @@ export class MyApp {
       }
 
       this.tabs = this.navparams;
+      this.menuservice.tabs = this.tabs.slice();
       if(typeof this.originalTabs === 'undefined')
         this.originalTabs = this.tabs.slice(); // make a copy
 
@@ -320,6 +323,7 @@ export class MyApp {
     if( data.menus.items ) {
 
       this.pages = data.menus.items;
+      this.menuservice.menu = this.pages.slice();
 
       this.showmenu = true;
 
@@ -431,7 +435,7 @@ export class MyApp {
    * Get side menu index by page slug
    */
   getMenuIndexBySlug(slug: string) {
-    return this.getIndexBySlug(slug, this.pages);
+    return this.menuservice.getIndexBySlug(slug, this.pages);
   }
 
   /**
@@ -439,32 +443,7 @@ export class MyApp {
    * @param slug page slug
    */
   getTabIndexBySlug(slug: string) {
-    return this.getIndexBySlug(slug, this.tabs);
-  }
-
-  /**
-   * Side or tab menus
-   * @param slug page slug
-   * @param pages menu or tab pages
-   */
-  getIndexBySlug(slug: string, pages) {
-    let menu_index: number;
-    let count: number = 0;
-
-    if(!pages)
-			return menu_index;
-
-    for(let page of pages) {
-      if(page.slug && page.slug == slug) {
-        menu_index = count;
-      }
-      count++;
-    };
-
-    if(!menu_index && menu_index !== 0)
-      console.log(pages); // you can find the slugs here
-
-    return menu_index;
+    return this.menuservice.getIndexBySlug(slug, this.tabs);
   }
 
   getPageIdBySlug(slug) {
@@ -656,6 +635,8 @@ export class MyApp {
       opt = { direction: 'back' }
 
     if( page.type === 'apppages' && page.page_type === 'list' ) {
+      page.menus = this.pages.menus;
+      page.tags = this.pages.tab_menu;
       this.nav.push( 'PostList', page, opt );
     } else if( page.type === 'apppages' && page.page_type === 'media-list' ) {
       this.nav.push( 'MediaList', page, opt );
@@ -1364,6 +1345,7 @@ export class MyApp {
     }
 
     this.tabs = this.navparams.slice();
+    this.menuservice.tabs = this.navparams.slice();
 
     // "refresh" the view by resetting to home tab
     //this.openPage( { 'title': this.tabs[0].title, 'url': '', 'component': 'TabsPage', 'navparams': this.navparams, 'class': this.tabs[0].icon } )

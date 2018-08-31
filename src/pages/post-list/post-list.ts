@@ -3,6 +3,7 @@ import {Component, ViewChild, OnInit, Input} from '@angular/core';
 import {Posts} from '../../providers/posts/posts';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
+import {MenuService} from "../../providers/menus/menu.service";
 import {Storage} from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {Network} from '@ionic-native/network';
@@ -48,6 +49,7 @@ export class PostList implements OnInit {
     public platform: Platform,
     private headerLogoService: HeaderLogo,
     private Network: Network,
+    private menuservice: MenuService,
     private Device: Device
   ) {
 
@@ -155,16 +157,74 @@ export class PostList implements OnInit {
 
   }
 
-  itemTapped(event, item) {
+  itemTapped(event, post) {
 
-    let opt = {};
+    let nav = {
+      root: 'PostDetailsPage',
+      navParams: {item: post},
+      opt: {}
+    };
+    
+    let wp_pushpage = this.getPushPagePostmeta(post, 'menu');
+    if(wp_pushpage)
+      nav = wp_pushpage;
+    else
+      wp_pushpage = this.getPushPagePostmeta(post, 'tab');
+      
+    if(wp_pushpage)
+      nav = wp_pushpage;
 
     if( this.platform.isRTL && this.platform.is('ios') )
-      opt = { direction: 'back' }
+      nav.opt = { direction: 'back' }
 
-    this.nav.push('PostDetailsPage', {
-      item: item
-    }, opt);
+    this.nav.push(nav.root, nav.navParams, nav.opt);
+  }
+
+  /**
+   * A post from WordPress may have postmeta: appp_push_page_menu, appp_push_page_tab, appp_open_page_menu or appp_open_page_tab,
+   * with a value of a menuIndex or a custom page slug. If it does, then lookup that
+   * menu item from the menu service and return the nav params to pushPage that menu item.
+   * 
+   * @param post wp post from post list
+   * @param menuType 'menu' or 'tab'
+   */
+  getPushPagePostmeta(post, menuType:string) {
+
+    let nav = null;
+    let menuItem = null;
+    let menuIndex:number|string = 0; // might be a slug
+
+    if(this.hasPushPageMeta(post, menuType)) {
+      // might be an index or slug as the value from the postmeta
+      menuIndex = (menuType == 'tab') ? post.appp_push_page.tab : post.appp_push_page.menu;
+    
+      if(typeof menuIndex === 'string') // might be a slug
+        menuIndex = this.menuservice.getIndexBySlug(menuIndex, menuType);
+
+      menuItem = this.menuservice.getMenuItem(menuIndex, menuType);
+      if(menuItem) {
+        nav = {
+          navParams: menuItem,
+          root: this.menuservice.getItemRoot(menuItem)
+        };
+      }
+    }
+
+    return nav; // null or navParams
+  }
+
+  hasPushPageMeta(postListItem, menuType) {
+    if(menuType == 'tab')
+      return (postListItem.appp_push_page && postListItem.appp_push_page.tab && this.menuservice.tabs.length);
+    else
+      return (postListItem.appp_push_page && postListItem.appp_push_page.menu && this.menuservice.menu.length);
+  }
+
+  hasOpenPageMeta(postListItem, menuType) {
+    if(menuType == 'tab')
+      return (postListItem.appp_open_page && postListItem.appp_open_page.tab && this.menuservice.tabs.length);
+    else
+      return (postListItem.appp_open_page && postListItem.appp_open_page.menu && this.menuservice.menu.length);
   }
 
   doRefresh(refresh) {

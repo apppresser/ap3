@@ -46,6 +46,7 @@ import {VideoUtils} from "../providers/video/video-utils";
 import {AppGeo} from "../providers/appgeo/appgeo";
 import {IAP} from "../providers/inapppurchase/inapppurchase";
 import {Download} from "../providers/download/download";
+import { MenuService } from "../providers/menus/menu.service";
 
 import {Iframe} from "../pages/iframe/iframe";
 
@@ -126,6 +127,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     VideoUtils,
     IAP,
     InAppPurchase,
+    MenuService,
     Download
   ]
 })
