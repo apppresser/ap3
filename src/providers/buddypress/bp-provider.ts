@@ -304,7 +304,7 @@ export class BpProvider {
 
   doFriend( friendId, login_data, unfriend ) {
 
-    let route = this.url + this.restBase + 'members/' + friendId;
+    let route = this.url + this.restBase + 'friends/friend/' + friendId;
 
     let action;
 
@@ -312,6 +312,42 @@ export class BpProvider {
       action = 'remove_friend'
     } else {
       action = 'add_friend'
+    }
+
+    let data = 'action=' + action + '&user_id=' + login_data.user_id + '&token=' + login_data.token;
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.post( route + '?' + data, null )
+        .map(res => res.json())
+        .subscribe(data => {
+          
+            resolve(data)
+
+          },
+          error => {
+
+            console.log(error)
+
+            reject(error);
+
+          }
+        )
+
+    }) // end promise
+
+  }
+
+  acceptWithdrawFriendship( friendId, login_data, withdraw ) {
+
+    let route = this.url + this.restBase + 'friends/requests/' + friendId;
+
+    let action;
+
+    if( withdraw ) {
+      action = 'withdraw'
+    } else {
+      action = 'accept'
     }
 
     let data = 'action=' + action + '&user_id=' + login_data.user_id + '&token=' + login_data.token;

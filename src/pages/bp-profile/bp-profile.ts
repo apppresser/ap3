@@ -130,6 +130,10 @@ export class BpProfilePage implements OnInit {
 
   }
 
+  friendsPage() {
+    this.nav.push( 'BpFriends' )
+  }
+
   doFriend( friendId, unfriend ) {
 
     this.showSpinner()

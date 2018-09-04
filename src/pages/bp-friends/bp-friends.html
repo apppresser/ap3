@@ -1,0 +1,66 @@
+<ion-header>
+
+  <ion-navbar>
+    
+    <ion-buttons start>
+    <button *ngIf="rtlBack||is_registration_page" (click)="backRtlTransition()" ion-button class="custom-back-button">
+        <ion-icon name="arrow-back"></ion-icon>
+        {{ 'Back' | translate }}
+    </button>
+
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+
+    </ion-buttons>
+
+    <img class="header-logo" *ngIf="show_header_logo" [src]="header_logo_url" />
+
+    <ion-title *ngIf="!show_header_logo">{{title | translate}}</ion-title>
+
+  </ion-navbar>
+
+  <ion-item *ngIf="friendSegments" id="favorites-toolbar" color="light">
+
+    <ion-select [(ngModel)]="segment" (ionChange)="segmentChanged()" placeholder="Friends">
+
+      <ion-option *ngFor="let segment of friendSegments" [value]="segment.name">{{segment.name}}</ion-option>
+
+    </ion-select>
+
+  </ion-item>
+
+</ion-header>
+
+<ion-content [ngClass]="customClasses">
+
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="friends">
+
+    <ion-list>
+
+        <ion-item *ngFor="let friend of friends">
+          <ion-avatar item-start (tap)="viewMember( friend )">
+            <img *ngIf="friend.avatar" [src]="formatUrl( friend.avatar )">
+            <img *ngIf="!friend.avatar" src="assets/default.png">
+          </ion-avatar>
+          <p *ngIf="friend.name" (tap)="viewMember( friend )"><strong>{{ friend.name }}</strong></p>
+          
+          <button *ngIf="isRequests" ion-button (tap)="acceptFriendship( friend, false )">{{ 'Accept' | translate }}</button>
+          
+        </ion-item>
+
+    </ion-list>
+
+  </div>
+
+  <ion-item *ngIf="!friends">{{ 'No items to show.' | translate }}</ion-item>
+
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+</ion-content>
