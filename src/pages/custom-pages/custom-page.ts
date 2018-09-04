@@ -69,6 +69,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	subscriptions = [];
 	listenFunc: Function;
 	rtlBack: boolean = false;
+	isRTL: boolean = false;
 	language: any;
 	templateUrl: string;
 	extraModules = [IonicModule, TranslateModule, ApListComponentModule, ApSliderComponentModule];
@@ -133,6 +134,7 @@ export class CustomPage implements OnInit, OnDestroy {
 		}));
 
 		this.pagetitle = this.navParams.data.title;
+		this.initIsRTL();
 
 		if(this.navParams.data.is_home == true) {
 			this.doLogo()
@@ -428,10 +430,18 @@ export class CustomPage implements OnInit, OnDestroy {
 	changeRTL( event, rtl ) {
 		if( rtl ) {	
 			this.platform.setDir('rtl', true)
+			this.isRTL = true;
 		} else {
 			this.platform.setDir('ltr', true)
+			this.isRTL = false;
 		}
 		this.storage.set( 'is_rtl', rtl )
+	}
+
+	initIsRTL() {
+		this.storage.get('is_rtl').then(value => {
+			this.isRTL = (value === 'true');
+		});
 	}
 
 	showSegments(opt?: ModalOptions) {

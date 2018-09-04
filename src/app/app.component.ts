@@ -35,6 +35,8 @@ import { LanguageService } from "../providers/language/language.service";
 import { MenuService } from "../providers/menus/menu.service";
 
 import {Iframe} from "../pages/iframe/iframe";
+import { Language } from '../models/language.model';
+import { DocumentDirection } from 'ionic-angular/umd/platform/platform';
 
 /**
  * Customizable options for our
@@ -153,17 +155,21 @@ export class MyApp {
     });
 
     // TODO: this causes a bug when iframe page is the homepage. It calls resetTabs too many times, which loads iframe.ts twice, causing the spinner to appear for too long.
-    this.languageservice.languageStatus().subscribe(language => {
+    this.languageservice.languageStatus().subscribe((language: Language) => {
 
       let is_loggedin = (this.loginservice.user);
+      this.rtl = (language.dir && language.dir == 'rtl');
+      let dir: DocumentDirection = (this.rtl) ? 'rtl' : 'ltr';
 
-      console.log('MyApp initializeApp languageStatus language changed resetTabs', language);
-      console.log('MyApp initializeApp languageStatus language changed is_loggedin', is_loggedin);
+      this.platform.setDir(dir, true);
+      this.platform.setLang(language.code, true);
 
       const lang_updated = true;
 
       this.resetTabs(is_loggedin, lang_updated);
-    })
+    });
+    // Let's not wait for the data if it's already in local storge
+    this.languageservice.initStoredLanguage();
 
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
@@ -247,12 +253,11 @@ export class MyApp {
     this.menu_side = ( data.meta.menu_right == true ) ? "right" : "left";
 
     this.rtl = ( data.meta.rtl == true ) ? true : false;
-
-    this.verifyLanguageFile(data);
-
-    if( this.rtl === true )
+    
+    if( this.rtl === true && this.languageservice.hasStoredLanguage === false )
       this.platform.setDir('rtl', true)
-
+    
+    this.verifyLanguageFile(data);
     this.loadStyles(data);
     
     this.doStatusBar(data);
@@ -1419,8 +1424,11 @@ export class MyApp {
 
     this.storage.get( 'app_language' ).then( lang => {
       if( lang ) {
-        this.translate.use( lang );
-        this.languageservice.setCurrentLanguage(lang);
+
+        let language = new Language(lang);
+
+        this.translate.use( language.code );
+        this.languageservice.setCurrentLanguage(language);
 
         this.setBackBtnText();
         
@@ -1481,40 +1489,23 @@ export class MyApp {
 
   verifyLanguageFile(data) {
     // check if language file exists. If not, default to en.json
-    this.langFileExists(data).then( data => {
-      const lang = (<string>data)
+    this.languageservice.langFileExists(data).then( data => {
+      const langData = (<Language>data);
 
-      console.log('set language to ' + lang);
+      // console.log(`set language to ${langData.code} and dir to ${langData.dir}`);
 
-      this.translate.setDefaultLang(lang);
-      this.languageservice.setCurrentLanguage(lang);
+      this.rtl = (langData.dir && langData.dir == 'rtl');
+
+      let language = new Language({
+        code: langData.code,
+        dir: (langData.dir && langData.dir == 'rtl') ? 'rtl' : 'ltr'
+      });
+
+      this.translate.setDefaultLang(language.code);
+      this.languageservice.setCurrentLanguage(language);
       this.setBackBtnText();
     });
   }
-
-  langFileExists(data) {
-		return new Promise( (resolve, reject) => {
-
-			if(data.default_language) {
-
-				const lang = data.default_language;
-
-				this.http.get( './assets/i18n/'+lang+'.json' )
-					.subscribe(data => {
-
-						// language file exists, return url 
-						resolve(lang);
-				},
-				error => {
-					// language file does not exist
-					resolve('en');
-				});
-
-			} else {
-				resolve('en');
-			}
-	    });
-	}
 
   setBackBtnText() {
 

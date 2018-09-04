@@ -1,13 +1,19 @@
 export class Language {
-	public current: String = '';
-	public available: any;
-	public rtl: Boolean;
+	public code: string = 'en';
+	public available: any[];
+	public dir: string = 'ltr';
 	
-	public constructor(data?) {
+	public constructor(data?: {code,dir}) {
 
 		if(data) {
-			// this.lang = (data.lang) ? data.lang : '';
-			// this.rtl = (data.rtl);
+			if(data.code)
+				this.code = data.code;
+			if(data.dir)
+				this.dir = data.dir;
 		}
+	}
+
+	isRTL() {
+		return (this.dir && this.dir == 'rtl');
 	}
 }
