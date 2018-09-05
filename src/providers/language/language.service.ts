@@ -1,13 +1,21 @@
+import { Injectable } from "@angular/core";
 import { Observable } from "rxjs/Observable";
 import { Subject } from "rxjs/Subject";
+import {Http, Response} from '@angular/http';
 import { HttpParams } from '@angular/common/http';
+import {Storage} from '@ionic/storage';
 import { Language } from "../../models/language.model";
 
+@Injectable()
 export class LanguageService {
 	private langObs = new Subject<Language>();
 	public language: Language;
+	public hasStoredLanguage = false;
 
-	constructor() {
+	constructor(
+		private storage: Storage,
+		private http: Http
+	) {
 		this.language = new Language();
 	}
 
@@ -16,11 +24,18 @@ export class LanguageService {
 		this.langObs.next(this.language);
 	}
 
-	setCurrentLanguage(language: String) {
+	initStoredLanguage() {
+		this.storage.get( 'app_language' ).then( lang => {
+			if( lang ) {
+				this.hasStoredLanguage = true;
+				this.setCurrentLanguage(lang);
+			}
+		});
+	}
 
-		console.log('LanguageService setCurrentLanguage language', language);
-
-		this.language.current = language;
+	setCurrentLanguage(language: Language) {
+		this.language.code = language.code;
+		this.language.dir = language.dir;
 		this.langObs.next(this.language);
 	}
 
@@ -32,7 +47,7 @@ export class LanguageService {
 	 * The current language: 'en'
 	 */
 	getCurrentLanguage() {
-		return this.language.current;
+		return this.language.code;
 	}
 
 	removeLanguage() {
@@ -117,5 +132,44 @@ export class LanguageService {
 	
 		return url;
 	
-	  }
+	}
+
+	langFileExists(data): Promise<Language> {
+		return new Promise<Language>( (resolve, reject) => {
+
+      		let fallbackLang = new Language({
+        		code:'en',
+				dir: 'ltr'
+      		});
+
+			if(data.default_language) {
+
+        		let langDefault = new Language({
+          			code: data.default_language,
+					dir: (data.meta.rtl) ? 'rtl' : 'ltr'
+        		});
+
+        		this.http.get( './assets/i18n/'+langDefault.code+'.json' )
+					.subscribe((response: Response) => {
+
+						let new_lang: Language = langDefault;
+						let parsedLangData = response.json();
+				
+						if(parsedLangData) {
+							new_lang.dir = (parsedLangData.dir) ? parsedLangData.dir : langDefault.dir;
+						}
+
+						// language file exists, return url 
+						resolve(new_lang);
+				},
+				error => {
+					// language file does not exist
+					resolve(fallbackLang);
+				});
+
+			} else {
+				resolve(fallbackLang);
+			}
+	    });
+	}
 }

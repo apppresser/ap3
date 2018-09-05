@@ -3,6 +3,7 @@ import {ViewController, ToastController, IonicPage, NavParams} from 'ionic-angul
 import {Storage} from '@ionic/storage';
 import {TranslateService} from '@ngx-translate/core';
 import { LanguageService } from "../../providers/language/language.service";
+import { Language } from '../../models/language.model';
 
 @IonicPage()
 @Component({
@@ -60,8 +61,10 @@ export class LanguageSettings {
         for (var i = langs.length - 1; i >= 0; i--) {
 
           // if language codes match, save as checked
-          if( langs[i].code === lang )
+          if(langs[i].code === lang.code || langs[i].code === lang) {
             langs[i].checked = true
+            this.languageservice.setCurrentLanguage(lang);
+          }
 
         }
         
@@ -73,11 +76,22 @@ export class LanguageSettings {
 
   }
 
-  toggleLanguage( event, language ) {
+  onToggleLanguage( event, language ) {
+    this.toggleLanguage(language);
+  }
+
+  toggleLanguage( new_language ) {
+
+    let dir = (new_language.dir) ? new_language.dir : 'ltr';
+
+    let language = new Language({
+      code: new_language.code,
+      dir: (new_language.dir && new_language.dir === 'rtl') ? 'rtl' : 'ltr'
+    });
 
     this.translate.use( language.code )
-    this.storage.set( 'app_language', language.code )
-    this.languageservice.setCurrentLanguage(language.code);
+    this.storage.set( 'app_language', language )
+    this.languageservice.setCurrentLanguage(language);
 
     this.translate.get('Language changed').subscribe( text => {
       this.presentToast(text);

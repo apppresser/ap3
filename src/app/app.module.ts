@@ -47,6 +47,7 @@ import {AppGeo} from "../providers/appgeo/appgeo";
 import {IAP} from "../providers/inapppurchase/inapppurchase";
 import {Download} from "../providers/download/download";
 import {BpProvider} from "../providers/buddypress/bp-provider";
+import { MenuService } from "../providers/menus/menu.service";
 
 import {Iframe} from "../pages/iframe/iframe";
 
@@ -128,7 +129,8 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     IAP,
     InAppPurchase,
     Download,
-    BpProvider
+    BpProvider,
+    MenuService
   ]
 })
 export class AppModule {}

@@ -7,6 +7,7 @@ import {IonicModule, ToastController} from 'ionic-angular';
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
 import {Posts} from '../../providers/posts/posts';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
+import {MenuService} from "../../providers/menus/menu.service";
 import {IAP} from '../../providers/inapppurchase/inapppurchase';
 
 import {Iframe} from "../iframe/iframe";
@@ -68,6 +69,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	subscriptions = [];
 	listenFunc: Function;
 	rtlBack: boolean = false;
+	isRTL: boolean = false;
 	language: any;
 	templateUrl: string;
 	extraModules = [IonicModule, TranslateModule, ApListComponentModule, ApSliderComponentModule];
@@ -111,6 +113,7 @@ export class CustomPage implements OnInit, OnDestroy {
 		public loadingCtrl: LoadingController,
 		public postCtrl: Posts,
 		public globalvars: GlobalVars,
+		private menuservice: MenuService,
 		private network: Network
         ) {}
 
@@ -131,6 +134,7 @@ export class CustomPage implements OnInit, OnDestroy {
 		}));
 
 		this.pagetitle = this.navParams.data.title;
+		this.initIsRTL();
 
 		if(this.navParams.data.is_home == true) {
 			this.doLogo()
@@ -261,7 +265,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	 * Get side menu index by page slug
 	 */
 	getMenuIndexBySlug(slug: string) {
-		return this.getIndexBySlug(slug, this.menus.side);
+		return this.menuservice.getIndexBySlug(slug, this.menus.side);
 	}
 
 	/**
@@ -269,34 +273,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	 * @param slug page slug
 	 */
 	getTabIndexBySlug(slug: string) {
-		return this.getIndexBySlug(slug, this.menus.tabs);
-	}
-
-	/**
-	 * Side or tab menus
-	 * @param slug page slug or URL
-	 * @param pages menu or tab pages
-	 */
-	getIndexBySlug(slug: string, pages) {
-		let menu_index: number;
-		let count: number = 0;
-
-		if(!pages)
-			return menu_index;
-
-		for(let page of pages) {
-			if(page.slug && page.slug == slug) {
-				menu_index = count;
-			} else if(page.url && page.url == slug) {
-				menu_index = count;
-			}
-			count++;
-		};
-
-		if(!menu_index && menu_index !== 0)
-			console.log(pages); // you can find the slugs here
-
-    	return menu_index;
+		return this.menuservice.getIndexBySlug(slug, this.menus.tabs);
 	}
 
 	/**
@@ -366,6 +343,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	  	let root = this.getPageType( page );
 
 		this.nav.push( root, page, opt );
+
 	}
 
 	/**
@@ -435,10 +413,18 @@ export class CustomPage implements OnInit, OnDestroy {
 	changeRTL( event, rtl ) {
 		if( rtl ) {	
 			this.platform.setDir('rtl', true)
+			this.isRTL = true;
 		} else {
 			this.platform.setDir('ltr', true)
+			this.isRTL = false;
 		}
 		this.storage.set( 'is_rtl', rtl )
+	}
+
+	initIsRTL() {
+		this.storage.get('is_rtl').then(value => {
+			this.isRTL = (value === 'true');
+		});
 	}
 
 	showSegments(opt?: ModalOptions) {

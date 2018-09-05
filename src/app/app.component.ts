@@ -32,8 +32,11 @@ import {Storage} from '@ionic/storage';
 import { User } from '../models/user.model';
 import { LoginService } from '../providers/logins/login.service';
 import { LanguageService } from "../providers/language/language.service";
+import { MenuService } from "../providers/menus/menu.service";
 
 import {Iframe} from "../pages/iframe/iframe";
+import { Language } from '../models/language.model';
+import { DocumentDirection } from 'ionic-angular/umd/platform/platform';
 
 /**
  * Customizable options for our
@@ -110,6 +113,7 @@ export class MyApp {
     private Dialogs: Dialogs,
     private zone: NgZone,
     private config: Config,
+    private menuservice: MenuService,
     private download: Download
   ) {
 
@@ -151,17 +155,21 @@ export class MyApp {
     });
 
     // TODO: this causes a bug when iframe page is the homepage. It calls resetTabs too many times, which loads iframe.ts twice, causing the spinner to appear for too long.
-    this.languageservice.languageStatus().subscribe(language => {
+    this.languageservice.languageStatus().subscribe((language: Language) => {
 
       let is_loggedin = (this.loginservice.user);
+      this.rtl = (language.dir && language.dir == 'rtl');
+      let dir: DocumentDirection = (this.rtl) ? 'rtl' : 'ltr';
 
-      console.log('MyApp initializeApp languageStatus language changed resetTabs', language);
-      console.log('MyApp initializeApp languageStatus language changed is_loggedin', is_loggedin);
+      this.platform.setDir(dir, true);
+      this.platform.setLang(language.code, true);
 
       const lang_updated = true;
 
       this.resetTabs(is_loggedin, lang_updated);
-    })
+    });
+    // Let's not wait for the data if it's already in local storge
+    this.languageservice.initStoredLanguage();
 
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
@@ -245,12 +253,11 @@ export class MyApp {
     this.menu_side = ( data.meta.menu_right == true ) ? "right" : "left";
 
     this.rtl = ( data.meta.rtl == true ) ? true : false;
-
-    this.verifyLanguageFile(data);
-
-    if( this.rtl === true )
+    
+    if( this.rtl === true && this.languageservice.hasStoredLanguage === false )
       this.platform.setDir('rtl', true)
-
+    
+    this.verifyLanguageFile(data);
     this.loadStyles(data);
     
     this.doStatusBar(data);
@@ -304,6 +311,7 @@ export class MyApp {
       }
 
       this.tabs = this.navparams;
+      this.menuservice.tabs = this.tabs.slice();
       if(typeof this.originalTabs === 'undefined')
         this.originalTabs = this.tabs.slice(); // make a copy
 
@@ -314,6 +322,7 @@ export class MyApp {
     if( data.menus.items ) {
 
       this.pages = data.menus.items;
+      this.menuservice.menu = this.pages.slice();
 
       this.showmenu = true;
 
@@ -419,7 +428,7 @@ export class MyApp {
    * Get side menu index by page slug
    */
   getMenuIndexBySlug(slug: string) {
-    return this.getIndexBySlug(slug, this.pages);
+    return this.menuservice.getIndexBySlug(slug, this.pages);
   }
 
   /**
@@ -427,32 +436,7 @@ export class MyApp {
    * @param slug page slug
    */
   getTabIndexBySlug(slug: string) {
-    return this.getIndexBySlug(slug, this.tabs);
-  }
-
-  /**
-   * Side or tab menus
-   * @param slug page slug
-   * @param pages menu or tab pages
-   */
-  getIndexBySlug(slug: string, pages) {
-    let menu_index: number;
-    let count: number = 0;
-
-    if(!pages)
-			return menu_index;
-
-    for(let page of pages) {
-      if(page.slug && page.slug == slug) {
-        menu_index = count;
-      }
-      count++;
-    };
-
-    if(!menu_index && menu_index !== 0)
-      console.log(pages); // you can find the slugs here
-
-    return menu_index;
+    return this.menuservice.getIndexBySlug(slug, this.tabs);
   }
 
   getPageIdBySlug(slug) {
@@ -643,6 +627,7 @@ export class MyApp {
     console.log('push page type', root)
 
     this.nav.push( root, page, opt );
+
   }
 
   openTab(tab_index: number) {
@@ -1343,6 +1328,7 @@ export class MyApp {
     }
 
     this.tabs = this.navparams.slice();
+    this.menuservice.tabs = this.navparams.slice();
 
     // "refresh" the view by resetting to home tab
     //this.openPage( { 'title': this.tabs[0].title, 'url': '', 'component': 'TabsPage', 'navparams': this.navparams, 'class': this.tabs[0].icon } )
@@ -1416,8 +1402,11 @@ export class MyApp {
 
     this.storage.get( 'app_language' ).then( lang => {
       if( lang ) {
-        this.translate.use( lang );
-        this.languageservice.setCurrentLanguage(lang);
+
+        let language = new Language(lang);
+
+        this.translate.use( language.code );
+        this.languageservice.setCurrentLanguage(language);
 
         this.setBackBtnText();
         
@@ -1478,40 +1467,23 @@ export class MyApp {
 
   verifyLanguageFile(data) {
     // check if language file exists. If not, default to en.json
-    this.langFileExists(data).then( data => {
-      const lang = (<string>data)
+    this.languageservice.langFileExists(data).then( data => {
+      const langData = (<Language>data);
 
-      console.log('set language to ' + lang);
+      // console.log(`set language to ${langData.code} and dir to ${langData.dir}`);
 
-      this.translate.setDefaultLang(lang);
-      this.languageservice.setCurrentLanguage(lang);
+      this.rtl = (langData.dir && langData.dir == 'rtl');
+
+      let language = new Language({
+        code: langData.code,
+        dir: (langData.dir && langData.dir == 'rtl') ? 'rtl' : 'ltr'
+      });
+
+      this.translate.setDefaultLang(language.code);
+      this.languageservice.setCurrentLanguage(language);
       this.setBackBtnText();
     });
   }
-
-  langFileExists(data) {
-		return new Promise( (resolve, reject) => {
-
-			if(data.default_language) {
-
-				const lang = data.default_language;
-
-				this.http.get( './assets/i18n/'+lang+'.json' )
-					.subscribe(data => {
-
-						// language file exists, return url 
-						resolve(lang);
-				},
-				error => {
-					// language file does not exist
-					resolve('en');
-				});
-
-			} else {
-				resolve('en');
-			}
-	    });
-	}
 
   setBackBtnText() {
 
