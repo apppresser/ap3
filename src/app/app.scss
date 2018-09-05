@@ -559,3 +559,13 @@ button.item-ios.divider .item-inner, button.item-ios.submenu-parent .item-inner 
 .iphoneX-portrait ion-content.statusbar-padding.has-favorites .scroll-content {
 	margin-top: 113px !important;
 }
+
+// Fix post-list favorite when using RTL
+ion-item-sliding.active-slide.active-options-left ion-item-options[side=left],
+ion-item-sliding.active-slide.active-options-right ion-item-options:not([side=left]),
+ion-item-sliding.active-slide.active-options-left ion-item-options[ng-reflect-side=left],
+ion-item-sliding.active-slide.active-options-right ion-item-options:not([ng-reflect-side=left]) {
+	width: 100%;
+    visibility: visible;
+	justify-content: flex-end;
+}

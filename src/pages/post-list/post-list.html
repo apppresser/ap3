@@ -83,7 +83,7 @@
 
       </button>
 
-      <ion-item-options side="right" *ngIf="doFavorites">
+      <ion-item-options [side]="platform.isRTL?'left':'right'" *ngIf="doFavorites">
         <button ion-button color="primary" (click)="addFav(slidingItem, item)">
           <ion-icon name="star-outline"></ion-icon>
           {{ 'Favorite' | translate }}
