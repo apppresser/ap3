@@ -9,12 +9,17 @@ bp-messages {
 			background: #fff;
 		}
 
+		.button {
+			background: transparent !important;
+		}
+
 	}
 
 	.single-message-thread {
 
 		clear: both;
 		overflow: hidden;
+		padding-top: 10px;
 		padding-bottom: 20px;
 
 		.item {
@@ -74,4 +79,9 @@ bp-messages {
 			}
 		}
 	}
+}
+
+.iphoneX-portrait .footer .toolbar.statusbar-padding:first-child {
+	min-height: 10px !important;
+	padding: 0 !important;
 }

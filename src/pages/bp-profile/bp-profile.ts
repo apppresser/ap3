@@ -37,7 +37,7 @@ export class BpProfilePage implements OnInit {
     events.subscribe('user:login', data => {
       this.login_data = data
       this.user_id = this.login_data.user_id
-      this.setupUser()
+      this.setupUser( true )
     });
 
   }
@@ -58,8 +58,17 @@ export class BpProfilePage implements OnInit {
     if( !this.user_id && !this.login_data ) {
       this.checkLogin()
     } else {
-      this.setupUser()
+      this.setupUser( true )
     }    
+
+  }
+
+  ionViewWillEnter() {
+
+    // update profile when cached
+    if( this.userData ) {
+      this.setupUser( false )
+    }
 
   }
 
@@ -71,7 +80,7 @@ export class BpProfilePage implements OnInit {
       if( login_data && login_data.user_id ) {
         this.login_data = login_data
         this.user_id = this.login_data.user_id
-        this.setupUser()
+        this.setupUser( true )
       } else {
         this.isError = true
       }
@@ -79,18 +88,19 @@ export class BpProfilePage implements OnInit {
     })
   }
 
-  setupUser() {
+  setupUser( spinner ) {
 
     this.isError = false
 
-    this.showSpinner()
+    if( spinner )
+      this.showSpinner()
 
     if( this.user_id === this.login_data.user_id ) {
       this.isMyProfile = true
     }
 
     this.bpProvider.getItem( 'members/' + this.user_id, this.login_data ).then( data => {
-      console.log(data)
+
       this.userData = data
       this.hideSpinner()
     }).catch( e => {
@@ -193,7 +203,11 @@ export class BpProfilePage implements OnInit {
   }
 
   hideSpinner() {
-    this.spinner.dismiss();
+
+    if( this.spinner ) {
+      this.spinner.dismiss();
+    }
+
   }
 
   // changes the back button transition direction if app is RTL
