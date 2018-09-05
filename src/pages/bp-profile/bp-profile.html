@@ -51,13 +51,19 @@
 				<button ion-button icon-start small clear *ngIf="isMyProfile" block (click)="showMessages()"><ion-icon name="chatbubbles"></ion-icon> {{ 'Messages' | translate }}</button>
 			</ion-col>
 			<ion-col text-center>
-				<button ion-button icon-start small clear (click)="friendsPage()"><ion-icon name="people"></ion-icon> {{ 'Friends' | translate }}</button>
+				<button ion-button icon-start small clear (click)="friendsPage()"><ion-icon name="people"></ion-icon> {{ 'Friends' | translate }} <ion-badge *ngIf="userData.request_count && userData.request_count != 0"> {{ userData.request_count }}</ion-badge></button>
+
 			</ion-col>
 			<ion-col text-center>
 				<button ion-button icon-start small clear (click)="openLoginModal()"><ion-icon name="log-in"></ion-icon> {{ 'Login/out' | translate }}</button>
 			</ion-col>
 		</ion-row>
 
+	</ion-card>
+
+	<ion-card class="last-activity" *ngIf="userData && userData.last_activity" (click)="userActivity( userData )">
+		<span class="last-update-header">{{ 'Last update' | translate }}</span>
+		<ion-card-content [innerHTML]="userData.last_activity.content"></ion-card-content>
 	</ion-card>
 	
 	<div *ngIf="isError" padding>

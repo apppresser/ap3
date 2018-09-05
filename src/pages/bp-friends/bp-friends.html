@@ -22,7 +22,7 @@
 
   <ion-item *ngIf="friendSegments" id="favorites-toolbar" color="light">
 
-    <ion-select [(ngModel)]="segment" (ionChange)="segmentChanged()" placeholder="Friends">
+    <ion-select [(ngModel)]="segment" (ionChange)="segmentChanged()" placeholder="Requests">
 
       <ion-option *ngFor="let segment of friendSegments" [value]="segment.name">{{segment.name}}</ion-option>
 

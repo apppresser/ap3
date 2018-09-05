@@ -1,16 +1,30 @@
 bp-messages {
+
+	.footer .toolbar {
+
+		border-top: 1px solid #eee;
+		padding: 0;
+
+		.toolbar-background {
+			background: #fff;
+		}
+
+	}
+
 	.single-message-thread {
 
 		clear: both;
 		overflow: hidden;
 		padding-bottom: 20px;
-		
+
 		.item {
-			margin: 8px 100px 8px 15px;
+			margin: 3px 100px 3px 15px;
 			width: auto;
 			display: flex;
 			float: left;
 			clear: both;
+			min-height: 10px;
+			padding-left: 0;
 		}
 
 		.item-inner {
@@ -18,6 +32,10 @@ bp-messages {
 			border-radius: 10px;
 			padding: 0 10px;
 			flex: inherit;
+		}
+
+		ion-avatar {
+			margin: 0 16px 0 0 !important;
 		}
 
 		ion-avatar img {

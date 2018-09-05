@@ -30,7 +30,7 @@ export class BpFriends {
   friendSegments: any[];
   segment: any;
   segmentArgs: string;
-  isRequests: boolean = false;
+  isRequests: boolean = true;
 
   constructor(
     public nav: NavController, 
@@ -65,7 +65,7 @@ export class BpFriends {
 
       if( data && data.user_id ) {
         this.login_data = data
-        this.segmentArgs = '?user=' + this.login_data.user_id
+        this.segmentArgs = '/requests'
         this.getStarted()
       } else {
         this.presentToast('Please login.')

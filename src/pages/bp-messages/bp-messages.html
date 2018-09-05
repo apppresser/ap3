@@ -95,8 +95,8 @@
 </ion-content>
 
 <ion-footer no-border>
-  <ion-toolbar *ngIf="threads && singleThread" color="light">
-    <button block ion-button icon-start clear (tap)="replyToThread()">
+  <ion-toolbar *ngIf="threads && singleThread">
+    <button block ion-button icon-start clear small (tap)="replyToThread()">
       <ion-icon name="ios-send"></ion-icon>
       Reply
     </button>

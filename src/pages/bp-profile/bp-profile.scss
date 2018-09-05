@@ -15,8 +15,30 @@ bp-profile {
 		height: 100px;
 	}
 
+	.button .badge {
+		margin-left: 5px;
+	}
+
+	.col {
+		min-width: 90px;
+	}
+
 	.card {
 		box-shadow: none;
 		border: none;
+	}
+
+	.last-activity img {
+		display: block;
+		height: auto;
+		width: 100%;
+		margin: 10px 0;
+	}
+
+	.last-update-header {
+		padding: 15px;
+		color: #999;
+		font-size: 12px;
+		text-transform: uppercase;
 	}
 }
