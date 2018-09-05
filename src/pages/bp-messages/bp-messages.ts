@@ -88,6 +88,8 @@ export class BpMessages {
             name: this.login_data.username,
             avatar: this.login_data.avatar
           } } )
+
+        this.scrollDown()
       }
 
     });
@@ -144,6 +146,18 @@ export class BpMessages {
         this.rtlBack = true
     }
  
+  }
+
+  scrollDown() {
+
+    setTimeout( ()=> {
+
+      this.content.scrollToBottom(200).then( res => {
+        console.log('scroll done', res)
+      })
+
+    }, 100 )
+
   }
 
   setupSegments() {
@@ -210,6 +224,10 @@ export class BpMessages {
 
       // Loads posts from WordPress API
       this.threads = items;
+
+      if( this.singleThread ) {
+        this.scrollDown()
+      }
 
       this.storage.set( route.substr(-10, 10) + '_bp', items);
 

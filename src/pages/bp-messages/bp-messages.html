@@ -43,11 +43,11 @@
 
 </ion-header>
 
-<ion-content [ngClass]="customClasses">
+<ion-content #content [ngClass]="customClasses">
 
-  <ion-refresher (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+  <!-- <ion-infinite-scroll *ngIf="singleThread" (ionInfinite)="loadMore($event)" position="top">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll> -->
 
   <div *ngIf="threads && !singleThread">
 
@@ -71,7 +71,7 @@
 
     <ion-list no-lines class="single-message-thread">
 
-        <ion-item *ngFor="let message of threads.messages" [ngClass]="{ 'my-reply' : message.sender_id == login_data.user_id }" text-wrap>
+        <ion-item *ngFor="let message of threads.messages.reverse()" [ngClass]="{ 'my-reply' : message.sender_id == login_data.user_id }" text-wrap>
           <ion-avatar item-start>
             <img *ngIf="message.sender_data && message.sender_data.avatar" [src]="formatUrl( message.sender_data.avatar )">
             <img *ngIf="!message.sender_data || !message.sender_data.avatar" src="assets/default.png">
@@ -87,10 +87,6 @@
   </div>
 
   <ion-item *ngIf="!threads">{{ 'No items to show.' | translate }}</ion-item>
-
-  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
-    <ion-infinite-scroll-content></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
 
 </ion-content>
 
