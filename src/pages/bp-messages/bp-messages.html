@@ -51,7 +51,7 @@
 
   <div *ngIf="threads && !singleThread">
 
-    <ion-list>
+    <ion-list no-lines>
 
         <ion-item *ngFor="let thread of threads" (tap)="loadThread(thread.id)">
           <ion-avatar item-start>
@@ -69,25 +69,18 @@
 
   <div *ngIf="threads && singleThread">
 
-    <ion-list>
+    <ion-list no-lines class="single-message-thread">
 
-        <ion-item *ngFor="let message of threads.messages">
+        <ion-item *ngFor="let message of threads.messages" [ngClass]="{ 'my-reply' : message.sender_id == login_data.user_id }" text-wrap>
           <ion-avatar item-start>
             <img *ngIf="message.sender_data && message.sender_data.avatar" [src]="formatUrl( message.sender_data.avatar )">
             <img *ngIf="!message.sender_data || !message.sender_data.avatar" src="assets/default.png">
+            <p *ngIf="message.sender_data && message.sender_data.name" class="sender-name">{{ message.sender_data.name }}</p>
           </ion-avatar>
-          <p *ngIf="message.sender_data && message.sender_data.name"><strong>{{ message.sender_data.name }}</strong></p>
-          
-          <p class="message-preview"><span *ngIf="message.subject && message.subject != 'undefined'"><strong>{{ message.subject }}:</strong></span> {{ message.message }}</p>
+            
+            <p class="message-preview"><span *ngIf="message.subject && message.subject != 'undefined'"><strong>{{ message.subject }}:</strong></span> {{ message.message }}</p>
+
         </ion-item>
-
-        <div padding>
-
-          <button block ion-button (tap)="replyToThread()">
-            Reply
-          </button>
-
-        </div>
 
     </ion-list>
 
@@ -100,3 +93,12 @@
   </ion-infinite-scroll>
 
 </ion-content>
+
+<ion-footer no-border>
+  <ion-toolbar *ngIf="threads && singleThread" color="light">
+    <button block ion-button icon-start clear (tap)="replyToThread()">
+      <ion-icon name="ios-send"></ion-icon>
+      Reply
+    </button>
+  </ion-toolbar>
+</ion-footer>

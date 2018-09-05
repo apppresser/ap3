@@ -40,7 +40,7 @@
 
   <div *ngIf="friends">
 
-    <ion-list>
+    <ion-list no-lines>
 
         <ion-item *ngFor="let friend of friends">
           <ion-avatar item-start (tap)="viewMember( friend )">

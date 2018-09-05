@@ -1,3 +1,59 @@
 bp-messages {
+	.single-message-thread {
 
+		clear: both;
+		overflow: hidden;
+		padding-bottom: 20px;
+		
+		.item {
+			margin: 8px 100px 8px 15px;
+			width: auto;
+			display: flex;
+			float: left;
+			clear: both;
+		}
+
+		.item-inner {
+			background-color: #eee;
+			border-radius: 10px;
+			padding: 0 10px;
+			flex: inherit;
+		}
+
+		ion-avatar img {
+			height: 25px;
+			width: 25px;
+			display: block;
+			margin: auto;
+		}
+
+		.sender-name {
+			font-size: 12px;
+			opacity: .7;
+			text-align: center;
+		}
+
+		.my-reply {
+
+			&.item {
+				margin-right: 15px;
+				margin-left: 100px;
+				display: block;
+				float: right;
+			}
+
+			ion-avatar, .sender-name {
+				display: none;
+			}
+
+			.item-inner {
+				background-color: #3AA6FC;
+
+				.input-wrapper, label, p {
+					color: #fff;
+				}
+
+			}
+		}
+	}
 }

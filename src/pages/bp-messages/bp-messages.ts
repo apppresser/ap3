@@ -83,6 +83,7 @@ export class BpMessages {
         this.threads.messages.unshift( { 
           "subject": data.subject, 
           "message": data.content,
+          "sender_id": this.login_data.user_id,
           "sender_data": {
             name: this.login_data.username,
             avatar: this.login_data.avatar
