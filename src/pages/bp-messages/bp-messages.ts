@@ -89,7 +89,7 @@ export class BpMessages {
             avatar: this.login_data.avatar
           } } )
 
-        this.scrollDown()
+        this.scrollDown(500)
       }
 
     });
@@ -148,7 +148,10 @@ export class BpMessages {
  
   }
 
-  scrollDown() {
+  scrollDown( delay ) {
+
+    if( !this.content._scroll )
+        return;
 
     setTimeout( ()=> {
 
@@ -156,7 +159,7 @@ export class BpMessages {
         console.log('scroll done', res)
       })
 
-    }, 100 )
+    }, delay )
 
   }
 
@@ -226,7 +229,7 @@ export class BpMessages {
       this.threads = items;
 
       if( this.singleThread ) {
-        this.scrollDown()
+        this.scrollDown(100)
       }
 
       this.storage.set( route.substr(-10, 10) + '_bp', items);
