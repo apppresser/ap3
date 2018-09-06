@@ -123,18 +123,6 @@ export class LoginModal {
 
 	doLogin() {
 
-		// if in preview, Device.platform is empty object. On device it should be string like 'iOS'
-		// checking for port 8100 let's me test logins locally
-		if( typeof this.Device.platform != 'string' && location.port != '8100') {
-
-			this.translate.get('Please try from a device.').subscribe( text => {
-				this.presentToast(text);
-			})
-
-			return;
-
-		}
-
 		this.translate.get('Please enter a valid login.').subscribe( text => {
 			if( !this.login )
 				this.presentToast(text);

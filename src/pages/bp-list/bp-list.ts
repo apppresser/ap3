@@ -676,7 +676,9 @@ export class BpList implements OnInit {
   loginCheck() {
 
     if( !this.login_data || !this.login_data.user_id ) {
-      this.presentToast('Please log in.')
+      this.presentToast('Please log in or sign up.')
+      const loginModal = this.modalCtrl.create('LoginModal' );
+      loginModal.present();
       return false;
     }
 
