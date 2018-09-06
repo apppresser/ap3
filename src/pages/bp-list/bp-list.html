@@ -18,18 +18,26 @@
 
     <ion-title *ngIf="!show_header_logo">{{title | translate}}</ion-title>
 
-    <ion-buttons end *ngIf="activityList">
+    <ion-buttons end>
 
-      <button *ngIf="groupId" ion-button (click)="iabLink(groupLink)">
+      <button *ngIf="activityList && groupId" ion-button (click)="iabLink(groupLink)">
         <ion-icon name="cog"></ion-icon>
       </button>
 
-      <button ion-button *ngIf="!isUserActivity" (click)="doActivity()">
+      <button ion-button *ngIf="activityList && !isUserActivity" (click)="doActivity()">
         <ion-icon name="ios-create-outline"></ion-icon>
+      </button>
+
+      <button ion-button class="search-button-header" (click)="toggleSearchBar()">
+        <ion-icon name="search"></ion-icon>
       </button>
     </ion-buttons>
 
   </ion-navbar>
+
+  <ion-toolbar *ngIf="showSearch">
+    <ion-searchbar placeholder="{{'Search' | translate }}" debounce="1000" (ionInput)="search($event)" (ionClear)="clearSearch()"></ion-searchbar>
+  </ion-toolbar>
 
   <ion-item *ngIf="bpSegments" id="favorites-toolbar" color="light">
 

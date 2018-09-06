@@ -42,6 +42,7 @@ export class BpList implements OnInit {
   showAllGroups: boolean = false;
   isUserActivity: boolean = false;
   segments: any;
+  showSearch: boolean = false;
 
   constructor(
     public nav: NavController, 
@@ -348,7 +349,7 @@ export class BpList implements OnInit {
 
   }
 
-  loadItems( route ) {
+  loadItems( route, more = true ) {
 
   	if( !route )
   		return;
@@ -386,7 +387,9 @@ export class BpList implements OnInit {
       this.storage.set( route.substr(-10, 10) + '_bp', items);
 
       // load more right away
-      this.loadMore(null);
+      if( more )
+        this.loadMore(null);
+
       loading.dismiss();
     }).catch((err) => {
 
@@ -603,6 +606,39 @@ export class BpList implements OnInit {
       login_data: this.login_data
     });
   	
+  }
+
+  toggleSearchBar() {
+    if( this.showSearch === true ) {
+      this.showSearch = false
+    } else {
+      this.showSearch = true
+    }
+
+    this.content.resize()
+  }
+
+  search(ev) {
+    // set val to the value of the searchbar
+    let val = ev.target.value;
+
+    // if the value is an empty string don't filter the items
+    if (val && val.trim() != '') {
+      // set to this.route so infinite scroll works
+      this.route = this.addQueryParam(this.route, 'search=' + val);
+      this.loadItems( this.route, false )
+    }
+
+  }
+
+  addQueryParam(url, param) {
+    const separator = (url.indexOf('?') > 0) ? '&' : '?';
+    return url + separator + param;
+  }
+
+  clearSearch() {
+    // reset to original query
+    this.loadItems(this.route)
   }
 
   iabLink(link) {
