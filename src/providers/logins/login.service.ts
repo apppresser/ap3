@@ -1,13 +1,20 @@
+import { Injectable } from "@angular/core";
 import { Observable } from "rxjs/Observable";
 import { Subject } from "rxjs/Subject";
 import { HttpParams } from '@angular/common/http';
 
 import { User } from "../../models/user.model";
+import { Events } from "ionic-angular";
 
+@Injectable()
 export class LoginService {
 	private userObs = new Subject<User>();
 	public user: User;
 	private wp_reset_password_url = '';
+
+	constructor(
+		private events: Events
+	) {}
 
 	setLoginStatus(user: User) {
 		this.user = user;
@@ -71,4 +78,22 @@ export class LoginService {
 		return url;
 	
 	  }
+
+	/**
+	 * Open the login modal if the menu item's extra_classes contains 'yieldlogin'
+	 * @param navParams
+	 */
+	yieldLogin(navParams) {
+		if(navParams && navParams.extra_classes && navParams.extra_classes.indexOf('yieldlogin') >= 0) {
+			if(this.user) { // logged in
+				return false;
+			} else { // logged out, show login modal
+				console.log('yieldLogin');
+				this.events.publish('login:force_login');
+				return true;
+			}
+		}
+
+		return false;
+	}
 }
