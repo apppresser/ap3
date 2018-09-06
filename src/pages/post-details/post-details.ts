@@ -5,6 +5,8 @@ import {SocialSharing} from '@ionic-native/social-sharing';
 
 import {MediaPlayer} from '../media-player/media-player';
 import { VideoUtils } from "../../providers/video/video-utils";
+import { MenuService } from '../../providers/menus/menu.service';
+import { LoginService } from '../../providers/logins/login.service';
 
 @IonicPage()
 @Component({
@@ -28,6 +30,8 @@ export class PostDetailsPage implements OnInit {
     public viewCtrl: ViewController,
     public platform: Platform,
     private SocialSharing: SocialSharing,
+    private menuservice: MenuService,
+    private loginservice: LoginService,
     private videoUtils: VideoUtils
     ) {
     // If we navigated to this page, we will have an item available as a nav param
@@ -38,7 +42,10 @@ export class PostDetailsPage implements OnInit {
     // Listen for link clicks, open in in app browser
     this.listenFunc = renderer.listen(elementRef.nativeElement, 'click', (event) => {
 
-      this.iabLinks( event.target )
+      if(!this.hasPushPageAttr(event)) {
+        this.iabLinks( event.target, event )
+      }
+
 
     });
 
@@ -59,9 +66,9 @@ export class PostDetailsPage implements OnInit {
     }
   }
 
-  iabLinks( el ) {
+  iabLinks( el, event? ) {
 
-    var target = '_blank'
+    let target = '_blank'
       
     if( el.href && el.href.indexOf('http') >= 0 ) {
 
@@ -82,6 +89,66 @@ export class PostDetailsPage implements OnInit {
 
     }
 
+  }
+
+  /**
+   * Look for push-page or open-page on the target
+   * 
+   * @param event click event on a link
+   */
+  hasPushPageAttr(event) {
+
+    let el: HTMLElement = event.target;
+    let page_slug = el.getAttribute('data-apppage');
+    if(!page_slug) {
+      // IMG might be wrapped
+      page_slug = el.parentElement.getAttribute('data-apppage');
+    }
+
+    if( page_slug ) {
+      
+      let menuType = null;
+
+      let page_index = this.menuservice.getIndexBySlug(page_slug, 'tab');
+
+      if(page_index) {
+        menuType = 'tab';
+      } else {
+        page_index = this.menuservice.getIndexBySlug(page_slug, 'side');
+
+        if(page_index) {
+          menuType = 'side';
+        }
+      }
+      
+      if(menuType) {
+
+        let navParams = null;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        if(menuType == 'tab') {
+          navParams = this.menuservice.tabs[page_index];
+        } else {
+          navParams = this.menuservice.menu[page_index];
+        }
+
+        let nav = {
+          root: this.menuservice.getPageModuleName(navParams),
+          navParams: navParams,
+          opt: ( this.platform.isRTL && this.platform.is('ios') ) ? { direction: 'back' } : {}
+        };
+      
+        if(!this.loginservice.yieldLogin(nav.navParams) ) {
+          this.nav.push(nav.root, nav.navParams, nav.opt);
+        }
+
+        return true;
+      }
+    }
+
+    return false;
   }
 
   ionViewWillEnter() {

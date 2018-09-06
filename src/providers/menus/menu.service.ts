@@ -70,7 +70,13 @@ export class MenuService {
 	getIndexBySlug(slug: string, menuType) {
 		let menu_index: number;
     let count: number = 0;
-    let pages = (menuType == 'tabs') ? this.tabs : this.menu;
+    let pages = null;
+    
+    if(typeof menuType == 'object') {
+      pages = menuType;
+    } else {
+      pages = (menuType == 'tab') ? this.tabs : this.menu;
+    }
 
 		if(!pages)
 			return menu_index;
@@ -85,8 +91,8 @@ export class MenuService {
 		};
 
 		if(!menu_index && menu_index !== 0)
-			console.log(pages); // you can find the slugs here
+			console.log('Are you looking for page slugs?', pages); // you can find the slugs here
 
     	return menu_index;
-	}
+  }
 }
