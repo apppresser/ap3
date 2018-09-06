@@ -56,10 +56,8 @@ export class BpMessages {
 
     this.customClasses = 'bp-messages';
 
-    if( this.navParams.data.singleThread && this.navParams.data.threadId ) {
-      this.singleThread = true
-      this.boxArg = ''
-      this.route = this.route + '/' + this.navParams.data.threadId;
+    if( this.navParams.data.singleThread && this.navParams.data.thread ) {
+      this.doSingleThread()
     } else {
       this.setupSegments()
     }
@@ -136,8 +134,10 @@ export class BpMessages {
         this.login_data = data
       }
 
-      // reload every time we hit this page
-      this.getStarted()
+      if( !this.singleThread ) {
+        this.getStarted()
+      }
+      
 
     });
 
@@ -148,9 +148,22 @@ export class BpMessages {
  
   }
 
+  doSingleThread() {
+
+    this.singleThread = true
+    this.boxArg = ''
+    this.threads = this.navParams.data.thread
+    this.route = this.route + '/' + this.navParams.data.threadId;
+    this.login_data = this.navParams.data.login_data
+    setTimeout( ()=> {
+      this.scrollDown(100)
+    }, 500)
+
+  }
+
   scrollDown( delay ) {
 
-    if( !this.content._scroll )
+    if( !this.content || !this.content._scroll )
         return;
 
     setTimeout( ()=> {
@@ -199,11 +212,12 @@ export class BpMessages {
 
   }
 
-  loadThread( id ) {
+  loadThread( thread ) {
 
     this.nav.push( 'BpMessages', {
       singleThread: true,
-      threadId: id
+      thread: thread,
+      login_data: this.login_data
     });
 
   }

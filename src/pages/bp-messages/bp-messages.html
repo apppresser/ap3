@@ -53,7 +53,7 @@
 
     <ion-list no-lines>
 
-        <ion-item *ngFor="let thread of threads" (tap)="loadThread(thread.id)">
+        <ion-item *ngFor="let thread of threads" (tap)="loadThread(thread)">
           <ion-avatar item-start>
             <img *ngIf="thread.sender_data && thread.sender_data.avatar" [src]="formatUrl( thread.sender_data.avatar )">
             <img *ngIf="!thread.sender_data || !thread.sender_data.avatar" src="assets/default.png">
