@@ -40,7 +40,8 @@ bp-messages {
 		}
 
 		ion-avatar {
-			margin: 0 16px 0 0 !important;
+			margin: 0 5px 0 0 !important;
+			max-width: 50px;
 		}
 
 		ion-avatar img {
@@ -51,9 +52,12 @@ bp-messages {
 		}
 
 		.sender-name {
-			font-size: 12px;
+			font-size: 10px;
 			opacity: .7;
 			text-align: center;
+			white-space: nowrap;
+    		overflow: hidden;
+    		text-overflow: ellipsis;
 		}
 
 		.my-reply {

@@ -56,7 +56,7 @@ export class BpMessages {
 
     this.customClasses = 'bp-messages';
 
-    if( this.navParams.data.singleThread && this.navParams.data.thread ) {
+    if( this.navParams.data.singleThread && this.navParams.data.threadId ) {
       this.doSingleThread()
     } else {
       this.setupSegments()
@@ -152,12 +152,9 @@ export class BpMessages {
 
     this.singleThread = true
     this.boxArg = ''
-    this.threads = this.navParams.data.thread
     this.route = this.route + '/' + this.navParams.data.threadId;
     this.login_data = this.navParams.data.login_data
-    setTimeout( ()=> {
-      this.scrollDown(100)
-    }, 500)
+    this.getStarted()
 
   }
 
@@ -212,11 +209,11 @@ export class BpMessages {
 
   }
 
-  loadThread( thread ) {
+  loadThread( id ) {
 
     this.nav.push( 'BpMessages', {
       singleThread: true,
-      thread: thread,
+      threadId: id,
       login_data: this.login_data
     });
 
@@ -244,12 +241,13 @@ export class BpMessages {
 
       if( this.singleThread ) {
         this.scrollDown(100)
+      } else {
+        // load more
+        this.loadMore(null);
       }
 
       this.storage.set( route.substr(-10, 10) + '_bp', items);
-
-      // load more right away
-      this.loadMore(null);
+      
       loading.dismiss();
     }).catch((err) => {
 

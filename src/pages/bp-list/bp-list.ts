@@ -431,15 +431,20 @@ export class BpList implements OnInit {
   doRefresh(refresh) {
 
     if( this.bpSegments && this.segments ) {
-      for (var i = 0; i < this.bpSegments.length; ++i) {
-        if( this.bpSegments[i].selected === true ) {
-          this.segmentChanged()
-        }
-      }
+
+      this.segmentChanged()
+
     } else {
+
       this.getRoute().then( route => {
+        console.log('get route here ' + route)
         this.loadItems( route );
       })
+
+    }
+
+    if( this.showSearch ) {
+      this.toggleSearchBar()
     }
 
     // refresh.complete should happen when posts are loaded, not timeout
@@ -625,8 +630,8 @@ export class BpList implements OnInit {
     // if the value is an empty string don't filter the items
     if (val && val.trim() != '') {
       // set to this.route so infinite scroll works
-      this.route = this.addQueryParam(this.route, 'search=' + val);
-      this.loadItems( this.route, false )
+      let route = this.addQueryParam(this.route, 'search=' + val);
+      this.loadItems( route, false )
     }
 
   }
@@ -637,8 +642,9 @@ export class BpList implements OnInit {
   }
 
   clearSearch() {
-    // reset to original query
-    this.loadItems(this.route)
+
+    this.loadItems( this.route )
+
   }
 
   iabLink(link) {
