@@ -20,6 +20,8 @@
 
 <ion-content>
 
+	<img class="cover-image" *ngIf="userData && userData.cover_image" [src]="userData.cover_image" />
+
 	<ion-card *ngIf="userData">
 
 		<ion-item>
