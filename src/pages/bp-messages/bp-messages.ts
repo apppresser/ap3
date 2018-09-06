@@ -56,7 +56,7 @@ export class BpMessages {
 
     this.customClasses = 'bp-messages';
 
-    if( this.navParams.data.singleThread && this.navParams.data.threadId ) {
+    if( this.navParams.data.singleThread ) {
       this.doSingleThread()
     } else {
       this.setupSegments()
@@ -77,17 +77,24 @@ export class BpMessages {
     // push new activity item after posted
     this.events.subscribe('bp-add-message', data => {
 
-      if( this.threads && this.singleThread ) {
-        this.threads.messages.unshift( { 
-          "subject": data.subject, 
-          "message": data.content,
-          "sender_id": this.login_data.user_id,
-          "sender_data": {
-            name: this.login_data.username,
-            avatar: this.login_data.avatar
-          } } )
+      if( this.singleThread ) {
 
-        this.scrollDown(500)
+        if( !this.threads || !this.threads.messages ) {
+          this.getThreads( this.route + '/' + data.threadId )
+        } else {
+          this.threads.messages.unshift( { 
+            "subject": data.subject, 
+            "message": data.content,
+            "sender_id": this.login_data.user_id,
+            "sender_data": {
+              name: this.login_data.username,
+              avatar: this.login_data.avatar
+            } } )
+
+          this.scrollDown(500)
+        }
+
+        
       }
 
     });
@@ -152,9 +159,25 @@ export class BpMessages {
 
     this.singleThread = true
     this.boxArg = ''
-    this.route = this.route + '/' + this.navParams.data.threadId;
     this.login_data = this.navParams.data.login_data
-    this.getStarted()
+
+    if( this.navParams.data.threadId ) {
+
+      this.route = this.route + '/' + this.navParams.data.threadId;
+      this.getStarted()
+
+    } else if( this.navParams.data.newThread ) {
+
+      let data = { message: true, title: 'Message' }
+
+      if( this.navParams.data.recipients ) {
+        data.recipients = this.navParams.data.recipients
+      }
+      let bpModal = this.modalCtrl.create( 'BpModal', data );
+      bpModal.present();
+
+    }
+    
 
   }
 
@@ -333,7 +356,11 @@ export class BpMessages {
 
   newMessage() {
 
-    this.presentToast('Visit a member profile to send a new message.')
+    this.nav.push( 'BpMessages', {
+      singleThread: true,
+      newThread: true,
+      login_data: this.login_data
+    });
 
   }
 

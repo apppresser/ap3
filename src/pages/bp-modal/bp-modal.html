@@ -18,6 +18,16 @@
 
   <form (ngSubmit)="submitForm()" padding *ngIf="login_data">
 
+    <ion-item *ngIf="isMessage && !navParams.data.recipients">
+
+      <ion-select [(ngModel)]="recipients" (ionChange)="recipientSelected()" name="recipients" placeholder="To:">
+
+        <ion-option *ngFor="let recipient of recipientArr" [value]="recipient.id">{{recipient.mention_name}}</ion-option>
+
+      </ion-select>
+
+    </ion-item>
+
     <ion-item *ngIf="isMessage">
       <ion-input type="text" [(ngModel)]="activity.subject" name="subject" placeholder="Subject"></ion-input>
     </ion-item>

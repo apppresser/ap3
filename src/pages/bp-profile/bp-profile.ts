@@ -164,9 +164,14 @@ export class BpProfilePage implements OnInit {
   }
 
   message( userData ) {
-    let data = { recipients: userData.id, message: true, title: 'Message' }
-    let bpModal = this.modalCtrl.create( 'BpModal', data );
-    bpModal.present();
+
+    this.nav.push( 'BpMessages', {
+      singleThread: true,
+      newThread: true,
+      login_data: this.login_data,
+      recipients: userData.id
+    });
+
   }
 
   iabLink(link) {

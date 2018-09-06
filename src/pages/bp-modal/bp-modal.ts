@@ -23,6 +23,8 @@ export class BpModal {
 	isReply: boolean = false;
 	isMessage: boolean = false;
 	groupId: any = null;
+	recipients: any;
+	recipientArr: any[]
 
 	constructor(
 		public navParams: NavParams,
@@ -54,6 +56,10 @@ export class BpModal {
 			this.isMessage = true;
 		}
 
+		if( this.navParams.get('recipients') ) {
+			this.recipients = this.navParams.get('recipients');
+		}
+
 		if( this.navParams.get('group') ) {
 			this.groupId = this.navParams.get('group')
 		}
@@ -62,13 +68,42 @@ export class BpModal {
 		this.storage.get('user_login').then( data => {
 
 			if(data) {
-			  this.login_data = data
+
+				this.login_data = data
+			
+
+				if( this.isMessage && !this.recipients ) {
+					this.populateRecipients()
+				}
+
 			}
 
 		});
 
 		this.is_preview = (location.href.indexOf('myapppresser') > 0);
 
+	}
+
+	populateRecipients() {
+
+		let item = window.localStorage.getItem( 'myappp' );
+		let wp_url = JSON.parse( item ).wordpress_url;
+		let rest_base = 'wp-json/ap-bp/v1/members';
+		let route = wp_url + rest_base
+
+		this.bpProvider.getItems( route + '?scope=friends&user=' + this.login_data.user_id, this.login_data, 1 ).then(items => {
+
+				console.log(items)
+				this.recipientArr = items;
+
+		  }).catch( e => {
+		  	console.warn(e)
+		  })
+
+	}
+
+	recipientSelected() {
+		console.log( this.recipients )
 	}
 
 	submitForm() {
@@ -113,15 +148,15 @@ export class BpModal {
 
 			let threadId = ( this.navParams.data.threadId ? this.navParams.data.threadId : null )
 
-			this.bpProvider.sendMessage( this.navParams.data.recipients, this.login_data, this.activity.subject, this.activity.content, threadId ).then( ret => {
+			this.bpProvider.sendMessage( this.recipients, this.login_data, this.activity.subject, this.activity.content, threadId ).then( ret => {
 
 				console.log(ret)
-				if( typeof ret == 'string' ) {
-					this.presentToast( ret )
-					this.events.publish('bp-add-message', { subject: this.activity.subject, content: this.activity.content, thread: threadId } )
+				if( ret ) {
+					this.presentToast( "Message sent." )
+					this.events.publish('bp-add-message', { subject: this.activity.subject, content: this.activity.content, threadId: ret } )
 				}
 
-				this.dismiss()
+				this.dismiss(ret)
 				
 				this.hideSpinner()
 
@@ -210,8 +245,8 @@ export class BpModal {
 
 	}
 
-	dismiss() {
-		this.viewCtrl.dismiss();
+	dismiss( data = null ) {
+		this.viewCtrl.dismiss( data );
 	}
 
 	showSpinner() {
