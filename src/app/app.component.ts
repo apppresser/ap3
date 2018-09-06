@@ -79,6 +79,7 @@ export class MyApp {
   customClasses: string;
   iphoneX: boolean = false;
   showingIntro: boolean = false;
+  doingNotification: boolean = false;
 
   constructor(
     private platform: Platform,
@@ -1051,27 +1052,39 @@ export class MyApp {
 
     push.on('notification').subscribe((data: any) => {
 
+      let isAppPushPostURL = ( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 && data.additionalData.target && data.additionalData.target == '_self' );
+      let isAppPushCustomURL = ( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 );
+      let isAppPage = ( data.additionalData && (<any>data).additionalData.page );
+
+      // Don't allow resetTabs to happen if we need to pushPage from notification: it messes things up
+      if( isAppPushPostURL || isAppPushCustomURL || isAppPage ) {
+        this.doingNotification = true;
+      }
+
       this.Dialogs.alert(
         data.message,  // message
-        data.title,            // title
+        data.title,    // title
         this.translate.instant('Done')  // buttonName
       ).then(() => {
 
+        // Now we can allow resetTabs to happen
+        this.doingNotification = false;
+
         // if apppush post URL
-        if( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 && data.additionalData.target && data.additionalData.target == '_self' ) {
+        if(isAppPushPostURL) {
           let page = { title: data.title, component: Iframe, url: data.additionalData.url, classes: null };
           this.pushPage( page );
           return;
         }
 
         // if there's an external url from apppush custom url field, open in IAB
-        if( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 ) {
+        if(isAppPushCustomURL) {
           this.openIab( data.additionalData.url, '_blank' );
           return;
         }
 
         // if there's an app page, open it
-        if( data.additionalData && (<any>data).additionalData.page ) {
+        if(isAppPage) {
 
           let page = (<any>data).additionalData.page;
 
@@ -1303,6 +1316,9 @@ export class MyApp {
    * @param login Boolean
    */
   resetTabs( login, lang_updated? ) {
+
+    if(this.doingNotification)
+      return; // We can't reset the tabs now if a push notification has opened the app and has a pushPage included
 
     this.navparams = []
 
