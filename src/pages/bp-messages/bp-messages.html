@@ -16,13 +16,17 @@
 
     <img class="header-logo" *ngIf="show_header_logo" [src]="header_logo_url" />
 
-    <ion-title *ngIf="!show_header_logo">{{title | translate}}</ion-title>
+    <ion-title *ngIf="!show_header_logo && !singleThread">{{ title | translate }}</ion-title>
+
+    <div *ngIf="singleThread" class="message-header-sender">
+
+      <img *ngIf="navParams.data.senderAvatar" [src]="navParams.data.senderAvatar" class="message-header-avatar">
+
+      <span class="message-header-name" *ngIf="navParams.data.senderName">{{ navParams.data.senderName }}</span>
+
+    </div>
 
     <ion-buttons end>
-
-      <button ion-button *ngIf="singleThread" (tap)="replyToThread()">
-        <ion-icon name="ios-send"></ion-icon>
-      </button>
 
       <button ion-button *ngIf="!singleThread" (tap)="newMessage()">
         <ion-icon name="ios-send"></ion-icon>
@@ -53,7 +57,7 @@
 
     <ion-list no-lines>
 
-        <ion-item *ngFor="let thread of threads" (tap)="loadThread(thread.id)">
+        <ion-item *ngFor="let thread of threads" (tap)="loadThread(thread)">
           <ion-avatar item-start>
             <img *ngIf="thread.sender_data && thread.sender_data.avatar" [src]="formatUrl( thread.sender_data.avatar )">
             <img *ngIf="!thread.sender_data || !thread.sender_data.avatar" src="assets/default.png">
@@ -78,7 +82,7 @@
             <p *ngIf="message.sender_data && message.sender_data.name" class="sender-name">{{ message.sender_data.name }}</p>
           </ion-avatar>
             
-            <p class="message-preview"><span *ngIf="message.subject && message.subject != 'undefined'"><strong>{{ message.subject }}:</strong></span> {{ message.message }}</p>
+            <p class="message-preview"><strong>{{ getSubject( message.subject ) }}</strong> {{ message.message }}</p>
 
         </ion-item>
 

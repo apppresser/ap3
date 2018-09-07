@@ -65,6 +65,14 @@ export class BpMessages {
 
     this.title = navParams.data.title;
 
+    if( !this.title ) {
+      this.title = "Messages"
+    }
+
+    if( this.navParams.data.senderAvatar ) {
+      this.navParams.data.senderAvatar = this.formatUrl( this.navParams.data.senderAvatar )
+    }
+
     if(navParams.data.is_home == true) {
       this.doLogo()
     }
@@ -178,7 +186,7 @@ export class BpMessages {
   addMessage( data ) {
 
     this.threads.messages.unshift( { 
-      "subject": ( data.subject ? data.subject : '' ), 
+      "subject": ( data.subject ? data.subject : null ), 
       "message": data.content,
       "sender_id": this.login_data.user_id,
       "sender_data": {
@@ -239,13 +247,20 @@ export class BpMessages {
 
   }
 
-  loadThread( id ) {
+  loadThread( thread ) {
 
-    this.nav.push( 'BpMessages', {
+    let data = {
       singleThread: true,
-      threadId: id,
+      threadId: thread.id,
       login_data: this.login_data
-    });
+    }
+
+    if( thread.sender_data ) {
+      (<any>data).senderAvatar = this.formatUrl( thread.sender_data.avatar )
+      (<any>data).senderName = thread.sender_data.name
+    }
+
+    this.nav.push( 'BpMessages', data );
 
   }
 
@@ -351,14 +366,23 @@ export class BpMessages {
 
   }
 
+  // we don't want to show auto-generated subjects, or empty subjects
+  getSubject( subject ) {
+
+    if( !subject || subject === '' || subject === 'No Subject' || subject == 'undefined' || subject && subject.indexOf('Re:') >= 0 ) {
+      return null;
+    } else {
+      return subject + ':';
+    }
+
+  }
+
   // this pushes the message text to the thread, then sends it to the server. If there is an error, we remove the message.
   replyToThread() {
 
-    console.log(this.threadReply)
-
     // fake delay
     setTimeout( () => {
-      this.addMessage( { subject: '', content: this.threadReply } )
+      this.addMessage( { subject: null, content: this.threadReply } )
       this.threadReply = ''
       this.scrollDown(1)
     }, 500 )
@@ -368,7 +392,7 @@ export class BpMessages {
     
     this.bpProvider.sendMessage( recipients, this.login_data, '', this.threadReply, this.threads.thread_id ).then( ret => {
 
-        console.log(ret)
+        console.log('message sent, thread id: ', ret)
 
       }).catch( e => {
 

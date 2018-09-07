@@ -376,6 +376,10 @@ export class BpProvider {
 
   sendMessage( recipients, login_data, subject, content, threadId ) {
 
+    if( !subject ) {
+      subject = ''
+    }
+
     let route = this.url + this.restBase + 'messages/send';
 
     let threadid = ( threadId ? "&thread_id=" + threadId : '' )

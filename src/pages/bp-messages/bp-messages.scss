@@ -30,6 +30,26 @@ bp-messages {
 
 	}
 
+	.message-header-sender {
+		display: block;
+	    margin: 0 auto;
+	    max-height: 50px;
+	    text-align: center;
+	}
+
+	.message-header-avatar {
+		display: block;
+	    margin: 0 auto;
+	    width: 30px;
+	    height: 30px;
+	    border-radius: 30px;
+	}
+
+	.message-header-name {
+		font-size: 10px;
+		color: #eee;
+	}
+
 	.single-message-thread {
 
 		clear: both;
