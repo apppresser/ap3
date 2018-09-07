@@ -32,6 +32,7 @@ export class BpMessages {
   messageSegments: any;
   segment: any;
   boxArg: string = '?box=inbox'
+  threadReply: string;
 
   constructor(
     public nav: NavController, 
@@ -82,14 +83,7 @@ export class BpMessages {
         if( !this.threads || !this.threads.messages ) {
           this.getThreads( this.route + '/' + data.threadId )
         } else {
-          this.threads.messages.unshift( { 
-            "subject": data.subject, 
-            "message": data.content,
-            "sender_id": this.login_data.user_id,
-            "sender_data": {
-              name: this.login_data.username,
-              avatar: this.login_data.avatar
-            } } )
+          this.addMessage( data )
 
           this.scrollDown(500)
         }
@@ -168,7 +162,7 @@ export class BpMessages {
 
     } else if( this.navParams.data.newThread ) {
 
-      let data = { message: true, title: 'Message' }
+      let data: any = { message: true, title: 'Message' }
 
       if( this.navParams.data.recipients ) {
         data.recipients = this.navParams.data.recipients
@@ -178,6 +172,19 @@ export class BpMessages {
 
     }
     
+
+  }
+
+  addMessage( data ) {
+
+    this.threads.messages.unshift( { 
+      "subject": ( data.subject ? data.subject : '' ), 
+      "message": data.content,
+      "sender_id": this.login_data.user_id,
+      "sender_data": {
+        name: this.login_data.username,
+        avatar: this.login_data.avatar
+      } } )
 
   }
 
@@ -298,7 +305,7 @@ export class BpMessages {
 
     this.page++;
 
-    this.bpProvider.getItems( this.route, this.login_data, this.page ).then(items => {
+    this.bpProvider.getItems( this.route + this.boxArg, this.login_data, this.page ).then(items => {
       // Loads posts from WordPress API
       let length = items["length"];
 
@@ -344,13 +351,32 @@ export class BpMessages {
 
   }
 
+  // this pushes the message text to the thread, then sends it to the server. If there is an error, we remove the message.
   replyToThread() {
 
-    let recipients = Object.keys( this.threads.recipients )
+    console.log(this.threadReply)
 
-    let data = { recipients: recipients, message: true, title: 'Message', threadId: this.threads.thread_id }
-    let bpModal = this.modalCtrl.create( 'BpModal', data );
-    bpModal.present();
+    // fake delay
+    setTimeout( () => {
+      this.addMessage( { subject: '', content: this.threadReply } )
+      this.threadReply = ''
+      this.scrollDown(1)
+    }, 500 )
+    
+
+    let recipients = Object.keys( this.threads.recipients )
+    
+    this.bpProvider.sendMessage( recipients, this.login_data, '', this.threadReply, this.threads.thread_id ).then( ret => {
+
+        console.log(ret)
+
+      }).catch( e => {
+
+        console.warn(e)
+        this.threads.messages.shift()
+        this.presentToast('There was a problem, please try again.')
+
+      });
 
   }
 

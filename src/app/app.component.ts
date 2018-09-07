@@ -1580,6 +1580,8 @@ export class MyApp {
       // maybe load profile page. It has type of bp-list even though it's not a bp-list page. Awkward I know.
       if( page.list_route === 'profile' ) {
         return 'BpProfilePage';
+      } else if( page.list_route === 'messages' ) {
+        return 'BpMessages';
       } else {
         return 'BpList';
       }

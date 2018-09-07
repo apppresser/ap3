@@ -5,12 +5,27 @@ bp-messages {
 		border-top: 1px solid #eee;
 		padding: 0;
 
+		ion-grid {
+			padding: 0;
+		}
+
 		.toolbar-background {
-			background: #fff;
+			background: #fafafa;
 		}
 
 		.button {
-			background: transparent !important;
+			border-radius: 44px;
+		    width: 44px;
+		    max-width: 44px;
+		    height: 44px;
+		    margin: 0 auto;
+		}
+
+		.input[type=text] {
+			border: 1px solid #eee;
+		    border-radius: 20px;
+		    padding: 0 15px;
+		    background-color: #fff;
 		}
 
 	}
