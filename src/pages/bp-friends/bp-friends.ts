@@ -1,5 +1,6 @@
 import {NavController, NavParams, LoadingController, ToastController, ModalController, Platform, ViewController, Content, IonicPage} from 'ionic-angular';
 import {Component, ViewChild, Input} from '@angular/core';
+import {TranslateService} from '@ngx-translate/core';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
 import {Storage} from '@ionic/storage';
@@ -45,7 +46,8 @@ export class BpFriends {
     private Network: Network,
     private Device: Device,
     public modalCtrl: ModalController,
-    public bpProvider: BpProvider
+    public bpProvider: BpProvider,
+    public translate: TranslateService
   ) {
 
     let item = window.localStorage.getItem( 'myappp' );
@@ -263,17 +265,17 @@ export class BpFriends {
 
   presentToast(msg) {
 
-    let toast = this.toastCtrl.create({
-      message: msg,
-      duration: 3000,
-      position: 'bottom'
-    });
+    this.translate.get(msg).subscribe( translation => {
 
-    toast.onDidDismiss(() => {
-      // console.log('Dismissed toast');
-    });
+      let toast = this.toastCtrl.create({
+        message: msg,
+        duration: 3000,
+        position: 'bottom'
+      });
 
-    toast.present();
+      toast.present();
+
+    })
 
   }
 

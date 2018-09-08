@@ -46,13 +46,13 @@
 			<ion-col>
 			  <button ion-button icon-start clear small (click)="comment()">
 			    <ion-icon name="text"></ion-icon>
-			    <div>Reply</div>
+			    <div>{{ 'Reply' | translate }}</div>
 			  </button>
 			</ion-col>
 			<ion-col text-right>
 			  <button ion-button [ngClass]="selectedItem.flagged ? 'item-flagged' : ''" icon-start clear small (click)="flag()">
 			    <ion-icon name="flag"></ion-icon>
-			    <div>Flag</div>
+			    <div>{{ 'Flag' | translate }}</div>
 			  </button>
 			</ion-col>
 		</ion-row>

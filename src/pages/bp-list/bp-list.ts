@@ -1,5 +1,6 @@
 import {NavController, NavParams, LoadingController, ToastController, ModalController, Platform, ViewController, Content, IonicPage, Events} from 'ionic-angular';
 import {Component, ViewChild, OnInit, Input} from '@angular/core';
+import {TranslateService} from '@ngx-translate/core';
 import {Posts} from '../../providers/posts/posts';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
@@ -59,7 +60,8 @@ export class BpList implements OnInit {
     private Device: Device,
     public modalCtrl: ModalController,
     private events: Events,
-    public bpProvider: BpProvider
+    public bpProvider: BpProvider,
+    public translate: TranslateService
   ) {
 
     if( !navParams.data.list_route )
@@ -437,7 +439,6 @@ export class BpList implements OnInit {
     } else {
 
       this.getRoute().then( route => {
-        console.log('get route here ' + route)
         this.loadItems( route );
       })
 
@@ -502,17 +503,17 @@ export class BpList implements OnInit {
 
   presentToast(msg) {
 
-    let toast = this.toastCtrl.create({
-      message: msg,
-      duration: 3000,
-      position: 'bottom'
-    });
+    this.translate.get(msg).subscribe( translation => {
 
-    toast.onDidDismiss(() => {
-      // console.log('Dismissed toast');
-    });
+      let toast = this.toastCtrl.create({
+        message: msg,
+        duration: 3000,
+        position: 'bottom'
+      });
 
-    toast.present();
+      toast.present();
+
+    })
 
   }
 

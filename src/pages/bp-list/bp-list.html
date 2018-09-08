@@ -43,7 +43,7 @@
 
     <ion-select [(ngModel)]="segments" (ionChange)="segmentChanged()" placeholder="Filter">
 
-      <ion-option *ngFor="let segment of bpSegments" [value]="segment.name">{{segment.name}}</ion-option>
+      <ion-option *ngFor="let segment of bpSegments" [value]="segment.name">{{ segment.name | translate }}</ion-option>
 
     </ion-select>
 

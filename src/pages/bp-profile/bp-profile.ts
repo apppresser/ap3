@@ -1,5 +1,6 @@
 import {NavController, NavParams, LoadingController, Platform, ViewController, IonicPage, Events, ToastController, ModalController} from 'ionic-angular';
 import {Component, OnInit} from '@angular/core';
+import {TranslateService} from '@ngx-translate/core';
 import {BpProvider} from '../../providers/buddypress/bp-provider';
 import {Storage} from '@ionic/storage';
 
@@ -30,7 +31,8 @@ export class BpProfilePage implements OnInit {
     public toastCtrl: ToastController,
     public loadingCtrl: LoadingController,
     public modalCtrl: ModalController,
-    public storage: Storage
+    public storage: Storage,
+    public translate: TranslateService
     ) {
 
     // set login data after modal login
@@ -187,17 +189,17 @@ export class BpProfilePage implements OnInit {
 
   presentToast(msg) {
 
-    let toast = this.toastCtrl.create({
-      message: msg,
-      duration: 3000,
-      position: 'bottom'
-    });
+    this.translate.get(msg).subscribe( translation => {
 
-    toast.onDidDismiss(() => {
-      // console.log('Dismissed toast');
-    });
+      let toast = this.toastCtrl.create({
+        message: msg,
+        duration: 3000,
+        position: 'bottom'
+      });
 
-    toast.present();
+      toast.present();
+
+    })
 
   }
 

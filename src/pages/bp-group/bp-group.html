@@ -31,7 +31,7 @@
 			</ion-avatar>
 			<h2 class="group-name" *ngIf="groupData.name" [innerHTML]="groupData.name"></h2>
 			<p *ngIf="groupData.description" [innerHTML]="groupData.description"></p>
-			<p class="member-count">{{ groupData.total_member_count }} members</p>
+			<p class="member-count">{{ groupData.total_member_count }} {{ 'members' | translate }}</p>
 		</ion-item>
 
 		<ion-row>
@@ -42,7 +42,7 @@
 				<button ion-button icon-start small clear (click)="groupActivity()"><ion-icon name="list"></ion-icon> {{ 'Group Activity' | translate }}</button>
 			</ion-col>
 			<ion-col text-center>
-				<button ion-button icon-start small clear (click)="iabLink(groupData.link)"><ion-icon name="cog"></ion-icon> Group Details</button>
+				<button ion-button icon-start small clear (click)="iabLink(groupData.link)"><ion-icon name="cog"></ion-icon> {{ 'Group Details' | translate }}</button>
 			</ion-col>
 		</ion-row>
 

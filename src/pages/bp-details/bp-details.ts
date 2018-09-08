@@ -1,5 +1,6 @@
 import {NavController, NavParams, ModalController, Platform, ViewController, IonicPage, Events, ToastController} from 'ionic-angular';
 import {Component, Renderer, ElementRef, OnInit} from '@angular/core';
+import {TranslateService} from '@ngx-translate/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import {Http} from '@angular/http';
@@ -38,7 +39,8 @@ export class BpDetailsPage implements OnInit {
     public http: Http,
     public events: Events,
     public bpProvider: BpProvider,
-    public toastCtrl: ToastController
+    public toastCtrl: ToastController,
+    public translate: TranslateService
     ) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = this.navParams.get('item');
@@ -216,17 +218,17 @@ export class BpDetailsPage implements OnInit {
 
   presentToast(msg) {
 
-    let toast = this.toastCtrl.create({
-      message: msg,
-      duration: 3000,
-      position: 'bottom'
-    });
+    this.translate.get(msg).subscribe( translation => {
 
-    toast.onDidDismiss(() => {
-      // console.log('Dismissed toast');
-    });
+      let toast = this.toastCtrl.create({
+        message: msg,
+        duration: 3000,
+        position: 'bottom'
+      });
 
-    toast.present();
+      toast.present();
+
+    })
 
   }
 
