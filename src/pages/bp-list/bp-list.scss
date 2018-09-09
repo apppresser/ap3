@@ -48,3 +48,24 @@ bp-list {
 	}
 
 }
+
+.toolbar #notification-button {            
+	position: relative;
+	width: 42px;
+	top:1px;
+	right: 1px;
+	overflow: visible!important;
+
+	.badge {
+		background-color: red !important;
+	    position: absolute;
+	    top: -2px;
+	    right: -2px;
+	    border-radius: 100%;
+	    font-size: 12px;
+	    height: 20px;
+	    width: 20px;
+	    text-align: center;
+	    padding: 4px;
+	}
+}

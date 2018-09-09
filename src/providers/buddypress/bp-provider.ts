@@ -410,6 +410,50 @@ export class BpProvider {
 
   }
 
+  getNotifications( login_data ) {
+
+    let user_id = ( login_data && login_data.user_id ? '&user_id=' + login_data.user_id : '' );
+    let token = ( login_data ? '&token=' + login_data.token : '' );
+
+    let data = '?user_id=' + login_data.user_id + '&token=' + login_data.token;
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.get( this.url + this.restBase + 'notifications' + data )
+          .map(res => res.json())
+          .subscribe(data => {
+              resolve( data );
+          },
+          error => {
+            // probably a bad url or 404
+            reject(error);
+          })
+    });
+
+  }
+
+  clearNotification( notification, login_data ) {
+
+    let user_id = ( login_data && login_data.user_id ? '&user_id=' + login_data.user_id : '' );
+    let token = ( login_data ? '&token=' + login_data.token : '' );
+
+    let data = '?user_id=' + login_data.user_id + '&token=' + login_data.token + '&component=' + notification.component + '&action=' + notification.action;
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.post( this.url + this.restBase + 'notifications' + data )
+          .map(res => res.json())
+          .subscribe(data => {
+              resolve( data );
+          },
+          error => {
+            // probably a bad url or 404
+            reject(error);
+          })
+    });
+
+  }
+
   handleError(err) {
     console.warn(err);
   }

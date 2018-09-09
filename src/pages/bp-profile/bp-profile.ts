@@ -20,6 +20,7 @@ export class BpProfilePage implements OnInit {
   isError: boolean = false;
   spinner: any;
   isMyProfile: boolean = false;
+  notificationCount: any;
 
   constructor(
     public nav: NavController, 
@@ -71,6 +72,8 @@ export class BpProfilePage implements OnInit {
     if( this.userData ) {
       this.setupUser( false )
     }
+
+    this.getNotifications()
 
   }
 
@@ -142,8 +145,8 @@ export class BpProfilePage implements OnInit {
 
   }
 
-  friendsPage() {
-    this.nav.push( 'BpFriends' )
+  notificationsPage() {
+    this.nav.push( 'BpNotifications' )
   }
 
   doFriend( friendId, unfriend ) {
@@ -172,6 +175,24 @@ export class BpProfilePage implements OnInit {
       newThread: true,
       login_data: this.login_data,
       recipients: userData.id
+    });
+
+  }
+
+  getNotifications() {
+
+    if( !this.login_data )
+      return;
+
+    this.bpProvider.getNotifications( this.login_data ).then(items => {
+
+      // Loads posts from WordPress API
+      this.notificationCount = (<any>items).length;
+
+    }).catch((err) => {
+
+      console.warn(err)
+
     });
 
   }

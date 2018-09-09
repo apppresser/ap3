@@ -1,18 +1,18 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { BpFriends } from './bp-friends';
+import { BpNotifications } from './bp-notifications';
 
 @NgModule({
   declarations: [
-    BpFriends,
+    BpNotifications,
   ],
   imports: [
-    IonicPageModule.forChild(BpFriends),
+    IonicPageModule.forChild(BpNotifications),
     TranslateModule.forChild()
   ],
   exports: [
-    BpFriends
+    BpNotifications
   ]
 })
-export class BpFriendsModule {}
+export class BpNotificationsModule {}

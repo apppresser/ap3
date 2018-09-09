@@ -14,6 +14,10 @@
 		</ion-buttons>
 
 		<ion-title *ngIf="userData">{{ userData.name }}</ion-title>
+
+		<ion-buttons end>
+			<button ion-button icon-start small clear (click)="openLoginModal()"><ion-icon name="log-in"></ion-icon> <span *ngIf="login_data">{{ 'Logout' | translate }}</span><span *ngIf="!login_data">{{ 'Login' | translate }}</span></button>
+		</ion-buttons>
 		
 	</ion-navbar>
 </ion-header>
@@ -53,11 +57,9 @@
 				<button ion-button icon-start small clear *ngIf="isMyProfile" block (click)="showMessages()"><ion-icon name="chatbubbles"></ion-icon> {{ 'Messages' | translate }}</button>
 			</ion-col>
 			<ion-col text-center>
-				<button ion-button icon-start small clear (click)="friendsPage()"><ion-icon name="people"></ion-icon> {{ 'Friends' | translate }} <ion-badge *ngIf="userData.request_count && userData.request_count != 0"> {{ userData.request_count }}</ion-badge></button>
 
-			</ion-col>
-			<ion-col text-center>
-				<button ion-button icon-start small clear (click)="openLoginModal()"><ion-icon name="log-in"></ion-icon> {{ 'Login/out' | translate }}</button>
+				<button id="notification-button" ion-button icon-start small clear (click)="notificationsPage()"><ion-icon name="notifications"></ion-icon> {{ 'Notifications' | translate }} <ion-badge color="danger" *ngIf="notificationCount && notificationCount != 0"> {{ notificationCount }}</ion-badge></button>
+
 			</ion-col>
 		</ion-row>
 

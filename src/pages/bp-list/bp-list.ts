@@ -44,6 +44,7 @@ export class BpList implements OnInit {
   isUserActivity: boolean = false;
   segments: any;
   showSearch: boolean = false;
+  notifications: any;
 
   constructor(
     public nav: NavController, 
@@ -106,6 +107,7 @@ export class BpList implements OnInit {
 
       if( data ) {
         this.login_data = data
+        this.getNotifications()
       }
 
     });
@@ -498,6 +500,27 @@ export class BpList implements OnInit {
 
 
     })
+
+  }
+
+  getNotifications() {
+
+    this.bpProvider.getNotifications( this.login_data ).then(items => {
+
+      // Loads posts from WordPress API
+      this.notifications = (<any>items).length;
+
+    }).catch((err) => {
+
+      console.warn(err)
+
+    });
+
+  }
+
+  viewNotifications() {
+
+    this.nav.push( 'BpNotifications' )
 
   }
 

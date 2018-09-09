@@ -20,6 +20,12 @@
 
     <ion-buttons end>
 
+      <button id="notification-button" *ngIf="notifications" ion-button (click)="viewNotifications()" clear>
+          <ion-icon name="notifications">
+            <ion-badge color="danger">{{ notifications }}</ion-badge>
+          </ion-icon>              
+      </button>
+
       <button *ngIf="activityList && groupId" ion-button (click)="iabLink(groupLink)">
         <ion-icon name="cog"></ion-icon>
       </button>

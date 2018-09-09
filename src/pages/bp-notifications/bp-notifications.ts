@@ -10,16 +10,16 @@ import {BpProvider} from '../../providers/buddypress/bp-provider';
 
 @IonicPage()
 @Component({
-  templateUrl: 'bp-friends.html',
-  selector: 'bp-friends'
+  templateUrl: 'bp-notifications.html',
+  selector: 'bp-notifications'
 })
-export class BpFriends {
+export class BpNotifications {
 
   @ViewChild(Content) content: Content;
 
-  friends: any;
-  page: number = 1;
+  items: any;
   route: string;
+  loading: any;
   siteurl: string;
   title: string;
   rtlBack: boolean = false;
@@ -28,10 +28,10 @@ export class BpFriends {
   show_header_logo: boolean = false;
   customClasses: string = '';
   login_data: any;
-  friendSegments: any[];
+  notificationSegments: any[];
   segment: any;
   segmentArgs: string;
-  isRequests: boolean = true;
+  isRequests: boolean = false;
 
   constructor(
     public nav: NavController, 
@@ -52,11 +52,18 @@ export class BpFriends {
 
     let item = window.localStorage.getItem( 'myappp' );
 
-    this.route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/friends';
+    this.route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/notifications';
 
-    this.setupSegments();
+    if( this.navParams.get('requests') ) {
 
-    this.title = 'Friends';
+      this.isRequests = true
+      this.route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/friends/requests';
+      this.title = 'Requests';
+    } else {
+      this.title = 'Notifications';
+    }
+
+    // this.setupSegments();
 
     if(navParams.data.is_home == true) {
       this.doLogo()
@@ -67,8 +74,7 @@ export class BpFriends {
 
       if( data && data.user_id ) {
         this.login_data = data
-        this.segmentArgs = '/requests'
-        this.getStarted()
+        this.getItems()
       } else {
         this.presentToast('Please login.')
         this.nav.pop()
@@ -76,23 +82,6 @@ export class BpFriends {
 
     });
     
-  }
-
-  getStarted() {
-
-    this.networkState = this.Network.type;
-
-    if( this.networkState === 'none' || this.networkState === 'unknown' ) {
-
-      // if offline, get posts from storage
-      this.getStoredPosts();
-
-    } else {
-
-      this.getFriends( this.route )
-		  
-    }
-
   }
 
   ionViewWillEnter() {
@@ -104,141 +93,137 @@ export class BpFriends {
  
   }
 
-  setupSegments() {
+  // setupSegments() {
 
-    this.friendSegments = [ { name: 'Friends', value: 'friends' },{ name: 'Requests', value: 'requests' } ];
+  //   this.notificationSegments = [ { name: 'Friends', value: 'friends' },{ name: 'Requests', value: 'requests' } ];
 
-    // fixes iphoneX status bar padding
-    this.customClasses += ' has-favorites';
+  //   // fixes iphoneX status bar padding
+  //   this.customClasses += ' has-favorites';
 
-  }
+  // }
 
-  segmentChanged() {
+  // segmentChanged() {
 
-    switch(this.segment) {
-      case 'Friends':
-        this.friends = []
-        this.isRequests = false;
-        this.segmentArgs = '?user=' + this.login_data.user_id
-        this.getFriends( this.route )
-        break;
-      case 'Requests':
-        this.friends = []
-        this.isRequests = true;
-        this.segmentArgs = '/requests';
-        this.getFriends( this.route )
-    }
+  //   switch(this.segment) {
+  //     case 'Friends':
+  //       this.items = []
+  //       this.isRequests = false;
+  //       this.segmentArgs = '?user=' + this.login_data.user_id
+  //       this.getItems( this.route )
+  //       break;
+  //     case 'Requests':
+  //       this.items = []
+  //       this.isRequests = true;
+  //       this.segmentArgs = '/requests';
+  //       this.getItems( this.route )
+  //   }
     
-  }
+  // }
 
-  // get posts from storage when we are offline
-  getStoredPosts() {
+  getItems() {
 
-    this.storage.get( this.route.substr(-10, 10) + '_bp' ).then( friends => {
-      if( friends ) {
-        this.friends = friends;
-      } else {
-        this.presentToast('No data available, pull to refresh when you are online.');
-      }
-    });
-
-  }
-
-  getFriends( route ) {
-
-  	if( !route )
-  		return;
-
-    let loading = this.loadingController.create({
+    this.loading = this.loadingController.create({
         showBackdrop: false,
         //dismissOnPageChange: true
     });
 
-    loading.present(loading);
+    this.loading.present(this.loading);
 
-    this.page = 1;
-    
-    // any menu imported from WP has to use same component. Other pages can be added manually with different components
-    this.bpProvider.getItems( route + this.segmentArgs, this.login_data, this.page ).then(items => {
+    if( this.isRequests ) {
+      this.getRequests()
+    } else {
+      this.getNotifications()
+    }
+
+  }
+
+  getRequests() {
+
+    this.bpProvider.getItems( this.route, this.login_data, 1 ).then(items => {
 
       // Loads posts from WordPress API
-      this.friends = items;
+      this.items = items;
 
-      this.storage.set( route.substr(-10, 10) + '_bp', items);
+      // this.storage.set( this.route.substr(-10, 10) + '_bp', items);
 
-      // load more right away
-      this.loadMore(null);
-      loading.dismiss();
+      this.loading.dismiss();
     }).catch((err) => {
 
-      loading.dismiss();
+      this.loading.dismiss();
       this.handleErr(err)
 
     });
 
-    setTimeout(() => {
-      if( loading )
-        loading.dismiss();
-    }, 8000);
+  }
+
+  getNotifications() {
+
+    // any menu imported from WP has to use same component. Other pages can be added manually with different components
+    this.bpProvider.getNotifications( this.login_data ).then(items => {
+
+      // Loads posts from WordPress API
+      this.items = items;
+
+      this.loading.dismiss();
+    }).catch((err) => {
+
+      this.loading.dismiss();
+      this.handleErr(err)
+
+    });
+
+  }
+
+  clearNotification( notification ) {
+
+    this.bpProvider.clearNotification( notification, this.login_data ).then(data => {
+
+      this.removeFromList( notification )
+
+    }).catch((err) => {
+
+      this.handleErr(err)
+
+    });
+
+  }
+
+  removeFromList( notification ) {
+
+    for (let i = this.items.length - 1; i >= 0; i--) {
+      if( this.items[i].id === notification.id ) {
+        this.items.splice(i, 1);
+        break;
+      }
+    }
+
+    // refresh the list
+    if( this.items.length ) {
+      this.items = this.items;
+    }
 
   }
 
   doRefresh(refresh) {
 
-    this.getFriends( this.route );
+    this.getItems();
 
     // refresh.complete should happen when posts are loaded, not timeout
     setTimeout( ()=> refresh.complete(), 500);
-  }
-
-  loadMore(infiniteScroll) {
-
-    // no pagination for requests
-    if( this.isRequests )
-      return;
-
-    this.page++;
-
-    this.bpProvider.getItems( this.route + this.segmentArgs, this.login_data, this.page ).then(items => {
-      // Loads posts from WordPress API
-      let length = items["length"];
-
-      if( length === 0 ) {
-        if(infiniteScroll)
-          infiniteScroll.complete();
-        return;
-      }
-
-      for (var i = 0; i < length; ++i) {
-        this.friends.push( items[i] );
-      }
-
-      this.storage.set( this.route.substr(-10, 10) + '_bp', this.friends);
-
-      if(infiniteScroll)
-        infiniteScroll.complete();
-
-    }).catch( e => {
-      // promise was rejected, usually a 404 or error response from API
-      if(infiniteScroll)
-        infiniteScroll.complete();
-
-      console.warn('load more error', e)
-
-    });
-
   }
 
   acceptFriendship( friend, withdraw ) {
 
     var friend = friend;
 
+    console.log(friend)
+
     this.bpProvider.acceptWithdrawFriendship( friend.id, this.login_data, withdraw ).then( ret => {
 
-      for (let i = this.friends.length - 1; i >= 0; i--) {
-        if( this.friends[i].id === friend.id ) {
-          console.log(this.friends[i])
-          this.friends.splice(i, 1);
+      for (let i = this.items.length - 1; i >= 0; i--) {
+        if( this.items[i].id === friend.id ) {
+          console.log(this.items[i])
+          this.items.splice(i, 1);
           break;
         }
       }
@@ -250,6 +235,29 @@ export class BpFriends {
       this.presentToast("There was a problem.")
       console.warn(e)
 
+    });
+
+  }
+
+  viewNotification( notification ) {
+
+    switch(notification.component) {
+      case 'friends':
+        this.showFriendRequests()
+        break;
+      case 'messages':
+        this.nav.push( 'BpMessages' )
+        break;
+      case 'activity':
+        this.nav.push( 'BpList', { list_route: 'activity'} )
+        break;
+    }
+  }
+
+  showFriendRequests() {
+
+    this.nav.push('BpNotifications', {
+      requests: true
     });
 
   }

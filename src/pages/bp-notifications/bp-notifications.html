@@ -1,0 +1,82 @@
+<ion-header>
+
+  <ion-navbar>
+    
+    <ion-buttons start>
+    <button *ngIf="rtlBack||is_registration_page" (click)="backRtlTransition()" ion-button class="custom-back-button">
+        <ion-icon name="arrow-back"></ion-icon>
+        {{ 'Back' | translate }}
+    </button>
+
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+
+    </ion-buttons>
+
+    <img class="header-logo" *ngIf="show_header_logo" [src]="header_logo_url" />
+
+    <ion-title *ngIf="!show_header_logo">{{title | translate}}</ion-title>
+
+  </ion-navbar>
+
+  <ion-item *ngIf="notificationSegments" id="favorites-toolbar" color="light">
+
+    <ion-select [(ngModel)]="segment" (ionChange)="segmentChanged()" placeholder="Requests">
+
+      <ion-option *ngFor="let segment of notificationSegments" [value]="segment.name">{{ segment.name | translate}}</ion-option>
+
+    </ion-select>
+
+  </ion-item>
+
+</ion-header>
+
+<ion-content [ngClass]="customClasses">
+
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="!isRequests && items">
+
+    <ion-list no-lines>
+
+        <ion-item *ngFor="let notification of items">
+
+          <p *ngIf="notification.content" (tap)="viewNotification( notification )"><strong>{{ notification.content }}</strong></p>
+          
+          <button ion-button item-end clear (tap)="viewNotification( notification )">{{ 'View' | translate }}</button> <button ion-button item-end color="light" (tap)="clearNotification( notification )">{{ 'Clear' | translate }}</button>
+          
+        </ion-item>
+
+    </ion-list>
+
+  </div>
+
+  <div *ngIf="isRequests && items">
+
+    <ion-list no-lines>
+
+        <ion-item *ngFor="let request of items">
+          <ion-avatar item-start (tap)="viewMember( request )">
+            <img *ngIf="request.avatar" [src]="formatUrl( request.avatar )">
+            <img *ngIf="!request.avatar" src="assets/default.png">
+          </ion-avatar>
+          <p *ngIf="request.name" (tap)="viewMember( request )"><strong>{{ request.name }}</strong></p>
+          
+          <button ion-button (tap)="acceptFriendship( request, false )">{{ 'Accept' | translate }}</button>
+          
+        </ion-item>
+
+    </ion-list>
+
+  </div>
+
+  <ion-item *ngIf="!items">{{ 'No items to show.' | translate }}</ion-item>
+
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+</ion-content>
