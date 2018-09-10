@@ -1361,6 +1361,11 @@ export class MyApp {
           // reset the tabs
           this.nav.setRoot( 'TabsPage', this.navparams );
         }
+      } else {
+        
+        // fixes bug where tabs don't reset after login
+        this.nav.setRoot( 'TabsPage', this.navparams );
+
       }
     } )
 
