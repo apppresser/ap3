@@ -47,6 +47,7 @@ import {AppGeo} from "../providers/appgeo/appgeo";
 import {IAP} from "../providers/inapppurchase/inapppurchase";
 import {Download} from "../providers/download/download";
 import { MenuService } from "../providers/menus/menu.service";
+import { NetworkStatusService } from "../providers/network/network-status.service";
 
 import {Iframe} from "../pages/iframe/iframe";
 
@@ -128,6 +129,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     IAP,
     InAppPurchase,
     MenuService,
+    NetworkStatusService,
     Download
   ]
 })

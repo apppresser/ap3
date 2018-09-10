@@ -1,4 +1,4 @@
-import {Component, Renderer, ElementRef, OnInit, AfterViewInit, Input, isDevMode, OnDestroy} from '@angular/core';
+import {Component, Renderer, ElementRef, OnInit, AfterViewInit, Input, isDevMode, OnDestroy, NgZone} from '@angular/core';
 import {Nav, NavParams, ModalController, Platform, ViewController, Events, IonicPage, LoadingController} from 'ionic-angular';
 import {TranslateService, TranslateModule} from '@ngx-translate/core';
 import {Storage} from '@ionic/storage';
@@ -28,6 +28,7 @@ import { User } from '../../models/user.model';
 import { LoginService } from '../../providers/logins/login.service';
 import { ApListComponentModule } from '../../components/ap-list/ap-list.module';
 import { ApSliderComponentModule } from '../../components/ap-slider/ap-slider.module';
+import { NetworkStatusService } from '../../providers/network/network-status.service';
 
 /*
  * Uses dynamic component creation, see https://github.com/apoterenko/angular2-dynamic-component
@@ -94,6 +95,8 @@ export class CustomPage implements OnInit, OnDestroy {
 	items: any;
 	networkState: any;
 	use_dynamic: boolean = false;
+	isOffline: boolean;
+	isOnline: boolean;
 
 	constructor(
 		public navParams: NavParams,
@@ -114,6 +117,8 @@ export class CustomPage implements OnInit, OnDestroy {
 		public postCtrl: Posts,
 		public globalvars: GlobalVars,
 		private menuservice: MenuService,
+		private networkstatus: NetworkStatusService,
+		private zone: NgZone,
 		private network: Network
         ) {}
 
@@ -132,6 +137,8 @@ export class CustomPage implements OnInit, OnDestroy {
 			this.inputData.user = user;
 			/** Development mode only -- END */
 		}));
+
+		this.initNetworkStatus();
 
 		this.pagetitle = this.navParams.data.title;
 		this.initIsRTL();
@@ -590,6 +597,32 @@ export class CustomPage implements OnInit, OnDestroy {
 		});
 	}
 
+	initNetworkStatus() {
+
+		this.isOffline = !this.networkstatus.currentStatus;
+		this.isOnline  = this.networkstatus.currentStatus;
+
+		/** Development mode only -- START */
+		this.inputData.isOffline = !this.networkstatus.currentStatus;
+		this.inputData.isOnline  = this.networkstatus.currentStatus;
+		/** Development mode only -- END */
+
+		this.subscriptions.push(this.networkstatus.networkStatus().subscribe(status => {
+
+			console.log('custom-page network status', status);
+
+			this.isOffline = !status;
+			this.isOnline  = status;
+
+			/** Development mode only -- START */
+			this.zone.run( () => {
+				this.inputData.isOffline = !status;
+				this.inputData.isOnline  = status;
+			});
+			/** Development mode only -- END */
+		}));
+	}
+
 	/** Development mode only -- START */
 	inputData: IComponentInputData = {
 		// anything that the template needs access to goes here
@@ -598,6 +631,8 @@ export class CustomPage implements OnInit, OnDestroy {
 		segments: this.getSegments(),
 		platform: this.platform,
 		customClasses: this.customClasses,
+		isOffline: this.isOffline,
+		isOnline: this.isOnline,
 		pushPage: (page) => {
 			this.pushPage(page);
 		},
