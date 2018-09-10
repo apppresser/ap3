@@ -22,7 +22,7 @@
 
       <img *ngIf="navParams.data.senderAvatar" [src]="navParams.data.senderAvatar" class="message-header-avatar">
 
-      <span class="message-header-name" *ngIf="navParams.data.senderName">{{ navParams.data.senderName }}</span>
+      <!-- <span class="message-header-name" *ngIf="navParams.data.senderName">{{ navParams.data.senderName }}</span> -->
 
     </div>
 
@@ -63,7 +63,7 @@
             <img *ngIf="!thread.sender_data || !thread.sender_data.avatar" src="assets/default.png">
           </ion-avatar>
           <p *ngIf="thread.sender_data && thread.sender_data.name"><strong>{{ thread.sender_data.name }}</strong></p>
-          <p class="message-preview"><span *ngIf="thread.subject && thread.subject != 'undefined'"><strong>{{ thread.subject }}:</strong></span> {{ thread.message }}</p>
+          <p class="message-preview"><span *ngIf="thread.subject && thread.subject != 'undefined'"><strong>{{ getSubject( thread.subject ) }}</strong></span> {{ thread.message }}</p>
           
         </ion-item>
 

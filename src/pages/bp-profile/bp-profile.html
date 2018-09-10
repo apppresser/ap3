@@ -15,8 +15,8 @@
 
 		<ion-title *ngIf="userData">{{ userData.name }}</ion-title>
 
-		<ion-buttons end>
-			<button ion-button icon-start small clear (click)="openLoginModal()"><ion-icon name="log-in"></ion-icon> <span *ngIf="login_data">{{ 'Logout' | translate }}</span><span *ngIf="!login_data">{{ 'Login' | translate }}</span></button>
+		<ion-buttons end *ngIf="isMyProfile">
+			<button ion-button (click)="openLoginModal()"><ion-icon name="log-in"></ion-icon> <!-- <span *ngIf="login_data">{{ 'Logout' | translate }}</span><span *ngIf="!login_data">{{ 'Login' | translate }}</span> --></button>
 		</ion-buttons>
 		
 	</ion-navbar>

@@ -134,6 +134,11 @@ export class BpMessages {
 
   }
 
+  ionViewWillLeave() {
+    // fixes a transition bug
+    this.navParams.data.senderAvatar = null
+  }
+
   ionViewWillEnter() {
 
     // get login data on first load
@@ -249,15 +254,15 @@ export class BpMessages {
 
   loadThread( thread ) {
 
-    let data = {
+    let data:any = {
       singleThread: true,
       threadId: thread.id,
       login_data: this.login_data
     }
 
     if( thread.sender_data ) {
-      (<any>data).senderAvatar = this.formatUrl( thread.sender_data.avatar )
-      (<any>data).senderName = thread.sender_data.name
+      data.senderAvatar = this.formatUrl( thread.sender_data.avatar )
+      data.senderName = thread.sender_data.name
     }
 
     this.nav.push( 'BpMessages', data );

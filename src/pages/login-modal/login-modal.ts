@@ -269,7 +269,6 @@ export class LoginModal {
 
 	setLoginData( data ) {
 		this.login_data = data
-		console.log('setLoginData', this.login_data)
 	}
 
 	register( e ) {

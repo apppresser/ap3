@@ -44,7 +44,7 @@
 
         <ion-item *ngFor="let notification of items">
 
-          <p *ngIf="notification.content" (tap)="viewNotification( notification )"><strong>{{ notification.content }}</strong></p>
+          <p *ngIf="notification.content" (tap)="viewNotification( notification )">{{ notification.content }}</p>
           
           <button ion-button item-end clear (tap)="viewNotification( notification )">{{ 'View' | translate }}</button> <button ion-button item-end color="light" (tap)="clearNotification( notification )">{{ 'Clear' | translate }}</button>
           

@@ -18,8 +18,13 @@ bp-modal {
 		border-bottom: none !important;
 	}
 
-	form .item-textarea {
-		border-bottom: 1px solid #eee;
+	form  {
+		.item-textarea {
+			border-bottom: 1px solid #eee;
+		}
+		.select {
+			padding: 13px 8px;
+		}
 	}
 
 	.fake-button {

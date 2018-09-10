@@ -441,7 +441,7 @@ export class BpProvider {
 
     return new Promise( (resolve, reject) => {
 
-      this.http.post( this.url + this.restBase + 'notifications' + data )
+      this.http.post( this.url + this.restBase + 'notifications' + data, null )
           .map(res => res.json())
           .subscribe(data => {
               resolve( data );
