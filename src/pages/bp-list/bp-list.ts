@@ -242,7 +242,7 @@ export class BpList implements OnInit {
     } else if( this.groupList ) {
       this.bpSegments = [ { name: 'My Groups' },{ name: 'All' } ];
     } else if( this.activityList ) {
-      this.bpSegments = [ { name: 'All' }, { name: 'Friends' } ];
+      this.bpSegments = [ { name: 'All' }, { name: 'Friends' }, { name: 'Mentions' }, { name: 'Me' } ];
     } else if( this.memberList ) {
       this.bpSegments = null
     }
@@ -266,15 +266,29 @@ export class BpList implements OnInit {
     if( false === this.loginCheck() )
       return;
 
+    let args = this.getSegmentArg()
+
+    let route = this.addQueryParam( this.route, args )
+
+    this.loadItems( route )
+    
+  }
+
+  getSegmentArg() {
+
     if( this.activityList ) {
 
       if( this.segments === 'Friends' && this.login_data && this.login_data.user_id ) {
 
-        this.loadItems( this.route + '&scope=friends&user=' + this.login_data.user_id )
+        return 'scope=friends&user=' + this.login_data.user_id;
 
-      } else {
+      } else if( this.segments === 'Mentions' && this.login_data && this.login_data.username ) {
 
-        this.loadItems( this.route )
+        return 'search=@' + this.login_data.username;
+
+      } else if( this.segments === 'Me' && this.login_data && this.login_data.username ) {
+
+        return 'user=' + this.login_data.user_id;
 
       }
 
@@ -284,17 +298,17 @@ export class BpList implements OnInit {
         case 'All':
           this.myGroups = false
           this.showAllGroups = true
-          // for all groups, we don't want user_id
-          this.loadItems( this.route )
           break;
         case 'My Groups':
           this.myGroups = true
           // add user_id to show my groups
-          this.loadItems( this.route + '?user_id=' + this.login_data.user_id )
+          return 'user_id=' + this.login_data.user_id;
       }
 
     }
-    
+
+    return '';
+
   }
 
   // get posts from storage when we are offline
@@ -328,6 +342,8 @@ export class BpList implements OnInit {
       route = this.addActivityParams( route )
 
     }
+
+    route = this.addQueryParam( route, this.getSegmentArg() );
 
     return route;
 
@@ -460,6 +476,8 @@ export class BpList implements OnInit {
 
     let login;
     this.getRoute().then( route => {
+
+      console.log("load more route ", route)
 
       // for some requests, we don't want to send login data
       if( !this.groupList ) {  
