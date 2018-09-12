@@ -102,6 +102,8 @@
 
   </form>
 
+  <p text-center *ngIf="!show_verification_field" (click)="showVerificationField()" class="gray-text">{{ 'Enter verification code' | translate }}</p>
+
   <p text-center *ngIf="show_verification_field" (click)="resendCode()" class="gray-text">{{ 'Re-send verification code' | translate }}</p>
 
   </div>

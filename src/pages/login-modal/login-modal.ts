@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Events, ViewController, LoadingController, IonicPage, ToastController, NavParams } from 'ionic-angular';
+import { Events, ViewController, LoadingController, IonicPage, ToastController, NavParams, Platform } from 'ionic-angular';
 import {WPlogin} from '../../providers/wplogin/wplogin';
 import {Logins} from "../../providers/logins/logins";
 import {FbConnectApp} from '../../providers/facebook/login-app';
@@ -48,7 +48,8 @@ export class LoginModal {
 		private toastCtrl: ToastController,
 		private loginservice: LoginService,
 		private Device: Device,
-		private bpProvider: BpProvider
+		private bpProvider: BpProvider,
+		private platform: Platform
 		) {
       
 		if(this.navParams.get('title')) {
@@ -60,7 +61,11 @@ export class LoginModal {
 		// login through postmessage sets login_data this way
 		events.subscribe('modal:logindata', data => {
 	      this.setLoginData(data);
-	    });
+		});
+		
+		platform.resume.subscribe ( (e) => {
+			this.getScreen()
+		});
 
 		// get login data on first load
 		this.storage.get('user_login').then( data => {
@@ -85,15 +90,7 @@ export class LoginModal {
 
 		})
 
-		this.storage.get( 'unverified_user' ).then( data => {
-
-			if( data ){
-				this.show_verification_field = true;
-				this.show_registration = true;
-				this.user_data = data
-			}
-
-		})
+		this.checkUnverified();
 
 		this.initFBLogin();
 
@@ -102,12 +99,24 @@ export class LoginModal {
 	}
 
 	ionViewWillEnter() {
+
 		// save the screen we were on last
+		this.getScreen()
+
+	}
+
+	getScreen() {
+
 		this.storage.get( 'login_screen' ).then( screen => {
 
+			console.log('screen = ' + screen )
+
 			if( screen === 'show_verification_field' ) {
+
 				this.show_verification_field = true;
 				this.show_registration = true;
+				this.checkUnverified()
+
 			} else if( screen === 'show_reset_code' ) {
 				this.show_pw_reset = true
 				this.show_reset_code = true
@@ -115,6 +124,22 @@ export class LoginModal {
 			}
 
 		})
+
+	}
+
+	checkUnverified() {
+
+		this.storage.get( 'unverified_user' ).then( data => {
+
+			if( data ){
+				console.log('unverified', data)
+				this.show_verification_field = true;
+				this.show_registration = true;
+				this.user_data = data
+			}
+
+		})
+
 	}
 
 	/**
@@ -337,6 +362,10 @@ export class LoginModal {
 
 	}
 
+	showVerificationField() {
+		this.show_verification_field = true;
+	}
+
 	doApiRegistration() {
 
 		console.log(this.user_data)
@@ -353,10 +382,14 @@ export class LoginModal {
 		} else {
 			this.wplogin.register( this.user_data ).then( data => {
 				console.log(data)
-				this.presentToast(data)
+				
 				this.show_verification_field = true;
+
 				this.storage.set( 'login_screen', 'show_verification_field' )
+
 				this.storage.set( 'unverified_user', this.user_data )
+
+				this.presentToast(data)
 				this.hideSpinner()
 
 			}).catch( e => {
