@@ -20,6 +20,7 @@ export class LoginModal {
 
 	login:any = {}
 	user_data: any = {}
+	pw_reset: any = {}
 	login_data: any
 	spinner: any
 	force_login: any = false;
@@ -30,6 +31,8 @@ export class LoginModal {
 	show_verification_field: boolean = false;
 	title: string = '';
 	show_registration: boolean = false;
+	show_pw_reset: boolean = false;
+	show_reset_code: boolean = false;
 
 	constructor(
 		public navParams: NavParams,
@@ -96,6 +99,22 @@ export class LoginModal {
 
 		this.is_preview = (location.href.indexOf('myapppresser') > 0);
 
+	}
+
+	ionViewWillEnter() {
+		// save the screen we were on last
+		this.storage.get( 'login_screen' ).then( screen => {
+
+			if( screen === 'show_verification_field' ) {
+				this.show_verification_field = true;
+				this.show_registration = true;
+			} else if( screen === 'show_reset_code' ) {
+				this.show_pw_reset = true
+				this.show_reset_code = true
+				this.show_registration = false
+			}
+
+		})
 	}
 
 	/**
@@ -192,16 +211,47 @@ export class LoginModal {
 
 	}
 
-	doResetPassword() {
+	showResetPassword() {
 		
-		this.dismiss();
+		this.show_pw_reset = true
+		this.show_registration = false
 
-		this.events.publish('pushpage', { 
-			url: this.loginservice.getPasswordResetUrl(), 
-			title: '', 
-			is_register_page: this.force_login // apply the force_login if needed
-		} );
-	
+	}
+
+	doResetPassword() {
+
+		console.log(this.pw_reset)
+
+		if( !this.pw_reset.email && !this.pw_reset.code ) {
+			alert("Please fill out required fields.")
+			return;
+		}
+
+		this.showSpinner()
+
+		this.wplogin.resetPassword( this.pw_reset ).then( data => {
+
+			console.log(data)
+
+			if( (<any>data).got_code ) {
+				this.show_reset_code = true;
+				this.storage.set( 'login_screen', 'show_reset_code' )
+			}
+
+			if( (<any>data).pw_changed ) {
+				setTimeout( () => {
+					this.show_pw_reset = false
+					this.storage.remove( 'login_screen' )
+				}, 800)
+			}
+			
+			this.presentToast( (<any>data).message )
+			this.hideSpinner()
+
+		}).catch( e => {
+			this.handleErr( e )
+			this.hideSpinner()
+		})
 
 	}
 
@@ -305,6 +355,7 @@ export class LoginModal {
 				console.log(data)
 				this.presentToast(data)
 				this.show_verification_field = true;
+				this.storage.set( 'login_screen', 'show_verification_field' )
 				this.storage.set( 'unverified_user', this.user_data )
 				this.hideSpinner()
 
@@ -328,6 +379,7 @@ export class LoginModal {
 				this.show_verification_field = false;
 				this.show_registration = false;
 				this.storage.remove( 'unverified_user' )
+				this.storage.remove( 'login_screen' )
 
 			} else if( (<any>data).message ) {
 
@@ -373,10 +425,14 @@ export class LoginModal {
 			this.show_verification_field = false
 			this.user_data.verification = null
 		})
+
+		this.storage.remove( 'login_screen' )
 	}
 
 	showLoginForm() {
 		this.show_registration = false;
+		this.show_pw_reset = false;
+		this.show_reset_code = false;
 	}
 
 	lostpw( e ) {

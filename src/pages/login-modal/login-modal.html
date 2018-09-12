@@ -16,15 +16,15 @@
 
 <ion-content>
 
-	<form (ngSubmit)="doLogin()" padding *ngIf="!login_data && !show_registration" class="fade-in">
+	<form (ngSubmit)="doLogin()" padding *ngIf="!login_data && !show_registration && !show_pw_reset" class="fade-in">
 
       <ion-item>
         <ion-label stacked>{{ 'Username' | translate }}</ion-label>
-        <ion-input type="text" [(ngModel)]="login.user" name="user" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+        <ion-input type="text" [(ngModel)]="login.user" name="user" autocomplete="on" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label stacked>{{ 'Password' | translate }}</ion-label>
-        <ion-input type="password" [(ngModel)]="login.pass" name="pass" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+        <ion-input type="password" [(ngModel)]="login.pass" name="pass" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
       </ion-item>
       
       <div padding>
@@ -32,7 +32,7 @@
       </div>
 
       <div class="appforgotpassword">
-        <button href="#" type="button" (click)="doResetPassword($event)">
+        <button type="button" (click)="showResetPassword()">
           <span class="forgot-password-text">{{ 'Forgot password?' | translate }}</span>
         </button>
       </div>
@@ -44,7 +44,7 @@
           </div>
 
           <div class="appfbconnectlogin">
-            <button href="#" type="button" (click)="doFBLogin()">
+            <button type="button" (click)="doFBLogin()">
               <span class="fb-icon"></span>
               <span class="fb-login-text">{{ 'Login with Facebook' | translate }}</span>
             </button>
@@ -64,15 +64,15 @@
     
     <ion-item>
       <ion-label stacked>{{ 'First name' | translate }}</ion-label>
-      <ion-input type="text" [(ngModel)]="user_data.first_name" name="first_name" autocorrect="off" autocapitalize="on" spellcheck="false"></ion-input>
+      <ion-input type="text" [(ngModel)]="user_data.first_name" name="first_name" autocomplete="off" autocorrect="on" autocapitalize="on" spellcheck="false"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label stacked>{{ 'Last name' | translate }}</ion-label>
-      <ion-input type="text" [(ngModel)]="user_data.last_name" name="last_name" autocorrect="off" autocapitalize="on" spellcheck="false"></ion-input>
+      <ion-input type="text" [(ngModel)]="user_data.last_name" name="last_name" autocomplete="on" autocorrect="off" autocapitalize="on" spellcheck="false"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label stacked>{{ 'Email' | translate }}</ion-label>
-      <ion-input type="email" [(ngModel)]="user_data.email" name="email" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+      <ion-input type="email" [(ngModel)]="user_data.email" name="email" autocomplete="on" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label stacked>{{ 'Create a username' | translate }}</ion-label>
@@ -106,6 +106,35 @@
 
   </div>
 
+  <div *ngIf="show_pw_reset && !login_data && !show_registration" class="fade-in">
+
+      <form (ngSubmit)="doResetPassword()" padding>
+    
+        <p [hidden]="show_reset_code">{{ 'Enter your email to retrieve your reset code.' | translate }}</p>
+
+        <p [hidden]="!show_reset_code">{{ 'Check your email for your verification code, then enter it here along with your new password.' | translate }}</p>
+
+        <ion-item [hidden]="show_reset_code">
+          <ion-label stacked>{{ 'Email' | translate }}</ion-label>
+          <ion-input type="email" [(ngModel)]="pw_reset.email" name="email" autocomplete="on" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+        </ion-item>
+        <ion-item [hidden]="!show_reset_code">
+          <ion-label stacked>{{ 'Verification code' | translate }}</ion-label>
+          <ion-input type="text" [(ngModel)]="pw_reset.code" name="code" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+        </ion-item>
+        <ion-item [hidden]="!show_reset_code">
+          <ion-label stacked>{{ 'Enter a new password' | translate }}</ion-label>
+          <ion-input type="text" [(ngModel)]="pw_reset.password" name="password" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+        </ion-item>
+        
+        <div padding>
+        <button ion-button type="submit" block>{{ 'Submit' | translate }}</button>
+        </div>
+    
+      </form>
+    
+  </div>
+
 	<div padding *ngIf="login_data">
 		<p>{{login_data.message}}</p>
     	<button ion-button block (click)="doLogout()">{{ 'Click here to logout' | translate }}</button>
@@ -120,7 +149,7 @@
 
       </ion-col>
 
-      <ion-col *ngIf="api_register_setting && show_registration">
+      <ion-col *ngIf="api_register_setting && show_registration || show_pw_reset">
 
         <button type="button" ion-button color="light" class="register-link" full (click)="showLoginForm()">{{ 'Log In' | translate }}</button>
 
