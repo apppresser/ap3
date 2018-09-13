@@ -64,8 +64,9 @@
 
   </form>
 
-	<div padding *ngIf="!login_data">
+	<div padding *ngIf="!login_data || !login_data.user_id">
     	{{ 'Login to post a reply.' | translate }}
+      <button ion-button (click)="loginModal()">Login</button>
   </div>
 
 </ion-content>

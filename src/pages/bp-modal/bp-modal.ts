@@ -67,7 +67,7 @@ export class BpModal {
 		// get login data on first load
 		this.storage.get('user_login').then( data => {
 
-			if(data) {
+			if(data && data.user_id) {
 
 				this.login_data = data
 			
@@ -76,6 +76,8 @@ export class BpModal {
 					this.populateRecipients()
 				}
 
+			} else {
+				this.presentToast('Please logout then log back in.')
 			}
 
 		});
@@ -259,6 +261,16 @@ export class BpModal {
 
 	hideSpinner() {
 		this.spinner.dismiss();
+	}
+
+	loginModal() {
+
+		let login_modal = this.modalCtrl.create('LoginModal' );
+
+		login_modal.present();
+
+		this.dismiss()
+
 	}
 
 	presentToast(msg) {
