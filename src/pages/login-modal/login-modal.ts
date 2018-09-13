@@ -105,11 +105,10 @@ export class LoginModal {
 
 	}
 
+	// if we are in the middle of a pw reset or registration, show correct fields
 	getScreen() {
 
 		this.storage.get( 'login_screen' ).then( screen => {
-
-			console.log('screen = ' + screen )
 
 			if( screen === 'show_verification_field' ) {
 
@@ -132,7 +131,6 @@ export class LoginModal {
 		this.storage.get( 'unverified_user' ).then( data => {
 
 			if( data ){
-				console.log('unverified', data)
 				this.show_verification_field = true;
 				this.show_registration = true;
 				this.user_data = data
@@ -248,7 +246,7 @@ export class LoginModal {
 		console.log(this.pw_reset)
 
 		if( !this.pw_reset.email && !this.pw_reset.code ) {
-			alert("Please fill out required fields.")
+			this.presentToast("Please fill out required fields.")
 			return;
 		}
 
@@ -258,12 +256,18 @@ export class LoginModal {
 
 			console.log(data)
 
+			// sent reset code, show the code field
 			if( (<any>data).got_code ) {
 				this.show_reset_code = true;
 				this.storage.set( 'login_screen', 'show_reset_code' )
 			}
 
+			// password has been changed, need user to login
 			if( (<any>data).pw_changed ) {
+
+				if( this.pw_reset.email ) 
+					this.login.user = this.pw_reset.email
+
 				setTimeout( () => {
 					this.show_pw_reset = false
 					this.storage.remove( 'login_screen' )
@@ -371,12 +375,13 @@ export class LoginModal {
 		console.log(this.user_data)
 
 		if( !this.user_data.email || !this.user_data.username || !this.user_data.password ) {
-			alert("Please fill out required fields.")
+			this.presentToast("Please fill out required fields.")
 			return;
 		}
 
 		this.showSpinner()
 
+		// if we are submitting a verification code, verify and login. Otherwise, register as unverified user
 		if( this.user_data.verification ) {
 			this.verify(this.user_data)
 		} else {
@@ -400,6 +405,7 @@ export class LoginModal {
 
 	}
 
+	// verify user after registration, login if successful
 	verify( user_data ) {
 
 		this.wplogin.verifyUser( this.user_data ).then( data => {
@@ -432,6 +438,11 @@ export class LoginModal {
 	}
 
 	resendCode() {
+
+		if( !this.user_data || !this.user_data.email || !this.user_data.username ) {
+			this.presentToast('Please enter your email and username, then try again.')
+			return;
+		}
 
 		this.showSpinner()
 
@@ -468,18 +479,6 @@ export class LoginModal {
 		this.show_reset_code = false;
 	}
 
-	lostpw( e ) {
-
-		let title = e.target.innerText
-
-		this.dismiss()
-
-		let item = window.localStorage.getItem( 'myappp' );
-    	let url = JSON.parse( item ).wordpress_url;
-
-		this.events.publish('pushpage', { url: url + 'wp-login.php?action=lostpassword', title: title } )
-	}
-
 	dismiss() {
 		this.viewCtrl.dismiss();
 	}
@@ -496,13 +495,17 @@ export class LoginModal {
 
 	presentToast(msg) {
 
-	    let toast = this.toastCtrl.create({
-	      message: msg,
-	      duration: 5000,
-	      position: 'bottom'
-	    });
+		this.translate.get(msg).subscribe( translation => {
 
-	    toast.present();
+		  let toast = this.toastCtrl.create({
+		    message: msg,
+		    duration: 3000,
+		    position: 'bottom'
+		  });
+
+		  toast.present();
+
+		})
 
 	}
 

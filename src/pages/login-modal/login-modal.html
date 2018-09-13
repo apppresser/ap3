@@ -58,15 +58,13 @@
 
   <form (ngSubmit)="doApiRegistration()" padding>
 
-    <div [hidden]="show_verification_field">
-
-    <p>{{ 'Enter your details to register.' | translate }}</p>
+    <p [hidden]="show_verification_field">{{ 'Enter your details to register.' | translate }}</p>
     
-    <ion-item>
+    <ion-item [hidden]="show_verification_field">
       <ion-label stacked>{{ 'First name' | translate }}</ion-label>
       <ion-input type="text" [(ngModel)]="user_data.first_name" name="first_name" autocomplete="off" autocorrect="on" autocapitalize="on" spellcheck="false"></ion-input>
     </ion-item>
-    <ion-item>
+    <ion-item [hidden]="show_verification_field">
       <ion-label stacked>{{ 'Last name' | translate }}</ion-label>
       <ion-input type="text" [(ngModel)]="user_data.last_name" name="last_name" autocomplete="on" autocorrect="off" autocapitalize="on" spellcheck="false"></ion-input>
     </ion-item>
@@ -78,12 +76,10 @@
       <ion-label stacked>{{ 'Create a username' | translate }}</ion-label>
       <ion-input type="text" [(ngModel)]="user_data.username" name="username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
     </ion-item>
-    <ion-item>
+    <ion-item [hidden]="show_verification_field">
       <ion-label stacked>{{ 'Create a password' | translate }}</ion-label>
       <ion-input type="password" [(ngModel)]="user_data.password" name="password" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
     </ion-item>
-
-  </div>
 
   <div *ngIf="show_verification_field" class="fade-in">
     
@@ -102,9 +98,9 @@
 
   </form>
 
-  <p text-center *ngIf="!show_verification_field" (click)="showVerificationField()" class="gray-text">{{ 'Enter verification code' | translate }}</p>
+  <p text-center *ngIf="!show_verification_field" (tap)="showVerificationField()" class="gray-text">{{ 'I have a verification code' | translate }}</p>
 
-  <p text-center *ngIf="show_verification_field" (click)="resendCode()" class="gray-text">{{ 'Re-send verification code' | translate }}</p>
+  <p text-center *ngIf="show_verification_field" (tap)="resendCode()" class="gray-text">{{ 'Re-send verification code' | translate }}</p>
 
   </div>
 

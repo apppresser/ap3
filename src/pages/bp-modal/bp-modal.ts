@@ -263,13 +263,17 @@ export class BpModal {
 
 	presentToast(msg) {
 
-	    let toast = this.toastCtrl.create({
-	      message: msg,
-	      duration: 5000,
-	      position: 'bottom'
-	    });
+		this.translate.get(msg).subscribe( translation => {
 
-	    toast.present();
+		  let toast = this.toastCtrl.create({
+		    message: msg,
+		    duration: 3000,
+		    position: 'bottom'
+		  });
+
+		  toast.present();
+
+		})
 
 	}
 
