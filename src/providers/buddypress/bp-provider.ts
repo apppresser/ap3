@@ -212,19 +212,26 @@ export class BpProvider {
 
     let route = this.url + this.restBase + 'activity';
 
-    let data = 'user_id=' + login_data.user_id + '&content=' + activity.content + '&token=' + login_data.token;
+    let data: any = {
+      user_id: login_data.user_id,
+      content: activity.content,
+      token: login_data.token,
+    };
 
     if( activity.parent ) {
-      data += '&type=activity_comment&parent=' + activity.parent + '&id=' + activity.parent
+      data.type = 'activity_comment';
+      data.parent = activity.parent;
+      data.id = activity.parent;
     }
 
     if( group_id ) {
-      data += '&type=activity_update&primary_id=' + group_id
+      data.type = 'activity_update';
+      data.primary_id = group_id;
     }
 
     return new Promise( (resolve, reject) => {
 
-      this.http.post( route + '?' + data, null )
+      this.http.post( route, data )
         .map(res => res.json())
         .subscribe(data => {
           
@@ -278,11 +285,15 @@ export class BpProvider {
 
     let route = this.url + this.restBase + 'groups/join-group';
 
-    let data = 'user_id=' + login_data.user_id + '&group_id=' + item.id + '&token=' + login_data.token;
+    let data = {
+      user_id: login_data.user_id,
+      group_id: item.id,
+      token: login_data.token
+    };
 
     return new Promise( (resolve, reject) => {
 
-      this.http.post( route + '?' + data, null )
+      this.http.post( route, data )
         .map(res => res.json())
         .subscribe(data => {
           
@@ -314,11 +325,15 @@ export class BpProvider {
       action = 'add_friend'
     }
 
-    let data = 'action=' + action + '&user_id=' + login_data.user_id + '&token=' + login_data.token;
+    let data = {
+      action: action,
+      user_id: login_data.user_id,
+      token: login_data.token
+    };
 
     return new Promise( (resolve, reject) => {
 
-      this.http.post( route + '?' + data, null )
+      this.http.post( route, data )
         .map(res => res.json())
         .subscribe(data => {
           
@@ -350,11 +365,15 @@ export class BpProvider {
       action = 'accept'
     }
 
-    let data = 'action=' + action + '&user_id=' + login_data.user_id + '&token=' + login_data.token;
+    let data = {
+      action: action,
+      user_id: login_data.user_id,
+      token: login_data.token
+    };
 
     return new Promise( (resolve, reject) => {
 
-      this.http.post( route + '?' + data, null )
+      this.http.post( route, data )
         .map(res => res.json())
         .subscribe(data => {
           
@@ -382,15 +401,23 @@ export class BpProvider {
 
     let route = this.url + this.restBase + 'messages/send';
 
-    let threadid = ( threadId ? "&thread_id=" + threadId : '' )
+    let data: any = {
+      recipients: recipients,
+      subject: subject,
+      content: content,
+      user_id: login_data.user_id,
+      token: login_data.token,
+    };
 
-    let data = 'recipients=' + recipients + '&subject=' + subject + '&content=' + content + '&user_id=' + login_data.user_id + '&token=' + login_data.token + threadid;
+    if(threadId) {
+      data.thread_id = threadId;
+    }
 
-    console.log('sendMessage', route + '?' + data )
+    console.log('sendMessage', route, data );
 
     return new Promise( (resolve, reject) => {
 
-      this.http.post( route + '?' + data, null )
+      this.http.post( route, data )
         .map(res => res.json())
         .subscribe(data => {
           
@@ -412,8 +439,8 @@ export class BpProvider {
 
   getNotifications( login_data ) {
 
-    let user_id = ( login_data && login_data.user_id ? '&user_id=' + login_data.user_id : '' );
-    let token = ( login_data ? '&token=' + login_data.token : '' );
+    // let user_id = ( login_data && login_data.user_id ? '&user_id=' + login_data.user_id : '' );
+    // let token = ( login_data ? '&token=' + login_data.token : '' );
 
     let data = '?user_id=' + login_data.user_id + '&token=' + login_data.token;
 
@@ -434,14 +461,16 @@ export class BpProvider {
 
   clearNotification( notification, login_data ) {
 
-    let user_id = ( login_data && login_data.user_id ? '&user_id=' + login_data.user_id : '' );
-    let token = ( login_data ? '&token=' + login_data.token : '' );
-
-    let data = '?user_id=' + login_data.user_id + '&token=' + login_data.token + '&component=' + notification.component + '&action=' + notification.action;
+    let data = {
+      user_id: (login_data && login_data.user_id) ? login_data.user_id : '',
+      token: (login_data && login_data.token) ? login_data.token : '',
+      component: notification.component,
+      action: notification.action
+    };
 
     return new Promise( (resolve, reject) => {
 
-      this.http.post( this.url + this.restBase + 'notifications' + data, null )
+      this.http.post( this.url + this.restBase + 'notifications', data )
           .map(res => res.json())
           .subscribe(data => {
               resolve( data );
