@@ -264,6 +264,16 @@ export class ApListComponent implements OnInit {
 		return string.substring(0,100);
 	}
 
+	getBgImage( item ) {
+		
+		if( item.featured_image_urls.large ) {
+			return item.featured_image_urls.large;
+		} else if( item.featured_image_urls.medium ) {
+			return item.featured_image_urls.medium;
+		}
+
+	}
+
 	presentToast(msg) {
 
 	    let toast = this.toastCtrl.create({

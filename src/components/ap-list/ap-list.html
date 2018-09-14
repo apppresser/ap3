@@ -5,8 +5,7 @@
     <ion-card (click)="loadDetail(item)" *ngFor="let item of items">
       
       <div class="card-featured-wrap" *ngIf="item.featured_image_urls">
-        <img *ngIf="item.featured_image_urls.large" src="{{item.featured_image_urls.large}}">
-        <img *ngIf="!item.featured_image_urls.large && item.featured_image_urls.medium" src="{{item.featured_image_urls.medium}}">
+        <div class="card-featured-image" [ngStyle]="{'background-image': 'url('+ getBgImage( item ) +')'}"></div>
       </div>
 
       <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_title" [innerHTML]="item.appp.post_list.above_title"></div>
@@ -19,7 +18,7 @@
 
         <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_title" [innerHTML]="item.appp.post_list.below_title"></div>
 
-        <p *ngIf="item.excerpt && item.excerpt.rendered" [innerHTML]="item.excerpt.rendered"></p>
+        <p *ngIf="item.excerpt && item.excerpt.rendered" [innerHTML]="truncateString( item.excerpt.rendered )"></p>
 
         <div class="item-content" *ngIf="!item.excerpt && item.content.rendered" [innerHTML]="truncateString( item.content.rendered )"></div>
 
@@ -47,7 +46,7 @@
 
       <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_title" [innerHTML]="item.appp.post_list.below_title"></div>
 
-      <p *ngIf="item.excerpt && item.excerpt.rendered" [innerHTML]="item.excerpt.rendered"></p>
+      <p *ngIf="item.excerpt && item.excerpt.rendered" [innerHTML]="truncateString( item.excerpt.rendered )"></p>
 
       <div class="item-content" *ngIf="!item.excerpt && item.content.rendered" [innerHTML]="truncateString( item.content.rendered )"></div>
 

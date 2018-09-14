@@ -91,6 +91,16 @@ export class AppData {
 
         } // end if statements
         
+      }).catch( e => {
+
+        // app-data.json is missing for some reason
+        console.warn(e)
+
+        // get data from api
+        this.getData( apiurl ).then( data => {
+          resolve(data);
+        });
+
       }); // end this.getData()
 
     }); // end promise
