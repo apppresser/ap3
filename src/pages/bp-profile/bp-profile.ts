@@ -160,8 +160,13 @@ export class BpProfilePage implements OnInit {
       this.hideSpinner()
     }).catch( e => {
 
+      let msg = 'There was a problem.';
+
       console.warn(e)
-      this.presentToast('There was a problem.')
+      if(e.status && e.status == 404) {
+        msg = 'Friendship connections are not available';
+      }
+      this.presentToast(msg);
       this.hideSpinner()
 
     })

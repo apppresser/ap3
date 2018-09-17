@@ -108,7 +108,7 @@ export class BpMessages {
   // maybe add https to avatar url
   formatUrl( url ) {
 
-    console.log('format url', url)
+    // console.log('format url', url)
 
     if( !url )
       return;
