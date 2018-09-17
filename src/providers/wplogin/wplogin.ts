@@ -47,7 +47,8 @@ export class WPlogin {
           if (request.status === 200) {
             console.log(request.responseText)
             try {
-              let login_data = (<any>JSON.parse(request.responseText)).data;
+              let login_data = (<any>JSON.parse(request.responseText));
+              login_data = (login_data.data) ? login_data.data : login_data;
               if(typeof login_data.username !== 'undefined') {
                 this.loginservice.setLoginStatus(new User(login_data));
               }
