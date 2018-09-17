@@ -14,9 +14,6 @@ export class GlobalVars {
   data: any = null;
   useDynamicContentModule: boolean = true; // false when using our builder on remote Ionic builder?
   // url should be WP site with AP installed, dynamically changes based on build form
-  // appid: string = '152';
-  // apiurl: string = 'http://myapppresser.local/test/'
-  // endpoint: string = 'wp-json/ap3/v1/app/152';
   appid: string = '[[appp_app_id]]';
   apiurl: string = '[[myappp_url]]'
   endpoint: string = 'wp-json/ap3/v1/app/[[appp_app_id]]';
@@ -25,6 +22,12 @@ export class GlobalVars {
   constructor( public http: Http ) {}
 
   getApi() {
+
+    // development API
+    if( window.location && window.location.href && window.location.href.indexOf('localhost') >=0 ) {
+      return 'https://myapppresser.com/demos/wp-json/ap3/v1/app/656'
+    }
+
     return this.api;
   }
 
