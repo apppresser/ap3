@@ -79,7 +79,7 @@ export class MyApp {
   customClasses: string;
   iphoneX: boolean = false;
   showingIntro: boolean = false;
-  doingNotification: boolean = false;
+  stopTabReset: boolean = false;
 
   constructor(
     private platform: Platform,
@@ -1038,7 +1038,7 @@ export class MyApp {
 
       // Don't allow resetTabs to happen if we need to pushPage from notification: it messes things up
       if( isAppPushPostURL || isAppPushCustomURL || isAppPage ) {
-        this.doingNotification = true;
+        this.stopTabReset = true;
       }
 
       this.Dialogs.alert(
@@ -1048,7 +1048,7 @@ export class MyApp {
       ).then(() => {
 
         // Now we can allow resetTabs to happen
-        this.doingNotification = false;
+        this.stopTabReset = false;
 
         // if apppush post URL
         if(isAppPushPostURL) {
@@ -1235,8 +1235,11 @@ export class MyApp {
           target: '',
           extra_classes: '',
         };
-        
+
+        this.stopTabReset = true;
         this.pushPage(page);
+        this.stopTabReset = false;
+        this.resetTabs(this.loginservice.user);
       }   
     }
   }
@@ -1297,7 +1300,7 @@ export class MyApp {
    */
   resetTabs( login, lang_updated? ) {
 
-    if(this.doingNotification)
+    if(this.stopTabReset)
       return; // We can't reset the tabs now if a push notification has opened the app and has a pushPage included
 
     this.navparams = []
