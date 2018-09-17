@@ -18,7 +18,7 @@ import {BpProvider} from '../../providers/buddypress/bp-provider';
 export class BpDetailsPage implements OnInit {
   selectedItem: any;
   login_data: any;
-  activityComments: any;
+  activityComments = <any>[];
   commentsLoaded: boolean = false;
   content: any;
   listenFunc: Function;
