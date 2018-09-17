@@ -328,7 +328,10 @@ export class BpNotifications {
 
     console.error('Error getting posts', err);
     let msg = "Cannot show items.";
-    if( err['_body'] && JSON.parse( err['_body'] ).message ) {
+    if( err && err.status == 404 ) { 
+      // notifications are disabled in BuddyPress settings
+      msg += 'Notifications are not enabled';
+    } else if( err['_body'] && JSON.parse( err['_body'] ).message ) {
       msg += ' ' + JSON.parse( err['_body'] ).message;
     }
     this.presentToast( msg );
