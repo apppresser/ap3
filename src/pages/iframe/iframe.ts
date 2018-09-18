@@ -236,6 +236,10 @@ export class Iframe implements OnInit {
                 target: this.el.nativeElement.querySelector('.ap3-iframe')
             };
             this.doCheckinModal(_e);
+        } else if( e.data === 'activity_modal' ) {
+            this.zone.run( () => {
+                this.activityModal = true;
+            } );
         } else if( e.data === 'goback' ) {
             this.goBack();
         } else if( e.data.indexOf('{') === 0 ) {
