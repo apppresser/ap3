@@ -58,9 +58,13 @@ export class BpNotifications {
 
       this.isRequests = true
       this.route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/friends/requests';
-      this.title = 'Requests';
+      this.translate.get('Requests').subscribe( text => {
+        this.title = text;
+      });
     } else {
-      this.title = 'Notifications';
+      this.translate.get('Notifications').subscribe( text => {
+        this.title = text;
+      });
     }
 
     // this.setupSegments();
@@ -76,7 +80,7 @@ export class BpNotifications {
         this.login_data = data
         this.getItems()
       } else {
-        this.presentToast('Please login.')
+        this.presentToast('Please log in.')
         this.nav.pop()
       }
 
@@ -327,14 +331,16 @@ export class BpNotifications {
   handleErr( err ) {
 
     console.error('Error getting posts', err);
-    let msg = "Cannot show items.";
-    if( err && err.status == 404 ) { 
-      // notifications are disabled in BuddyPress settings
-      msg += 'Notifications are not enabled';
-    } else if( err['_body'] && JSON.parse( err['_body'] ).message ) {
-      msg += ' ' + JSON.parse( err['_body'] ).message;
-    }
-    this.presentToast( msg );
+    this.translate.get('Cannot show items.').subscribe( text => {
+      let msg = text;
+      if( err && err.status == 404 ) { 
+        // notifications are disabled in BuddyPress settings
+        msg += ' Notifications are not enabled.';
+      } else if( err['_body'] && JSON.parse( err['_body'] ).message ) {
+        msg += ' ' + JSON.parse( err['_body'] ).message;
+      }
+      this.presentToast( msg );
+    });
 
   }
 

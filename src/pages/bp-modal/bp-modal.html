@@ -46,7 +46,7 @@
     <ion-grid>
       <ion-row>
         <ion-col>
-          <button ion-button type="submit" block>{{ isReply ? 'Post comment' : isMessage ? 'Send Message' : 'Post update' | translate }}</button>
+          <button ion-button type="submit" block>{{ isReply ? 'Post comment' : isMessage ? 'Send message' : 'Post update' | translate }}</button>
         </ion-col>
 
         <ion-col *ngIf="!isReply && !isMessage">
@@ -66,7 +66,7 @@
 
 	<div padding *ngIf="!login_data || !login_data.user_id">
     	{{ 'Login to post a reply.' | translate }}
-      <button ion-button (click)="loginModal()">Login</button>
+      <button ion-button (click)="loginModal()">{{ Login | translate }}</button>
   </div>
 
 </ion-content>

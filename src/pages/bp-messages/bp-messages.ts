@@ -68,7 +68,9 @@ export class BpMessages {
     this.title = navParams.data.title;
 
     if( !this.title ) {
-      this.title = "Messages"
+      this.translate.get('Messages').subscribe( text => {
+        this.title = text;
+      });
     }
 
     if( this.navParams.data.senderAvatar ) {
@@ -179,17 +181,18 @@ export class BpMessages {
 
     } else if( this.navParams.data.newThread ) {
 
-      let data: any = { message: true, title: 'Message' }
+      this.translate.get('Message').subscribe( text => {
+        
+        let data: any = { message: true, title: text }
+  
+        if( this.navParams.data.recipients ) {
+          data.recipients = this.navParams.data.recipients
+        }
+        let bpModal = this.modalCtrl.create( 'BpModal', data );
+        bpModal.present();
 
-      if( this.navParams.data.recipients ) {
-        data.recipients = this.navParams.data.recipients
-      }
-      let bpModal = this.modalCtrl.create( 'BpModal', data );
-      bpModal.present();
-
+      });
     }
-    
-
   }
 
   addMessage( data ) {
@@ -463,11 +466,14 @@ export class BpMessages {
   handleErr( err ) {
 
     console.error('Error getting posts', err);
-    let msg = "Cannot show items.";
-    if( err['_body'] && JSON.parse( err['_body'] ).message ) {
-      msg += ' ' + JSON.parse( err['_body'] ).message;
-    }
-    this.presentToast( msg );
+
+    this.translate.get('Cannot show items.').subscribe( text => {
+      let msg = text;
+      if( err['_body'] && JSON.parse( err['_body'] ).message ) {
+        msg += ' ' + JSON.parse( err['_body'] ).message;
+      }
+      this.presentToast( msg );
+    });
 
   }
 

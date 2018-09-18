@@ -39,7 +39,7 @@
 
     <ion-select [(ngModel)]="segment" (ionChange)="segmentChanged()" placeholder="Inbox">
 
-      <ion-option *ngFor="let segment of messageSegments" [value]="segment.name">{{segment.name}}</ion-option>
+      <ion-option *ngFor="let segment of messageSegments" [value]="segment.name">{{ segment.name | translate }}</ion-option>
 
     </ion-select>
 

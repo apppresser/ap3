@@ -24,7 +24,17 @@ export class BpModal {
 	isMessage: boolean = false;
 	groupId: any = null;
 	recipients: any;
-	recipientArr: any[]
+	recipientArr: any[];
+	i18n = {
+		imageSheet: {
+			title: 'Choose an image',
+			buttonLabels: {
+				takePhoto: 'Take Photo',
+				photoLibrary: 'Photo Library'
+			},
+			addCancelButtonWithLabel: 'Cancel',
+		}
+	};
 
 	constructor(
 		public navParams: NavParams,
@@ -43,8 +53,12 @@ export class BpModal {
 		if(this.navParams.get('title')) {
 			this.title = this.navParams.get('title');
 		} else {
-			this.title = 'Activity';
+			this.translate.get('Activity').subscribe( text => {
+				this.title = text;
+			});
 		}
+
+		this.setTranslations();
 
 		this.route = this.navParams.get('route');
 
@@ -84,6 +98,25 @@ export class BpModal {
 
 		this.is_preview = (location.href.indexOf('myapppresser') > 0);
 
+	}
+
+	setTranslations() {
+
+		this.translate.get(this.i18n.imageSheet.title).subscribe( text => {
+			this.i18n.imageSheet.title = text;
+
+			this.translate.get(this.i18n.imageSheet.buttonLabels.takePhoto).subscribe( text => {
+				this.i18n.imageSheet.buttonLabels.takePhoto = text;
+
+				this.translate.get(this.i18n.imageSheet.buttonLabels.takePhoto).subscribe( text => {
+					this.i18n.imageSheet.buttonLabels.takePhoto = text;
+
+					this.translate.get(this.i18n.imageSheet.addCancelButtonWithLabel).subscribe( text => {
+						this.i18n.imageSheet.addCancelButtonWithLabel = text;
+					});
+				});
+			});
+		});
 	}
 
 	populateRecipients() {
@@ -219,9 +252,12 @@ export class BpModal {
 	imageSheet() {
 
 		let options = {
-	      title: 'Choose an image',
-	      buttonLabels: ['Take Photo', 'Photo Library'],
-	      addCancelButtonWithLabel: 'Cancel',
+	      title: this.i18n.imageSheet.title,
+	      buttonLabels: [
+			  this.i18n.imageSheet.buttonLabels.takePhoto,
+			  this.i18n.imageSheet.buttonLabels.photoLibrary
+		  ],
+	      addCancelButtonWithLabel: this.i18n.imageSheet.addCancelButtonWithLabel,
 	      destructiveButtonLast: true
 	    }
     

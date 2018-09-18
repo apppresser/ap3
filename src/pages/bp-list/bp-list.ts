@@ -731,14 +731,17 @@ export class BpList implements OnInit {
   handleErr( err ) {
 
     console.error('Error getting posts', err);
-    let msg = "Cannot show items.";
-    if( err && err.status == 404 ) { 
-      // activity streams are disabled in BuddyPress settings
-      msg += 'Activity streams are not enabled';
-    } else if( err['_body'] && JSON.parse( err['_body'] ).message ) {
-      msg += ' ' + JSON.parse( err['_body'] ).message;
-    }
-    this.presentToast( msg );
+
+    this.translate.get("Cannot show items.").subscribe( text => {
+      let msg = text;
+      if( err && err.status == 404 ) { 
+        // activity streams are disabled in BuddyPress settings
+        msg += 'Activity streams are not enabled';
+      } else if( err['_body'] && JSON.parse( err['_body'] ).message ) {
+        msg += ' ' + JSON.parse( err['_body'] ).message;
+      }
+      this.presentToast( msg );
+    });
 
   }
 

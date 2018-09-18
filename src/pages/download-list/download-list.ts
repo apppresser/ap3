@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {NavParams, ViewController, ToastController, IonicPage, ModalController} from 'ionic-angular';
 import {Storage} from '@ionic/storage';
 import {File} from '@ionic-native/file';
+import { TranslateService } from '@ngx-translate/core';
 
 declare var cordova: any;
 
@@ -21,13 +22,16 @@ export class DownloadList {
     public viewCtrl: ViewController,
     public toastCtrl: ToastController,
     public modalCtrl: ModalController,
-    private file: File
+    private file: File,
+    private translate: TranslateService
     ) {
 
     if(this.navParams.get('title')) {
       this.title = this.navParams.get('title');
     } else {
-      this.title = 'Downloads';
+      this.translate.get('Downloads').subscribe( text => {
+        this.title = text;
+      });
     }
       
   }
