@@ -22,6 +22,8 @@
 
 	<div *ngIf="groupData">
 
+		<div *ngIf="selectedItem.appp && selectedItem.appp && selectedItem.appp.above_content" [innerHTML]="selectedItem.appp.above_content | sanitizeHtml"></div>
+
 		<img class="group-cover-image" *ngIf="groupData.cover_image" [src]="groupData.cover_image" />
 
 		<ion-item>
@@ -45,6 +47,8 @@
 				<button ion-button icon-start small clear (click)="iabLink(groupData.link)"><ion-icon name="cog"></ion-icon> {{ 'Group Details' | translate }}</button>
 			</ion-col>
 		</ion-row>
+
+		<div *ngIf="selectedItem.appp && selectedItem.appp && selectedItem.appp.below_content" [innerHTML]="selectedItem.appp.below_content | sanitizeHtml"></div>
 
 	</div>
 
