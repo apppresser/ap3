@@ -150,8 +150,10 @@ export class BpMessages {
     // get login data on first load
     this.storage.get('user_login').then( data => {
 
-      if( data ) {
+      if( data && data.user_id ) {
         this.login_data = data
+      } else {
+        this.events.publish( 'login:force_login' )
       }
 
       if( !this.singleThread ) {
