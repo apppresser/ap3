@@ -58,7 +58,18 @@ export class Iframe implements OnInit {
         private SocialSharing: SocialSharing,
         private events: Events,
         public zone: NgZone
-        ) {}
+        ) {
+
+            events.subscribe('user:login', data => {
+                // reload the iframe for a logged in user
+                this.setupURL();
+            });
+        
+            events.subscribe('user:logout', data => {
+                // reload the iframe for a logged out user
+                this.setupURL();
+            });
+        }
 
     ngOnInit() {
 
