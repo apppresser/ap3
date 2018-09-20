@@ -1,5 +1,5 @@
 import {Component, Renderer, ElementRef, OnInit, AfterViewInit, Input, isDevMode, OnDestroy, NgZone} from '@angular/core';
-import {Nav, NavParams, ModalController, Platform, ViewController, Events, IonicPage, LoadingController} from 'ionic-angular';
+import {Nav, NavParams, ModalController, Platform, ViewController, Events, IonicPage, LoadingController, Loading} from 'ionic-angular';
 import {TranslateService, TranslateModule} from '@ngx-translate/core';
 import {Storage} from '@ionic/storage';
 import {Network} from '@ionic-native/network';
@@ -85,7 +85,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	customClasses: string;
 	pages: any;
 	products: any;
-	spinner: any;
+	spinner: Loading;
 	menus: {
 		side: any,
 		tabs: any
@@ -591,13 +591,16 @@ export class CustomPage implements OnInit, OnDestroy {
 	}
 
 	showSpinner() {
-		this.spinner = this.loadingCtrl.create();
-
-		this.spinner.present();
+		if(!this.spinner) {
+			this.spinner = this.loadingCtrl.create();
+			this.spinner.present();
+		}
 	}
 
 	hideSpinner() {
-		this.spinner.dismiss();
+		this.spinner.dismiss().then(()=>{
+			this.spinner = null;
+		})
 	}
 
 	ngOnDestroy() {
