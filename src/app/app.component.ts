@@ -122,10 +122,12 @@ export class MyApp {
 
     events.subscribe('user:login', data => {
       this.userLogin(data);
+      this.menu.close();
     });
 
     events.subscribe('user:logout', data => {
       this.userLogout(data);
+      this.menu.close();
     });
 
     events.subscribe('data:update', obj => {
