@@ -189,13 +189,11 @@ export class Iframe implements OnInit {
                 setTimeout(() => {
                     if( this.loading )
                      this.loading.dismiss().then(() => {
-                         this.loading= null;
+                         this.loading = null;
                      })
-            
-                });
+                }, 8000);
             });
         }
-
     }
 
     ionSelected() {
