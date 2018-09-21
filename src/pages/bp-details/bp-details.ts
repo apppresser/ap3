@@ -167,7 +167,7 @@ export class BpDetailsPage implements OnInit {
 
   flag() {
 
-    if( !this.login_data ) {
+    if( !this.login_data || !this.login_data.user_id ) {
       this.presentToast('You must be logged in to do that.')
     }
 

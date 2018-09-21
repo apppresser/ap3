@@ -89,7 +89,7 @@ export class BpGroupPage {
 
   joinGroup() {
 
-    if( !this.login_data ) {
+    if( !this.login_data || !this.login_data.user_id ) {
       this.presentToast('Please log in.')
       return;
     }

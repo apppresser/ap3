@@ -75,8 +75,8 @@
 	<div *ngIf="selectedItem.appp && selectedItem.appp && selectedItem.appp.below_content" [innerHTML]="selectedItem.appp.below_content | sanitizeHtml"></div>
 	
 	<div *ngIf="isError" padding>
-		<p>{{ 'There is a problem displaying this profile.' | translate }}</p>
-		<button *ngIf="isMyProfile" ion-button icon-start small clear (click)="openLoginModal()"><ion-icon name="log-in"></ion-icon> {{ 'Please logout then log back in' | translate }}</button>
+		<p>{{ 'There is a problem displaying this profile. You may need to login, or log out then log back in.' | translate }}</p>
+		<button ion-button icon-start small clear (click)="openLoginModal()"><ion-icon name="log-in"></ion-icon> {{ 'Please login' | translate }}</button>
 	</div>
 
 </ion-content>
