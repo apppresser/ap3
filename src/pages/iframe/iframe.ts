@@ -1,4 +1,4 @@
-import {NavParams, Nav, LoadingController, ModalController, Platform, ViewController} from 'ionic-angular';
+import {NavParams, Nav, LoadingController, ModalController, Platform, ViewController, Loading} from 'ionic-angular';
 import {Component, HostListener, ElementRef, OnInit, Input, NgZone} from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -24,7 +24,7 @@ export class Iframe implements OnInit {
     url: any;
     iframe: any;
     param: string;
-    loading: any;
+    loading: Loading;
     loaded: boolean = false;
     activityModal: boolean = false;
     checkinModal: boolean = false;
@@ -58,7 +58,18 @@ export class Iframe implements OnInit {
         private SocialSharing: SocialSharing,
         private events: Events,
         public zone: NgZone
-        ) {}
+        ) {
+
+            events.subscribe('user:login', data => {
+                // reload the iframe for a logged in user
+                this.setupURL();
+            });
+        
+            events.subscribe('user:logout', data => {
+                // reload the iframe for a logged out user
+                this.setupURL();
+            });
+        }
 
     ngOnInit() {
 
@@ -71,7 +82,9 @@ export class Iframe implements OnInit {
             // hack to fix spinner appearing too long when iframe is home tab. Caused by language service calls to resetTabs in main component.
             setTimeout(() => {
                 if( this.loading )
-                    this.loading.dismiss();
+                    this.loading.dismiss().then(() => {
+                        this.loading = null;
+                    })
             }, 4000);
 
         }
@@ -175,17 +188,23 @@ export class Iframe implements OnInit {
     }
 
     showSpinner() {
-        this.loading = this.loadingController.create({
-            showBackdrop: false,
-            dismissOnPageChange: false
-        });
 
-        this.loading.present();
+        // create only one spinner
+        if(!this.loading) {
+            this.loading = this.loadingController.create({
+                showBackdrop: false,
+                dismissOnPageChange: false
+            });
 
-        setTimeout(() => {
-            if( this.loading )
-             this.loading.dismiss();
-        }, 8000);
+            this.loading.present().then(data => {
+                setTimeout(() => {
+                    if( this.loading )
+                     this.loading.dismiss().then(() => {
+                         this.loading = null;
+                     })
+                }, 8000);
+            });
+        }
     }
 
     ionSelected() {
@@ -217,7 +236,9 @@ export class Iframe implements OnInit {
         if( e.data === 'site_loaded' ) {
 
             if(this.loading)
-                this.loading.dismiss();
+                this.loading.dismiss().then(() => {
+                    this.loading = null;
+                });
 
         } else if( e.data === 'show_spinner' ) {
             this.showSpinner()
