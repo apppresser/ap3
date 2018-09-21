@@ -505,8 +505,24 @@ export class CustomPage implements OnInit, OnDestroy {
 	}
 
 	getPages() {
+
 		if(!this.pages) {
-			this.pages = JSON.parse( window.localStorage.getItem( 'myappp' ) );
+
+			let pages = [];
+
+			let data = JSON.parse( window.localStorage.getItem( 'myappp' ) );
+
+			if(data && data.menus && data.menus.items) {
+				for(let page of data.menus.items) {
+					if(page.extra_classes && page.extra_classes.indexOf('divider') >= 0) {
+						// skip
+						// console.log('skip', page)
+					} else {
+						pages.push(page);
+					}
+				}
+				this.pages = {menus: {items: pages.slice()}};
+			}
 		}
 		return this.pages;
 	}

@@ -324,7 +324,20 @@ export class MyApp {
 
     if( data.menus.items ) {
 
-      this.pages = data.menus.items;
+      let pages = [];
+
+      for(let page of data.menus.items ) {
+
+        console.log(page);
+
+        if(page.extra_classes && page.extra_classes.indexOf('divider') >= 0) {
+          // skip
+        } else {
+          pages.push(page);
+        }
+      }
+
+      this.pages = pages.slice();
       this.menuservice.menu = this.pages.slice();
 
       this.showmenu = true;
