@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs/Observable";
 import { Subject } from "rxjs/Subject";
 import { Network } from '@ionic-native/network';
+import { Platform } from 'ionic-angular';
 
 @Injectable()
 export class NetworkStatusService {
@@ -10,9 +11,14 @@ export class NetworkStatusService {
 	public currentStatus: boolean = null;
 
 	constructor(
-		private network: Network
+		private network: Network,
+		public platform: Platform
 	) {
-		this.initNetworkWatch();
+		// only do this on a device
+		if( this.platform.is('ios') || this.platform.is('android') ) {
+			this.initNetworkWatch();
+		} 
+		
 	}
 
 	networkStatus(): Observable<boolean> {
@@ -22,11 +28,14 @@ export class NetworkStatusService {
 
 	/**
 	 * 
-	 * @param wait optional How long to wait which confirms we have truely lost a connection
+	 * @param wait optional How long to wait which confirms we have truly lost a connection
 	 */
 	initNetworkWatch(wait?: number) {
 
 		wait = (wait) ? wait : 3000;
+
+		if( !this.network )
+			return;
 
 		// Initial status
 		if (this.network.type === 'none') {
@@ -55,7 +64,8 @@ export class NetworkStatusService {
 					this.currentStatus = true;
 				}
 			}, wait);
-		});
+		},
+		(err) => { console.warn( err ) });
 
 		
 	}
