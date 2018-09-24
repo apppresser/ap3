@@ -127,7 +127,6 @@ export class Iframe implements OnInit {
         this.showShare = false;
 
         if(this.navParams.get('is_register_page') === true) {
-            console.log('yes, is_register_page');
             if(this.viewCtrl.enableBack())
                 this.viewCtrl.showBackButton(false)
             this.rtlBack = false

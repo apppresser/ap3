@@ -20,8 +20,6 @@ export class Posts {
 
   load(url:string, page) {
 
-    console.log('lost posts ' + url)
-
     // set pagination
     if( !page ) {
       let page = '1';

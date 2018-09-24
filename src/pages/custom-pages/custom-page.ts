@@ -637,7 +637,7 @@ export class CustomPage implements OnInit, OnDestroy {
 
 		this.subscriptions.push(this.networkstatus.networkStatus().subscribe(status => {
 
-			console.log('custom-page network status', status);
+			// console.log('custom-page network status', status);
 
 			this.isOffline = !status;
 			this.isOnline  = status;

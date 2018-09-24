@@ -477,8 +477,6 @@ export class BpList implements OnInit {
     let login;
     this.getRoute().then( route => {
 
-      console.log("load more route ", route)
-
       // for some requests, we don't want to send login data
       if( !this.groupList ) {  
         login = this.login_data
@@ -567,8 +565,6 @@ export class BpList implements OnInit {
     this.doFavCount(item)
 
   	this.bpProvider.updateItem( 'activity_favorite', this.login_data, item.id ).then( ret => {
-
-      console.log(ret)
 
   		if( !ret ) {
         this.undoFavCount(item)

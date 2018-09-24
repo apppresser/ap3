@@ -328,7 +328,7 @@ export class MyApp {
 
       for(let page of data.menus.items ) {
 
-        console.log(page);
+        // console.log(page);
 
         if(page.extra_classes && page.extra_classes.indexOf('divider') >= 0) {
           // skip
@@ -576,13 +576,11 @@ export class MyApp {
     }
 
     let root = this.getPageType( page );
-    console.log('open page root', root, page)
+    // console.log('open page root', root, page)
 
     if( root ) {
       this.nav.setRoot( root, page );
     } else if (page.url && page.root === "true") {
-
-      console.log('doing learndash')
 
       // for LearnDash post messages, specifically course completion redirects
 
@@ -640,7 +638,7 @@ export class MyApp {
 
     let root = this.getPageType( page );
 
-    console.log('push page type', root)
+    // console.log('push page type', root)
 
     this.nav.push( root, page, opt );
 
@@ -841,7 +839,7 @@ export class MyApp {
       if( typeof e.data !== 'string' || e.data == '' )
         return;
 
-      console.log('postMessage', e.data);
+      // console.log('postMessage', e.data);
 
       if( e.data === 'checkin_success' ) {
 
