@@ -24,7 +24,7 @@
 
 <ion-content>
 
-	<div *ngIf="selectedItem.appp && selectedItem.appp && selectedItem.appp.above_content" [innerHTML]="selectedItem.appp.above_content | sanitizeHtml"></div>
+	<div *ngIf="userData && userData.appp && userData.appp.above_content" [innerHTML]="userData.appp.above_content | sanitizeHtml"></div>
 
 	<img class="cover-image" *ngIf="userData && userData.cover_image" [src]="userData.cover_image" />
 
@@ -72,7 +72,7 @@
 		<ion-card-content [innerHTML]="userData.last_activity.content"></ion-card-content>
 	</ion-card>
 
-	<div *ngIf="selectedItem.appp && selectedItem.appp && selectedItem.appp.below_content" [innerHTML]="selectedItem.appp.below_content | sanitizeHtml"></div>
+	<div *ngIf="userData && userData.appp && userData.appp.below_content" [innerHTML]="userData.appp.below_content | sanitizeHtml"></div>
 	
 	<div *ngIf="isError" padding>
 		<p>{{ 'There is a problem displaying this profile. You may need to login, or log out then log back in.' | translate }}</p>
