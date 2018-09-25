@@ -87,7 +87,7 @@ export class MediaList implements OnInit {
 
     this.previewAlert(this.route);
 
-    this.customClasses = 'post-list' + ((navParams.data.slug) ? ' page-' + navParams.data.slug : '');
+    this.customClasses = 'post-list has-favorites' + ((navParams.data.slug) ? ' page-' + navParams.data.slug : '');
 
     this.zone = new NgZone({ enableLongStackTrace: false });
     
