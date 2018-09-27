@@ -223,10 +223,14 @@ export class LoginModal {
 
 	maybeSetCookie( login_data, logout = false ) {
 
+		// only do this in the browser
+		if( this.platform.is('ios') || this.platform.is('android') ) {
+			this.dismiss()
+			return;
+		}
+
         let myappp = JSON.parse( window.localStorage.getItem( 'myappp' ) );
         let url = myappp.wordpress_url;
-
-        console.log('maybesetcookie', logout )
 
         // maybe add token to set cookie. This fixes an issue where auth cookie was not set because of API login
         if( logout ) {
