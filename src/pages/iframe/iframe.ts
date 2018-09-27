@@ -241,6 +241,8 @@ export class Iframe implements OnInit {
 
         } else if( e.data === 'show_spinner' ) {
             this.showSpinner()
+        } else if( e.data === 'open_login_modal' ) {
+            this.openLoginModal()
         } else if( e.data === 'reload_frame' ) {
 
             // need to reload frame on login
@@ -484,6 +486,13 @@ export class Iframe implements OnInit {
     mediaModal( src, img = null ) {
 
         let modal = this.modalCtrl.create(MediaPlayer, {source: src, image: img});
+        modal.present();
+
+    }
+
+    openLoginModal() {
+
+        let modal = this.modalCtrl.create( 'LoginModal');
         modal.present();
 
     }
