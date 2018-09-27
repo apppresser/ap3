@@ -229,6 +229,8 @@ export class LoginModal {
 			return;
 		}
 
+		console.log('Setting cookie via iframe because we are in the browser.')
+
         let myappp = JSON.parse( window.localStorage.getItem( 'myappp' ) );
         let url = myappp.wordpress_url;
 
