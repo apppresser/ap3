@@ -298,7 +298,7 @@ export class Iframe implements OnInit {
 
                 if(parsed.apppkeyboardhelper === 'close') {
                   if( this.Keyboard ) {
-                    this.Keyboard.close();
+                    this.Keyboard.hide();
                   }
                 }
 
