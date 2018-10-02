@@ -73,7 +73,7 @@
 
       <ion-card-content>
         
-        <div (click)="loadDetail(item)" class="item-content" *ngIf="item.content" [innerHTML]="item.content"></div>
+        <div class="item-content" *ngIf="item.content" [innerHTML]="item.content | doLinks"></div>
 
       </ion-card-content>
 

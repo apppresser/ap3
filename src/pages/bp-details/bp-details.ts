@@ -20,7 +20,6 @@ export class BpDetailsPage implements OnInit {
   login_data: any;
   activityComments = <any>[];
   commentsLoaded: boolean = false;
-  content: any;
   listenFunc: Function;
   rtlBack: boolean = false;
   showShare: boolean = true;
@@ -83,7 +82,10 @@ export class BpDetailsPage implements OnInit {
 
   setupContent() {
 
-    this.content = this.sanitizer.bypassSecurityTrustHtml( this.selectedItem.content );
+    // remove listener first so we don't set it multiple times
+    if( this.listenFunc ) {
+      this.listenFunc()
+    }
 
     // Listen for link clicks, open in in app browser
     this.listenFunc = this.renderer.listen(this.elementRef.nativeElement, 'click', (event) => {
