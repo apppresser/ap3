@@ -3,6 +3,7 @@ import {DomSanitizer} from '@angular/platform-browser';
 import anchorme from "anchorme";
 /*
  * This converts text links to HTML links with target blank
+ * It also bypasses security to display videos
  * http://alexcorvi.github.io/anchorme.js/
  */
 @Pipe({ name: 'doLinks' })
