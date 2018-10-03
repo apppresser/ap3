@@ -1,5 +1,5 @@
 import {NavController, NavParams, LoadingController, ToastController, ModalController, Platform, ViewController, Content, IonicPage, Events} from 'ionic-angular';
-import {Component, ViewChild, OnInit, Input} from '@angular/core';
+import {Component, ViewChild, OnInit, Input, Renderer, ElementRef} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Posts} from '../../providers/posts/posts';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
@@ -45,6 +45,7 @@ export class BpList implements OnInit {
   segments: any;
   showSearch: boolean = false;
   notifications: any;
+  listenFunc: Function;
 
   constructor(
     public nav: NavController, 
@@ -62,7 +63,9 @@ export class BpList implements OnInit {
     public modalCtrl: ModalController,
     private events: Events,
     public bpProvider: BpProvider,
-    public translate: TranslateService
+    public translate: TranslateService,
+    public renderer: Renderer,
+    public elementRef: ElementRef
   ) {
 
     if( !navParams.data.list_route )
@@ -317,6 +320,7 @@ export class BpList implements OnInit {
     this.storage.get( this.route.substr(-10, 10) + '_bp' ).then( posts => {
       if( posts ) {
         this.items = posts;
+        this.setListener()
       } else {
         this.presentToast('No data available, pull to refresh when you are online.');
       }
@@ -405,6 +409,8 @@ export class BpList implements OnInit {
       }
 
       this.storage.set( route.substr(-10, 10) + '_bp', items);
+
+      this.setListener()
 
       // load more right away
       if( more )
@@ -685,6 +691,22 @@ export class BpList implements OnInit {
 
   }
 
+  setListener() {
+
+    // remove listener first so we don't set it multiple times
+    if( this.listenFunc ) {
+      this.listenFunc()
+    }
+
+    // Listen for link clicks, open in in app browser
+    this.listenFunc = this.renderer.listen(this.elementRef.nativeElement, 'click', (event) => {
+
+      this.linkHandler( event.target )
+
+    });
+    
+  }
+
   iabLink(link) {
   	window.open( link, '_blank' );
   }
@@ -697,6 +719,30 @@ export class BpList implements OnInit {
       obj = {direction: 'forward'}
     
     this.nav.pop( obj )
+  }
+
+  linkHandler( el ) {
+
+    var target = '_blank'
+      
+    if( el.href && el.href.indexOf('http') >= 0 ) {
+
+      event.preventDefault()
+
+      // handle @mention links
+      if( el.classList && el.classList.contains('bp-suggestions-mention') && el.text.indexOf('@') === 0 ) {
+        this.openMember( { user: el.text.split("@")[1] } )
+        return;
+      }
+
+      if( el.classList && el.classList.contains('system') ) {
+        target = '_system'
+      }
+      
+      window.open( el.href, target )
+
+    }
+
   }
 
   doLogo() {

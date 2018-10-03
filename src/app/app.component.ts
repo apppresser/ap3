@@ -191,7 +191,7 @@ export class MyApp {
       this.doIphoneX();
 
       // prevents bug where select done button didn't display
-      this.Keyboard.hideKeyboardAccessoryBar(false);
+      this.Keyboard.hideFormAccessoryBar(false);
       // Disable scroll fixes webview displacement, but hides content lower on page. Can't use
       //Keyboard.disableScroll(true);
 

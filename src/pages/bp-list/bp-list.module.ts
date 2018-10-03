@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { BpList } from './bp-list';
+import { DoLinksModule } from '../../pipes/do-links/do-links.module';
 
 @NgModule({
   declarations: [
@@ -9,7 +10,8 @@ import { BpList } from './bp-list';
   ],
   imports: [
     IonicPageModule.forChild(BpList),
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
+    DoLinksModule
   ],
   exports: [
     BpList

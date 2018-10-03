@@ -36,9 +36,9 @@
 			<span class="comment-name" *ngIf="selectedItem.display_name" [innerHTML]="selectedItem.display_name"></span>
 		</ion-item>
 
-		<ion-card-content *ngIf="content">
+		<ion-card-content *ngIf="selectedItem.content">
 
-			<div class="item-content" [innerHTML]="content"></div>
+			<div class="item-content" [innerHTML]="selectedItem.content | doLinks"></div>
 
 		</ion-card-content>
 
