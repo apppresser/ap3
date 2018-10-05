@@ -38,7 +38,7 @@ export class AppData {
 
       // convert to a constant to use in promise
       const localData = this.local
-      const localVer = localData.meta.app_update_version
+      const localVer = ( localData? localData.meta.app_update_version : null )
 
       // get json data first
       this.getData( 'app-data.json' ).then( jsonData => {
@@ -47,7 +47,11 @@ export class AppData {
 
         if( this.Device.platform != 'iOS' && this.Device.platform != 'Android' ) {
           // if we are not on a device, don't cache data. helps preview update faster
-          this.updateNeeded = true;
+          // get data from api
+          this.getData( apiurl ).then( data => {
+            resolve(data);
+          })
+          return;
         }
 
         // if app-data.json version is higher, force update
@@ -64,7 +68,7 @@ export class AppData {
           // send back localstorage item
           resolve( localData );
 
-        } else if( !localData && this.updateNeeded != true ) {
+        } else if( !localData && this.updateNeeded != true && jsonData ) {
 
           console.log('using app-data.json');
 
