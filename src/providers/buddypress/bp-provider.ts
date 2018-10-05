@@ -59,8 +59,6 @@ export class BpProvider {
 
     let url = route + concat + 'page=' + page + user_id + token;
 
-    console.log(url)
-
     return new Promise( (resolve, reject) => {
 
       this.http.get( url )

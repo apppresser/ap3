@@ -17,6 +17,7 @@ export class BpGroupPage {
   groupData: any;
   login_data: any;
   spinner: any;
+  join_pending: boolean = false;
 
   constructor(
     public nav: NavController, 
@@ -95,12 +96,30 @@ export class BpGroupPage {
     }
 
     this.bpProvider.joinGroup( this.groupData, this.login_data ).then( data => {
-      if( data ) {
+
+      if( data && !(<any>data).status ) {
+        // deprecated, here for backwards compat
         this.presentToast('Joined group!')
         this.groupData.is_user_member = true
       }
+
+      if( !(<any>data).status ) 
+        return;
+
+      this.presentToast( (<any>data).message ); 
+
+      if( (<any>data).status === 'joined_group' ) {
+        this.groupData.is_user_member = true
+      } else if( (<any>data).status === 'pending' ) {
+        this.join_pending = true;
+      }
+
     }).catch( e => {
-      this.presentToast('Could not join group.')
+      let msg = ''
+      if( e.message ) {
+        msg = e.message;
+      }
+      this.presentToast('Could not join group. ' + msg )
       console.warn(e)
     })
 

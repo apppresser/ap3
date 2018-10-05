@@ -38,7 +38,7 @@
 
 		<ion-row>
 			<ion-col *ngIf="!groupData.is_user_member" text-center>
-				<button ion-button icon-start small clear (click)="joinGroup()"><ion-icon name="add"></ion-icon> {{ 'Join Group' | translate }}</button>
+				<button ion-button icon-start small clear (click)="joinGroup()"><span *ngIf="!join_pending"><ion-icon name="add"></ion-icon> {{ 'Join Group' | translate }}</span> <ion-badge *ngIf="join_pending">{{ 'Pending' | translate }}</ion-badge></button>
 			</ion-col>
 			<ion-col text-center *ngIf="groupData.is_user_member">
 				<button ion-button icon-start small clear (click)="groupActivity()"><ion-icon name="list"></ion-icon> {{ 'Group Activity' | translate }}</button>

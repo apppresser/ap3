@@ -255,6 +255,13 @@ export class BpNotifications {
       case 'activity':
         this.nav.push( 'BpList', { list_route: 'activity'} )
         break;
+      default:
+        this.nav.push('PostDetailsPage', { 
+          item: { 
+            "content": { "rendered":  notification.content },
+            "title":  { "rendered":  "Notification" }
+          } 
+        } )
     }
   }
 

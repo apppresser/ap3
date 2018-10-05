@@ -359,13 +359,13 @@ export class BpList implements OnInit {
     // maybe add the type of activity. group, member, etc
     if( this.navParams.data.group_id ) {
 
-      route += '&primary_id=' + this.navParams.data.group_id
+      route = this.addQueryParam( route, 'primary_id=' + this.navParams.data.group_id )
       this.groupId = this.navParams.data.group_id
       this.groupLink = this.navParams.data.group_link
 
     } else if( this.navParams.data.user_activity ) {
 
-      route += '&user=' + this.navParams.data.user_activity
+      route = this.addQueryParam( route, '&user=' + this.navParams.data.user_activity )
 
     }
 
@@ -487,7 +487,7 @@ export class BpList implements OnInit {
       if( !this.groupList ) {  
         login = this.login_data
       } else if( this.myGroups ) {
-        route += '?user_id=' + this.login_data.user_id
+        route = this.addQueryParam( route, 'user_id=' + this.login_data.user_id )
       }
 
       // console.log('load more ' + this.page + route )
