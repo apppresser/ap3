@@ -14,6 +14,10 @@ export class NetworkStatusService {
 		private network: Network,
 		public platform: Platform
 	) {
+
+		if( window.location && window.location.href && window.location.href.indexOf('localhost') >=0 )
+			return;
+		
 		// only do this on a device
 		if( this.platform.is('ios') || this.platform.is('android') ) {
 			this.initNetworkWatch();

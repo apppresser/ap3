@@ -901,7 +901,8 @@ export class MyApp {
       } else if( typeof( data.isloggedin ) != "undefined" ) {
 
         // make sure app and WP have the same status
-        this.syncLoginStatus( data )
+        // this is no longer necessary with API login plus cookie fix
+        // this.syncLoginStatus( data )
 
       } else if( data.apppage ) {
 

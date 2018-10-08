@@ -41,6 +41,15 @@ page-login-modal {
 		margin-bottom: 80px;
 	}
 
+	#loginIframe {
+		width:1px;
+		height:1px;
+		visibility: hidden;
+		position: absolute;
+		bottom: -1px;
+		left: -1px;
+	}
+
 }
 
 .appforgotpassword {
@@ -48,6 +57,10 @@ page-login-modal {
 	margin-top: 11px;
 	margin-bottom: 26px;
 	text-align: center;
+
+	button {
+		background-color: transparent;
+	}
 }
 
 .appfbconnectlogin {

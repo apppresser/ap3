@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Events, ViewController, LoadingController, IonicPage, ToastController, NavParams, Platform } from 'ionic-angular';
+import {DomSanitizer} from '@angular/platform-browser';
 import {WPlogin} from '../../providers/wplogin/wplogin';
 import {Logins} from "../../providers/logins/logins";
 import {FbConnectApp} from '../../providers/facebook/login-app';
@@ -33,6 +34,7 @@ export class LoginModal {
 	show_registration: boolean = false;
 	show_pw_reset: boolean = false;
 	show_reset_code: boolean = false;
+	iframeUrl: any;
 
 	constructor(
 		public navParams: NavParams,
@@ -49,7 +51,8 @@ export class LoginModal {
 		private loginservice: LoginService,
 		private Device: Device,
 		private bpProvider: BpProvider,
-		private platform: Platform
+		private platform: Platform,
+		private sanitizer: DomSanitizer
 		) {
       
 		if(this.navParams.get('title')) {
@@ -176,7 +179,7 @@ export class LoginModal {
 		setTimeout( () => {
 			if( this.spinner )
 				this.hideSpinner()
-		}, 10000 );
+		}, 15000 );
 
 		this.wplogin.login( this.login ).then( response => {
 
@@ -210,10 +213,40 @@ export class LoginModal {
 		this.storage.set( 'user_login', login_data )
 		this.events.publish('user:login', login_data )
 		this.login_data = login_data
-		this.dismiss()
+
+		this.maybeSetCookie( login_data )
 
 		// clean up
 		this.resetRegistration()
+
+	}
+
+	maybeSetCookie( login_data, logout = false ) {
+
+		// only do this in the browser
+		if( this.platform.is('ios') || this.platform.is('android') ) {
+			this.dismiss()
+			return;
+		}
+
+		console.log('Setting cookie via iframe because we are in the browser.')
+
+        let myappp = JSON.parse( window.localStorage.getItem( 'myappp' ) );
+        let url = myappp.wordpress_url;
+
+        // maybe add token to set cookie. This fixes an issue where auth cookie was not set because of API login
+        if( logout ) {
+        	url = url + '?appp=3&wp_logout=true'
+            this.storage.remove( 'wp_logout' );
+        } else if( login_data && login_data.cookie_auth && login_data.cookie_auth != '' ) {
+            url = url + '?appp=3&cookie_auth=' + login_data.cookie_auth
+            login_data.cookie_auth = '';
+            this.storage.set( 'user_login', login_data );
+        }
+
+        this.iframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl( url );
+
+        console.log('iframe url ' + url )
 
 	}
 
@@ -314,14 +347,17 @@ export class LoginModal {
 		this.wplogin.logout().then( response => {
 
 			this.storage.remove( 'user_login' )
+			this.storage.set( 'wp_logout', true );
+			this.maybeSetCookie( null, true )
 			this.events.publish('user:logout', response )
 			this.login_data = null
-			this.dismiss()
 			this.hideSpinner()
 
 		}, (err) => {
 
 			this.storage.remove( 'user_login' )
+			this.storage.set( 'wp_logout', true );
+			this.maybeSetCookie( null, true )
 			this.events.publish('user:logout' )
 			this.login_data = null
 			this.hideSpinner()
