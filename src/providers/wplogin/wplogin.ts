@@ -58,7 +58,15 @@ export class WPlogin {
 
             resolve(JSON.parse(request.responseText));
           } else {
-            reject(JSON.parse(request.statusText));
+
+            if(request.statusText) {
+              reject(request.statusText);
+            } else {
+              reject('Failed, with no response from server');
+            }
+
+
+            
           }
         }
       };

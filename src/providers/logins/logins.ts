@@ -80,6 +80,9 @@ export class Logins {
 	 */
 	fixProtocolRelativeUrl(url: string, protocol?: string) {
 
+		if(!url)
+			return '';
+
 		protocol = protocol ? protocol : 'https';
 
 		if (url.indexOf('//') === 0)
