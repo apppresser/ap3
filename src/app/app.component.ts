@@ -786,7 +786,7 @@ export class MyApp {
     styles += "p, .item p { color: "  + data.meta.design.text_color + " }";
 
     // buttons
-    styles += ".button-primary, .menu-login-button, page-login-modal div > .button, bp-modal .button, bp-list .badge, bp-details .badge, bp-messages .button { background: " + data.meta.design.button_background + "!important; color: "  + data.meta.design.button_text_color + " }";
+    styles += ".button-primary, .menu-login-button, page-login-modal div > .button, bp-modal .button, bp-list .badge, bp-details .badge, bp-messages .button { background: " + data.meta.design.button_background + "!important; color: "  + data.meta.design.button_text + " }";
     styles += "bp-list .button, bp-details .button, bp-group .button, bp-profile .button { color: "  + data.meta.design.button_background + " }";
 
     // headings
