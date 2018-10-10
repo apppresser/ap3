@@ -5,6 +5,7 @@ import {Http, Response} from '@angular/http';
 import { HttpParams } from '@angular/common/http';
 import {Storage} from '@ionic/storage';
 import { Language } from "../../models/language.model";
+import { AnalyticsService } from "../analytics/analytics.service";
 
 @Injectable()
 export class LanguageService {
@@ -13,6 +14,7 @@ export class LanguageService {
 	public hasStoredLanguage = false;
 
 	constructor(
+		private analyticsservice: AnalyticsService,
 		private storage: Storage,
 		private http: Http
 	) {
@@ -36,6 +38,7 @@ export class LanguageService {
 	setCurrentLanguage(language: Language) {
 		this.language.code = language.code;
 		this.language.dir = language.dir;
+		this.analyticsservice.trackEvent('lang', this.language.code);
 		this.langObs.next(this.language);
 	}
 

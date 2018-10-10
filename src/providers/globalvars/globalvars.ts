@@ -25,7 +25,7 @@ export class GlobalVars {
 
     // development API
     if( window.location && window.location.href && window.location.href.indexOf('localhost') >=0 ) {
-      return 'http://myapppresser.local/test/wp-json/ap3/v1/app/487'
+      return 'http://myapppresser.ducky.thiessen.us/green/wp-json/ap3/v1/app/636'
     }
 
     return this.api;

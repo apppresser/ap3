@@ -17,6 +17,8 @@ import {AppData} from '../providers/appdata/appdata';
 import {AppGeo} from '../providers/appgeo/appgeo';
 import {Logins} from '../providers/logins/logins';
 import {Download} from '../providers/download/download';
+import { Angulartics2GoogleAnalytics } from 'angulartics2/ga';
+import {AnalyticsService} from '../providers/analytics/analytics.service';
 
 /* Native */
 import { StatusBar } from '@ionic-native/status-bar';
@@ -115,6 +117,7 @@ export class MyApp {
     private zone: NgZone,
     private config: Config,
     private menuservice: MenuService,
+    private analyticsservice: AnalyticsService,
     private download: Download
   ) {
 
@@ -123,11 +126,13 @@ export class MyApp {
     events.subscribe('user:login', data => {
       this.userLogin(data);
       this.menu.close();
+      this.analyticsservice.trackEvent('user:login');
     });
 
     events.subscribe('user:logout', data => {
       this.userLogout(data);
       this.menu.close();
+      this.analyticsservice.trackEvent('user:logout');
     });
 
     events.subscribe('data:update', obj => {
@@ -279,6 +284,17 @@ export class MyApp {
 
     if( data.show_registration_link === 'on' ) {
       this.storage.set( 'api_register_setting', { "registration": true, "url": data.registration_url } );
+    }
+
+
+    if( data.vendors && data.vendors.google_analytics && data.vendors.google_analytics.tracking_id ) {
+
+      const tracking_id = data.vendors.google_analytics.tracking_id;
+
+      this.analyticsservice.beginTracking(tracking_id);
+      this.analyticsservice.trackEvent('open');
+    } else {
+      console.log('not racking: missing tracking_id');
     }
 
   }

@@ -9,6 +9,7 @@ import {Posts} from '../../providers/posts/posts';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {MenuService} from "../../providers/menus/menu.service";
 import {IAP} from '../../providers/inapppurchase/inapppurchase';
+import {AnalyticsService} from '../../providers/analytics/analytics.service';
 
 import {Iframe} from "../iframe/iframe";
 
@@ -119,6 +120,7 @@ export class CustomPage implements OnInit, OnDestroy {
 		private menuservice: MenuService,
 		private networkstatus: NetworkStatusService,
 		private zone: NgZone,
+		private analyticsservice: AnalyticsService,
 		private network: Network
         ) {}
 
@@ -175,6 +177,10 @@ export class CustomPage implements OnInit, OnDestroy {
 	}
 
 	ionViewWillEnter() {
+
+		if(this.slug) {
+			this.analyticsservice.trackScreenView('custom-page/' + this.slug);
+		}
 
         if(this.platform.isRTL && this.viewCtrl.enableBack()) {
             this.viewCtrl.showBackButton(false)
