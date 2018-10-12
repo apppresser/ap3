@@ -485,7 +485,7 @@ export class Iframe implements OnInit {
 
     mediaModal( src, img = null ) {
 
-        let modal = this.modalCtrl.create(MediaPlayer, {source: src, image: img});
+        let modal = this.modalCtrl.create('MediaPlayer', {source: src, image: img});
         modal.present();
 
     }
