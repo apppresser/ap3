@@ -63,7 +63,7 @@
             <img *ngIf="!thread.sender_data || !thread.sender_data.avatar" src="assets/default.png">
           </ion-avatar>
           <p *ngIf="thread.sender_data && thread.sender_data.name"><strong>{{ thread.sender_data.name }}</strong></p>
-          <p class="message-preview"><span *ngIf="thread.subject && thread.subject != 'undefined'"><strong>{{ getSubject( thread.subject ) }}</strong></span> {{ thread.message }}</p>
+          <p class="message-preview"><strong *ngIf="thread.subject && thread.subject != 'undefined'" [innerHTML]="getSubject( thread.subject )"></strong> <span [innerHTML]=" thread.message"></span></p>
           
         </ion-item>
 
@@ -82,7 +82,7 @@
             <p *ngIf="message.sender_data && message.sender_data.name" class="sender-name">{{ message.sender_data.name }}</p>
           </ion-avatar>
             
-            <p class="message-preview"><strong>{{ getSubject( message.subject ) }}</strong> {{ message.message }}</p>
+            <p class="message-preview"><strong>{{ getSubject( message.subject ) }}</strong> <span [innerHTML]=" message.message"></span></p>
 
         </ion-item>
 
