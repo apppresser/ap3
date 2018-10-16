@@ -140,7 +140,7 @@ export class Iframe implements OnInit {
         }
 
         if(this.navParams.data.url) {
-            this.ga.trackScreenView('iframe?' + this.navParams.data.url);
+            this.ga.trackScreenView('Iframe', this.navParams.data.url);
 		}
     }
 

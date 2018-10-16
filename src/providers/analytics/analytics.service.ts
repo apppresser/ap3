@@ -20,9 +20,13 @@ export class AnalyticsService {
 		private angulartics2: Angulartics2
 	) {}
 
-	beginTracking(tracking_id: string) {
+	beginTracking(tracking_id: string, basename: string) {
 		
 		this.isEnabled = true;
+
+		if(basename) {
+			this.basepath = basename + '/';
+		}
 
 		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -45,7 +49,7 @@ export class AnalyticsService {
 		ga('set', 'checkProtocolTask', function(){ /* noop */});
 	}
 
-	trackScreenView(screenname: string) {
+	trackScreenView(component: string, screenname: string) {
 
 		if(!this.isEnabled)
 			return;
@@ -53,7 +57,7 @@ export class AnalyticsService {
 		if(!this.isDuplicate) {
 			this.setNoDuplicates();
 			// https://github.com/angulartics/angulartics2/blob/master/src/lib/providers/ga/ga.ts
-			this.ga.pageTrack(this.basepath + screenname);
+			this.ga.pageTrack(this.basepath + component + '/#/' + screenname);
 		}
 	}
 

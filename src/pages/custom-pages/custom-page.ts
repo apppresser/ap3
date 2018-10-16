@@ -179,7 +179,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	ionViewWillEnter() {
 
 		if(this.slug) {
-			this.analyticsservice.trackScreenView('custom-page/' + this.slug);
+			this.analyticsservice.trackScreenView('CustomPage', this.slug);
 		}
 
         if(this.platform.isRTL && this.viewCtrl.enableBack()) {

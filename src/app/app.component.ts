@@ -290,11 +290,12 @@ export class MyApp {
     if( data.vendors && data.vendors.google_analytics && data.vendors.google_analytics.tracking_id ) {
 
       const tracking_id = data.vendors.google_analytics.tracking_id;
+      const basename = data.vendors.google_analytics.basename;
 
-      this.analyticsservice.beginTracking(tracking_id);
+      this.analyticsservice.beginTracking(tracking_id, basename);
       this.analyticsservice.trackEvent('open');
     } else {
-      console.log('not racking: missing tracking_id');
+      console.log('no analytics: missing tracking_id');
     }
 
   }
