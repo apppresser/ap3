@@ -49,6 +49,9 @@ import {Download} from "../providers/download/download";
 import {BpProvider} from "../providers/buddypress/bp-provider";
 import { MenuService } from "../providers/menus/menu.service";
 import { NetworkStatusService } from "../providers/network/network-status.service";
+import { Angulartics2GoogleAnalytics } from 'angulartics2/ga';
+import { Angulartics2RouterlessModule } from 'angulartics2/routerlessmodule';
+import { AnalyticsService } from '../providers/analytics/analytics.service'
 
 import {Iframe} from "../pages/iframe/iframe";
 
@@ -77,6 +80,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     BrowserModule,
     HttpModule,
     HttpClientModule,
+    Angulartics2RouterlessModule.forRoot([Angulartics2GoogleAnalytics]),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -96,6 +100,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     AppCamera,
     Posts,
     GlobalVars,
+    AnalyticsService,
     AppAds,
     FbConnectIframe,
     FbConnectApp,
