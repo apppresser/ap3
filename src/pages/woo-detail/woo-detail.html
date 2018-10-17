@@ -1,0 +1,67 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title><span [innerHTML]="selectedItem.name"></span></ion-title>
+
+    <ion-buttons end>
+		<button ion-button (click)="showCart()" [ngClass]="{ 'item-added' : itemAdded  }">
+			<ion-icon name="cart"></ion-icon>
+			<ion-badge color="dark" item-end>{{cart_count}}</ion-badge>
+		</button>
+	</ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding>
+
+ <div *ngIf="selectedItem" class="selection">
+
+ 	<ion-slides pager>
+
+	  <ion-slide *ngFor="let image of selectedItem.images">
+	    <img src="{{image.src}}" />
+	  </ion-slide>
+
+	</ion-slides>
+
+    <h2 [innerHTML]="selectedItem.name"></h2>
+
+    <p *ngIf="selectedItem.price && !selectedItem.sale_price" class="product-price">${{selectedItem.price}}</p>
+
+    <p *ngIf="selectedItem.sale_price" class="product-price">Sale! ${{selectedItem.sale_price}}</p>
+
+	<div *ngIf="description" [innerHTML]="description"></div>
+
+	<p *ngIf="selectedItem.average_rating != '0.00'" class="product-rating"><em>Rating: {{selectedItem.average_rating}} stars</em></p>
+
+	<p *ngIf="selectedItem.in_stock" class="product-stock">✓ In Stock.</p>
+
+	<form (ngSubmit)="addToCart(addToCartForm)" #addToCartForm="ngForm">
+
+		<div *ngIf="variations">
+			<ion-item *ngIf="variations.length">
+				<ion-label stacked>Options</ion-label>
+				<ion-select ngModel name="variation_id">
+					<ion-option *ngFor="let variation of variations" value="{{variation.id}}">
+						${{variation.price}} - 
+						<div *ngFor="let attr of variation.attributes">
+							{{attr.name}} : {{attr.option}}
+						</div>
+					</ion-option>
+				</ion-select>
+			</ion-item>
+		</div>
+
+		<ion-item class="quantity">
+			<ion-label stacked>Quantity</ion-label>
+			<ion-input type="number" ngModel name="quantity" value="1" size="5" placeholder="1">
+			</ion-input>
+		</ion-item>
+		
+		<button ion-button type="submit" block>Add to Cart</button>
+
+	</form>
+
+ </div>
+</ion-content>

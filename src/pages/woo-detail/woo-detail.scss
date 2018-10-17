@@ -1,0 +1,42 @@
+page-woo-detail {
+	.swiper-slide {
+		max-height: 250px;
+	}
+
+	.item h2 {
+		font-size: 1.8rem;
+		font-weight: bold;
+		margin-bottom: 5px;
+		color: #444;
+	}
+
+	.product-price, .product-stock {
+		font-size: 1.8rem;
+		font-weight: 500;
+		margin-bottom: 5px;
+		color: Green;
+	}
+
+	.item.quantity {
+		max-width: 100px
+	}
+
+	.button[type="submit"] {
+		margin-top: 15px;
+	}
+
+	.toolbar button, .toolbar .badge {
+		transition: background-color 500ms ease-out;
+		background-color: transparent;
+	}
+
+	button.item-added {
+		
+		background-color: rgba(247,247,187,.4);
+
+		.badge {
+			background-color: transparent !important
+		}
+	}
+
+}

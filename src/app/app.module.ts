@@ -57,6 +57,8 @@ import {Iframe} from "../pages/iframe/iframe";
 
 /* Other */
 import { IonicStorageModule } from '@ionic/storage';
+import { WooProvider } from '../providers/woo/woo';
+import { NgxStripeModule } from 'ngx-stripe';
 
 // required for ng translate, tells it to look in assets folder for trans files
 export function HttpLoaderFactory(http: HttpClient) {
@@ -81,6 +83,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     HttpModule,
     HttpClientModule,
     Angulartics2RouterlessModule.forRoot([Angulartics2GoogleAnalytics]),
+    NgxStripeModule.forRoot('pk_test_07YFA0DDYu5miC2ijbhzWOXw'),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -137,7 +140,8 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     Download,
     BpProvider,
     MenuService,
-    NetworkStatusService
+    NetworkStatusService,
+    WooProvider
   ]
 })
 export class AppModule {}
