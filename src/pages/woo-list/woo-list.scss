@@ -18,5 +18,27 @@ page-woo-list {
 			font-size: 1.2rem;
 			margin-bottom: 5px;
 		}
-	} 
+	}
+
+	.card-featured-image {
+		height: 30vh;
+	    width: 100%;
+	    background-repeat: no-repeat;
+	    background-size: cover;
+	    background-position: center;
+	}
+
+	.col-2.list {
+		display: flex;
+    	flex-wrap: wrap;
+
+    	.card {
+    		width: calc(50% - 15px);
+    		margin: 10px 5px 0 10px;
+    	}
+
+    	.card:nth-of-type(even) {
+			margin-left: 5px;
+    	}
+	}
 }

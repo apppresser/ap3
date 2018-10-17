@@ -25,7 +25,11 @@ export class WooList {
 		public events: Events
 		) {
 
-		this.route = 'products'
+		if( this.navParams.get('route') ) {
+			this.route = this.navParams.get('route')
+		} else {
+			this.route = 'products/categories'
+		}
 
 		events.subscribe('add_to_cart', data => {
 	      this.cart_count++
@@ -83,11 +87,26 @@ export class WooList {
 
 	itemTapped(event, item) {
 
+		console.log(item)
+
 		let opt = {};
 
-		this.navCtrl.push('WooDetail', {
-		  item: item
-		}, opt);
+		if( item.price ) {
+			
+			this.navCtrl.push('WooDetail', {
+			  item: item
+			}, opt);
+
+		} else {
+
+			// link to another category page. Need to be able to tell if a category has children. If so, we link to 'products/categories/?parent=' + item.id 
+			// otherwise we link to products?category=item.id
+			this.navCtrl.push('WooList', {
+			  route: 'products/categories/?parent=' + item.id
+			}, opt);
+		}
+
+		
 	}
 
 	doRefresh(refresh) {

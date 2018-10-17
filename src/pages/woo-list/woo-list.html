@@ -27,25 +27,38 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
   
-  <ion-list class="post-list woocommerce">
+  <ion-list class="post-list woocommerce col-2">
 
-    <ion-item *ngFor="let item of items" (tap)="itemTapped($event, item)">
+    <ion-card *ngFor="let item of items" (tap)="itemTapped($event, item)">
 
-    	<ion-thumbnail item-start *ngIf="item.images">
-	      <img src="{{item.images[0].src}}">
-	    </ion-thumbnail>
+      <div class="card-featured-wrap" *ngIf="item.images || item.image">
+        <div *ngIf="item.images && item.images[0].src" class="card-featured-image" [ngStyle]="{'background-image': 'url('+ item.images[0].src +')'}"></div>
+        <div *ngIf="item.image && item.image.src" class="card-featured-image" [ngStyle]="{'background-image': 'url('+ item.image.src +')'}"></div>
+      </div>
 
-		<h2 *ngIf="item.name" [innerHTML]="item.name"></h2>
+      <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.above_title" [innerHTML]="item.appp.woo_list.above_title"></div>
 
-		<p *ngIf="item.price && !item.sale_price" class="product-price">${{item.price}}</p>
+      <ion-card-content>
 
-    	<p *ngIf="item.sale_price" class="product-price">Sale! ${{item.sale_price}}</p>
+        <ion-card-title *ngIf="item.name">
+          <h2 [innerHTML]="item.name"></h2>
+        </ion-card-title>
 
-		<p *ngIf="item.description" [innerHTML]="item.description" class="product-description"></p>
+        <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.below_title" [innerHTML]="item.appp.woo_list.below_title"></div>
 
-		<p *ngIf="item.average_rating != '0.00'" class="product-rating"><em>Rating: {{item.average_rating}} stars</em></p>
+        <p *ngIf="item.price && !item.sale_price" class="product-price">${{item.price}}</p>
 
-    </ion-item>
+        <p *ngIf="item.sale_price" class="product-price">Sale! ${{item.sale_price}}</p>
+
+        <p *ngIf="item.description" [innerHTML]="item.description" class="product-description"></p>
+
+        <p *ngIf="item.average_rating != '0.00'" class="product-rating"><em>Rating: {{item.average_rating}} stars</em></p>
+
+      </ion-card-content>
+
+      <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.below_content" [innerHTML]="item.appp.woo_list.below_content"></div>
+
+    </ion-card>
 
   </ion-list>
 
