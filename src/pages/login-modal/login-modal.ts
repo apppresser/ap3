@@ -35,6 +35,8 @@ export class LoginModal {
 	show_pw_reset: boolean = false;
 	show_reset_code: boolean = false;
 	iframeUrl: any;
+	customClasses: string;
+	iphoneX: boolean = false;
 
 	constructor(
 		public navParams: NavParams,
@@ -98,6 +100,8 @@ export class LoginModal {
 		this.initFBLogin();
 
 		this.is_preview = (location.href.indexOf('myapppresser') > 0);
+
+		this.doIphoneX()
 
 	}
 
@@ -547,13 +551,34 @@ export class LoginModal {
 
 	handleErr( err ) {
 
-	    console.error('Error with registration', err);
-	    let msg = "There was a problem, please try again.";
-	    if( err['_body'] && JSON.parse( err['_body'] ).message ) {
-	      msg += ' ' + JSON.parse( err['_body'] ).message;
-	    }
-	    this.presentToast( msg );
+		console.error('Error with registration', err);
+		let msg = "There was a problem, please try again.";
+		if( err['_body'] && JSON.parse( err['_body'] ).message ) {
+		  msg += ' ' + JSON.parse( err['_body'] ).message;
+		}
+		this.presentToast( msg );
 
-	  }
+	}
+
+	doIphoneX() {
+
+		// hack for iphonex status bar
+		if( this.Device && this.Device.model ) {
+		  let model = this.Device.model.toLowerCase();
+
+		  if( model.indexOf('iphone10') >= 0 ) {
+
+		    this.iphoneX = true;
+
+		    if( this.platform.isLandscape() ) {
+		      this.customClasses = 'iphoneX-landscape'
+		    } else {
+		      this.customClasses = 'iphoneX-portrait'
+		    }
+		    
+		  }
+		}
+
+	}
 
 }
