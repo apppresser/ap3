@@ -12,6 +12,7 @@ import {Events} from 'ionic-angular';
 import {MediaPlayer} from '../media-player/media-player';
 import {HeaderLogo} from "../../providers/header-logo/header-logo";
 import { LanguageService } from "../../providers/language/language.service";
+import { AnalyticsService } from '../../providers/analytics/analytics.service';
 
 @Component({
     templateUrl: 'iframe.html',
@@ -57,6 +58,7 @@ export class Iframe implements OnInit {
         private Geolocation: Geolocation,
         private SocialSharing: SocialSharing,
         private events: Events,
+        private ga: AnalyticsService,
         public zone: NgZone
         ) {
 
@@ -137,6 +139,9 @@ export class Iframe implements OnInit {
             this.is_registration_page = false;
         }
 
+        if(this.navParams.data.url) {
+            this.ga.trackScreenView('Iframe', this.navParams.data.url);
+		}
     }
 
     ionViewDidLoad() {
