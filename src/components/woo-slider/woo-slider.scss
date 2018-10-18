@@ -1,0 +1,50 @@
+woo-slider {
+	ion-slides {
+		height: 350px;
+		padding-bottom: 0 !important;
+
+		.card {
+			height: 300px;
+			width: auto;
+			margin: 0 auto;
+
+			ion-card-content {
+				display: inline;
+
+				.item-content {
+					padding: 0 10px 10px;
+				}
+
+			}
+		}
+
+		.card-featured-wrap {
+			height: 100px;
+		}
+
+		.card-featured-image {
+			height: 100%;
+		    width: 100%;
+		    background-repeat: no-repeat;
+		    background-size: cover;
+		    background-position: center;
+		}
+
+		.product-price {
+			font-size: 1.4rem;
+			font-weight: 500;
+			margin-bottom: 5px;
+			color: Green;
+		}
+
+		.product-description, .product-rating {
+			font-size: 1.2rem;
+			margin-bottom: 5px;
+		}
+	}
+
+	ion-slide {
+		background-repeat: no-repeat;
+		background-position: center;
+	}
+}

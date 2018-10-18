@@ -29,6 +29,8 @@ import { User } from '../../models/user.model';
 import { LoginService } from '../../providers/logins/login.service';
 import { ApListComponentModule } from '../../components/ap-list/ap-list.module';
 import { ApSliderComponentModule } from '../../components/ap-slider/ap-slider.module';
+import { WooListComponentModule } from '../../components/woo-list/woo-list.module';
+import { WooSliderComponentModule } from '../../components/woo-slider/woo-slider.module';
 import { NetworkStatusService } from '../../providers/network/network-status.service';
 
 /*
@@ -74,7 +76,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	isRTL: boolean = false;
 	language: any;
 	templateUrl: string;
-	extraModules = [IonicModule, TranslateModule, ApListComponentModule, ApSliderComponentModule];
+	extraModules = [IonicModule, TranslateModule, ApListComponentModule, ApSliderComponentModule, WooListComponentModule, WooSliderComponentModule];
 	langs: any;
 	segments: any;
 	show_segments: boolean = false;

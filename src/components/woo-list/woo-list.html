@@ -1,0 +1,71 @@
+<div class="list-loading-spinner" *ngIf="loading"><ion-spinner name="bubbles"></ion-spinner></div>
+
+<ion-list *ngIf="card">
+
+    <ion-card *ngFor="let item of items" (tap)="loadDetail(item)">
+
+      <div class="card-featured-wrap" *ngIf="item.images || item.image">
+        <div *ngIf="item.images && item.images[0].src" class="card-featured-image" [ngStyle]="{'background-image': 'url('+ item.images[0].src +')'}"></div>
+        <div *ngIf="item.image && item.image.src" class="card-featured-image" [ngStyle]="{'background-image': 'url('+ item.image.src +')'}"></div>
+      </div>
+
+      <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.above_title" [innerHTML]="item.appp.woo_list.above_title"></div>
+
+      <ion-card-content>
+
+        <ion-card-title *ngIf="item.name">
+          <h2 [innerHTML]="item.name"></h2>
+        </ion-card-title>
+
+        <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.below_title" [innerHTML]="item.appp.woo_list.below_title"></div>
+
+        <p *ngIf="item.price && !item.sale_price" class="product-price">${{item.price}}</p>
+
+        <p *ngIf="item.sale_price" class="product-price">Sale! ${{item.sale_price}}</p>
+
+        <p *ngIf="item.description" [innerHTML]="item.description" class="product-description"></p>
+
+        <p *ngIf="item.average_rating && item.average_rating != '0.00'" class="product-rating"><em>Rating: {{item.average_rating}} stars</em></p>
+
+      </ion-card-content>
+
+      <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.below_content" [innerHTML]="item.appp.woo_list.below_content"></div>
+
+    </ion-card>
+
+</ion-list>
+
+<ion-list *ngIf="!card">
+
+	<ion-item *ngFor="let item of items" (click)="loadDetail(item)">
+
+      <ion-avatar item-left *ngIf="item.images">
+        <img *ngIf="item.images[0] && item.images[0].src" src="{{item.images[0].src}}">
+        <img *ngIf="!item.images[0]" src="assets/woo-default.png">
+      </ion-avatar>
+
+      <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.above_title" [innerHTML]="item.appp.woo_list.above_title"></div>
+
+      <h2 *ngIf="item.name" [innerHTML]="item.name"></h2>
+
+      <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.below_title" [innerHTML]="item.appp.woo_list.below_title"></div>
+
+      <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.below_title" [innerHTML]="item.appp.woo_list.below_title"></div>
+
+      <p *ngIf="item.price && !item.sale_price" class="product-price">${{item.price}}</p>
+
+      <p *ngIf="item.sale_price" class="product-price">Sale! ${{item.sale_price}}</p>
+
+      <p *ngIf="item.description" [innerHTML]="item.description" class="product-description"></p>
+
+      <p *ngIf="item.average_rating && item.average_rating != '0.00'" class="product-rating"><em>Rating: {{item.average_rating}} stars</em></p>
+
+      <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.below_content" [innerHTML]="item.appp.woo_list.below_content"></div>
+
+    </ion-item>
+
+</ion-list>
+
+<ion-infinite-scroll *ngIf="infiniteScroll" (ionInfinite)="loadMore($event)">
+<ion-infinite-scroll-content></ion-infinite-scroll-content>
+</ion-infinite-scroll>

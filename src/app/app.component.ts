@@ -1625,7 +1625,7 @@ export class MyApp {
       } else if( page.list_route === 'messages' ) {
         return 'BpMessages';
       } else {
-        return 'WooList';
+        return 'BpList';
       }
       
     } else if( page.type === 'apppages' ) {
