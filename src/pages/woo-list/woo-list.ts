@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController, ToastController, ModalController, Events } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, LoadingController, ToastController, ModalController, Events, Content } from 'ionic-angular';
 import { WooProvider } from '../../providers/woo/woo';
 
 @IonicPage()
@@ -9,11 +9,17 @@ import { WooProvider } from '../../providers/woo/woo';
 })
 export class WooList {
 
+	@ViewChild(Content) content: Content;
+
 	items: any;
 	page: number = 1;
 	route: string;
 	cartModal: any;
 	cart_count: any;
+	categories: any;
+	category: any;
+	customClasses: string;
+	showSearch: boolean = false;
 
 	constructor(
 		public navCtrl: NavController, 
@@ -41,15 +47,18 @@ export class WooList {
 	}
 
 	ionViewDidLoad() {
-		this.loadProducts()
+
+		this.loadProducts( this.route )
 
 		this.wooProvider.getCartContents().then( cart => {
 			this.cart_count = ( cart ? (<any>cart).length : '' )
 		})
+
+		this.getCategories()
 		
 	}
 
-	loadProducts() {
+	loadProducts( route ) {
 
 		let loading = this.loadingCtrl.create({
 		    showBackdrop: false,
@@ -61,7 +70,7 @@ export class WooList {
 		this.page = 1;
 
 		// any menu imported from WP has to use same component. Other pages can be added manually with different components
-		this.wooProvider.get( this.route, this.page ).then(items => {
+		this.wooProvider.get( route, this.page ).then(items => {
 
 		  console.log(items)
 
@@ -82,6 +91,39 @@ export class WooList {
 		setTimeout(() => {
 		    loading.dismiss();
 		}, 8000);
+
+	}
+
+	getCategories() {
+
+		this.wooProvider.get( 'products/categories', null ).then(categories => {
+
+			if( categories ) {
+				this.customClasses += ' has-favorites';
+				this.content.resize()
+			}
+
+			console.log(categories)
+
+			// Loads posts from WordPress API
+			this.categories = categories;
+
+
+		}).catch((err) => {
+
+		  console.warn('Error getting categories', err);
+
+		});
+
+	}
+
+	categoryChanged() {
+
+		console.log(this.category)
+
+		let route = this.addQueryParam( 'products', 'category=' + this.category )
+
+		this.loadProducts( route )
 
 	}
 
@@ -110,7 +152,7 @@ export class WooList {
 	}
 
 	doRefresh(refresh) {
-		this.loadProducts();
+		this.loadProducts( this.route );
 		// refresh.complete should happen when posts are loaded, not timeout
 		setTimeout( ()=> refresh.complete(), 500);
 	}
@@ -165,6 +207,40 @@ export class WooList {
 	    this.cartModal = this.modalCtrl.create( 'CartPage' );
 	    
 	    this.cartModal.present();
+
+	}
+
+	toggleSearchBar() {
+		if( this.showSearch === true ) {
+		  this.showSearch = false
+		} else {
+		  this.showSearch = true
+		}
+
+		this.content.resize()
+	}
+
+	search(ev) {
+		// set val to the value of the searchbar
+		let val = ev.target.value;
+
+		// if the value is an empty string don't filter the items
+		if (val && val.trim() != '') {
+		  // set to this.route so infinite scroll works
+		  let route = this.addQueryParam(this.route, 'search=' + val);
+		  this.loadProducts( route )
+		}
+
+	}
+
+	addQueryParam(url, param) {
+		const separator = (url.indexOf('?') > 0) ? '&' : '?';
+		return url + separator + param;
+	}
+
+	clearSearch() {
+
+		this.loadProducts( this.route )
 
 	}
 

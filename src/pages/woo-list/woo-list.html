@@ -9,25 +9,43 @@
     <ion-title>WooCommerce</ion-title>
   
 
-  	<ion-buttons end>
-		<button ion-button (click)="showCart()">
-			<ion-icon name="cart"></ion-icon>
-      <ion-badge color="dark" item-end>{{cart_count}}</ion-badge>
-		</button>
-	</ion-buttons>
+    <ion-buttons end>
+      <button ion-button class="search-button-header" (click)="toggleSearchBar()">
+        <ion-icon name="search"></ion-icon>
+      </button>
+      
+      <button ion-button (click)="showCart()">
+      	<ion-icon name="cart"></ion-icon>
+        <ion-badge color="dark" item-end>{{cart_count}}</ion-badge>
+      </button>
+    </ion-buttons>
 
 	</ion-navbar>
+
+  <ion-toolbar *ngIf="showSearch">
+    <ion-searchbar placeholder="{{'Search' | translate }}" debounce="1000" (ionInput)="search($event)" (ionClear)="clearSearch()"></ion-searchbar>
+  </ion-toolbar>
+
+  <ion-item *ngIf="categories && !showSearch" id="favorites-toolbar" color="light">
+
+    <ion-select [(ngModel)]="category" (ionChange)="categoryChanged()" placeholder="Category">
+
+      <ion-option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name | translate }}</ion-option>
+
+    </ion-select>
+
+  </ion-item>
 
 
 </ion-header>
 
 
-<ion-content>
+<ion-content [ngClass]="customClasses">
   <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
   
-  <ion-list class="post-list woocommerce col-2">
+  <ion-list class="woocommerce-list">
 
     <ion-card *ngFor="let item of items" (tap)="itemTapped($event, item)">
 

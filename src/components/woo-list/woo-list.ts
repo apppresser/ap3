@@ -140,7 +140,7 @@ export class WooListComponent implements OnInit {
 			// link to another category page. Need to be able to tell if a category has children. If so, we link to 'products/categories/?parent=' + item.id 
 			// otherwise we link to products?category=item.id
 			this.nav.push('WooList', {
-			  route: 'products/categories/?parent=' + item.id
+			  route: 'products?category=' + item.id
 			}, opt);
 
 		}

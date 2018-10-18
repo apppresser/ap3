@@ -1,5 +1,5 @@
 page-woo-list {
-	.woocommerce.post-list {
+	.woocommerce-list {
 		.item h2 {
 			font-size: 1.8rem;
 			font-weight: bold;
@@ -40,5 +40,19 @@ page-woo-list {
     	.card:nth-of-type(even) {
 			margin-left: 5px;
     	}
+	}
+
+	ion-select {
+		width: 100%;
+		max-width: 100%;
+	}
+
+	.select-text {
+		color: #777;
+	}
+
+	div ion-icon[name=text] {
+		position: relative;
+		top: 3px;
 	}
 }
