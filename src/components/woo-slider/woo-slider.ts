@@ -169,6 +169,13 @@ export class WooSliderComponent {
 			  item: item
 			}, opt);
 
+		} else if( this.route.indexOf('categories') >= 0 ) {
+
+			// this is a list of categories, so we need to show category sub-items next
+			this.nav.push('WooList', {
+			  route: 'products/categories/?parent=' + item.id
+			}, opt);
+
 		} else {
 
 			this.nav.push('WooList', {

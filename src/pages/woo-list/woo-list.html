@@ -6,14 +6,14 @@
         <ion-icon name="menu"></ion-icon>
       </button>
     </ion-buttons>
-    <ion-title>WooCommerce</ion-title>
+    <ion-title>{{ title }}</ion-title>
   
 
     <ion-buttons end>
       <button ion-button class="search-button-header" (click)="toggleSearchBar()">
         <ion-icon name="search"></ion-icon>
       </button>
-      
+
       <button ion-button (click)="showCart()">
       	<ion-icon name="cart"></ion-icon>
         <ion-badge color="dark" item-end>{{cart_count}}</ion-badge>

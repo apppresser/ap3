@@ -20,6 +20,7 @@ export class WooList {
 	category: any;
 	customClasses: string;
 	showSearch: boolean = false;
+	title: string;
 
 	constructor(
 		public navCtrl: NavController, 
@@ -34,8 +35,10 @@ export class WooList {
 		if( this.navParams.get('route') ) {
 			this.route = this.navParams.get('route')
 		} else {
-			this.route = 'products/categories'
+			this.route = 'products'
 		}
+
+		this.title = this.navParams.get('title')
 
 		events.subscribe('add_to_cart', data => {
 	      this.cart_count++
@@ -72,14 +75,20 @@ export class WooList {
 		// any menu imported from WP has to use same component. Other pages can be added manually with different components
 		this.wooProvider.get( route, this.page ).then(items => {
 
-		  console.log(items)
+			if( (<any>items).length ) {
 
-		  // Loads posts from WordPress API
-		  this.items = items;
+			  this.items = items;
 
-		  // load more right away
-		  this.loadMore(null);
-		  loading.dismiss();
+			  // load more right away
+			  this.loadMore(null);
+
+			} else {
+				this.route = 'products?category=' + this.getCatParam( this.route )
+				this.loadProducts( this.route )
+			}
+
+			loading.dismiss();
+		  
 		}).catch((err) => {
 
 		  loading.dismiss();
@@ -103,8 +112,6 @@ export class WooList {
 				this.content.resize()
 			}
 
-			console.log(categories)
-
 			// Loads posts from WordPress API
 			this.categories = categories;
 
@@ -119,8 +126,6 @@ export class WooList {
 
 	categoryChanged() {
 
-		console.log(this.category)
-
 		let route = this.addQueryParam( 'products', 'category=' + this.category )
 
 		this.loadProducts( route )
@@ -128,8 +133,6 @@ export class WooList {
 	}
 
 	itemTapped(event, item) {
-
-		console.log(item)
 
 		let opt = {};
 
@@ -139,10 +142,14 @@ export class WooList {
 			  item: item
 			}, opt);
 
+		} else if( this.route.indexOf('categories') >= 0 ) {
+
+			this.navCtrl.push('WooList', {
+			  route: 'products/?category=' + item.id
+			}, opt);
+
 		} else {
 
-			// link to another category page. Need to be able to tell if a category has children. If so, we link to 'products/categories/?parent=' + item.id 
-			// otherwise we link to products?category=item.id
 			this.navCtrl.push('WooList', {
 			  route: 'products/categories/?parent=' + item.id
 			}, opt);
@@ -231,6 +238,11 @@ export class WooList {
 		  this.loadProducts( route )
 		}
 
+	}
+
+	// get category ID from url string
+	getCatParam( url ) {
+		return url.split('parent=').pop()
 	}
 
 	addQueryParam(url, param) {

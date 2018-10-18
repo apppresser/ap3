@@ -1,4 +1,5 @@
 woo-slider {
+
 	ion-slides {
 		height: 350px;
 		padding-bottom: 0 !important;
@@ -41,6 +42,18 @@ woo-slider {
 			font-size: 1.2rem;
 			margin-bottom: 5px;
 		}
+	}
+	
+	// categories are smaller because there is no description
+	&[categories="true"] ion-slides {
+		height: 250px;
+
+		.card {
+
+			height: 200px;
+
+		}
+
 	}
 
 	ion-slide {
