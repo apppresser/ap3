@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Events, ViewController, LoadingController, IonicPage, ToastController, NavParams, ModalController } from 'ionic-angular';
+import { Events, ViewController, LoadingController, IonicPage, ToastController, NavParams, ModalController, Platform } from 'ionic-angular';
 import {Storage} from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {TranslateService} from '@ngx-translate/core';
@@ -35,6 +35,8 @@ export class BpModal {
 			addCancelButtonWithLabel: 'Cancel',
 		}
 	};
+	customClasses: string;
+	iphoneX: boolean = false;
 
 	constructor(
 		public navParams: NavParams,
@@ -47,7 +49,8 @@ export class BpModal {
 		private Device: Device,
 		public bpProvider: BpProvider,
 		private actionSheet: ActionSheet,
-		public modalCtrl: ModalController
+		public modalCtrl: ModalController,
+		public platform: Platform
 		) {
       
 		if(this.navParams.get('title')) {
@@ -97,6 +100,8 @@ export class BpModal {
 		});
 
 		this.is_preview = (location.href.indexOf('myapppresser') > 0);
+
+		this.doIphoneX()
 
 	}
 
@@ -322,6 +327,27 @@ export class BpModal {
 		  toast.present();
 
 		})
+
+	}
+
+	doIphoneX() {
+
+		// hack for iphonex status bar
+		if( this.Device && this.Device.model ) {
+		  let model = this.Device.model.toLowerCase();
+
+		  if( model.indexOf('iphone10') >= 0 ) {
+
+		    this.iphoneX = true;
+
+		    if( this.platform.isLandscape() ) {
+		      this.customClasses = 'iphoneX-landscape'
+		    } else {
+		      this.customClasses = 'iphoneX-portrait'
+		    }
+		    
+		  }
+		}
 
 	}
 

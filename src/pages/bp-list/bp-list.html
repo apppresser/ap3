@@ -41,7 +41,7 @@
     <ion-searchbar placeholder="{{'Search' | translate }}" debounce="1000" (ionInput)="search($event)" (ionClear)="clearSearch()"></ion-searchbar>
   </ion-toolbar>
 
-  <ion-item *ngIf="bpSegments" id="favorites-toolbar" color="light">
+  <ion-item *ngIf="bpSegments && !showSearch" id="favorites-toolbar" color="light">
 
     <ion-select [(ngModel)]="segments" (ionChange)="segmentChanged()" placeholder="Filter">
 
