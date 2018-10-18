@@ -7,6 +7,7 @@ import {MediaPlayer} from '../media-player/media-player';
 import { VideoUtils } from "../../providers/video/video-utils";
 import { MenuService } from '../../providers/menus/menu.service';
 import { LoginService } from '../../providers/logins/login.service';
+import {AnalyticsService} from '../../providers/analytics/analytics.service';
 
 @IonicPage()
 @Component({
@@ -32,6 +33,7 @@ export class PostDetailsPage implements OnInit {
     private SocialSharing: SocialSharing,
     private menuservice: MenuService,
     private loginservice: LoginService,
+    private ga: AnalyticsService,
     private videoUtils: VideoUtils
     ) {
     // If we navigated to this page, we will have an item available as a nav param
@@ -157,6 +159,9 @@ export class PostDetailsPage implements OnInit {
         this.viewCtrl.showBackButton(false)
         this.rtlBack = true
     }
+
+    if(this.selectedItem && this.selectedItem.link)
+      this.ga.trackScreenView('PostDetailsPage', 'link/' + this.selectedItem.link);
  
   }
 

@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {NavParams, ViewController, IonicPage} from 'ionic-angular';
+import {AnalyticsService} from '../../providers/analytics/analytics.service';
 
 @IonicPage()
 @Component({
@@ -18,6 +19,7 @@ export class MediaPlayer {
 
   constructor( 
     public navParams: NavParams, 
+    private ga: AnalyticsService,
     public viewCtrl: ViewController 
     ) {
     this.source = navParams.get('source');
@@ -43,6 +45,11 @@ export class MediaPlayer {
 
     } else {
       this.showVideoPlayer = true;
+    }
+
+    if(this.source) {
+      const action = (this.source && this.showVideoPlayer) ? 'play' : 'open';
+      this.ga.trackScreenView('MediaPlayer', action + '/' + this.source);
     }
   }
 

@@ -58,6 +58,8 @@ export class AnalyticsService {
 			this.setNoDuplicates();
 			// https://github.com/angulartics/angulartics2/blob/master/src/lib/providers/ga/ga.ts
 			this.ga.pageTrack(this.basepath + component + '/#/' + screenname);
+
+			console.log(this.basepath + component + '/#/' + screenname);
 		}
 	}
 

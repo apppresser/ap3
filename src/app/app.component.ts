@@ -17,7 +17,6 @@ import {AppData} from '../providers/appdata/appdata';
 import {AppGeo} from '../providers/appgeo/appgeo';
 import {Logins} from '../providers/logins/logins';
 import {Download} from '../providers/download/download';
-import { Angulartics2GoogleAnalytics } from 'angulartics2/ga';
 import {AnalyticsService} from '../providers/analytics/analytics.service';
 
 /* Native */

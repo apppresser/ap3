@@ -8,6 +8,7 @@ import {Storage} from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {Network} from '@ionic-native/network';
 import {BpProvider} from '../../providers/buddypress/bp-provider';
+import {AnalyticsService} from '../../providers/analytics/analytics.service';
 
 @IonicPage()
 @Component({
@@ -62,6 +63,7 @@ export class BpList implements OnInit {
     private Device: Device,
     public modalCtrl: ModalController,
     private events: Events,
+    private ga: AnalyticsService,
     public bpProvider: BpProvider,
     public translate: TranslateService,
     public renderer: Renderer,
@@ -147,6 +149,12 @@ export class BpList implements OnInit {
     if( this.platform.isRTL && this.viewCtrl.enableBack() ) {
         this.viewCtrl.showBackButton(false)
         this.rtlBack = true
+    }
+
+    if(this.navParams.data.slug) {
+      const list_route = (this.navParams.data.list_route) ? this.navParams.data.list_route + '/' : '';
+      const list_slug  = this.navParams.data.slug;
+      this.ga.trackScreenView('BpList', list_route + list_slug);
     }
  
   }
