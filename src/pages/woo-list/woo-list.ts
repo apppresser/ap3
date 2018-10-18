@@ -85,6 +85,7 @@ export class WooList {
 			} else {
 				this.route = 'products?category=' + this.getCatParam( this.route )
 				this.loadProducts( this.route )
+				this.getCategories()
 			}
 
 			loading.dismiss();
@@ -104,6 +105,10 @@ export class WooList {
 	}
 
 	getCategories() {
+
+		if( this.route.indexOf('categories') >= 0 ) {
+			return;
+		}
 
 		this.wooProvider.get( 'products/categories', null ).then(categories => {
 
