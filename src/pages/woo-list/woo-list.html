@@ -28,7 +28,7 @@
 
   <ion-item *ngIf="categories && !showSearch" id="favorites-toolbar" color="light">
 
-    <ion-select [(ngModel)]="category" (ionChange)="categoryChanged()" placeholder="Category">
+    <ion-select [(ngModel)]="category" (ionChange)="categoryChanged()" placeholder="{{ 'Category' | translate }}">
 
       <ion-option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name | translate }}</ion-option>
 

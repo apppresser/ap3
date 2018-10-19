@@ -21,6 +21,7 @@ export class WooList {
 	customClasses: string;
 	showSearch: boolean = false;
 	title: string;
+	stopLoop: boolean = false;
 
 	constructor(
 		public navCtrl: NavController, 
@@ -82,10 +83,11 @@ export class WooList {
 			  // load more right away
 			  this.loadMore(null);
 
-			} else {
-				this.route = 'products?category=' + this.getCatParam( this.route )
+			} else if ( !this.stopLoop ) {
+				this.route = 'products?category=' + this.getUrlParam( this.route, 'parent=' )
 				this.loadProducts( this.route )
 				this.getCategories()
+				this.stopLoop = true
 			}
 
 			loading.dismiss();
@@ -119,6 +121,17 @@ export class WooList {
 
 			// Loads posts from WordPress API
 			this.categories = categories;
+
+			console.log(this.categories)
+
+			// set category name in dropdown
+			if( this.route.indexOf('category') >= 0 ) {
+				let catId = this.getUrlParam( this.route, 'category=' )
+				setTimeout( () => {
+					this.category = catId
+				}, 100 )
+				
+			}
 
 
 		}).catch((err) => {
@@ -246,8 +259,9 @@ export class WooList {
 	}
 
 	// get category ID from url string
-	getCatParam( url ) {
-		return url.split('parent=').pop()
+	getUrlParam( url, param ) {
+		console.log('url param ' + url, param)
+		return url.split( param ).pop()
 	}
 
 	addQueryParam(url, param) {
