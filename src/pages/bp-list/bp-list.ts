@@ -753,6 +753,18 @@ export class BpList implements OnInit {
 
   }
 
+  getGroupName( str ) {
+
+    if( str.indexOf('group') === -1 )
+      return;
+
+    let ret = str.split('group')[1];
+
+    if( ret )
+      return ret;
+
+  }
+
   doLogo() {
     // check if logo file exists. If so, show it
     this.headerLogoService.checkLogo().then( data => {
