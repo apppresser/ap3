@@ -54,15 +54,13 @@ export class WooDetail {
 
 		this.getVariations()
 
-		if( this.selectedItem.grouped_products.length ) {
+		if( this.selectedItem.grouped_products && this.selectedItem.grouped_products.length ) {
 			this.getGroupedProducts()
 		}
 
 	}
 
 	addToCart(form) {
-
-		console.log(form)
 
 		let item = form.value
 
@@ -116,13 +114,13 @@ export class WooDetail {
 
 		var that = this;
 
-		// using async/await with promise inside loop
-		(async function loop() {
-		    for ( var id in item ) {
-		        await that.addGroupItemToCart( id, item[id] );
-		        console.log(id);
-		    }
-		})();
+// using async/await with promise inside loop
+(async function loop() {
+    for ( var id in item ) {
+        await that.addGroupItemToCart( id, item[id] );
+        console.log(id);
+    }
+})();
 
 	}
 
