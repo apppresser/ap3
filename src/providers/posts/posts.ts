@@ -45,8 +45,10 @@ export class Posts {
 
         let language = ''
 
-        if(lang) {
-          language = '&lang=' + lang
+        if(lang && typeof(lang) === 'object') {
+          language = '&lang=' + lang.code;
+        } else if(lang && typeof(lang) === 'string') {
+          language = '&lang=' + lang;
         }
 
         this.http.get( url + concat + 'appp=3&page=' + page + language)

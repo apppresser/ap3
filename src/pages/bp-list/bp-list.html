@@ -68,7 +68,9 @@
           <img *ngIf="item.user_avatar && item.user_avatar.thumb" [src]="formatUrl( item.user_avatar.thumb )">
           <img *ngIf="!item.user_avatar || !item.user_avatar.thumb" src="assets/default.png">
         </ion-avatar>
-        <span class="comment-name" [innerHTML]="item.display_name"></span>
+        <span class="comment-name" [innerHTML]="item.display_name">
+        </span>
+        <span class="group-name" *ngIf="item.title">{{ getGroupName( item.title ) }}</span>
       </ion-item>
 
       <ion-card-content>

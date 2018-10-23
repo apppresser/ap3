@@ -9,6 +9,7 @@ import 'rxjs/add/operator/map';
 import {MediaPlayer} from '../media-player/media-player';
 import { VideoUtils } from "../../providers/video/video-utils";
 import {BpProvider} from '../../providers/buddypress/bp-provider';
+import {AnalyticsService} from '../../providers/analytics/analytics.service';
 
 @IonicPage()
 @Component({
@@ -39,6 +40,7 @@ export class BpDetailsPage implements OnInit {
     public events: Events,
     public bpProvider: BpProvider,
     public toastCtrl: ToastController,
+    private ga: AnalyticsService,
     public translate: TranslateService
     ) {
     // If we navigated to this page, we will have an item available as a nav param
@@ -146,7 +148,10 @@ export class BpDetailsPage implements OnInit {
         this.viewCtrl.showBackButton(false)
         this.rtlBack = true
     }
- 
+
+    if(this.selectedItem.component && this.selectedItem.id) {
+      this.ga.trackScreenView('BpDetailsPage', this.selectedItem.component + '/' + this.selectedItem.id);
+    }
   }
 
   mediaModal( src, img = null ) {

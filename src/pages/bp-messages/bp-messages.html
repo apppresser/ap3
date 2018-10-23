@@ -64,6 +64,7 @@
           </ion-avatar>
           <p *ngIf="thread.sender_data && thread.sender_data.name"><strong>{{ thread.sender_data.name }}</strong></p>
           <p class="message-preview"><strong *ngIf="thread.subject && thread.subject != 'undefined'" [innerHTML]="getSubject( thread.subject )"></strong> <span [innerHTML]=" thread.message"></span></p>
+          <p *ngIf="thread.date" class="message-date">{{ thread.date }}</p>
           
         </ion-item>
 

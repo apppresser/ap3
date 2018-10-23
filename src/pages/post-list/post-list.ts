@@ -6,6 +6,7 @@ import {HeaderLogo} from '../../providers/header-logo/header-logo';
 import {Storage} from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {Network} from '@ionic-native/network';
+import {AnalyticsService} from '../../providers/analytics/analytics.service';
 
 @IonicPage()
 @Component({
@@ -48,6 +49,7 @@ export class PostList implements OnInit {
     public platform: Platform,
     private headerLogoService: HeaderLogo,
     private Network: Network,
+    private ga: AnalyticsService,
     private Device: Device
   ) {
 
@@ -101,23 +103,30 @@ export class PostList implements OnInit {
         this.rtlBack = true
     }
 
-    this.storage.get( this.route.substr(-10, 10) + '_favorites' ).then( (favorites) => {
-      if( favorites )
-        this.favorites = favorites
-    })
+    if(this.route) {
+      this.storage.get( this.route.substr(-10, 10) + '_favorites' ).then( (favorites) => {
+        if( favorites )
+          this.favorites = favorites
+      });
+
+      this.ga.trackScreenView('PostList', 'route/' + this.route);
+    }
+
  
   }
 
   // get posts from storage when we are offline
   getStoredPosts() {
 
-    this.storage.get( this.route.substr(-10, 10) + '_posts' ).then( posts => {
-      if( posts ) {
-        this.items = posts;
-      } else {
-        this.presentToast('No data available, pull to refresh when you are online.');
-      }
-    });
+    if(this.route) {
+      this.storage.get( this.route.substr(-10, 10) + '_posts' ).then( posts => {
+        if( posts ) {
+          this.items = posts;
+        } else {
+          this.presentToast('No data available, pull to refresh when you are online.');
+        }
+      });
+    }
 
   }
 
