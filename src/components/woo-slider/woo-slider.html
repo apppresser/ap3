@@ -1,3 +1,5 @@
+<div class="list-loading-spinner" *ngIf="loading"><ion-spinner name="bubbles"></ion-spinner></div>
+
 <ion-slides *ngIf="!card" pager>
 
 	<ion-slide *ngFor="let item of items" [ngStyle]="{'background-image': 'url(' + ( item.images ? item.images[0].src : '' ) + ')'}" (click)="loadDetail(item)">

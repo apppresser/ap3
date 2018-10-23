@@ -1,5 +1,15 @@
 woo-slider {
 
+	.list-loading-spinner {
+	    text-align: center;
+	    margin: 5px;
+
+	    ion-spinner * {
+		  fill: rgba(0,0,0,.2);
+		}
+
+	}
+
 	ion-slides {
 		height: 350px;
 		padding-bottom: 0 !important;

@@ -129,7 +129,7 @@ export class WooListComponent implements OnInit {
 		if( this.platform.isRTL && this.platform.is('ios') )
 		  opt = { direction: 'back' }
 
-		if( item.price ) {
+		if( item.type ) {
 			
 			this.nav.push('WooDetail', {
 			  item: item

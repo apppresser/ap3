@@ -109,6 +109,8 @@ export class WooSliderComponent {
 
 	loadPosts() {
 
+		this.loading = true;
+
 		// any menu imported from WP has to use same component. Other pages can be added manually with different components
 		this.wooProvider.get( this.route, '1' ).then(items => {
 
@@ -126,9 +128,12 @@ export class WooSliderComponent {
 				this.slides.pager = true;
 			}
 
+			this.loading = false;
+
 		}).catch((err) => {
 
-		  console.error('Error getting posts', err);
+			console.error('Error getting posts', err);
+			this.loading = false;
 			this.translate.get('Error getting posts.').subscribe( text => {
 				this.presentToast(text);
 			});
@@ -163,7 +168,7 @@ export class WooSliderComponent {
 		if( this.platform.isRTL && this.platform.is('ios') )
 		  opt = { direction: 'back' }
 
-		if( item.price ) {
+		if( item.type ) {
 			
 			this.nav.push('WooDetail', {
 			  item: item
