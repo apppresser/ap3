@@ -255,7 +255,7 @@ export class BpList implements OnInit {
     } else if( this.activityList ) {
       this.bpSegments = [ { name: 'All' }, { name: 'Friends' }, { name: 'Mentions' }, { name: 'Me' } ];
     } else if( this.memberList ) {
-      this.bpSegments = null
+      this.bpSegments = [ { name: 'All' }, { name: 'Friends' } ];
     }
 
     // no segments in group activity
@@ -314,6 +314,17 @@ export class BpList implements OnInit {
           this.myGroups = true
           // add user_id to show my groups
           return 'user_id=' + this.login_data.user_id;
+      }
+
+    } else if( this.memberList ) {
+
+      switch(this.segments) {
+        case 'All':
+          return '';
+          break;
+        case 'Friends':
+          // add user to show my friends
+          return 'user=' + this.login_data.user_id;
       }
 
     }
@@ -398,11 +409,9 @@ export class BpList implements OnInit {
     let login;
 
     // for some requests, we don't want to send login data
-    if( !this.groupList ) {  
+    if( this.activityList || this.memberList && this.segments === "Friends" ) {  
       login = this.login_data
     }
-
-    // console.log('loadItems route ' + route)
     
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
     this.bpProvider.getItems( route, login, this.page ).then(items => {
@@ -492,7 +501,7 @@ export class BpList implements OnInit {
     this.getRoute().then( route => {
 
       // for some requests, we don't want to send login data
-      if( !this.groupList ) {  
+      if( this.activityList || this.memberList && this.segments === "Friends" ) {  
         login = this.login_data
       } else if( this.myGroups ) {
         route = this.addQueryParam( route, 'user_id=' + this.login_data.user_id )
@@ -689,6 +698,7 @@ export class BpList implements OnInit {
   }
 
   addQueryParam(url, param) {
+
     const separator = (url.indexOf('?') > 0) ? '&' : '?';
     return url + separator + param;
   }
