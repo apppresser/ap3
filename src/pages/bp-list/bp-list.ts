@@ -319,9 +319,6 @@ export class BpList implements OnInit {
     } else if( this.memberList ) {
 
       switch(this.segments) {
-        case 'All':
-          return '';
-          break;
         case 'Friends':
           // add user to show my friends
           return 'user=' + this.login_data.user_id;
