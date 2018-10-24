@@ -1,6 +1,15 @@
 page-woo-detail {
+
+	.single-product-content {
+		padding: 20px;
+	}
+
 	.swiper-slide {
-		max-height: 250px;
+		max-height: 300px;
+	}
+
+	.slides {
+		background-color: #fafafa;
 	}
 
 	.item h2 {

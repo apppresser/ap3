@@ -13,9 +13,9 @@
 
 </ion-header>
 
-<ion-content padding>
+<ion-content>
 
- <div *ngIf="selectedItem" class="selection">
+ <section *ngIf="selectedItem" class="single-product">
 
  	<ion-slides pager>
 
@@ -25,53 +25,55 @@
 
 	</ion-slides>
 
-    <h2 [innerHTML]="selectedItem.name"></h2>
+	<div class="single-product-content">
 
-    <p *ngIf="selectedItem.price && !selectedItem.sale_price" class="product-price">${{selectedItem.price}}</p>
+	    <h2 [innerHTML]="selectedItem.name"></h2>
 
-    <p *ngIf="!selectedItem.price && !selectedItem.sale_price && selectedItem.price_html" [innerHTML]="selectedItem.price_html"></p>
+	    <p *ngIf="selectedItem.price && !selectedItem.sale_price" class="product-price">${{selectedItem.price}}</p>
 
-    <p *ngIf="selectedItem.sale_price" class="product-price">Sale! ${{selectedItem.sale_price}}</p>
+	    <p *ngIf="!selectedItem.price && !selectedItem.sale_price && selectedItem.price_html" [innerHTML]="selectedItem.price_html"></p>
 
-	<div *ngIf="description" [innerHTML]="description"></div>
+	    <p *ngIf="selectedItem.sale_price" class="product-price">Sale! ${{selectedItem.sale_price}}</p>
 
-	<p *ngIf="selectedItem.average_rating != '0.00'" class="product-rating"><em>Rating: {{selectedItem.average_rating}} stars</em></p>
+		<div *ngIf="description" [innerHTML]="description"></div>
 
-	<p *ngIf="selectedItem.in_stock" class="product-stock">✓ In Stock.</p>
+		<p *ngIf="selectedItem.average_rating != '0.00'" class="product-rating"><em>Rating: {{selectedItem.average_rating}} stars</em></p>
 
-	<form (ngSubmit)="addToCart(addToCartForm)" #addToCartForm="ngForm">
+		<p *ngIf="selectedItem.in_stock" class="product-stock">✓ In Stock.</p>
 
-		<div *ngIf="variations">
-			<ion-item *ngIf="variations.length">
-				<ion-label stacked>Options</ion-label>
-				<ion-select ngModel name="variation_id">
-					<ion-option *ngFor="let variation of variations" value="{{variation.id}}">
-						${{variation.price}} - 
-						<div *ngFor="let attr of variation.attributes">
-							{{attr.name}} : {{attr.option}}
-						</div>
-					</ion-option>
-				</ion-select>
-			</ion-item>
-		</div>
-		
-		<div *ngIf="groupedProducts?.length">
-			<ion-item *ngFor="let groupProd of groupedProducts">
-				<ion-label stacked>{{groupProd.name}}</ion-label>
-				<ion-input type="number" ngModel name="{{groupProd.id}}" value="1" size="5" placeholder="1">
+		<form (ngSubmit)="addToCart(addToCartForm)" #addToCartForm="ngForm">
+
+			<div *ngIf="variations">
+				<ion-item *ngIf="variations.length">
+					<ion-label stacked>Options</ion-label>
+					<ion-select ngModel name="variation_id">
+						<ion-option *ngFor="let variation of variations" value="{{variation.id}}">
+							${{variation.price}} - 
+							<div *ngFor="let attr of variation.attributes">
+								{{attr.name}} : {{attr.option}}
+							</div>
+						</ion-option>
+					</ion-select>
+				</ion-item>
+			</div>
+			
+			<div *ngIf="groupedProducts?.length">
+				<ion-item *ngFor="let groupProd of groupedProducts">
+					<ion-label stacked>{{groupProd.name}}</ion-label>
+					<ion-input type="number" ngModel name="{{groupProd.id}}" value="1" size="5" placeholder="1">
+					</ion-input>
+				</ion-item>
+			</div>
+
+			<ion-item class="quantity" *ngIf="!groupedProducts?.length">
+				<ion-label stacked>Quantity</ion-label>
+				<ion-input type="tel" ngModel name="quantity" value="1" size="5" placeholder="1">
 				</ion-input>
 			</ion-item>
-		</div>
+			
+			<button ion-button type="submit" block>Add to Cart</button>
 
-		<ion-item class="quantity" *ngIf="!groupedProducts?.length">
-			<ion-label stacked>Quantity</ion-label>
-			<ion-input type="number" ngModel name="quantity" value="1" size="5" placeholder="1">
-			</ion-input>
-		</ion-item>
-		
-		<button ion-button type="submit" block>Add to Cart</button>
-
-	</form>
-
- </div>
+		</form>
+	</div>
+ </section>
 </ion-content>

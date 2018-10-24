@@ -16,13 +16,13 @@ export class WooProvider {
 
     let item = window.localStorage.getItem( 'myappp' );
     let url = JSON.parse( item ).wordpress_url;
-    let restBase = 'wp-json/wc/v2/'
+    let restBase = 'wp-json/wc/v3/'
     this.url = url + restBase
 
     // TODO: move this
-    // this.authString = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
+    this.authString = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
     // reactordev
-    this.authString = 'Basic Y2tfMDM4NTI0M2Y1NDZmNzhmNGE3MWZiOWNkNTZmNzM4NTkyNDhmMWQ0Yzpjc19lYWUwZDVhY2FjNjBhOGZkMmY5OGNiZTQ0ZWMyMzgyNGMzZTFiNGNm'
+    // this.authString = 'Basic Y2tfMDM4NTI0M2Y1NDZmNzhmNGE3MWZiOWNkNTZmNzM4NTkyNDhmMWQ0Yzpjc19lYWUwZDVhY2FjNjBhOGZkMmY5OGNiZTQ0ZWMyMzgyNGMzZTFiNGNm'
 
   }
 
@@ -128,7 +128,7 @@ export class WooProvider {
         })
       };
 
-      this.http.post( this.url + 'cart/add', data, httpOptions )
+      this.http.post( this.url.replace('v3', 'v2') + 'cart/add', data, httpOptions )
         .subscribe(response => {
 
           resolve(response);
@@ -145,9 +145,16 @@ export class WooProvider {
 
   clearCart() {
 
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'Authorization': this.authString
+      })
+    };
+
     return new Promise( (resolve, reject) => {
 
-      this.http.post( this.url + 'cart/clear', null )
+      this.http.post( this.url.replace('v3', 'v2') + 'cart/clear', null, httpOptions )
         .subscribe(response => {
 
           resolve(response);
@@ -164,13 +171,46 @@ export class WooProvider {
 
   getCartContents() {
 
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'Authorization': this.authString
+      })
+    };
+
     return new Promise( (resolve, reject) => {
 
-      this.storage.get( 'cart' ).then( data => {
-        resolve( data )
-      })
+      this.http.get( this.url.replace('v3', 'v2') + 'cart?thumb=true', httpOptions )
+        .subscribe(response => {
 
-    })
+          resolve(response);
+        },
+        error => {
+          // probably a bad url or 404
+          reject(error);
+          this.handleError(error)
+        })
+
+    }); // end Promise
+
+  }
+
+  getCartTotals() {
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.post( this.url.replace('v3', 'v2') + 'cart/totals', null )
+        .subscribe(response => {
+
+          resolve(response);
+        },
+        error => {
+          // probably a bad url or 404
+          reject(error);
+          this.handleError(error)
+        })
+
+    }); // end Promise
 
   }
 

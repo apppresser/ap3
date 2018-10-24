@@ -11,8 +11,9 @@ import { WooProvider } from '../../providers/woo/woo';
 })
 export class CartPage {
 
-	items: any;
+	products: any;
 	cart_total: number;
+	cartEmpty: string;
 
 	constructor(
 		public navCtrl: NavController,
@@ -28,18 +29,36 @@ export class CartPage {
 
 	ionViewDidLoad() {
 
-		this.getCartItems()
+		// this.getCartStorage()
+
+		this.getCartContents()
 		
 	}
 
-	getCartItems() {
+	getCartContents() {
+
+		this.wooProvider.getCartContents().then( response => {
+
+			if( typeof (<any>response) === 'string' ) {
+				this.cartEmpty = (<any>response)
+			} else {
+				this.products = (<any>response).products 
+				this.cart_total = (<any>response).cart_total.cart_contents_total
+			}
+			
+			console.log(response ) 
+		})
+
+	}
+
+	getCartStorage() {
 
 		this.storage.get( 'cart' ).then( data => {
 
 			if( !data )
 				return;
 
-			this.items = data
+			this.products = data
 
 			for (var i = 0; i < data.length; ++i) {
 				let total = parseInt( data[i].price ) * parseInt( data[i].quantity )
@@ -54,7 +73,7 @@ export class CartPage {
 
 		this.storage.remove( 'cart' )
 
-		this.items = []
+		this.products = []
 
 		this.cart_total = 0
 

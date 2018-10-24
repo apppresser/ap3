@@ -3,11 +3,11 @@
   <ion-navbar>
     <ion-title>Cart</ion-title>
 
-    <ion-buttons end>
+    <!-- <ion-buttons end>
 		<button ion-button (click)="dismiss()">
 			<ion-icon name="close"></ion-icon>
 		</button>
-	</ion-buttons>
+	</ion-buttons> -->
 
   </ion-navbar>
 
@@ -17,31 +17,32 @@
 <ion-content padding>
 
   <div *ngIf="!items">
-    <p>Your cart is empty.</p>
-    <button ion-button (click)="dismiss()">Continue Shopping</button>
+    <p>{{ cartEmpty }}</p>
+    <!-- <button ion-button (click)="dismiss()">Continue Shopping</button> -->
   </div>
 
-	<ion-list class="post-list woocommerce" *ngIf="items">
+	<ion-list class="post-list woocommerce" *ngIf="products">
 
-    <ion-item *ngFor="let item of items">
+    <ion-item *ngFor="let item of products">
 
-    	<ion-thumbnail item-start *ngIf="item.images">
-	      <img src="{{item.images[0].src}}">
+    	<ion-thumbnail item-start *ngIf="item.product_image">
+	      <img src="{{item.product_image}}" class="product-image">
 	    </ion-thumbnail>
 
-  		<h2 *ngIf="item.name" [innerHTML]="item.name"></h2>
+  		<h2 *ngIf="item.product_name" [innerHTML]="item.product_name"></h2>
 
   		<ion-grid>
         <ion-row>
-          <ion-col col-10><p *ngIf="item.price" class="product-price">${{item.price}}</p></ion-col>
-          <ion-col col-2><p *ngIf="item.quantity" class="product-price">{{item.quantity}}</p></ion-col>
+          <ion-col col-8><p *ngIf="item.line_total" class="product-price">${{item.line_total}}</p></ion-col>
+          <ion-col col-2 text-center><p *ngIf="item.quantity" class="product-price">{{item.quantity}}</p></ion-col>
+          <ion-col col-2  text-right (click)="removeItem(item)"><ion-icon name="close" color="danger"></ion-icon></ion-col>
         </ion-row>
       </ion-grid>
 
     </ion-item>
 
     <ion-item>
-      Cart total: ${{cart_total}}
+      Cart total: $ {{cart_total}}
     </ion-item>
 
     <ion-item>
@@ -53,7 +54,7 @@
 </ion-content>
 
 <ion-footer>
-  <ion-toolbar *ngIf="items">
+  <ion-toolbar *ngIf="products">
 
       <button ion-button full color="primary" (click)="goCheckout()">
         Checkout

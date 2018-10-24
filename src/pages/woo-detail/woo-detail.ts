@@ -33,7 +33,7 @@ export class WooDetail {
 		this.loadProduct()
 
 		this.wooProvider.getCartContents().then( cart => {
-			this.cart_count = ( cart ? (<any>cart).length : '' )
+			this.cart_count = ( cart && typeof cart != 'string' && (<any>cart).products ? (<any>cart).products.length : '' )
 		})
 
 		events.subscribe('clear_cart', data => {
@@ -86,32 +86,13 @@ export class WooDetail {
 		item.quantity = ( item.quantity ? item.quantity : 1 )
 
 		this.wooProvider.addToCart( item ).then( data => {
-			console.log(data)
-		}).catch( e => { console.warn(e) } )
-
-		this.storage.get( 'cart' ).then( data => {
-
-			if( data ) {
-
-				// if item is already in cart, just bump quantity
-				for( let product of data ) {
-					if( product.product_id === item.product_id ) {
-						product.quantity = parseInt( product.quantity ) + parseInt( item.quantity )
-						this.productAddSuccess( data, item )
-						return;
-					}
-				}
-				data.push(item)
-			} else {
-				data = [item]
-			}
 
 			this.cart_count++
 			this.events.publish( 'add_to_cart', item )
-
 			this.productAddSuccess( data, item )
 
-		})
+		}).catch( e => { console.warn(e) } )
+
 	}
 
 	addGroupedItem( item ) {
@@ -133,12 +114,7 @@ export class WooDetail {
 
 			var item:any = {}
 
-			console.log(item)
-
 			item.product_id = id
-
-			console.log('product id ' + id, 'quantity ' + quantity)
-			console.log('grouped products', this.groupedProducts)
 
 			let productObject:any = this.groupedProducts.filter(obj => {
 				console.log('filtering', obj)
@@ -154,33 +130,10 @@ export class WooDetail {
 			item.price = productObject[0].price
 			item.quantity = ( quantity ? quantity : 1 )
 
-			this.storage.get( 'cart' ).then( data => {
-
-				if( data ) {
-
-					// if item is already in cart, just bump quantity
-					for( let product of data ) {
-						if( product.product_id === item.product_id ) {
-							product.quantity = parseInt( product.quantity ) + parseInt( item.quantity )
-							this.productAddSuccess( data, item )
-							return;
-						}
-					}
-					data.push(item)
-				} else {
-					data = [item]
-				}
-
+			this.wooProvider.addToCart( item ).then( data => {
 				this.cart_count++
-				this.events.publish( 'add_to_cart', item )
-
-				this.storage.set( 'cart', data )
-
-			}).then( ()=>{
-
-				resolve()
-
-			})
+				this.events.publish( 'add_to_cart', data )
+			}).catch( e => { console.warn(e) } ).then( () => resolve() )
 
 		})
 

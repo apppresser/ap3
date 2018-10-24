@@ -55,7 +55,7 @@ export class WooList {
 		this.loadProducts( this.route )
 
 		this.wooProvider.getCartContents().then( cart => {
-			this.cart_count = ( cart ? (<any>cart).length : '' )
+			this.cart_count = ( cart && typeof cart != 'string' && (<any>cart).products ? (<any>cart).products.length : '' )
 		})
 
 		this.getCategories()
