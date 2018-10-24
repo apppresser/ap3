@@ -20,7 +20,9 @@ export class WooProvider {
     this.url = url + restBase
 
     // TODO: move this
-    this.authString = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
+    // this.authString = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
+    // reactordev
+    this.authString = 'Basic Y2tfMDM4NTI0M2Y1NDZmNzhmNGE3MWZiOWNkNTZmNzM4NTkyNDhmMWQ0Yzpjc19lYWUwZDVhY2FjNjBhOGZkMmY5OGNiZTQ0ZWMyMzgyNGMzZTFiNGNm'
 
   }
 
@@ -101,6 +103,54 @@ export class WooProvider {
           this.data = data;
 
           resolve(this.data);
+        },
+        error => {
+          // probably a bad url or 404
+          reject(error);
+          this.handleError(error)
+        })
+
+    }); // end Promise
+
+  }
+
+  addToCart( data ) {
+
+    return new Promise( (resolve, reject) => {
+
+      if( !data )
+        reject({ data: { message: "No data." } })
+
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type':  'application/json',
+          'Authorization': this.authString
+        })
+      };
+
+      this.http.post( this.url + 'cart/add', data, httpOptions )
+        .subscribe(response => {
+
+          resolve(response);
+        },
+        error => {
+          // probably a bad url or 404
+          reject(error);
+          this.handleError(error)
+        })
+
+    }); // end Promise
+
+  }
+
+  clearCart() {
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.post( this.url + 'cart/clear', null )
+        .subscribe(response => {
+
+          resolve(response);
         },
         error => {
           // probably a bad url or 404

@@ -85,6 +85,10 @@ export class WooDetail {
 		item.price = this.selectedItem.price
 		item.quantity = ( item.quantity ? item.quantity : 1 )
 
+		this.wooProvider.addToCart( item ).then( data => {
+			console.log(data)
+		}).catch( e => { console.warn(e) } )
+
 		this.storage.get( 'cart' ).then( data => {
 
 			if( data ) {
@@ -114,13 +118,12 @@ export class WooDetail {
 
 		var that = this;
 
-// using async/await with promise inside loop
-(async function loop() {
-    for ( var id in item ) {
-        await that.addGroupItemToCart( id, item[id] );
-        console.log(id);
-    }
-})();
+		// using async/await with promise inside loop
+		(async function loop() {
+		    for ( var id in item ) {
+		        await that.addGroupItemToCart( id, item[id] );
+		    }
+		})();
 
 	}
 
@@ -185,8 +188,6 @@ export class WooDetail {
 
 	productAddSuccess( data, item ) {
 
-		console.log('success', data)
-
 		this.storage.set( 'cart', data )
 
 		this.presentToast( item.name + ' added to cart!')
@@ -238,9 +239,11 @@ export class WooDetail {
 
 	showCart() {
 
-	    this.cartModal = this.modalCtrl.create( 'CartPage' );
+	    // this.cartModal = this.modalCtrl.create( 'CartPage' );
 	    
-	    this.cartModal.present();
+	    // this.cartModal.present();
+
+	    this.navCtrl.push('CartPage')
 
 	}
 

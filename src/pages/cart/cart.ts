@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, Events } from 'ionic-angular';
+import {Iframe} from '../iframe/iframe';
 import { Storage } from '@ionic/storage';
+import { WooProvider } from '../../providers/woo/woo';
 
 @IonicPage()
 @Component({
@@ -13,11 +15,12 @@ export class CartPage {
 	cart_total: number;
 
 	constructor(
-		public navCtrl: NavController, 
+		public navCtrl: NavController,
 		public navParams: NavParams,
 		public storage: Storage,
 		public viewCtrl: ViewController,
-		public events: Events
+		public events: Events,
+		public wooProvider: WooProvider
 		) {
 
 
@@ -55,14 +58,20 @@ export class CartPage {
 
 		this.cart_total = 0
 
+		this.wooProvider.clearCart().then( response => console.log(response ) )
+
 		this.events.publish( 'clear_cart', 0 )
 
 	}
 
 	goCheckout() {
 
-		this.navCtrl.push('CheckoutPage');
-		this.dismiss()
+		let item = window.localStorage.getItem( 'myappp' );
+    	let url = JSON.parse( item ).wordpress_url;
+
+    	this.navCtrl.push(Iframe, { url: url + 'checkout', title: 'Checkout' } );
+
+		//this.navCtrl.push('CheckoutPage');
 
 	}
 

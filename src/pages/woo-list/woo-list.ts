@@ -229,9 +229,11 @@ export class WooList {
 
 	showCart() {
 
-	    this.cartModal = this.modalCtrl.create( 'CartPage' );
+	    // this.cartModal = this.modalCtrl.create( 'CartPage' );
 	    
-	    this.cartModal.present();
+	    // this.cartModal.present();
+
+	    this.navCtrl.push('CartPage')
 
 	}
 
