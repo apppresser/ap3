@@ -91,7 +91,10 @@ export class WooDetail {
 			this.events.publish( 'add_to_cart', item )
 			this.productAddSuccess( data, item )
 
-		}).catch( e => { console.warn(e) } )
+		}).catch( e => { 
+			console.warn(e)
+			if( e.error && e.error.message ) this.presentToast( e.error.message ) 
+		} )
 
 	}
 

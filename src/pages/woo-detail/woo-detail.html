@@ -60,7 +60,7 @@
 			<div *ngIf="groupedProducts?.length">
 				<ion-item *ngFor="let groupProd of groupedProducts">
 					<ion-label stacked>{{groupProd.name}}</ion-label>
-					<ion-input type="number" ngModel name="{{groupProd.id}}" value="1" size="5" placeholder="1">
+					<ion-input type="tel" ngModel name="{{groupProd.id}}" value="1" size="5" placeholder="1">
 					</ion-input>
 				</ion-item>
 			</div>

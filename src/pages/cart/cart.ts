@@ -76,15 +76,14 @@ export class CartPage {
 
 	clearCart() {
 
-		this.storage.remove( 'cart' )
+		this.wooProvider.clearCart().then( response => {
 
-		this.products = []
+			this.products = []
+			this.cart_total = 0
+			this.presentToast(response)
+			this.events.publish( 'clear_cart', 0 )
 
-		this.cart_total = 0
-
-		this.wooProvider.clearCart().then( response => console.log(response ) )
-
-		this.events.publish( 'clear_cart', 0 )
+		}).catch( e => console.warn(e) )
 
 	}
 
