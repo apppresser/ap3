@@ -1,7 +1,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Cart</ion-title>
+    <ion-title>{{ 'Cart' | translate }}</ion-title>
 
     <!-- <ion-buttons end>
 		<button ion-button (click)="dismiss()">
@@ -34,19 +34,24 @@
   		<ion-grid>
         <ion-row>
           <ion-col col-8><p *ngIf="item.line_total" class="product-price">${{item.line_total}}</p></ion-col>
-          <ion-col col-2 text-center><p *ngIf="item.quantity" class="product-price">{{item.quantity}}</p></ion-col>
+          <ion-col col-2 text-center>
+            <ion-item class="quantity" *ngIf="item.quantity">
+              <ion-input type="tel" (ionChange)="quantityChanged($event, item)" name="quantity" value="{{item.quantity}}" size="3" placeholder="1">
+              </ion-input>
+            </ion-item>
+          </ion-col>
           <ion-col col-2  text-right (click)="removeItem(item)"><ion-icon name="close" color="danger"></ion-icon></ion-col>
         </ion-row>
       </ion-grid>
 
     </ion-item>
 
-    <ion-item>
-      Cart total: $ {{cart_total}}
+    <ion-item *ngIf="cart_total">
+      {{ 'Cart total:' | translate }} $ {{cart_total}}
     </ion-item>
 
-    <ion-item>
-      <button ion-button icon-left color="light" (click)="clearCart()"><ion-icon name="trash"></ion-icon> Clear Cart</button>
+    <ion-item *ngIf="cart_total">
+      <button ion-button icon-left color="light" (click)="clearCart()"><ion-icon name="trash"></ion-icon> {{ 'Clear Cart' | translate }}</button>
     </ion-item>
 
   </ion-list>
@@ -57,7 +62,7 @@
   <ion-toolbar *ngIf="products">
 
       <button ion-button full color="primary" (click)="goCheckout()">
-        Checkout
+        {{ 'Checkout' | translate }}
         <ion-icon name="arrow-forward"></ion-icon>
       </button>
 

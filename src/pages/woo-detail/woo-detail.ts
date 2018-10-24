@@ -104,6 +104,7 @@ export class WooDetail {
 		    for ( var id in item ) {
 		        await that.addGroupItemToCart( id, item[id] );
 		    }
+		    that.presentToast( that.selectedItem.name + ' added to cart!')
 		})();
 
 	}
@@ -117,17 +118,15 @@ export class WooDetail {
 			item.product_id = id
 
 			let productObject:any = this.groupedProducts.filter(obj => {
-				console.log('filtering', obj)
 				if( obj.id === parseInt( id ) ) {
 					return obj
 				}
 			})
 
-			console.log(productObject[0])
-			
-			item.name = productObject[0].name
+			// console.log(productObject[0])
+			item.name = ( productObject[0] ? productObject[0].name : '' )
 			item.product_id = id
-			item.price = productObject[0].price
+			item.price = ( productObject[0] ? productObject[0].price : '' )
 			item.quantity = ( quantity ? quantity : 1 )
 
 			this.wooProvider.addToCart( item ).then( data => {

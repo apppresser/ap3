@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController, Events, ToastController, LoadingController } from 'ionic-angular';
 import {Iframe} from '../iframe/iframe';
 import { Storage } from '@ionic/storage';
 import { WooProvider } from '../../providers/woo/woo';
@@ -14,6 +14,8 @@ export class CartPage {
 	products: any;
 	cart_total: number;
 	cartEmpty: string;
+	quantity: any;
+	loading: any;
 
 	constructor(
 		public navCtrl: NavController,
@@ -21,7 +23,9 @@ export class CartPage {
 		public storage: Storage,
 		public viewCtrl: ViewController,
 		public events: Events,
-		public wooProvider: WooProvider
+		public wooProvider: WooProvider,
+		public toastCtrl: ToastController,
+		public loadingCtrl: LoadingController
 		) {
 
 
@@ -41,6 +45,7 @@ export class CartPage {
 
 			if( typeof (<any>response) === 'string' ) {
 				this.cartEmpty = (<any>response)
+				this.cart_total = null
 			} else {
 				this.products = (<any>response).products 
 				this.cart_total = (<any>response).cart_total.cart_contents_total
@@ -83,6 +88,45 @@ export class CartPage {
 
 	}
 
+	removeItem( item ) {
+
+		this.showSpinner()
+
+		this.wooProvider.removeItem( item ).then( response => {
+			console.log(response )
+
+			for (let i = this.products.length - 1; i >= 0; i--) {
+				if( this.products[i].product_id === item.product_id ) {
+				  this.products.splice(i, 1);
+				  break;
+				}
+			}
+
+			this.getCartContents()
+
+			this.presentToast("Item removed.")
+
+		} ).catch( e => {
+			this.presentToast("Could not remove item.")
+			console.warn( e ) 
+		}).then( () => {
+			this.hideSpinner()
+		})
+
+	}
+
+	quantityChanged(e, item) {
+		console.log(e.value, item )
+		this.wooProvider.updateItem( item, e.value ).then( response => {
+
+			this.presentToast(response )
+
+		} ).catch( e => {
+			this.presentToast("Could not update item.")
+			console.warn( e ) 
+		})
+	}
+
 	goCheckout() {
 
 		let item = window.localStorage.getItem( 'myappp' );
@@ -97,5 +141,37 @@ export class CartPage {
 	dismiss() {
 		this.viewCtrl.dismiss();
 	}
+
+	presentToast(msg) {
+
+		let toast = this.toastCtrl.create({
+		  message: msg,
+		  duration: 3000,
+		  position: 'bottom',
+		  cssClass: 'normal-toast'
+		});
+
+		toast.present();
+
+	}
+
+	showSpinner() {
+
+        // create only one spinner
+        if(!this.loading) {
+            this.loading = this.loadingCtrl.create({
+                showBackdrop: false,
+                dismissOnPageChange: false
+            });
+
+            this.loading.present();
+        }
+    }
+
+    hideSpinner() {
+
+    	if( this.loading )
+    		this.loading.dismiss();
+    }
 
 }

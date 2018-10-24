@@ -5,4 +5,8 @@ page-cart {
 	.footer-md:before, .footer-ios:before {
 		display: none;
 	}
+
+	.item-input.quantity {
+		border: none !important;
+	}
 }
