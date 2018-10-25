@@ -61,6 +61,18 @@ export class WooDetail {
 			this.getGroupedProducts()
 		}
 
+		if( !this.selectedItem.quantity ) {
+			this.selectedItem.quantity = 1
+		}
+
+	}
+
+	increment( item ) {
+		item.quantity = parseInt( item.quantity ) + 1
+	}
+
+	decrement( item ) {
+		item.quantity = parseInt( item.quantity ) - 1
 	}
 
 	addToCart(form) {
@@ -97,7 +109,7 @@ export class WooDetail {
 		item.name = this.selectedItem.name
 		item.product_id = this.selectedItem.id
 		item.price = this.selectedItem.price
-		item.quantity = ( item.quantity ? item.quantity : 1 )
+		item.quantity = this.selectedItem.quantity
 
 		this.wooProvider.addToCart( item ).then( data => {
 			

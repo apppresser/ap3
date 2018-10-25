@@ -60,15 +60,18 @@
 			<div *ngIf="groupedProducts?.length">
 				<ion-item *ngFor="let groupProd of groupedProducts">
 					<ion-label stacked>{{groupProd.name}}</ion-label>
-					<ion-input type="tel" ngModel name="{{groupProd.id}}" value="1" size="5" placeholder="1">
+					<ion-icon item-start name="remove-circle" (click)="decrement(groupProd.id)"></ion-icon>
+					<ion-input type="number" ngModel name="quantity-{{groupProd.id}}" value="1" size="5" placeholder="1">
 					</ion-input>
+					<ion-icon item-end name="add-circle" (click)="increment(groupProd.id)"></ion-icon>
 				</ion-item>
 			</div>
 
 			<ion-item class="quantity" *ngIf="!groupedProducts?.length">
-				<ion-label stacked>Quantity</ion-label>
-				<ion-input type="tel" ngModel name="quantity" value="1" size="5" placeholder="1">
-				</ion-input>
+				<ion-label>Quantity: {{ selectedItem.quantity }}</ion-label>
+				<ion-icon item-start name="remove-circle" (click)="decrement( selectedItem )"></ion-icon>
+				
+				<ion-icon item-end name="add-circle" (click)="increment( selectedItem )"></ion-icon>
 			</ion-item>
 			
 			<button ion-button type="submit" block>Add to Cart</button>

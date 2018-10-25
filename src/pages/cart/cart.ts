@@ -111,6 +111,7 @@ export class CartPage {
 			this.presentToast("Could not remove item.")
 			console.warn( e ) 
 		}).then( () => {
+			// update totals
 			this.getCartContents()
 		})
 
