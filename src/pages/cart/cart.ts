@@ -76,8 +76,11 @@ export class CartPage {
 
 	clearCart() {
 
+		this.showSpinner()
+
 		this.wooProvider.clearCart().then( response => {
 
+			this.hideSpinner()
 			this.products = []
 			this.cart_total = 0
 			this.presentToast(response)
@@ -89,27 +92,26 @@ export class CartPage {
 
 	removeItem( item ) {
 
-		this.showSpinner()
+		// we remove the item right away, before the API call. It gets added back if there is an error.
+		for (let i = this.products.length - 1; i >= 0; i--) {
+			if( this.products[i].product_id === item.product_id ) {
+			  this.products.splice(i, 1);
+			  break;
+			}
+		}
+
+		this.presentToast("Item removed.")
 
 		this.wooProvider.removeItem( item ).then( response => {
+
+			// success
 			console.log(response )
-
-			for (let i = this.products.length - 1; i >= 0; i--) {
-				if( this.products[i].product_id === item.product_id ) {
-				  this.products.splice(i, 1);
-				  break;
-				}
-			}
-
-			this.getCartContents()
-
-			this.presentToast("Item removed.")
 
 		} ).catch( e => {
 			this.presentToast("Could not remove item.")
 			console.warn( e ) 
 		}).then( () => {
-			this.hideSpinner()
+			this.getCartContents()
 		})
 
 	}

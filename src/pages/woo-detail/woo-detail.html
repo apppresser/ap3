@@ -1,7 +1,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title><span [innerHTML]="selectedItem.name"></span></ion-title>
+    <ion-title *ngIf="selectedItem?.name"><span [innerHTML]="selectedItem.name"></span></ion-title>
 
     <ion-buttons end>
 		<button ion-button (click)="showCart()" [ngClass]="{ 'item-added' : itemAdded  }">

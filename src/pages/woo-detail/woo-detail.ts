@@ -30,6 +30,9 @@ export class WooDetail {
 		public events: Events
 		) {
 
+		if( !this.navParams.get('item') )
+			return;
+
 		this.loadProduct()
 
 		this.wooProvider.getCartContents().then( cart => {
@@ -70,11 +73,22 @@ export class WooDetail {
 			this.addSingleItem( item )
 		}
 
+		this.instantAdd( item )
+
+	}
+
+	// we show success right away to enhance perceived speed
+	// only if there is an error we alert the user
+	instantAdd( item ) {
+
+		this.cart_count++
 		// flash cart icon
 		this.itemAdded = true
 		setTimeout( () => {
 			this.itemAdded = false
 		}, 1000 );
+
+		this.presentToast( 'Adding ' + item.name + ' to cart.' )
 
 	}
 
@@ -86,14 +100,14 @@ export class WooDetail {
 		item.quantity = ( item.quantity ? item.quantity : 1 )
 
 		this.wooProvider.addToCart( item ).then( data => {
-
-			this.cart_count++
-			this.events.publish( 'add_to_cart', item )
+			
 			this.productAddSuccess( data, item )
 
 		}).catch( e => { 
+
+			this.productAddError( e )
 			console.warn(e)
-			if( e.error && e.error.message ) this.presentToast( e.error.message ) 
+
 		} )
 
 	}
@@ -107,7 +121,6 @@ export class WooDetail {
 		    for ( var id in item ) {
 		        await that.addGroupItemToCart( id, item[id] );
 		    }
-		    that.presentToast( that.selectedItem.name + ' added to cart!')
 		})();
 
 	}
@@ -133,9 +146,11 @@ export class WooDetail {
 			item.quantity = ( quantity ? quantity : 1 )
 
 			this.wooProvider.addToCart( item ).then( data => {
-				this.cart_count++
-				this.events.publish( 'add_to_cart', data )
-			}).catch( e => { console.warn(e) } ).then( () => resolve() )
+				this.productAddSuccess( data, item )
+			}).catch( e => { 
+				console.warn(e)
+				this.productAddError( e ) 
+			}).then( () => resolve() )
 
 		})
 
@@ -143,9 +158,23 @@ export class WooDetail {
 
 	productAddSuccess( data, item ) {
 
-		this.storage.set( 'cart', data )
+		this.events.publish( 'add_to_cart', item )
 
-		this.presentToast( item.name + ' added to cart!')
+	}
+
+	productAddError( e ) {
+
+		this.cart_count--
+
+		let msg;
+
+		if( e.error && e.error.message ) {
+			msg = e.error.message
+		} else {
+			msg = 'There was a problem, your item was not added to the cart.'
+		}
+
+		this.presentToast( msg ) 
 
 	}
 
