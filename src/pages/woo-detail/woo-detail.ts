@@ -18,6 +18,7 @@ export class WooDetail {
 	cart_count: number;
 	itemAdded: boolean = false;
 	groupedProducts: Array<any>;
+	productLoaded: boolean = false;
 
 	constructor(
 		public navCtrl: NavController, 
@@ -89,6 +90,8 @@ export class WooDetail {
 
 		if( this.selectedItem.grouped_products && this.selectedItem.grouped_products.length ) {
 			this.getGroupedProducts()
+		} else {
+			this.productLoaded = true
 		}
 
 		if( !this.selectedItem.quantity ) {
@@ -152,7 +155,7 @@ export class WooDetail {
 
 	addSingleItem( item ) {
 
-		this.presentToast( 'Adding ' + item.name + ' to cart.' )
+		this.presentToast( 'Adding ' + this.selectedItem.name + ' to cart.' )
 
 		item.name = this.selectedItem.name
 		item.product_id = this.selectedItem.id
@@ -175,8 +178,6 @@ export class WooDetail {
 	addGroupedItem( item ) {
 
 		this.presentToast( 'Adding ' + this.selectedItem.name + ' to cart.' )
-
-		console.log( item )
 
 		var that = this;
 
@@ -258,6 +259,8 @@ export class WooDetail {
 				}
 				
 				this.groupedProducts.push( product )
+
+				this.productLoaded = true
 
 			}).catch( e => {
 				console.warn(e)

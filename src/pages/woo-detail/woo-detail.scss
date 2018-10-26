@@ -26,6 +26,44 @@ page-woo-detail {
 		color: Green;
 	}
 
+	.product-quantity.item {
+		padding-left: 0;
+		max-width: 120px;
+		.item-inner {
+			border: none;
+			padding: 0 5px;
+			margin-left: 0;
+			text-align: center;
+		}
+	}
+
+	.grouped-product {
+		.product-price {
+			font-size: 1.4rem;
+			margin-bottom: 0;
+			font-weight: normal;
+		}
+		.product-name {
+			font-weight: bold;
+		}
+		.product-quantity {
+			font-size: 2rem;
+			span {
+				display: inline-block;
+				max-width: 32%;
+				overflow: hidden;
+				font-size: 1.7rem;
+				margin-top: 3px;
+			}
+		}
+		ion-icon[name="add-circle"] {
+			float:right;
+		}
+		ion-icon[name="remove-circle"] {
+			float:left;
+		}
+	}
+
 	.button[type="submit"] {
 		margin-top: 15px;
 	}

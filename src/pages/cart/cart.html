@@ -33,14 +33,15 @@
 
   		<ion-grid>
         <ion-row>
-          <ion-col col-8><p *ngIf="item.line_total" class="product-price">${{item.line_total}}</p></ion-col>
-          <ion-col col-2 text-center>
-            <ion-item class="quantity" *ngIf="item.quantity">
-              <ion-input type="tel" (ionChange)="quantityChanged($event, item)" name="quantity" value="{{item.quantity}}" size="3" placeholder="1">
-              </ion-input>
-            </ion-item>
+          <ion-col col-4 class="product-price"><p *ngIf="item.line_total">${{item.line_total}}</p></ion-col>
+          <ion-col col-5 text-center class="product-quantity">
+
+              <ion-icon item-start name="remove-circle" (click)="decrement( item )"></ion-icon>
+              <span>{{ item.quantity }}</span>
+              <ion-icon item-end name="add-circle" (click)="increment( item )"></ion-icon>
+
           </ion-col>
-          <ion-col col-2  text-right (click)="removeItem(item)"><ion-icon name="close" color="danger"></ion-icon></ion-col>
+          <ion-col class="product-remove" col-3  text-right (click)="removeItem(item)"><ion-icon name="close" color="danger"></ion-icon></ion-col>
         </ion-row>
       </ion-grid>
 

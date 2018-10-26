@@ -119,11 +119,23 @@ export class CartPage {
 
 	}
 
-	quantityChanged(e, item) {
-		console.log(e.value, item )
-		this.wooProvider.updateItem( item, e.value ).then( response => {
+	increment( item ) {
+		item.quantity = parseInt( item.quantity ) + 1
+		this.quantityChanged( item )
+	}
+
+	decrement( item ) {
+		item.quantity = parseInt( item.quantity ) - 1
+		this.quantityChanged( item )
+	}
+
+	quantityChanged(item) {
+		console.log(item )
+		this.wooProvider.updateItem( item, item.quantity ).then( response => {
 
 			this.presentToast(response )
+			// update totals
+			this.getCartContents()
 			this.events.publish( 'cart_change' )
 
 		} ).catch( e => {

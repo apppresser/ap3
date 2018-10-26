@@ -6,8 +6,37 @@ page-cart {
 		display: none;
 	}
 
-	.item-input.quantity {
-		border: none !important;
-		min-width: 44px;
+	.item {
+		.item-inner {
+			padding-right: 0;
+		}
+
+		ion-label {
+			margin-right: 0
+		}
+	}
+
+	.product-price p {
+		font-weight: bold;
+		font-size: 1.6rem;
+		color: green;
+	}
+
+	.product-quantity {
+		text-align: center;
+
+		ion-icon {
+			margin: 0 !important;
+		}
+		ion-icon[name="add-circle"] {
+			float:right;
+		}
+		ion-icon[name="remove-circle"] {
+			float:left;
+		}
+	}
+
+	.product-remove ion-icon {
+		float:right;
 	}
 }
