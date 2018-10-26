@@ -35,7 +35,7 @@
 
 	    <p *ngIf="selectedItem.sale_price" class="product-price">Sale! ${{selectedItem.sale_price}}</p>
 
-	    <div class="star-rating-wrap"><span [ngStyle]="{'width.%': selectedItem.average_rating * 2 * 10 }" class="stars"></span></div>
+	    <div class="star-rating-wrap" *ngIf="selectedItem.average_rating != '0.00'"><span [ngStyle]="{'width.%': selectedItem.average_rating * 2 * 10 }" class="stars"></span></div>
 
 		<div *ngIf="description" [innerHTML]="description"></div>
 
@@ -89,21 +89,22 @@
 
 			<ion-item class="product-quantity" *ngIf="!groupedProducts?.length && productLoaded">
 				<ion-label>{{ selectedItem.quantity }}</ion-label>
-				<ion-icon item-start name="remove-circle" (click)="decrement( selectedItem )"></ion-icon>
+				<ion-icon name="remove-circle" (click)="decrement( selectedItem )"></ion-icon>
 				
-				<ion-icon item-end name="add-circle" (click)="increment( selectedItem )"></ion-icon>
+				<ion-icon name="add-circle" (click)="increment( selectedItem )"></ion-icon>
 			</ion-item>
 			
 			<button *ngIf="productLoaded" ion-button type="submit" block>Add to Cart</button>
 
 		</form>
 
-		<hr>
+		<div *ngIf="reviews?.length">
 
-		<div *ngIf="reviews">
+			<hr>
+
 			<h2>{{ 'Reviews' | translate }}</h2>
 			<ion-list>
-				<ion-item *ngFor="let review of reviews">
+				<ion-item text-wrap *ngFor="let review of reviews">
 					<ion-avatar item-start *ngIf="review.reviewer_avatar_urls">
 				      <img [src]="review.reviewer_avatar_urls['48']" class="reviewer-avatar">
 				    </ion-avatar>
