@@ -1,6 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController, ToastController, ModalController, Events, Content } from 'ionic-angular';
 import { WooProvider } from '../../providers/woo/woo';
+import { Storage } from '@ionic/storage';
 
 @IonicPage()
 @Component({
@@ -30,7 +31,8 @@ export class WooList {
 		public loadingCtrl: LoadingController,
 		public toastCtrl: ToastController,
 		public modalCtrl: ModalController,
-		public events: Events
+		public events: Events,
+		public storage: Storage
 		) {
 
 		if( this.navParams.get('route') ) {
@@ -48,17 +50,49 @@ export class WooList {
 	    events.subscribe('clear_cart', data => {
 	      this.cart_count = 0
 	    });
+
+	    events.subscribe('cart_change', data => {
+	      this.getCartFromAPI()
+	    });
+
+	    // make sure cart count is always updated on initial load
+	    this.storage.remove( 'cart_count' )
+
 	}
 
 	ionViewDidLoad() {
 
 		this.loadProducts( this.route )
 
-		this.wooProvider.getCartContents().then( cart => {
-			this.cart_count = ( cart && typeof cart != 'string' && (<any>cart).products ? (<any>cart).products.length : '' )
-		})
-
 		this.getCategories()
+		
+	}
+
+	ionViewWillEnter() {
+
+		this.getCartCount()
+
+	}
+
+	getCartCount() {
+
+		// get cart count from storage, or hit API if we don't have it
+		this.storage.get( 'cart_count' ).then( data => {
+			if( data ) {
+				this.cart_count = data
+			} else {
+				this.getCartFromAPI()
+			}
+		})
+	}
+
+	getCartFromAPI() {
+
+		this.wooProvider.getCartContents().then( cart => {
+
+			this.cart_count = ( cart && typeof cart != 'string' && (<any>cart).cart_total ? (<any>cart).cart_total.cart_contents_count : '' )
+			// don't need to save count to storage, it's already saved in woo.ts
+		})
 		
 	}
 

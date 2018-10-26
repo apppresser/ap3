@@ -59,11 +59,11 @@
 			
 			<div *ngIf="groupedProducts?.length">
 				<ion-item *ngFor="let groupProd of groupedProducts">
-					<ion-label stacked>{{groupProd.name}}</ion-label>
-					<ion-icon item-start name="remove-circle" (click)="decrement(groupProd.id)"></ion-icon>
-					<ion-input type="number" ngModel name="quantity-{{groupProd.id}}" value="1" size="5" placeholder="1">
-					</ion-input>
-					<ion-icon item-end name="add-circle" (click)="increment(groupProd.id)"></ion-icon>
+				<ion-input type="hidden" ngModel name="{{groupProd.id}}"></ion-input>
+				<ion-label stacked>{{groupProd.name}}</ion-label>
+				<ion-label>Quantity: {{ groupProd.quantity }}</ion-label>
+				<ion-icon item-start name="remove-circle" (click)="decrement( groupProd )"></ion-icon>
+				<ion-icon item-end name="add-circle" (click)="increment( groupProd )"></ion-icon>
 				</ion-item>
 			</div>
 

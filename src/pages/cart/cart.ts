@@ -12,7 +12,7 @@ import { WooProvider } from '../../providers/woo/woo';
 export class CartPage {
 
 	products: any;
-	cart_total: number;
+	cart_total: any;
 	cartEmpty: string;
 	quantity: any;
 	loading: any;
@@ -32,8 +32,6 @@ export class CartPage {
 	}
 
 	ionViewDidLoad() {
-
-		// this.getCartStorage()
 
 		this.getCartContents()
 		
@@ -56,23 +54,23 @@ export class CartPage {
 
 	}
 
-	getCartStorage() {
+	// getCartStorage() {
 
-		this.storage.get( 'cart' ).then( data => {
+	// 	this.storage.get( 'cart' ).then( data => {
 
-			if( !data )
-				return;
+	// 		if( !data )
+	// 			return;
 
-			this.products = data
+	// 		this.products = data
 
-			for (var i = 0; i < data.length; ++i) {
-				let total = parseInt( data[i].price ) * parseInt( data[i].quantity )
-				this.cart_total = ( this.cart_total ? this.cart_total : 0 ) + total
-			}
+	// 		for (var i = 0; i < data.length; ++i) {
+	// 			let total = parseInt( data[i].price ) * parseInt( data[i].quantity )
+	// 			this.cart_total = ( this.cart_total ? this.cart_total : 0 ) + total
+	// 		}
 
-		})
+	// 	})
 
-	}
+	// }
 
 	clearCart() {
 
@@ -84,6 +82,7 @@ export class CartPage {
 			this.products = []
 			this.cart_total = 0
 			this.presentToast(response)
+			this.storage.set( 'cart_count', 0 )
 			this.events.publish( 'clear_cart', 0 )
 
 		}).catch( e => console.warn(e) )
@@ -100,12 +99,15 @@ export class CartPage {
 			}
 		}
 
+		this.cart_total = "Calculating..."
+
 		this.presentToast("Item removed.")
 
 		this.wooProvider.removeItem( item ).then( response => {
 
 			// success
 			console.log(response )
+			this.events.publish( 'cart_change' )
 
 		} ).catch( e => {
 			this.presentToast("Could not remove item.")
@@ -122,6 +124,7 @@ export class CartPage {
 		this.wooProvider.updateItem( item, e.value ).then( response => {
 
 			this.presentToast(response )
+			this.events.publish( 'cart_change' )
 
 		} ).catch( e => {
 			this.presentToast("Could not update item.")

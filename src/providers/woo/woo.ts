@@ -21,9 +21,9 @@ export class WooProvider {
     this.url = url + restBase
 
     // TODO: move this
-    // this.authString = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
+    this.authString = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
     // reactordev
-    this.authString = 'Basic Y2tfMDM4NTI0M2Y1NDZmNzhmNGE3MWZiOWNkNTZmNzM4NTkyNDhmMWQ0Yzpjc19lYWUwZDVhY2FjNjBhOGZkMmY5OGNiZTQ0ZWMyMzgyNGMzZTFiNGNm'
+    // this.authString = 'Basic Y2tfMDM4NTI0M2Y1NDZmNzhmNGE3MWZiOWNkNTZmNzM4NTkyNDhmMWQ0Yzpjc19lYWUwZDVhY2FjNjBhOGZkMmY5OGNiZTQ0ZWMyMzgyNGMzZTFiNGNm'
 
     this.httpOptions = {
       headers: new HttpHeaders({
@@ -156,6 +156,8 @@ export class WooProvider {
       this.http.get( this.url.replace('wc/v3/', 'wc/v2/') + 'cart?thumb=true', this.httpOptions )
         .subscribe(response => {
 
+          this.setCartCount(response)
+
           resolve(response);
         },
         error => {
@@ -165,6 +167,17 @@ export class WooProvider {
         })
 
     }); // end Promise
+
+  }
+
+  // update cart total every time we do an API call
+  setCartCount( response ) {
+
+    if( typeof (<any>response) === 'string' ) {
+      this.storage.remove( 'cart_count' )
+    } else {
+      this.storage.set( 'cart_count', (<any>response).cart_total.cart_contents_count )
+    }
 
   }
 

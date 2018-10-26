@@ -35,13 +35,43 @@ export class WooDetail {
 
 		this.loadProduct()
 
-		this.wooProvider.getCartContents().then( cart => {
-			this.cart_count = ( cart && typeof cart != 'string' && (<any>cart).products ? (<any>cart).products.length : '' )
-		})
-
-		events.subscribe('clear_cart', data => {
+		events.subscribe( 'clear_cart', data => {
 	      this.cart_count = 0
+	      console.log('detail clear cart ' + this.cart_count )
 	    });
+
+	    events.subscribe('cart_change', data => {
+	      this.getCartFromAPI()
+	    });
+
+	    // make sure cart count is always updated on initial load
+	    this.storage.remove( 'cart_count' )
+
+	}
+
+	ionViewWillEnter() {
+
+		this.getCartCount()
+
+	}
+
+	getCartCount() {
+
+		this.storage.get( 'cart_count' ).then( data => {
+			if( data ) {
+				this.cart_count = data
+			} else {
+				this.getCartFromAPI()
+			}
+		})
+	}
+
+	getCartFromAPI() {
+
+		this.wooProvider.getCartContents().then( cart => {
+			this.cart_count = ( cart && typeof cart != 'string' && (<any>cart).cart_total ? (<any>cart).cart_total.cart_contents_count : '' )
+			// don't need to save count to storage, it's already saved in woo.ts
+		})
 
 	}
 
@@ -79,32 +109,50 @@ export class WooDetail {
 
 		let item = form.value
 
-		if( this.selectedItem.type === 'grouped' ) {
-			this.addGroupedItem( item )
-		} else {
-			this.addSingleItem( item )
+		if( item.quantity === 0 ) {
+			this.presentToast( 'Please select a quantity.' )
+			return;
 		}
 
-		this.instantAdd( item )
+		if( this.selectedItem.type === 'grouped' ) {
+			this.addGroupedItem( item )
+			this.instantAdd( item, true )
+		} else {
+			this.addSingleItem( item )
+			this.instantAdd( item, false )
+		}
 
 	}
 
 	// we show success right away to enhance perceived speed
 	// only if there is an error we alert the user
-	instantAdd( item ) {
+	instantAdd( item, grouped ) {
 
-		this.cart_count++
+		this.cart_count = ( this.cart_count ? this.cart_count : 0 )
+
+		if( grouped ) {
+
+			for( let product of this.groupedProducts ) {
+				this.cart_count = this.cart_count + parseInt( product.quantity )
+			}
+
+		} else {
+			this.cart_count = this.cart_count + parseInt( item.quantity )
+		}
+
+		this.storage.set( 'cart_count', this.cart_count )
+		
 		// flash cart icon
 		this.itemAdded = true
 		setTimeout( () => {
 			this.itemAdded = false
 		}, 1000 );
 
-		this.presentToast( 'Adding ' + item.name + ' to cart.' )
-
 	}
 
 	addSingleItem( item ) {
+
+		this.presentToast( 'Adding ' + item.name + ' to cart.' )
 
 		item.name = this.selectedItem.name
 		item.product_id = this.selectedItem.id
@@ -126,12 +174,16 @@ export class WooDetail {
 
 	addGroupedItem( item ) {
 
+		this.presentToast( 'Adding ' + this.selectedItem.name + ' to cart.' )
+
+		console.log( item )
+
 		var that = this;
 
 		// using async/await with promise inside loop
 		(async function loop() {
 		    for ( var id in item ) {
-		        await that.addGroupItemToCart( id, item[id] );
+		        await that.addGroupItemToCart( id, item.quantity );
 		    }
 		})();
 
@@ -155,7 +207,7 @@ export class WooDetail {
 			item.name = ( productObject[0] ? productObject[0].name : '' )
 			item.product_id = id
 			item.price = ( productObject[0] ? productObject[0].price : '' )
-			item.quantity = ( quantity ? quantity : 1 )
+			item.quantity = ( productObject[0] ? productObject[0].quantity : 1 )
 
 			this.wooProvider.addToCart( item ).then( data => {
 				this.productAddSuccess( data, item )
@@ -178,6 +230,8 @@ export class WooDetail {
 
 		this.cart_count--
 
+		this.storage.set( 'cart_count', this.cart_count )
+
 		let msg;
 
 		if( e.error && e.error.message ) {
@@ -198,6 +252,10 @@ export class WooDetail {
 		for (var i = 0; i < this.selectedItem.grouped_products.length; ++i) {
 
 			this.wooProvider.get( 'products/' + this.selectedItem.grouped_products[i], 'nopaging' ).then(product => {
+
+				if( !(<any>product).quantity ) {
+					(<any>product).quantity = 1
+				}
 				
 				this.groupedProducts.push( product )
 
