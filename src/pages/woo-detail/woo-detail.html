@@ -6,7 +6,7 @@
     <ion-buttons end>
 		<button ion-button (click)="showCart()" [ngClass]="{ 'item-added' : itemAdded  }">
 			<ion-icon name="cart"></ion-icon>
-			<ion-badge color="dark" item-end>{{cart_count}}</ion-badge>
+			<ion-badge color="clear" item-end>{{cart_count}}</ion-badge>
 		</button>
 	</ion-buttons>
   </ion-navbar>
@@ -35,16 +35,16 @@
 
 	    <p *ngIf="selectedItem.sale_price" class="product-price">Sale! ${{selectedItem.sale_price}}</p>
 
-		<div *ngIf="description" [innerHTML]="description"></div>
+	    <div class="star-rating-wrap"><span [ngStyle]="{'width.%': selectedItem.average_rating * 2 * 10 }" class="stars"></span></div>
 
-		<p *ngIf="selectedItem.average_rating != '0.00'" class="product-rating"><em>Rating: {{selectedItem.average_rating}} stars</em></p>
+		<div *ngIf="description" [innerHTML]="description"></div>
 
 		<p *ngIf="selectedItem.in_stock" class="product-stock">✓ In Stock.</p>
 
 		<form (ngSubmit)="addToCart(addToCartForm)" #addToCartForm="ngForm">
 
-			<div *ngIf="variations">
-				<ion-item *ngIf="variations.length">
+			<!-- <div *ngIf="variations">
+				<ion-button *ngIf="variations.length">
 					<ion-label stacked>Options</ion-label>
 					<ion-select ngModel name="variation_id">
 						<ion-option *ngFor="let variation of variations" value="{{variation.id}}">
@@ -52,6 +52,17 @@
 							<div *ngFor="let attr of variation.attributes">
 								{{attr.name}} : {{attr.option}}
 							</div>
+						</ion-option>
+					</ion-select>
+				</ion-item>
+			</div> -->
+
+			<div *ngIf="!groupedProducts?.length && availableAttributes.length">
+				<ion-item *ngFor="let attribute of availableAttributes">
+					<ion-label stacked>{{attribute.name}}</ion-label>
+					<ion-select (ionChange)="variationChanged( $event, attribute )" ngModel name="attribute_id" >
+						<ion-option *ngFor="let option of attribute.options" value="{{option}}">
+							{{option}}
 						</ion-option>
 					</ion-select>
 				</ion-item>
@@ -86,6 +97,24 @@
 			<button *ngIf="productLoaded" ion-button type="submit" block>Add to Cart</button>
 
 		</form>
+
+		<hr>
+
+		<div *ngIf="reviews">
+			<h2>{{ 'Reviews' | translate }}</h2>
+			<ion-list>
+				<ion-item *ngFor="let review of reviews">
+					<ion-avatar item-start *ngIf="review.reviewer_avatar_urls">
+				      <img [src]="review.reviewer_avatar_urls['48']" class="reviewer-avatar">
+				    </ion-avatar>
+				    <h3 class="reviewer-name">{{ review.reviewer }}</h3>
+				    <div class="star-rating-wrap"><span [ngStyle]="{'width.%': review.rating * 2 * 10 }" class="stars"></span></div>
+				    <div [innerHTML]="review.review"></div>
+				    <!--p class="review-date">{{ review.date_created }}</p-->
+				</ion-item>
+			</ion-list>
+		</div>
+
 	</div>
  </section>
 </ion-content>

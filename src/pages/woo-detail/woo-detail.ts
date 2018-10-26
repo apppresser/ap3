@@ -15,10 +15,12 @@ export class WooDetail {
 	description: any;
 	cartModal: any;
 	variations: any;
+	reviews: any;
 	cart_count: number;
 	itemAdded: boolean = false;
 	groupedProducts: Array<any>;
 	productLoaded: boolean = false;
+	availableAttributes: any;
 
 	constructor(
 		public navCtrl: NavController, 
@@ -46,7 +48,7 @@ export class WooDetail {
 	    });
 
 	    // make sure cart count is always updated on initial load
-	    this.storage.remove( 'cart_count' )
+	    this.getCartFromAPI()
 
 	}
 
@@ -61,8 +63,6 @@ export class WooDetail {
 		this.storage.get( 'cart_count' ).then( data => {
 			if( data ) {
 				this.cart_count = data
-			} else {
-				this.getCartFromAPI()
 			}
 		})
 	}
@@ -80,24 +80,48 @@ export class WooDetail {
 
 		this.selectedItem = this.navParams.get('item');
 
+		console.log(this.selectedItem)
+
 		if( this.selectedItem.description ) {
 		  this.description = this.sanitizer.bypassSecurityTrustHtml( this.selectedItem.description );
 		} else {
 			this.description = '';
 		}
 
-		this.getVariations()
+		this.availableAttributes = this.selectedItem.attributes
 
-		if( this.selectedItem.grouped_products && this.selectedItem.grouped_products.length ) {
+		if( this.selectedItem.type === 'variable' ) {
+			this.getVariations()
+		} else if( this.selectedItem.type === 'grouped' ) {
 			this.getGroupedProducts()
 		} else {
 			this.productLoaded = true
 		}
 
+		setTimeout( () => {
+			this.getProductReviews()
+		}, 1500 )
+
 		if( !this.selectedItem.quantity ) {
 			this.selectedItem.quantity = 1
 		}
 
+	}
+
+	variationChanged( e, attribute ) {
+		
+		console.log(e, attribute)
+
+		if( !this.variations )
+			return;
+
+		// check what other attributes are possible with attribute.name == e, and send those to availableAttributes
+		for (let i = 0; i < this.variations.length; ++i) {
+			console.log( attribute.name + '=' + e)
+			if( this.variations[i].attributes.length ) {
+				console.log(this.variations[i].attributes)
+			}
+		}
 	}
 
 	increment( item ) {
@@ -155,6 +179,12 @@ export class WooDetail {
 
 	addSingleItem( item ) {
 
+		console.log(item, this.selectedItem)
+
+		// if( this.variations.length ) {
+		// 	item.variation_id = this.getVariationId( item )
+		// }
+
 		this.presentToast( 'Adding ' + this.selectedItem.name + ' to cart.' )
 
 		item.name = this.selectedItem.name
@@ -173,6 +203,11 @@ export class WooDetail {
 
 		} )
 
+	}
+
+	getVariationId( item ) {
+
+		// match attributes with a variation ID
 	}
 
 	addGroupedItem( item ) {
@@ -270,11 +305,26 @@ export class WooDetail {
 
 	}
 
-	getVariations() {
+	getVariations( arg = null ) {
 
-		this.wooProvider.get( 'products/' + this.selectedItem.id + '/variations', 'nopaging' ).then(variations => {
+		let param = ( arg ? '/?' + arg : '' )
+
+		this.wooProvider.get( 'products/' + this.selectedItem.id + '/variations' + param, 'nopaging' ).then(variations => {
 			console.log('variations', variations)
 			this.variations = variations
+		}).catch( e => {
+			console.warn(e)
+		}).then( () => { 
+			this.productLoaded = true 
+		})
+
+	}
+
+	getProductReviews() {
+
+		this.wooProvider.get( 'products/reviews/?product=' + this.selectedItem.id, 'nopaging' ).then(reviews => {
+			console.log('reviews', reviews)
+			this.reviews = reviews
 		}).catch( e => {
 			console.warn(e)
 		})

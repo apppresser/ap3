@@ -82,4 +82,28 @@ page-woo-detail {
 		}
 	}
 
+	.reviewer-name {
+		font-weight: bold;
+	}
+
+	.star-rating-wrap {
+	  background: url("../assets/icon/star-rating-sprite.png") repeat-x;
+	  font-size: 0;
+	  height: 21px;
+	  line-height: 0;
+	  overflow: hidden;
+	  text-indent: -999em;
+	  width: 110px;
+	  margin: 5px 0;
+	  
+	  .stars {
+	    background: url("../assets/icon/star-rating-sprite.png") repeat-x;
+	    background-position: 0 100%;
+	    float: left;
+	    height: 21px;
+	    display:block;
+	  }
+	  
+	}
+
 }

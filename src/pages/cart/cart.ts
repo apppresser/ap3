@@ -91,17 +91,22 @@ export class CartPage {
 
 	removeItem( item ) {
 
-		// we remove the item right away, before the API call. It gets added back if there is an error.
-		for (let i = this.products.length - 1; i >= 0; i--) {
-			if( this.products[i].product_id === item.product_id ) {
-			  this.products.splice(i, 1);
-			  break;
+		// small delay otherwise it feels too jumpy
+		setTimeout( ()=> {
+
+			// we remove the item right away, before the API call. It gets added back if there is an error.
+			for (let i = this.products.length - 1; i >= 0; i--) {
+				if( this.products[i].product_id === item.product_id ) {
+				  this.products.splice(i, 1);
+				  break;
+				}
 			}
-		}
 
-		this.cart_total = "Calculating..."
+			this.cart_total = "Calculating..."
 
-		this.presentToast("Item removed.")
+			this.presentToast("Item removed.")
+
+		}, 200 )
 
 		this.wooProvider.removeItem( item ).then( response => {
 
@@ -126,7 +131,11 @@ export class CartPage {
 
 	decrement( item ) {
 		item.quantity = parseInt( item.quantity ) - 1
-		this.quantityChanged( item )
+		if( item.quantity === 0 ) {
+			this.removeItem(item)
+		} else {
+			this.quantityChanged( item )
+		}
 	}
 
 	quantityChanged(item) {

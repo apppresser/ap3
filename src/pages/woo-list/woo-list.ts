@@ -56,7 +56,7 @@ export class WooList {
 	    });
 
 	    // make sure cart count is always updated on initial load
-	    this.storage.remove( 'cart_count' )
+	    this.getCartFromAPI()
 
 	}
 
