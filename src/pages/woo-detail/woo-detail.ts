@@ -109,7 +109,7 @@ export class WooDetail {
 	}
 
 	variationChanged( e, attribute ) {
-		
+
 		console.log(e, attribute)
 
 		if( !this.variations )
@@ -144,6 +144,9 @@ export class WooDetail {
 		if( this.selectedItem.type === 'grouped' ) {
 			this.addGroupedItem( item )
 			this.instantAdd( item, true )
+		} else if( this.selectedItem.type === 'external' ) {
+			window.open( this.selectedItem.external_url, '_blank' )
+			return;
 		} else {
 			this.addSingleItem( item )
 			this.instantAdd( item, false )
@@ -185,7 +188,7 @@ export class WooDetail {
 		// 	item.variation_id = this.getVariationId( item )
 		// }
 
-		this.presentToast( 'Adding ' + this.selectedItem.name + ' to cart.' )
+		this.presentToast( 'Adding ' + this.selectedItem.name + ' to cart...' )
 
 		item.name = this.selectedItem.name
 		item.product_id = this.selectedItem.id

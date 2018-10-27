@@ -64,6 +64,10 @@ page-woo-detail {
 		}
 	}
 
+	.item ion-icon[item-left], .item ion-icon[item-right], .item ion-icon[item-start], .item ion-icon[item-end] {
+		margin: 0;
+	}
+
 	.button[type="submit"] {
 		margin-top: 15px;
 	}
