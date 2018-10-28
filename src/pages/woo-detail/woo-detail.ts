@@ -188,7 +188,7 @@ export class WooDetail {
 		// 	item.variation_id = this.getVariationId( item )
 		// }
 
-		this.presentToast( 'Adding ' + this.selectedItem.name + ' to cart...' )
+		this.presentToast( this.selectedItem.name + ' added to cart.' )
 
 		item.name = this.selectedItem.name
 		item.product_id = this.selectedItem.id
@@ -331,6 +331,14 @@ export class WooDetail {
 		}).catch( e => {
 			console.warn(e)
 		})
+
+	}
+
+	getRelatedRoute() {
+
+		if( this.selectedItem.related_ids.length ) {
+			return 'products?include=' + this.selectedItem.related_ids
+		}
 
 	}
 
