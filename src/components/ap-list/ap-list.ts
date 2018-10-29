@@ -25,6 +25,7 @@ export class ApListComponent implements OnInit {
 	@Input() favorites: boolean = false;
 	@Input() infiniteScroll: boolean = false;
 	@Input() wp: string;
+	@Input() refresh: boolean = false;
 
 	page: number = 1;
 	items: any;
@@ -178,10 +179,9 @@ export class ApListComponent implements OnInit {
 
 	}
 
-	// doRefresh(refresh) {
-	// 	this.loadPosts();
-	// 	setTimeout( ()=> refresh.complete(), 500);
-	// }
+	doRefresh() {
+		this.loadPosts()
+	}
 
 	addFav(slidingItem: ItemSliding, item) {
 
