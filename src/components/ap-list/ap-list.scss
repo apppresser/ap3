@@ -30,3 +30,13 @@ ap-list {
 	    background-size: cover;
 	}
 }
+
+// apply to all lists
+.list-refresher {
+	padding: 10px;
+	color: #999;
+
+	.icon:before {
+		color: #999
+	}
+}

@@ -35,7 +35,7 @@
 
 	    <p *ngIf="selectedItem.sale_price" class="product-price">Sale! ${{selectedItem.sale_price}}</p>
 
-	    <div class="star-rating-wrap" *ngIf="selectedItem.average_rating != '0.00'"><span [ngStyle]="{'width.%': selectedItem.average_rating * 2 * 10 }" class="stars"></span></div>
+	    <div class="star-rating-wrap" *ngIf="selectedItem.average_rating && selectedItem.average_rating != '0.00'"><div [ngClass]="selectedItem.average_rating >= 1 ? 'star-on' : 'star-off'"></div><div [ngClass]="selectedItem.average_rating >= 2 ? 'star-on' : 'star-off'"></div><div [ngClass]="selectedItem.average_rating >= 3 ? 'star-on' : 'star-off'"></div><div [ngClass]="selectedItem.average_rating >= 4 ? 'star-on' : 'star-off'"></div><div [ngClass]="selectedItem.average_rating == 5 ? 'star-on' : 'star-off'"></div></div>
 
 		<div *ngIf="description" [innerHTML]="description"></div>
 
@@ -98,7 +98,7 @@
 
 		</form>
 
-		<div *ngIf="reviews?.length">
+		<div *ngIf="reviews?.length" class="product-reviews">
 
 			<hr>
 
@@ -109,7 +109,7 @@
 				      <img [src]="review.reviewer_avatar_urls['48']" class="reviewer-avatar">
 				    </ion-avatar>
 				    <h3 class="reviewer-name">{{ review.reviewer }}</h3>
-				    <div class="star-rating-wrap"><span [ngStyle]="{'width.%': review.rating * 2 * 10 }" class="stars"></span></div>
+				    <div class="star-rating-wrap"><div [ngClass]="selectedItem.average_rating >= 1 ? 'star-on' : 'star-off'"></div><div [ngClass]="selectedItem.average_rating >= 2 ? 'star-on' : 'star-off'"></div><div [ngClass]="selectedItem.average_rating >= 3 ? 'star-on' : 'star-off'"></div><div [ngClass]="selectedItem.average_rating >= 4 ? 'star-on' : 'star-off'"></div><div [ngClass]="selectedItem.average_rating == 5 ? 'star-on' : 'star-off'"></div></div>
 				    <div [innerHTML]="review.review"></div>
 				    <!--p class="review-date">{{ review.date_created }}</p-->
 				</ion-item>

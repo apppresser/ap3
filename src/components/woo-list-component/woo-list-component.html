@@ -1,5 +1,10 @@
 <div class="list-loading-spinner" *ngIf="loading"><ion-spinner name="bubbles"></ion-spinner></div>
 
+<div *ngIf="refresh && !loading" class="list-refresher">
+  <ion-icon name="refresh" (tap)="doRefresh()"></ion-icon>
+  <span>{{ 'Refresh' | translate }}</span>
+</div>
+
 <ion-list *ngIf="card">
 
     <ion-card *ngFor="let item of items">

@@ -10,7 +10,7 @@ import {Iframe} from "../../pages/iframe/iframe";
 
 @Component({
   selector: 'woo-list',
-  templateUrl: 'woo-list.html'
+  templateUrl: 'woo-list-component.html'
 })
 export class WooListComponent implements OnInit {
 
@@ -18,6 +18,7 @@ export class WooListComponent implements OnInit {
 	@Input() card: boolean = false;
 	@Input() infiniteScroll: boolean = false;
 	@Input() wp: string;
+	@Input() refresh: boolean = false;
 
 	page: number = 1;
 	items: any;
@@ -104,6 +105,10 @@ export class WooListComponent implements OnInit {
 
 		});
 
+	}
+
+	doRefresh( event ) {
+		this.loadPosts()
 	}
 
 	loadDetail(item) {

@@ -29,7 +29,7 @@ import { User } from '../../models/user.model';
 import { LoginService } from '../../providers/logins/login.service';
 import { ApListComponentModule } from '../../components/ap-list/ap-list.module';
 import { ApSliderComponentModule } from '../../components/ap-slider/ap-slider.module';
-import { WooListComponentModule } from '../../components/woo-list/woo-list.module';
+import { WooListComponentModule } from '../../components/woo-list-component/woo-list-component.module';
 import { WooSliderComponentModule } from '../../components/woo-slider/woo-slider.module';
 import { NetworkStatusService } from '../../providers/network/network-status.service';
 

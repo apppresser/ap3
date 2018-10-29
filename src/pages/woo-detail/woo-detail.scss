@@ -86,28 +86,26 @@ page-woo-detail {
 		}
 	}
 
+	.product-reviews .star-rating-wrap {
+		margin: 5px 0;
+	}
+
 	.reviewer-name {
 		font-weight: bold;
 	}
 
 	.star-rating-wrap {
-	  background: url("../assets/icon/star-rating-sprite.png") repeat-x;
-	  font-size: 0;
-	  height: 21px;
-	  line-height: 0;
-	  overflow: hidden;
-	  text-indent: -999em;
-	  width: 110px;
-	  margin: 5px 0;
-	  
-	  .stars {
-	    background: url("../assets/icon/star-rating-sprite.png") repeat-x;
-	    background-position: 0 100%;
-	    float: left;
-	    height: 21px;
-	    display:block;
-	  }
-	  
+		height: 30px;
+		overflow: hidden;
 	}
+
+	.star-off, .star-on {
+	  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='80'%20height='30'%3E%3Cpath%20d='M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z'%20fill='%23c0c0c0'%20stroke='%23c0c0c0'/%3E%3Cpath%20d='M57.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z'%20fill='%23ffd83d'%20stroke='%23eac328'/%3E%3C/svg%3E");
+	  height: 30px; 
+	  width: 30px;
+	  display: inline-block;
+	}
+	.star-off { background-position: 0px 0px }
+	.star-on { background-position: -40px 0px }
 
 }
