@@ -47,9 +47,9 @@
   
   <ion-list class="woocommerce-list">
 
-    <ion-card *ngFor="let item of items" (tap)="itemTapped($event, item)">
+    <ion-card *ngFor="let item of items">
 
-      <div class="card-featured-wrap" *ngIf="item.images || item.image">
+      <div (tap)="loadDetail($event, item)" class="card-featured-wrap" *ngIf="item.images || item.image">
         <div *ngIf="item.images && item.images[0].src" class="card-featured-image" [ngStyle]="{'background-image': 'url('+ item.images[0].src +')'}"></div>
         <div *ngIf="item.image && item.image.src" class="card-featured-image" [ngStyle]="{'background-image': 'url('+ item.image.src +')'}"></div>
       </div>
@@ -58,7 +58,7 @@
 
       <ion-card-content>
 
-        <ion-card-title *ngIf="item.name">
+        <ion-card-title (tap)="loadDetail($event, item)" *ngIf="item.name">
           <h2 [innerHTML]="item.name"></h2>
         </ion-card-title>
 
@@ -68,13 +68,17 @@
 
         <p *ngIf="item.sale_price" class="product-price">Sale! ${{item.sale_price}}</p>
 
-        <p *ngIf="item.description" [innerHTML]="item.description" class="product-description"></p>
+        <!-- <p (tap)="loadDetail($event, item)" *ngIf="item.description" [innerHTML]="item.description" class="product-description"></p> -->
 
-        <p *ngIf="item.average_rating && item.average_rating != '0.00'" class="product-rating"><em>Rating: {{item.average_rating}} stars</em></p>
+        <!-- <p *ngIf="item.average_rating && item.average_rating != '0.00'" class="product-rating"><em>Rating: {{item.average_rating}} stars</em></p> -->
+
+        <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.below_content" [innerHTML]="item.appp.woo_list.below_content"></div>
 
       </ion-card-content>
 
-      <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.below_content" [innerHTML]="item.appp.woo_list.below_content"></div>
+      <div class="btn-wrap" *ngIf="item.type">
+        <button class="product-action" ion-button block small color="light" (tap)="productAction(item)">{{ getBtnText(item) | translate }}</button>
+      </div>
 
     </ion-card>
 

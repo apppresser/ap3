@@ -195,6 +195,91 @@ export class WooSliderComponent {
 		return string.substring(0,50);
 	}
 
+	getBtnText( item ) {
+
+		let txt;
+
+		switch( item.type ) {
+			case "simple":
+				txt = "Add to Cart"
+				break;
+			case "grouped":
+				txt = "View Products"
+				break;
+			case "variable":
+				txt = "Select Options"
+				break;
+			default:
+				txt = "View Details"
+		}
+
+		return txt
+
+	}
+
+	productAction( item ) {
+
+		switch( item.type ) {
+			case "simple":
+				this.addToCart(item)
+				break;
+			default:
+				this.loadDetail(item)
+		}
+
+	}
+
+	addToCart( item ) {
+
+		this.presentToast( item.name + ' added to cart.' )
+
+		item.quantity = 1
+		item.product_id = item.id
+
+		this.wooProvider.addToCart( item ).then( data => {
+			
+			this.productAddSuccess( data, item )
+
+		}).catch( e => { 
+
+			this.productAddError( e )
+			console.warn(e)
+
+		} )
+
+	}
+
+	productAddSuccess( data, item ) {
+
+		this.storage.get( 'cart_count').then( count => {
+
+			if( count ) {
+				count = parseInt( count ) + 1
+			} else {
+				count = 1
+			}
+			this.storage.set( 'cart_count', count )
+
+		})
+
+		this.events.publish( 'add_to_cart', item )
+
+	}
+
+	productAddError( e ) {
+
+		let msg;
+
+		if( e.error && e.error.message ) {
+			msg = e.error.message
+		} else {
+			msg = 'There was a problem, your item was not added to the cart.'
+		}
+
+		this.presentToast( msg ) 
+
+	}
+
 	presentToast(msg) {
 
 	    let toast = this.toastCtrl.create({

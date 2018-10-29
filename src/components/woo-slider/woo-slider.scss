@@ -56,6 +56,14 @@ woo-slider {
 			font-size: 1.2rem;
 			margin-bottom: 5px;
 		}
+
+		.btn-wrap {
+			padding: 0 15px 15px 15px;
+		}
+
+		.product-action {
+			margin-top: 15px
+		}
 	}
 	
 	// categories are smaller because there is no description
@@ -64,7 +72,7 @@ woo-slider {
 
 		.card {
 
-			height: 200px;
+			height: 175px;
 
 		}
 
@@ -74,4 +82,15 @@ woo-slider {
 		background-repeat: no-repeat;
 		background-position: center;
 	}
+}
+
+.related-products woo-slider ion-slides {
+	height: 300px;
+
+	.card {
+
+		height: 250px;
+
+	}
+
 }

@@ -42,6 +42,19 @@ page-woo-list {
     	}
 	}
 
+	.card-content {
+		min-height: 100px;
+		padding-bottom: 0;
+	}
+
+	.btn-wrap {
+		padding: 0 15px 15px 15px;
+	}
+
+	.product-action {
+		margin-top: 15px
+	}
+
 	ion-select {
 		width: 100%;
 		max-width: 100%;

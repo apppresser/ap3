@@ -14,10 +14,10 @@
 
 <ion-slides *ngIf="card" pager>
 
-	<ion-slide *ngFor="let item of items" (click)="loadDetail(item)">
+	<ion-slide *ngFor="let item of items">
 		<ion-card>
 
-			<div class="card-featured-wrap" *ngIf="item.images || item.image">
+			<div (tap)="loadDetail(item)" class="card-featured-wrap" *ngIf="item.images || item.image">
 	        <div *ngIf="item.images && item.images[0].src" class="card-featured-image" [ngStyle]="{'background-image': 'url('+ item.images[0].src +')'}"></div>
 	        <div *ngIf="item.image && item.image.src" class="card-featured-image" [ngStyle]="{'background-image': 'url('+ item.image.src +')'}"></div>
 	      </div>
@@ -28,7 +28,7 @@
 
 	        <div class="item-content">
 
-	        	<ion-card-title *ngIf="item.name">
+	        	<ion-card-title (tap)="loadDetail(item)" *ngIf="item.name">
 		          <h3 [innerHTML]="item.name"></h3>
 		        </ion-card-title>
 
@@ -38,9 +38,7 @@
 
 		        <p *ngIf="item.sale_price" class="product-price">Sale! ${{item.sale_price}}</p>
 
-		        <p *ngIf="item.description" [innerHTML]="truncateString( item.description )" class="product-description"></p>
-
-		        <p *ngIf="item.average_rating && item.average_rating != '0.00'" class="product-rating"><em>Rating: {{item.average_rating}} stars</em></p>
+		        <button class="product-action" *ngIf="item.type" ion-button block small color="light" (tap)="productAction(item)">{{ getBtnText(item) | translate }}</button>
 
 		    </div>
 

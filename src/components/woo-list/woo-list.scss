@@ -50,4 +50,17 @@ woo-list {
 			margin-left: 5px;
     	}
 	}
+
+	.card-content {
+		min-height: 100px;
+		padding-bottom: 0;
+	}
+
+	.btn-wrap {
+		padding: 0 15px 15px 15px;
+	}
+
+	.product-action {
+		margin-top: 15px
+	}
 }
