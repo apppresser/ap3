@@ -35,7 +35,23 @@
 
 	    <p *ngIf="selectedItem.sale_price" class="product-price">Sale! ${{selectedItem.sale_price}}</p>
 
-	    <div class="star-rating-wrap" *ngIf="selectedItem.average_rating && selectedItem.average_rating != '0.00'"><div [ngClass]="selectedItem.average_rating >= 1 ? 'star-on' : 'star-off'"></div><div [ngClass]="selectedItem.average_rating >= 2 ? 'star-on' : 'star-off'"></div><div [ngClass]="selectedItem.average_rating >= 3 ? 'star-on' : 'star-off'"></div><div [ngClass]="selectedItem.average_rating >= 4 ? 'star-on' : 'star-off'"></div><div [ngClass]="selectedItem.average_rating == 5 ? 'star-on' : 'star-off'"></div></div>
+	    <div class="star-rating-wrap" *ngIf="selectedItem.average_rating && selectedItem.average_rating != '0.00'">
+	    	<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" [ngClass]="selectedItem.average_rating >= 1 ? 'star-on' : 'star-off'">
+				<path d="M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z" />
+			</svg>
+	    	<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" [ngClass]="selectedItem.average_rating >= 2 ? 'star-on' : 'star-off'">
+				<path d="M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z" />
+			</svg>
+			<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" [ngClass]="selectedItem.average_rating >= 3 ? 'star-on' : 'star-off'">
+				<path d="M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z" />
+			</svg>
+			<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" [ngClass]="selectedItem.average_rating >= 4 ? 'star-on' : 'star-off'">
+				<path d="M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z" />
+			</svg>
+			<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" [ngClass]="selectedItem.average_rating == 5 ? 'star-on' : 'star-off'">
+				<path d="M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z" />
+			</svg>
+		</div>
 
 		<div *ngIf="description" [innerHTML]="description"></div>
 
@@ -94,9 +110,15 @@
 				<ion-icon name="add-circle" (tap)="increment( selectedItem )" item-end></ion-icon>
 			</ion-item>
 			
-			<button *ngIf="productLoaded" ion-button type="submit" block>Add to Cart</button>
+
+			<button *ngIf="productLoaded" ion-button type="submit" block>{{ 'Add to Cart' | translate }}</button>
 
 		</form>
+
+		<ion-item class="add-to-list" *ngIf="productLoaded">
+			<span class="add-to-list-text">{{ 'Save for later?' | translate }}</span>
+			<button class="add-to-list-btn" (tap)="addToList()" ion-button color="light" item-end>{{ 'Add to List' | translate }}</button>
+		</ion-item>
 
 		<div *ngIf="reviews?.length" class="product-reviews">
 
@@ -109,7 +131,23 @@
 				      <img [src]="review.reviewer_avatar_urls['48']" class="reviewer-avatar">
 				    </ion-avatar>
 				    <h3 class="reviewer-name">{{ review.reviewer }}</h3>
-				    <div class="star-rating-wrap"><div [ngClass]="selectedItem.average_rating >= 1 ? 'star-on' : 'star-off'"></div><div [ngClass]="selectedItem.average_rating >= 2 ? 'star-on' : 'star-off'"></div><div [ngClass]="selectedItem.average_rating >= 3 ? 'star-on' : 'star-off'"></div><div [ngClass]="selectedItem.average_rating >= 4 ? 'star-on' : 'star-off'"></div><div [ngClass]="selectedItem.average_rating == 5 ? 'star-on' : 'star-off'"></div></div>
+				    <div class="star-rating-wrap">
+				    	<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" [ngClass]="review.rating >= 1 ? 'star-on' : 'star-off'">
+							<path d="M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z" />
+						</svg>
+				    	<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" [ngClass]="review.rating >= 2 ? 'star-on' : 'star-off'">
+							<path d="M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z" />
+						</svg>
+						<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" [ngClass]="review.rating >= 3 ? 'star-on' : 'star-off'">
+							<path d="M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z" />
+						</svg>
+						<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" [ngClass]="review.rating >= 4 ? 'star-on' : 'star-off'">
+							<path d="M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z" />
+						</svg>
+						<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" [ngClass]="review.rating == 5 ? 'star-on' : 'star-off'">
+							<path d="M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z" />
+						</svg>
+					</div>
 				    <div [innerHTML]="review.review"></div>
 				    <!--p class="review-date">{{ review.date_created }}</p-->
 				</ion-item>

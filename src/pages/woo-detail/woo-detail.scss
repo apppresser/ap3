@@ -100,12 +100,24 @@ page-woo-detail {
 	}
 
 	.star-off, .star-on {
-	  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='80'%20height='30'%3E%3Cpath%20d='M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z'%20fill='%23c0c0c0'%20stroke='%23c0c0c0'/%3E%3Cpath%20d='M57.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z'%20fill='%23ffd83d'%20stroke='%23eac328'/%3E%3C/svg%3E");
 	  height: 30px; 
 	  width: 30px;
 	  display: inline-block;
 	}
-	.star-off { background-position: 0px 0px }
-	.star-on { background-position: -40px 0px }
+	.star-off { fill:#c0c0c0; stroke:#c0c0c0 }
+	.star-on { fill:#ffd83d; stroke:#eac328 }
+
+	.item.add-to-list {
+		margin: 15px 0;
+		background-color: #f4f4f4d6;
+		
+		.item-inner {
+			border-bottom: none;
+		}
+
+		.add-to-list-text {
+			font-size: 1.6rem;
+		}
+	}
 
 }

@@ -76,8 +76,25 @@
 
       </ion-card-content>
 
-      <div class="btn-wrap" *ngIf="item.type">
+      <div class="btn-wrap" *ngIf="item.type && !showingSavedItems">
+
         <button class="product-action" ion-button block small color="light" (tap)="productAction(item)">{{ getBtnText(item) | translate }}</button>
+
+      </div>
+
+      <div *ngIf="showingSavedItems" class="saved-items-btns">
+
+        <ion-grid>
+          <ion-row>
+            <ion-col col-6>
+              <button class="product-action" ion-button block small clear icon-start (tap)="productAction(item)"><ion-icon name="add-circle"></ion-icon> {{ getBtnText(item) | translate }}</button>
+            </ion-col>
+            <ion-col col-6>
+              <button class="remove-from-list" ion-button block small clear icon-start (tap)="removeFromList(item)"><ion-icon name="remove-circle"></ion-icon> {{ 'Remove' | translate }}</button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
       </div>
 
     </ion-card>

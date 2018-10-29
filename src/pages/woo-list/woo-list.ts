@@ -23,6 +23,7 @@ export class WooList {
 	showSearch: boolean = false;
 	title: string;
 	stopLoop: boolean = false;
+	showingSavedItems: boolean = false;
 
 	constructor(
 		public navCtrl: NavController, 
@@ -62,9 +63,13 @@ export class WooList {
 
 	ionViewDidLoad() {
 
-		this.loadProducts( this.route )
-
-		this.getCategories()
+		if( this.route === 'woo_saved_items' ) {
+			this.getSavedItems()
+			this.showingSavedItems = true
+		} else {
+			this.loadProducts( this.route )
+			this.getCategories()
+		}
 		
 	}
 
@@ -94,6 +99,28 @@ export class WooList {
 			// don't need to save count to storage, it's already saved in woo.ts
 		})
 		
+	}
+
+	getSavedItems() {
+
+		this.storage.get( 'woo_saved_items' ).then( items => {
+			this.items = items
+		})
+	}
+
+	removeFromList( item ) {
+
+		for (let i = this.items.length - 1; i >= 0; i--) {
+			if( this.items[i].id === item.id ) {
+			  this.items.splice(i, 1);
+			  break;
+			}
+		}
+
+		this.storage.set( 'woo_saved_items', this.items )
+
+		this.presentToast( item.name + ' removed from list.' )
+
 	}
 
 	loadProducts( route ) {
@@ -184,7 +211,7 @@ export class WooList {
 
 	}
 
-	loadDetail(event, item) {
+	loadDetail(item) {
 
 		let opt = {};
 

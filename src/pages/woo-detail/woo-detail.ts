@@ -208,6 +208,39 @@ export class WooDetail {
 
 	}
 
+	addToList() {
+
+		this.storage.get('woo_saved_items').then( items => {
+
+			if( !items ) {
+				items = [ this.selectedItem ]
+			} else {
+
+				var inArray = false;
+
+			    for (let i = items.length - 1; i >= 0; i--) {
+
+			      if( items[i].id === this.selectedItem.id ) {
+			        inArray = true;
+			        break;
+			      }
+
+			    }
+
+			    // Don't add duplicate favs
+			    if( inArray === false ) {
+			    	items.push( this.selectedItem )
+			    }
+
+			}
+
+			this.storage.set( 'woo_saved_items', items )
+		})
+
+		this.presentToast( this.selectedItem.name + ' added to list.')
+
+	}
+
 	getVariationId( item ) {
 
 		// match attributes with a variation ID
@@ -215,7 +248,7 @@ export class WooDetail {
 
 	addGroupedItem( item ) {
 
-		this.presentToast( 'Adding ' + this.selectedItem.name + ' to cart.' )
+		this.presentToast( this.selectedItem.name + ' added to cart.' )
 
 		var that = this;
 
