@@ -42,6 +42,8 @@ export class WooList {
 			this.route = 'products'
 		}
 
+		console.log('route ' + this.route)
+
 		this.title = this.navParams.get('title')
 
 		events.subscribe('add_to_cart', data => {
@@ -214,6 +216,8 @@ export class WooList {
 	loadDetail(item) {
 
 		let opt = {};
+
+		console.log( item )
 
 		if( item.price ) {
 			

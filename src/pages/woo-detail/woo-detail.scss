@@ -94,19 +94,6 @@ page-woo-detail {
 		font-weight: bold;
 	}
 
-	.star-rating-wrap {
-		height: 30px;
-		overflow: hidden;
-	}
-
-	.star-off, .star-on {
-	  height: 30px; 
-	  width: 30px;
-	  display: inline-block;
-	}
-	.star-off { fill:#c0c0c0; stroke:#c0c0c0 }
-	.star-on { fill:#ffd83d; stroke:#eac328 }
-
 	.item.add-to-list {
 		margin: 15px 0;
 		background-color: #f4f4f4d6;
@@ -120,4 +107,18 @@ page-woo-detail {
 		}
 	}
 
+}
+
+// global
+.star-rating-wrap {
+	height: 25px;
+	overflow: hidden;
+
+	.star-off, .star-on {
+	  height: 20px; 
+	  width: 20px;
+	  display: inline-block;
+	}
+	.star-off { fill:#c0c0c0; stroke:#c0c0c0 }
+	.star-on { fill:#ffd83d; stroke:#eac328 }
 }

@@ -7,6 +7,8 @@ import { ApListComponentModule } from '../../components/ap-list/ap-list.module';
 import { ApSliderComponentModule } from '../../components/ap-slider/ap-slider.module';
 import { WooListComponentModule } from '../../components/woo-list-component/woo-list-component.module';
 import { WooSliderComponentModule } from '../../components/woo-slider/woo-slider.module';
+import { StarRatingComponentModule } from '../../components/star-rating/star-rating.module';
+
 
 @NgModule({
   declarations: [
@@ -19,7 +21,8 @@ import { WooSliderComponentModule } from '../../components/woo-slider/woo-slider
     ApListComponentModule,
     ApSliderComponentModule,
     WooListComponentModule,
-    WooSliderComponentModule
+    WooSliderComponentModule,
+    StarRatingComponentModule
   ],
   entryComponents: [
     CustomPage

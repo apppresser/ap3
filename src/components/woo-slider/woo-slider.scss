@@ -62,7 +62,8 @@ woo-slider {
 		}
 
 		.product-action {
-			margin-top: 15px
+			margin-top: 15px;
+			display: none;
 		}
 	}
 	
@@ -85,11 +86,11 @@ woo-slider {
 }
 
 .related-products woo-slider ion-slides {
-	height: 300px;
+	height: 275px;
 
 	.card {
 
-		height: 250px;
+		height: 220px;
 
 	}
 

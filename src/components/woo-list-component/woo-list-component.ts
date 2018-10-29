@@ -85,6 +85,7 @@ export class WooListComponent implements OnInit {
 
 		  // Loads posts from WordPress API
 		  this.items = items;
+		  console.log(items)
 
 		  this.storage.set( this.route.substr(-10, 10) + '_woo', items);
 

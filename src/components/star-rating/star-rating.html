@@ -1,0 +1,27 @@
+<div class="star-rating-wrap" *ngIf="rating && rating != '0.00'">
+    <div [ngClass]="rating >= 1 ? 'star-on' : 'star-off'">
+      <svg viewBox="5 0 30 30" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" >
+        <path d="M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z" />
+      </svg>
+    </div>
+    <div [ngClass]="rating >= 2 ? 'star-on' : 'star-off'">
+      <svg viewBox="5 0 30 30" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" >
+        <path d="M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z" />
+      </svg>
+    </div>
+    <div [ngClass]="rating >= 3 ? 'star-on' : 'star-off'">
+      <svg viewBox="5 0 30 30" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" >
+        <path d="M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z" />
+      </svg>
+    </div>
+    <div [ngClass]="rating >= 4 ? 'star-on' : 'star-off'">
+      <svg viewBox="5 0 30 30" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" >
+        <path d="M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z" />
+      </svg>
+    </div>
+    <div [ngClass]="rating >= 5 ? 'star-on' : 'star-off'">
+      <svg viewBox="5 0 30 30" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" >
+        <path d="M17.5,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z" />
+      </svg>
+    </div>
+</div>
