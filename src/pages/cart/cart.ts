@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController, Events, ToastController, LoadingController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController, Events, ToastController, LoadingController, Platform } from 'ionic-angular';
 import {Iframe} from '../iframe/iframe';
 import { Storage } from '@ionic/storage';
 import { WooProvider } from '../../providers/woo/woo';
@@ -26,7 +26,8 @@ export class CartPage {
 		public events: Events,
 		public wooProvider: WooProvider,
 		public toastCtrl: ToastController,
-		public loadingCtrl: LoadingController
+		public loadingCtrl: LoadingController,
+		public platform: Platform
 		) {
 
 
@@ -165,6 +166,19 @@ export class CartPage {
     	this.navCtrl.push(Iframe, { url: url + 'checkout', title: 'Checkout' } );
 
 		//this.navCtrl.push('CheckoutPage');
+
+	}
+
+	loadDetail(item) {
+
+		let opt = {};
+
+		if( this.platform.isRTL && this.platform.is('ios') )
+		  opt = { direction: 'back' }
+			
+		this.navCtrl.push('WooDetail', {
+		  item: item
+		}, opt);
 
 	}
 

@@ -34,11 +34,11 @@
 
     <ion-item *ngFor="let item of products">
 
-    	<ion-thumbnail item-start *ngIf="item.product_image">
+    	<ion-thumbnail (tap)="loadDetail(item)" item-start *ngIf="item.product_image">
 	      <img src="{{item.product_image}}" class="product-image">
 	    </ion-thumbnail>
 
-  		<h2 *ngIf="item.product_name" [innerHTML]="item.product_name"></h2>
+  		<h2 (tap)="loadDetail(item)" *ngIf="item.product_name" [innerHTML]="item.product_name"></h2>
 
   		<ion-grid>
         <ion-row>
