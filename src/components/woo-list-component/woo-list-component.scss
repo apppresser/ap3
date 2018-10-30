@@ -64,4 +64,16 @@ woo-list {
 		margin-top: 15px;
 		display: none;
 	}
+
+	.loading-squares {
+		width: 100%;
+		height: 300px;
+		display: block;
+
+		.loading-square {
+			height: 20px;
+			margin: 15px 0;
+			width: 100%;
+		}
+	}
 }

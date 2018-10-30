@@ -1,5 +1,8 @@
 woo-slider {
 
+	position: relative;
+	display: block;
+
 	.list-loading-spinner {
 	    text-align: center;
 	    margin: 5px;
@@ -94,4 +97,41 @@ woo-slider {
 
 	}
 
+}
+
+@keyframes loadingAnimation {
+   0% {
+     opacity: .8;
+   }
+   50% {
+   	opacity: .2;
+   }
+   100% {
+     opacity: .8;
+   }
+
+}
+
+.loading-squares {
+	width: 100%;
+	height: 80%;
+	position: absolute;
+	z-index: 2;
+	display: flex;
+
+	.loading-square {
+		height: 100%;
+		flex: 1;
+		margin-right: 2%;
+		border-radius: 3px;
+		background-color: #eeeeee;
+		animation-name: loadingAnimation; 
+		animation-duration: 2s; 
+		animation-iteration-count: infinite;
+		animation-timing-function: ease;
+	}
+
+	.loading-square:last-child {
+		margin-right: 0;
+	}
 }

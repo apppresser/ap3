@@ -1,4 +1,13 @@
-<div class="list-loading-spinner" *ngIf="loading"><ion-spinner name="bubbles"></ion-spinner></div>
+<div class="loading-squares" *ngIf="loading">
+ <div class="loading-square">
+ </div>
+ <div class="loading-square">
+ </div>
+ <div class="loading-square">
+ </div>
+ <div class="loading-square">
+ </div>
+</div>
 
 <div *ngIf="refresh && !loading" class="list-refresher">
   <ion-icon name="refresh" (tap)="doRefresh()"></ion-icon>

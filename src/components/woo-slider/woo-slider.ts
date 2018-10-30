@@ -29,7 +29,6 @@ export class WooSliderComponent {
 	@Input() freeMode: string;
 	@Input() wp: string;
 	@Input() spaceBetween: string;
-	@Input() card: boolean = false;
 
 	items: any;
 	loading: any;

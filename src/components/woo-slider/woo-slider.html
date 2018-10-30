@@ -1,18 +1,15 @@
-<div class="list-loading-spinner" *ngIf="loading"><ion-spinner name="bubbles"></ion-spinner></div>
+<div class="loading-squares" *ngIf="loading">
+ <div class="loading-square">
+ </div>
+ <div class="loading-square" *ngIf="slidesPerView && slidesPerView >= 2">
+ </div>
+ <div class="loading-square" *ngIf="slidesPerView && slidesPerView >= 3">
+ </div>
+ <div class="loading-square" *ngIf="slidesPerView && slidesPerView >= 4">
+ </div>
+</div>
 
-<ion-slides *ngIf="!card" pager>
-
-	<ion-slide *ngFor="let item of items" [ngStyle]="{'background-image': 'url(' + ( item.images ? item.images[0].src : '' ) + ')'}" (click)="loadDetail(item)">
-
-		<h3 class="item-title" *ngIf="item.name" [innerHTML]="item.name"></h3>
-
-		<div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.item_content" [innerHTML]="item.appp.post_list.item_content"></div>
-
-	</ion-slide>
-
-</ion-slides>
-
-<ion-slides *ngIf="card" pager>
+<ion-slides pager>
 
 	<ion-slide *ngFor="let item of items">
 		<ion-card>

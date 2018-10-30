@@ -101,7 +101,7 @@
 
 		<ion-item class="add-to-list" *ngIf="productLoaded">
 			<span class="add-to-list-text">{{ 'Save for later?' | translate }}</span>
-			<button class="add-to-list-btn" (tap)="addToList()" ion-button color="light" item-end>{{ 'Add to List' | translate }}</button>
+			<button class="add-to-list-btn" (tap)="addToList()" ion-button color="light" item-end icon-start><ion-icon name="add"></ion-icon> {{ 'Add to List' | translate }}</button>
 		</ion-item>
 
 		<div *ngIf="reviews?.length" class="product-reviews">
