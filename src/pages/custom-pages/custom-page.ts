@@ -10,6 +10,7 @@ import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {MenuService} from "../../providers/menus/menu.service";
 import {IAP} from '../../providers/inapppurchase/inapppurchase';
 import {AnalyticsService} from '../../providers/analytics/analytics.service';
+import { WooProvider } from '../../providers/woo/woo';
 
 import {Iframe} from "../iframe/iframe";
 
@@ -100,6 +101,8 @@ export class CustomPage implements OnInit, OnDestroy {
 	use_dynamic: boolean = false;
 	isOffline: boolean;
 	isOnline: boolean;
+	showCartIcon: boolean = false;
+	cart_count: number;
 
 	constructor(
 		public navParams: NavParams,
@@ -123,7 +126,8 @@ export class CustomPage implements OnInit, OnDestroy {
 		private networkstatus: NetworkStatusService,
 		private zone: NgZone,
 		private analyticsservice: AnalyticsService,
-		private network: Network
+		private network: Network,
+		public wooProvider: WooProvider
         ) {}
 
 	ngOnInit() {
@@ -175,6 +179,7 @@ export class CustomPage implements OnInit, OnDestroy {
 
 		this.listener();
 
+		this.wooEvents()
 
 	}
 
@@ -204,6 +209,24 @@ export class CustomPage implements OnInit, OnDestroy {
 				}
 	      }
 	    });
+	}
+
+	wooEvents() {
+
+		this.events.subscribe( 'show_cart_icon', data => {
+			if( data ) {
+				this.showCartIcon = true;
+				this.getCartCount()
+			}
+		})
+
+		this.events.subscribe( 'cart_change', data => {
+			if( data ) {
+				this.cart_count = data
+			} else {
+				this.cart_count = null
+			}
+		})
 	}
 
 	// changes the back button transition direction if app is RTL
@@ -661,6 +684,34 @@ export class CustomPage implements OnInit, OnDestroy {
 			});
 			/** Development mode only -- END */
 		}));
+	}
+
+	getCartCount() {
+
+		// get cart count from storage, or hit API if we don't have it
+		this.storage.get( 'cart_count' ).then( data => {
+			if( data ) {
+				this.cart_count = data
+			} else {
+				this.getCartFromAPI()
+			}
+		})
+	}
+
+	getCartFromAPI() {
+
+		this.wooProvider.getCartContents().then( cart => {
+
+			this.cart_count = ( cart && typeof cart != 'string' && (<any>cart).cart_total ? (<any>cart).cart_total.cart_contents_count : '' )
+			// don't need to save count to storage, it's already saved in woo.ts
+		})
+		
+	}
+
+	showCart() {
+
+	    this.nav.push('CartPage')
+
 	}
 
 	/** Development mode only -- START */

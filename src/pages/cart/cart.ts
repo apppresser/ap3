@@ -14,6 +14,7 @@ export class CartPage {
 	products: any;
 	cart_total: any;
 	cartEmpty: string;
+	cart_count: number;
 	quantity: any;
 	loading: any;
 
@@ -47,7 +48,11 @@ export class CartPage {
 			} else {
 				this.products = (<any>response).products 
 				this.cart_total = (<any>response).cart_total.cart_contents_total
+				this.cart_count = (<any>response).cart_total.cart_contents_count
 			}
+
+			// any time a cart item is changed we get here, so publish cart count event here
+			this.events.publish( 'cart_change', this.cart_count )
 			
 			console.log(response ) 
 		})
@@ -83,7 +88,8 @@ export class CartPage {
 			this.cart_total = 0
 			this.presentToast(response)
 			this.storage.set( 'cart_count', 0 )
-			this.events.publish( 'clear_cart', 0 )
+			this.events.publish( 'cart_change', 0 )
+			this.cartEmpty = "Cart is empty."
 
 		}).catch( e => console.warn(e) )
 
@@ -112,7 +118,6 @@ export class CartPage {
 
 			// success
 			console.log(response )
-			this.events.publish( 'cart_change' )
 
 		} ).catch( e => {
 			this.presentToast("Could not remove item.")
@@ -145,7 +150,6 @@ export class CartPage {
 			this.presentToast(response )
 			// update totals
 			this.getCartContents()
-			this.events.publish( 'cart_change' )
 
 		} ).catch( e => {
 			this.presentToast("Could not update item.")

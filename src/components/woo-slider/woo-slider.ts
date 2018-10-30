@@ -63,6 +63,8 @@ export class WooSliderComponent {
 		      this.loadPosts();
 		    }
 
+		    this.cartIconEvent()
+
 		}
 
 		// set options based on input attributes
@@ -90,6 +92,11 @@ export class WooSliderComponent {
 			this.slides.spaceBetween = this.spaceBetween;
 		}
 
+	}
+
+	// this is used to show the cart icon on custom page headers
+	cartIconEvent() {
+		this.events.publish( 'show_cart_icon', true )
 	}
 
 	// get posts from storage when we are offline
@@ -260,9 +267,9 @@ export class WooSliderComponent {
 			}
 			this.storage.set( 'cart_count', count )
 
-		})
+			this.events.publish( 'cart_change', count )
 
-		this.events.publish( 'add_to_cart', item )
+		})
 
 	}
 

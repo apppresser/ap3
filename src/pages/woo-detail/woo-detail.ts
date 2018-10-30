@@ -38,13 +38,8 @@ export class WooDetail {
 
 		this.loadProduct()
 
-		events.subscribe( 'clear_cart', data => {
-	      this.cart_count = 0
-	      console.log('detail clear cart ' + this.cart_count )
-	    });
-
-	    events.subscribe('cart_change', data => {
-	      this.getCartFromAPI()
+	    events.subscribe('cart_change', count => {
+	      this.cart_count = (<number>count)
 	    });
 
 	    // make sure cart count is always updated on initial load
@@ -70,7 +65,7 @@ export class WooDetail {
 	getCartFromAPI() {
 
 		this.wooProvider.getCartContents().then( cart => {
-			this.cart_count = ( cart && typeof cart != 'string' && (<any>cart).cart_total ? (<any>cart).cart_total.cart_contents_count : '' )
+			this.cart_count = ( cart && typeof cart != 'string' && (<any>cart).cart_total ? (<any>cart).cart_total.cart_contents_count : 0 )
 			// don't need to save count to storage, it's already saved in woo.ts
 		})
 
@@ -157,20 +152,6 @@ export class WooDetail {
 	// we show success right away to enhance perceived speed
 	// only if there is an error we alert the user
 	instantAdd( item, grouped ) {
-
-		this.cart_count = ( this.cart_count ? this.cart_count : 0 )
-
-		if( grouped ) {
-
-			for( let product of this.groupedProducts ) {
-				this.cart_count = this.cart_count + parseInt( product.quantity )
-			}
-
-		} else {
-			this.cart_count = this.cart_count + parseInt( item.quantity )
-		}
-
-		this.storage.set( 'cart_count', this.cart_count )
 		
 		// flash cart icon
 		this.itemAdded = true
@@ -197,7 +178,7 @@ export class WooDetail {
 
 		this.wooProvider.addToCart( item ).then( data => {
 			
-			this.productAddSuccess( data, item )
+			this.productAddSuccess( item )
 
 		}).catch( e => { 
 
@@ -282,7 +263,7 @@ export class WooDetail {
 			item.quantity = ( productObject[0] ? productObject[0].quantity : 1 )
 
 			this.wooProvider.addToCart( item ).then( data => {
-				this.productAddSuccess( data, item )
+				this.productAddSuccess( item )
 			}).catch( e => { 
 				console.warn(e)
 				this.productAddError( e ) 
@@ -292,17 +273,19 @@ export class WooDetail {
 
 	}
 
-	productAddSuccess( data, item ) {
+	productAddSuccess( item ) {
 
-		this.events.publish( 'add_to_cart', item )
+		let quantity = ( item.quantity ? item.quantity : 1 )
+
+		console.log( this.cart_count, quantity )
+
+		this.cart_count = this.cart_count + quantity
+		this.storage.set( 'cart_count', this.cart_count )
+		this.events.publish( 'cart_change', this.cart_count )
 
 	}
 
 	productAddError( e ) {
-
-		this.cart_count--
-
-		this.storage.set( 'cart_count', this.cart_count )
 
 		let msg;
 

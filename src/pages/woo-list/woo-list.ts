@@ -42,20 +42,12 @@ export class WooList {
 			this.route = 'products'
 		}
 
-		console.log('route ' + this.route)
+		// console.log('route ' + this.route)
 
 		this.title = this.navParams.get('title')
 
-		events.subscribe('add_to_cart', data => {
-	      this.cart_count++
-	    });
-
-	    events.subscribe('clear_cart', data => {
-	      this.cart_count = 0
-	    });
-
-	    events.subscribe('cart_change', data => {
-	      this.getCartFromAPI()
+	    events.subscribe('cart_change', count => {
+	      this.cart_count = count
 	    });
 
 	    // make sure cart count is always updated on initial load
@@ -344,9 +336,11 @@ export class WooList {
 			}
 			this.storage.set( 'cart_count', count )
 
+			this.events.publish( 'cart_change', count )
+
 		})
 
-		this.events.publish( 'add_to_cart', item )
+		
 
 	}
 
