@@ -58,7 +58,6 @@ import {Iframe} from "../pages/iframe/iframe";
 /* Other */
 import { IonicStorageModule } from '@ionic/storage';
 import { WooProvider } from '../providers/woo/woo';
-import { NgxStripeModule } from 'ngx-stripe';
 import { IonicImageViewerModule } from 'ionic-img-viewer';
 
 // required for ng translate, tells it to look in assets folder for trans files
@@ -85,7 +84,6 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     HttpClientModule,
     IonicImageViewerModule,
     Angulartics2RouterlessModule.forRoot([Angulartics2GoogleAnalytics]),
-    NgxStripeModule.forRoot('pk_test_07YFA0DDYu5miC2ijbhzWOXw'),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
