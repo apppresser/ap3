@@ -1,5 +1,8 @@
 woo-list {
 
+	position: relative;
+	display: block;
+
 	.list-loading-spinner {
 	    text-align: center;
 	    margin: 5px;
@@ -71,9 +74,63 @@ woo-list {
 		display: block;
 
 		.loading-square {
-			height: 20px;
-			margin: 15px 0;
+			height: 100px;
+			margin: 10px 0;
 			width: 100%;
+			animation-name: loadingAnimation2;
 		}
+
+		// .loading-square:before {
+		//     content: '';
+		//     display: block;
+		//     float: left;
+		//     height: 50px;
+		//     width: 50px;
+		//     background-color: #fafafa;
+		//     margin: 25px;
+		//     border-radius: 50%;
+		// }
 	}
+	
+	&[card="true"] {
+
+		.loading-squares {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+
+			.loading-square {
+				height: 100%;
+
+				&:before {
+					display: none;
+				}
+			}
+		}
+
+	}
+
+	&.col-2 {
+
+		.loading-square {
+			height: 50%;
+			width: 48%;
+			flex: none;
+		}
+
+	}
+	
+}
+
+@keyframes loadingAnimation2 {
+   0% {
+     opacity: .2;
+   }
+   50% {
+   	opacity: .5;
+   }
+   100% {
+     opacity: .1;
+   }
+
 }

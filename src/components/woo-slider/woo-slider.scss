@@ -101,13 +101,13 @@ woo-slider {
 
 @keyframes loadingAnimation {
    0% {
-     opacity: .8;
+     opacity: .5;
    }
    50% {
-   	opacity: .2;
+   	opacity: .1;
    }
    100% {
-     opacity: .8;
+     opacity: .5;
    }
 
 }
@@ -120,10 +120,11 @@ woo-slider {
 	display: flex;
 
 	.loading-square {
+		opacity: .5;
 		height: 100%;
 		flex: 1;
 		margin-right: 2%;
-		border-radius: 3px;
+		border-radius: 5px;
 		background-color: #eeeeee;
 		animation-name: loadingAnimation; 
 		animation-duration: 2s; 
