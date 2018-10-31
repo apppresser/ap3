@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {InAppBrowser, InAppBrowserObject} from '@ionic-native/in-app-browser';
+import {Platform} from 'ionic-angular';
 
 /*
   Appwoo
@@ -11,10 +12,15 @@ export class AppWoo {
   iframe: any;
   browser: InAppBrowserObject;
 
-  constructor(private iab: InAppBrowser) {
+  constructor(private iab: InAppBrowser, public platform: Platform) {
   }
 
   paypal( paypal_url, redirect ) {
+
+    if( !this.platform.is('ios') && !this.platform.is('android') ) {
+      window.open( paypal_url, '_blank' )
+      return;
+    }
 
     this.browser = this.iab.create( paypal_url, '_blank' );
 

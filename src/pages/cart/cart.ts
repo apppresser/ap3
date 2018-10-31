@@ -33,7 +33,7 @@ export class CartPage {
 
 	}
 
-	ionViewDidLoad() {
+	ionViewDidEnter() {
 
 		this.getCartContents()
 		
@@ -46,6 +46,7 @@ export class CartPage {
 			if( typeof (<any>response) === 'string' ) {
 				this.cartEmpty = (<any>response)
 				this.cart_total = null
+				this.products = []
 			} else {
 				this.products = (<any>response).products 
 				this.cart_total = (<any>response).cart_total.cart_contents_total
@@ -59,24 +60,6 @@ export class CartPage {
 		})
 
 	}
-
-	// getCartStorage() {
-
-	// 	this.storage.get( 'cart' ).then( data => {
-
-	// 		if( !data )
-	// 			return;
-
-	// 		this.products = data
-
-	// 		for (var i = 0; i < data.length; ++i) {
-	// 			let total = parseInt( data[i].price ) * parseInt( data[i].quantity )
-	// 			this.cart_total = ( this.cart_total ? this.cart_total : 0 ) + total
-	// 		}
-
-	// 	})
-
-	// }
 
 	clearCart() {
 
