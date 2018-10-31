@@ -1403,6 +1403,15 @@ export class MyApp {
         this.nav.setRoot( 'TabsPage', this.navparams );
 
       }
+
+      if(!this.user) {
+        this.storage.get('force_login').then((data) => {
+          if(data && !this.user) {
+            this.openLoginModal();
+          }
+        });
+      }
+      
     } )
 
   }
