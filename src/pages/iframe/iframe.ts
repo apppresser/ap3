@@ -332,6 +332,19 @@ export class Iframe implements OnInit {
                     target: this.el.nativeElement.querySelector('.ap3-iframe')
                 };
                 this.doApppGeolocation(_e);
+            } else if( parsed.redirect ) {
+
+                console.log(parsed)
+
+                let order_id = /(\/[0-9]+\/)/g.exec( parsed.redirect )[0]
+                order_id = order_id.replace('/', '')
+
+                this.events.publish( 'cart_change', 0 )
+                
+                // close views and show thanks page
+                this.goBack()
+                this.nav.push( 'ThanksPage', { 'order_id': order_id } )
+
             }
         }
 

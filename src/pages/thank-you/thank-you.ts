@@ -35,4 +35,8 @@ export class ThanksPage {
 
 	}
 
+	thanksContinue() {
+		this.navCtrl.pop()
+	}
+
 }

@@ -1,7 +1,20 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Thank You!</ion-title>
+
+  	<ion-buttons start>
+      <button *ngIf="rtlBack" (click)="backRtlTransition()" ion-button class="custom-back-button">
+          <ion-icon name="arrow-back"></ion-icon>
+          {{'Back' | translate }}
+      </button>
+
+      <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+
+    </ion-buttons>
+
+    <ion-title>{{ 'Thank You!' | translate }}</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -10,18 +23,20 @@
 <ion-content padding>
 
 	<div *ngIf="order">
-		<h2>Thank you for your order!</h2>
+		<h2>{{ 'Thank you!' | translate }}</h2>
 
 		<ion-list>
 
 			<ion-item *ngFor="let item of order.line_items">
-				<p>{{item.name}}</p>
-				<p>{{item.total}}</p>
+				<p class="item-name">{{item.name}}</p>
+				<p class="item-total">{{item.total}}</p>
 			</ion-item>
-			<ion-item><strong>Total: {{order.total}}</strong></ion-item>
-			<ion-item><p>Status: {{order.status}}</p></ion-item>
+			<ion-item><strong>{{ 'Total:' | translate }} {{order.total}}</strong></ion-item>
+			<ion-item><p>{{ 'Status:' | translate }} {{order.status}}</p></ion-item>
 		</ion-list>
 
 	</div>
+
+	<button ion-button block (tap)="thanksContinue()">{{ 'Continue shopping' | translate }}</button>
 
 </ion-content>
