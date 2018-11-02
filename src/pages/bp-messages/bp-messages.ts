@@ -1,5 +1,5 @@
 import {NavController, NavParams, LoadingController, ToastController, ModalController, Platform, ViewController, Content, IonicPage, Events} from 'ionic-angular';
-import {Component, ViewChild, Input} from '@angular/core';
+import {Component, ViewChild, Input, Renderer, ElementRef} from '@angular/core';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {TranslateService} from '@ngx-translate/core';
 import {HeaderLogo} from '../../providers/header-logo/header-logo';
@@ -35,6 +35,7 @@ export class BpMessages {
   segment: any;
   boxArg: string = '?box=inbox'
   threadReply: string;
+  listenFunc: Function;
 
   constructor(
     public nav: NavController, 
@@ -52,7 +53,9 @@ export class BpMessages {
     private events: Events,
     private ga: AnalyticsService,
     public bpProvider: BpProvider,
-    public translate: TranslateService
+    public translate: TranslateService,
+    public renderer: Renderer,
+    public elementRef: ElementRef
   ) {
 
     let item = window.localStorage.getItem( 'myappp' );
@@ -84,6 +87,13 @@ export class BpMessages {
     }
 
     this.eventSubscribe()
+
+    // Listen for link clicks, open in in app browser
+    this.listenFunc = renderer.listen(elementRef.nativeElement, 'click', (event) => {
+
+      this.iabLinks( event.target, event )
+
+    });
     
   }
 
@@ -438,6 +448,31 @@ export class BpMessages {
 
   iabLink(link) {
   	window.open( link, '_blank' );
+  }
+
+  iabLinks( el, event? ) {
+
+    let target = '_blank'
+      
+    if( el.href && el.href.indexOf('http') >= 0 ) {
+
+      if( el.classList && el.classList.contains('system') )
+        target = '_system'
+
+      event.preventDefault()
+      window.open( el.href, target )
+
+    } else if( el.tagName == 'IMG' && el.parentNode.href && el.parentNode.href.indexOf('http') >= 0 ) {
+
+      // handle image tags that have link as the parent
+      if( el.parentNode.classList && el.parentNode.classList.contains('system') )
+        target = '_system'
+
+      event.preventDefault()
+      window.open( el.parentNode.href, target )
+
+    }
+
   }
 
   // changes the back button transition direction if app is RTL
