@@ -30,6 +30,9 @@ export class CartPage {
 		public platform: Platform
 		) {
 
+		events.subscribe('cart_change', count => {
+	      this.cart_count = (<number>count)
+	    })
 
 	}
 

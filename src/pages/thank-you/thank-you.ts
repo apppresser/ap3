@@ -11,6 +11,7 @@ export class ThanksPage {
 
 	order_id: any
 	order: any
+	title: string;
 
 	constructor(
 		public navCtrl: NavController, 
@@ -21,6 +22,10 @@ export class ThanksPage {
 
 	ionViewDidLoad() {
 		this.order_id = this.navParams.get('order_id');
+
+		console.log('order id: ' + this.order_id)
+
+		this.title = ( this.navParams.get('title') ? this.navParams.get('title') : "Your Order" )
 
 		if( this.order_id )
 			this.getOrder()
