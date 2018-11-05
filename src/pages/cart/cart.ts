@@ -44,6 +44,8 @@ export class CartPage {
 
 	getCartContents() {
 
+		this.showSpinner()
+
 		this.wooProvider.getCartContents().then( response => {
 
 			if( typeof (<any>response) === 'string' ) {
@@ -60,6 +62,10 @@ export class CartPage {
 			this.events.publish( 'cart_change', this.cart_count )
 			
 			console.log(response ) 
+		}).catch( e => {
+			console.warn(e)
+		}).then( () => {
+			this.hideSpinner()
 		})
 
 	}

@@ -43,6 +43,8 @@ export class Iframe implements OnInit {
     is_cached: boolean = false;
     browser: any;
     order_id: any;
+    browserSubscription1: any;
+    browserSubscription2: any;
 
     constructor(
         public navParams: NavParams,
@@ -238,6 +240,8 @@ export class Iframe implements OnInit {
 
     myListeners(e) {
 
+        console.log('iframe msg', e)
+
         // get current window so we can find active iframe
         let w = e.target;
 
@@ -371,12 +375,12 @@ export class Iframe implements OnInit {
 
         console.log('order id ' + this.order_id, obj.redirect )
 
-        this.browser.on('exit').subscribe( value => {
+        this.browserSubscription1 = this.browser.on('exit').subscribe( value => {
           console.log('browser closed 2', value)
           this.orderComplete()
         })
 
-        this.browser.on('loadstop').subscribe( event => {
+        this.browserSubscription2 = this.browser.on('loadstop').subscribe( event => {
           this.maybeCompletePaypalCheckout( event );
         })
 
@@ -432,8 +436,13 @@ export class Iframe implements OnInit {
 
     orderComplete() {
 
+        console.log('order complete')
+
         // TODO: if order is successful...
         this.events.publish( 'cart_change', 0 )
+
+        this.browserSubscription1.unsubscribe()
+        this.browserSubscription2.unsubscribe()
 
         this.goBack()
 
@@ -694,6 +703,7 @@ export class Iframe implements OnInit {
 
     // used by postMessage in applms to dismiss current view
     goBack() {
+
         this.findIframe();
 
         let page = this.findAncestor( this.iframe, 'ion-page' );
