@@ -83,7 +83,7 @@
             <p *ngIf="message.sender_data && message.sender_data.name" class="sender-name">{{ message.sender_data.name }}</p>
           </ion-avatar>
             
-            <p class="message-preview"><strong>{{ getSubject( message.subject ) }}</strong> <span [innerHTML]=" message.message"></span></p>
+            <p class="message-preview"><strong>{{ getSubject( message.subject ) }}</strong> <span [innerHTML]=" message.message | doLinks"></span></p>
 
         </ion-item>
 

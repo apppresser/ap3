@@ -2,7 +2,7 @@
 
 <div *ngIf="refresh && !loading" class="list-refresher">
   <ion-icon name="refresh" (tap)="doRefresh()"></ion-icon>
-  <span>{{ 'Refresh' | translate }}</span>
+  <span (tap)="doRefresh()">{{ 'Refresh' | translate }}</span>
 </div>
 
 <ion-list *ngIf="card">

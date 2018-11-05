@@ -18,9 +18,11 @@
 
   <form (ngSubmit)="submitForm()" padding *ngIf="login_data">
 
-    <ion-item *ngIf="isMessage && !navParams.data.recipients">
+    <ion-item *ngIf="isMessage && !navParams.data.recipients" class="message-recipients">
 
-      <ion-select [(ngModel)]="recipients" (ionChange)="recipientSelected()" name="recipients" placeholder="To:">
+      <ion-label *ngIf="!recipientArr?.length">To:</ion-label>
+
+      <ion-select *ngIf="recipientArr?.length" [(ngModel)]="recipients" (ionChange)="recipientSelected()" name="recipients" placeholder="To:">
 
         <ion-option *ngFor="let recipient of recipientArr" [value]="recipient.id">{{recipient.mention_name}}</ion-option>
 
