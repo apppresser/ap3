@@ -84,6 +84,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	header_logo_url: string;
 	show_header_logo: boolean = false;
 	customClasses: string;
+	customHeaderClasses: string;
 	pages: any;
 	products: any;
 	spinner: Loading;
@@ -170,6 +171,7 @@ export class CustomPage implements OnInit, OnDestroy {
 		/** Development mode only -- END */
 
 		this.customClasses = 'custom-page page-' + this.slug
+		this.customHeaderClasses = 'header-' + this.slug
 
 		this.listener();
 
@@ -669,6 +671,7 @@ export class CustomPage implements OnInit, OnDestroy {
 		segments: this.getSegments(),
 		platform: this.platform,
 		customClasses: this.customClasses,
+		customHeaderClasses: this.customHeaderClasses,
 		isOffline: this.isOffline,
 		isOnline: this.isOnline,
 		pushPage: (page) => {
