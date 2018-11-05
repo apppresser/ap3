@@ -241,7 +241,7 @@ export class Iframe implements OnInit {
 
             if(this.loading)
                 this.loading.dismiss().then(() => {
-                    // this.loading = null;
+                    this.loading = null;
                 });
 
         } else if( e.data === 'show_spinner' ) {
