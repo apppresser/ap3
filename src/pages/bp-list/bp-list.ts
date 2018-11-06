@@ -33,6 +33,7 @@ export class BpList implements OnInit {
   header_logo_url: string;
   show_header_logo: boolean = false;
   customClasses: string = '';
+  customHeaderClasses: string = '';
   login_data: any;
   groupId: any;
   groupList: boolean = false;
@@ -76,6 +77,8 @@ export class BpList implements OnInit {
     this.title = navParams.data.title;
 
     this.customClasses = 'bp-list' + ((navParams.data.slug) ? ' page-' + navParams.data.slug : '');
+    this.customHeaderClasses = (navParams.data.slug) ? ' header-' + navParams.data.slug : '';
+
 
     if(navParams.data.is_home == true) {
       this.doLogo()

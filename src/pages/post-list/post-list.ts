@@ -36,6 +36,7 @@ export class PostList implements OnInit {
   header_logo_url: string;
   show_header_logo: boolean = false;
   customClasses: string = '';
+  customHeaderClasses: string = '';
 
   constructor(
     public nav: NavController, 
@@ -58,6 +59,7 @@ export class PostList implements OnInit {
     this.title = navParams.data.title;
 
     this.customClasses = 'post-list' + ((navParams.data.slug) ? ' page-' + navParams.data.slug : '');
+    this.customHeaderClasses = (navParams.data.slug) ? ' header-' + navParams.data.slug : '';
 
     if(navParams.data.is_home == true) {
       this.doLogo()
