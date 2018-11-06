@@ -1407,7 +1407,9 @@ export class MyApp {
       if(!this.user) {
         this.storage.get('force_login').then((data) => {
           if(data && !this.user) {
-            this.openLoginModal();
+            setTimeout( () => {
+              this.openLoginModal();
+            }, 800); // a little time to load smoother
           }
         });
       }
