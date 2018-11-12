@@ -748,7 +748,7 @@ export class BpList implements OnInit {
       event.preventDefault()
 
       // handle @mention links
-      if( el.classList && el.classList.contains('bp-suggestions-mention') && el.text.indexOf('@') === 0 ) {
+      if( el.href.indexOf('members') >= 0 && el.text.indexOf('@') === 0 ) {
         this.openMember( { user: el.text.split("@")[1] } )
         return;
       }
