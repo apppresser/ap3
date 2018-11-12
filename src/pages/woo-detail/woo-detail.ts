@@ -180,12 +180,10 @@ export class WooDetail {
 			
 			this.productAddSuccess( item )
 
-		}).catch( e => { 
-
+		} ).catch( e => {
 			this.productAddError( e )
 			console.warn(e)
-
-		} )
+		})
 
 	}
 

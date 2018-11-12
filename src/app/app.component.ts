@@ -117,7 +117,8 @@ export class MyApp {
     private config: Config,
     private menuservice: MenuService,
     private analyticsservice: AnalyticsService,
-    private download: Download
+    private download: Download,
+    public iab: InAppBrowser
   ) {
 
     this.initializeApp();
@@ -270,6 +271,9 @@ export class MyApp {
     this.doStatusBar(data);
     this.getSetLang(data);
     this.getSetLogin();
+
+    // Uncomment this when we begin using WKWebview
+    // this.maybeSetCookie( data );
 
     this.apptitle = data.title;
 
@@ -758,6 +762,23 @@ export class MyApp {
       if( data.meta.design && data.meta.design.status_bar_bkg ) {
         this.StatusBar.backgroundColorByHexString(data.meta.design.status_bar_bkg);
       }
+    }
+
+  }
+
+  // if using WKWebview, we have to set a cookie by opening an invisible browser
+  maybeSetCookie( data ) {
+
+    if( this.platform.is('ios') || this.platform.is('android') && data.wordpress_url ) {
+
+      let browser = this.iab.create( data.wordpress_url, '_blank', 'hidden=yes' )
+
+      console.log('loading browser', browser)
+
+      setTimeout( () => {
+        browser.close()
+      }, 10000 )
+
     }
 
   }

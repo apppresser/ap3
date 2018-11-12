@@ -127,7 +127,7 @@
 
 		<div class="related-products" *ngIf="selectedItem.related_ids?.length">
 
-			<h3>Related Products</h3>
+			<h3>{{ 'Related Products' | translate }}</h3>
 
 			<woo-slider [route]="getRelatedRoute()" card="true" slidesPerView="2"></woo-slider>
 

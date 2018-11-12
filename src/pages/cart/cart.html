@@ -70,12 +70,10 @@
 <ion-footer>
   <ion-toolbar>
 
-      <button ion-button *ngIf="products?.length" full color="primary" (click)="goCheckout()">
+      <button ion-button class="checkout-btn" *ngIf="products?.length" full color="primary" (click)="openCheckout()" icon-end>
         {{ 'Checkout' | translate }}
         <ion-icon name="arrow-forward"></ion-icon>
       </button>
-
-      <button ion-button full *ngIf="!products?.length" (click)="dismiss()">Continue Shopping</button>
 
   </ion-toolbar>
 </ion-footer>

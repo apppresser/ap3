@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, ViewController, Events, ToastContr
 import {Iframe} from '../iframe/iframe';
 import { Storage } from '@ionic/storage';
 import { WooProvider } from '../../providers/woo/woo';
+import {InAppBrowser, InAppBrowserObject} from '@ionic-native/in-app-browser';
 
 @IonicPage()
 @Component({
@@ -17,6 +18,10 @@ export class CartPage {
 	cart_count: number;
 	quantity: any;
 	loading: any;
+	browser: any;
+	browserSubscription1: any;
+    browserSubscription2: any;
+    order_id: any;
 
 	constructor(
 		public navCtrl: NavController,
@@ -27,7 +32,8 @@ export class CartPage {
 		public wooProvider: WooProvider,
 		public toastCtrl: ToastController,
 		public loadingCtrl: LoadingController,
-		public platform: Platform
+		public platform: Platform,
+		public iab: InAppBrowser
 		) {
 
 		events.subscribe('cart_change', count => {
@@ -150,14 +156,12 @@ export class CartPage {
 		})
 	}
 
-	goCheckout() {
+	openCheckout() {
 
 		let item = window.localStorage.getItem( 'myappp' );
     	let url = JSON.parse( item ).wordpress_url;
 
-    	this.navCtrl.push(Iframe, { url: url + 'checkout', title: 'Checkout' } );
-
-		//this.navCtrl.push('CheckoutPage');
+    	this.createBrowser( url + 'checkout' )
 
 	}
 
@@ -174,9 +178,95 @@ export class CartPage {
 
 	}
 
-	dismiss() {
-		this.viewCtrl.dismiss();
+	createBrowser( url ) {
+
+		if( !this.platform.is('ios') && !this.platform.is('android') ) {
+			alert('Redirecting, please try from a device for a better checkout experience.')
+			window.open( url, '_blank' )
+			return;
+		}
+
+		this.browser = this.iab.create( url, '_blank', 'location=no,toolbarcolor=#ffffff,navigationbuttoncolor=#444444,closebuttoncolor=#444444' )
+
+		this.browserSubscription1 = this.browser.on('exit').subscribe( data => {
+          console.log('browser closed', data)
+          
+          // update cart in case items were changed on site
+          this.getCartContents()
+
+          this.browserCleanup( data )
+          // this.orderComplete()
+        })
+
+        this.browserSubscription2 = this.browser.on('loadstop').subscribe( event => {
+        	console.log('loadstop', event)
+          	this.maybeCompleteCheckout( event );
+        })
+
 	}
+
+	// get order ID from url (woocommerce)
+    getOrderId( url ) {
+
+        let order_id = '';
+
+        if( url.indexOf('order_id') >= 0 ) {
+            // get order ID param
+
+            if( url.indexOf('cmd=_cart') >= 0 ) {
+                url = decodeURIComponent( url )
+            }
+            
+            let url2 = new URL( url );
+            order_id = ( url2.searchParams.get("order_id") ? url2.searchParams.get("order_id") : null );
+        } else if( url.indexOf('order-received') >= 0 ) {
+            // get order ID from url
+            // this regex might fail if there are numbers in the url
+            order_id = /(\/[0-9]+\/)/g.exec( url )[0]
+            order_id = order_id.replace(/\//g, "")
+        }
+
+        return order_id;
+        
+    }
+
+	maybeCompleteCheckout( event ) {
+
+		if( event.url.indexOf('order-received') >= 0 ) {
+			this.order_id = this.getOrderId( event.url )
+			this.browser.close();
+			this.browserCleanup( null );
+			// send to order complete page
+        	this.orderComplete()
+		}
+
+	}
+
+	orderComplete() {
+
+        console.log('order complete')
+
+        // TODO: if order is unsuccessful don't clear cart...
+        this.clearCart()
+
+        this.browserSubscription1.unsubscribe()
+        this.browserSubscription2.unsubscribe()
+        // get empty cart page out of history
+        this.navCtrl.pop()
+
+        // send to order complete page
+        this.navCtrl.push('ThanksPage', { 'order_id': this.order_id } )
+
+    }
+
+	browserCleanup( data ) {
+    	console.log('browser closed', data)
+    	// TODO: figure out what to do here. Example: if order is incomplete, show message
+    	this.presentToast('Show appropriate message here')
+    	this.browserSubscription1.unsubscribe()
+        this.browserSubscription2.unsubscribe()
+        this.browser = null
+    }
 
 	presentToast(msg) {
 
