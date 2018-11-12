@@ -401,7 +401,7 @@ export class BpMessages {
   // we don't want to show auto-generated subjects, or empty subjects
   getSubject( subject ) {
 
-    if( !subject || subject === '' || subject === 'No Subject' || subject == 'undefined' || subject && subject.indexOf('Re:') >= 0 ) {
+    if( !subject || subject === '' || subject.indexOf('No Subject') >= 0 || subject == 'undefined' || subject && subject.indexOf('Re:') >= 0 ) {
       return null;
     } else {
       return subject + ':';

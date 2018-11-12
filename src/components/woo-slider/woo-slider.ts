@@ -51,20 +51,19 @@ export class WooSliderComponent {
 
 	ngAfterViewInit() {
 
-		if( this.route ) {
+		if( !this.route )
+			return;
 
-			this.networkState = this.network.type;
+		this.networkState = this.network.type;
 
-		    if( this.networkState === 'none' || this.networkState === 'unknown' ) {
-		      // if offline, get posts from storage
-		      this.getStoredPosts();
-		    } else {
-		      this.loadPosts();
-		    }
+	    if( this.networkState === 'none' || this.networkState === 'unknown' ) {
+	      // if offline, get posts from storage
+	      this.getStoredPosts();
+	    } else {
+	      this.loadPosts();
+	    }
 
-		    this.cartIconEvent()
-
-		}
+	    this.cartIconEvent()
 
 		// set options based on input attributes
 		if( this.slidesPerView ) {

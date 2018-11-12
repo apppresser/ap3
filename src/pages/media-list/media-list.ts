@@ -39,6 +39,7 @@ export class MediaList implements OnInit {
   header_logo_url: string;
   show_header_logo: boolean = false;
   customClasses: string = '';
+  customHeaderClasses: string = '';
   loadProgress: any = 0;
   showFeaturedImage: boolean = false;
 
@@ -88,6 +89,7 @@ export class MediaList implements OnInit {
     this.previewAlert(this.route);
 
     this.customClasses = 'post-list has-favorites' + ((navParams.data.slug) ? ' page-' + navParams.data.slug : '');
+    this.customHeaderClasses = (navParams.data.slug) ? ' header-' + navParams.data.slug : '';
 
     this.zone = new NgZone({ enableLongStackTrace: false });
     

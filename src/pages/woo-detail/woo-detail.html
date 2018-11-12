@@ -17,7 +17,7 @@
 
  <section *ngIf="selectedItem" class="single-product">
 
- 	<ion-slides pager>
+ 	<ion-slides pager class="single-product-images" *ngIf="selectedItem.images">
 
 	  <ion-slide *ngFor="let image of selectedItem.images">
 		<img src="{{image.src}}" class="product-image" imageViewer />

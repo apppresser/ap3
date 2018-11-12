@@ -41,10 +41,6 @@ export class Iframe implements OnInit {
     hide_share_icon: boolean = false;
     is_registration_page: boolean = false;
     is_cached: boolean = false;
-    browser: any;
-    order_id: any;
-    browserSubscription1: any;
-    browserSubscription2: any;
 
     constructor(
         public navParams: NavParams,
@@ -340,114 +336,8 @@ export class Iframe implements OnInit {
                     target: this.el.nativeElement.querySelector('.ap3-iframe')
                 };
                 this.doApppGeolocation(_e);
-            } else if( parsed.redirect ) {
-
-                console.log(parsed)
-
-                if( parsed.redirect.indexOf('paypal.com') >= 0 ) {
-                    // open in app browser
-                    this.openPaypalCheckout(parsed)
-                } else {
-                    
-                    // non paypal checkout
-                    let order_id = this.getOrderId( parsed.redirect )
-
-                    console.log(order_id)
-
-                    this.events.publish( 'cart_change', 0 )
-                    
-                    // close views and show thanks page
-                    this.goBack()
-                    this.nav.push( 'ThanksPage', { 'order_id': order_id } )
-                }
-
             }
         }
-
-    }
-
-    // handles the in app browser for Paypal checkout. Added 11-2018
-    openPaypalCheckout( obj ) {
-
-        this.browser = this.iab.create( obj.redirect, '_blank' )
-
-        this.order_id = this.getOrderId( obj.redirect )
-
-        console.log('order id ' + this.order_id, obj.redirect )
-
-        this.browserSubscription1 = this.browser.on('exit').subscribe( value => {
-          console.log('browser closed 2', value)
-          this.orderComplete()
-        })
-
-        this.browserSubscription2 = this.browser.on('loadstop').subscribe( event => {
-          this.maybeCompletePaypalCheckout( event );
-        })
-
-    }
-
-    maybeCompletePaypalCheckout( event ) {
-
-        console.log('browser loadstop. should send to thanks page or show error', event)
-
-        // get base url
-        let test_url = event.url.split('/')[2];
-
-        this.findIframe();
-        let src = this.iframe.src;
-        src = src.split('/')[2];
-
-        // If url in in-app browser is one of our own,
-        if ( src == test_url ) {
-
-            // trigger the in-app browser to close
-            this.browser.close();
-
-            this.orderComplete()
-
-        }
-
-    }
-
-    // get order ID from url (woocommerce)
-    getOrderId( url ) {
-
-        let order_id = '';
-
-        if( url.indexOf('order_id') >= 0 ) {
-            // get order ID param
-
-            if( url.indexOf('cmd=_cart') >= 0 ) {
-                url = decodeURIComponent( url )
-            }
-            
-            let url2 = new URL( url );
-            order_id = ( url2.searchParams.get("order_id") ? url2.searchParams.get("order_id") : null );
-        } else if( url.indexOf('order-received') >= 0 ) {
-            // get order ID from url
-            // this regex might fail if there are numbers in the url
-            order_id = /(\/[0-9]+\/)/g.exec( url )[0]
-            order_id = order_id.replace(/\//g, "")
-        }
-
-        return order_id;
-        
-    }
-
-    orderComplete() {
-
-        console.log('order complete')
-
-        // TODO: if order is successful...
-        this.events.publish( 'cart_change', 0 )
-
-        this.browserSubscription1.unsubscribe()
-        this.browserSubscription2.unsubscribe()
-
-        this.goBack()
-
-        // send to order complete page
-        this.nav.push('ThanksPage', { 'order_id': this.order_id } )
 
     }
 

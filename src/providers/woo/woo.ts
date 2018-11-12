@@ -29,7 +29,8 @@ export class WooProvider {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
         'Authorization': this.authString
-      })
+      }),
+      withCredentials: true
     };
 
   }
@@ -117,6 +118,8 @@ export class WooProvider {
 
       this.http.post( this.url.replace('wc/v3/', 'wc/v2/') + 'cart/add', data, this.httpOptions )
         .subscribe(response => {
+
+          console.log(response)
 
           resolve(response);
         },
