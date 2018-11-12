@@ -85,7 +85,6 @@ export class CartPage {
 			this.hideSpinner()
 			this.products = []
 			this.cart_total = 0
-			this.presentToast(response)
 			this.storage.set( 'cart_count', 0 )
 			this.events.publish( 'cart_change', 0 )
 			this.cartEmpty = "Cart is empty."
@@ -190,7 +189,7 @@ export class CartPage {
 
 		this.browserSubscription1 = this.browser.on('exit').subscribe( data => {
           console.log('browser closed', data)
-          
+
           // update cart in case items were changed on site
           this.getCartContents()
 
