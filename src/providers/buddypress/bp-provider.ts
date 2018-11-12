@@ -253,11 +253,15 @@ export class BpProvider {
 
     let route = this.url + this.restBase + 'activity/' + activity_id;
 
-    let data = 'user_id=' + login_data.user_id + '&action=' + action + '&token=' + login_data.token;
+    let data = { 
+      user_id: login_data.user_id,
+      action: action,
+      token: login_data.token
+    }
 
     return new Promise( (resolve, reject) => {
 
-      this.http.put( route + '?' + data, null )
+      this.http.post( route, data )
         .map(res => res.json())
         .subscribe(data => {
 
