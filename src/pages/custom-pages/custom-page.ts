@@ -713,10 +713,10 @@ export class CustomPage implements OnInit, OnDestroy {
 
 	showCart() {
 
-	    let cartPage = this.wooProvider.getWooPage()
+	    let cartPage = this.wooProvider.getWooPage('cart')
 	    let cartModule = this.getPageModuleName( cartPage.page_id )
 
-	    this.nav.push( cartModule, { title: 'Cart', cartPage } )
+	    this.nav.push( cartModule, cartPage )
 
 	}
 

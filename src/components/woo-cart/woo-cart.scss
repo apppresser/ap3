@@ -1,4 +1,8 @@
 woo-cart {
+
+	min-height: 200px;
+	display: block;
+
 	.footer .toolbar-background {
 		background: none;
 	}
@@ -39,4 +43,19 @@ woo-cart {
 	.product-remove ion-icon {
 		float:right;
 	}
+
+	.loading-squares {
+		display: block;
+		height: 275px;
+		overflow: hidden;
+		clear: both;
+
+		.loading-square {
+			height: 80px;
+			margin: 10px 0;
+			width: 100%;
+		}
+
+	}
+
 }

@@ -1,3 +1,10 @@
+<div class="loading-squares" *ngIf="loadingItems">
+ <div class="loading-square">
+ </div>
+ <div class="loading-square">
+ </div>
+</div>
+
 <div *ngIf="!products?.length">
   <p>{{ cartEmpty }}</p>
 </div>
@@ -38,7 +45,9 @@
 
 </ion-list>
 
-<button ion-button class="checkout-btn" *ngIf="products?.length" full color="primary" (click)="openCheckout()" icon-end>
-      {{ 'Checkout' | translate }}
-  <ion-icon name="arrow-forward"></ion-icon>
-</button>
+<div padding>
+  <button ion-button class="checkout-btn" *ngIf="products?.length" full color="primary" (click)="openCheckout()" icon-end>
+        {{ 'Checkout' | translate }}
+    <ion-icon name="arrow-forward"></ion-icon>
+  </button>
+</div>

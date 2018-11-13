@@ -20,6 +20,7 @@ export class WooCartComponent implements OnInit {
 	browserSubscription1: any;
     browserSubscription2: any;
     order_id: any;
+    loadingItems: boolean = false;
 
 	constructor(
 		public navCtrl: NavController,
@@ -48,7 +49,7 @@ export class WooCartComponent implements OnInit {
 
 	getCartContents() {
 
-		this.showSpinner()
+		this.loadingItems = true;
 
 		this.wooProvider.getCartContents().then( response => {
 
@@ -69,7 +70,7 @@ export class WooCartComponent implements OnInit {
 		}).catch( e => {
 			console.warn(e)
 		}).then( () => {
-			this.hideSpinner()
+			this.loadingItems = false
 		})
 
 	}
@@ -179,7 +180,7 @@ export class WooCartComponent implements OnInit {
 
 		if( !this.platform.is('ios') && !this.platform.is('android') ) {
 			alert('Redirecting, please try from a device for a better checkout experience.')
-			window.open( url, '_blank' )
+			window.open( url + '?appcommerce=1', '_blank' )
 			return;
 		}
 
