@@ -32,6 +32,7 @@ import { ApListComponentModule } from '../../components/ap-list/ap-list.module';
 import { ApSliderComponentModule } from '../../components/ap-slider/ap-slider.module';
 import { WooListComponentModule } from '../../components/woo-list-component/woo-list-component.module';
 import { WooSliderComponentModule } from '../../components/woo-slider/woo-slider.module';
+import { WooCartComponentModule } from '../../components/woo-cart/woo-cart.module';
 import { NetworkStatusService } from '../../providers/network/network-status.service';
 
 /*
@@ -77,7 +78,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	isRTL: boolean = false;
 	language: any;
 	templateUrl: string;
-	extraModules = [IonicModule, TranslateModule, ApListComponentModule, ApSliderComponentModule, WooListComponentModule, WooSliderComponentModule];
+	extraModules = [IonicModule, TranslateModule, ApListComponentModule, ApSliderComponentModule, WooListComponentModule, WooSliderComponentModule, WooCartComponentModule];
 	langs: any;
 	segments: any;
 	show_segments: boolean = false;
@@ -712,7 +713,10 @@ export class CustomPage implements OnInit, OnDestroy {
 
 	showCart() {
 
-	    this.nav.push('CartPage')
+	    let cartId = this.wooProvider.getCartId()
+	    let cartModule = this.getPageModuleName( cartId )
+
+	    this.nav.push( cartModule, { title: 'Cart', slug: 'custom-cart' } )
 
 	}
 

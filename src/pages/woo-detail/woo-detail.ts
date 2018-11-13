@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, isDevMode } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController, ModalController, Events } from 'ionic-angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Storage } from '@ionic/storage';
@@ -371,12 +371,18 @@ export class WooDetail {
 
 	showCart() {
 
-	    // this.cartModal = this.modalCtrl.create( 'CartPage' );
-	    
-	    // this.cartModal.present();
+	    let cartPageArr = this.wooProvider.getCartPage()
+	    let cartModule = this.getPageModuleName( cartPageArr[0] )
 
-	    this.navCtrl.push('CartPage')
+	    this.navCtrl.push( cartModule, { title: 'Cart', slug: cartPageArr[1] } )
 
+	}
+
+	getPageModuleName(page_id) {
+		if(!isDevMode())
+			return 'Page'+page_id;
+		else
+			return 'CustomPage';
 	}
 
 }

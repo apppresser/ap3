@@ -25,55 +25,6 @@
 
 <ion-content padding>
 
-  <div *ngIf="!items">
-    <p>{{ cartEmpty }}</p>
-  </div>
-
-	<ion-list class="post-list woocommerce" *ngIf="products">
-
-    <ion-item *ngFor="let item of products">
-
-    	<ion-thumbnail (tap)="loadDetail(item)" item-start *ngIf="item.product_image">
-	      <img src="{{item.product_image}}" class="product-image">
-	    </ion-thumbnail>
-
-  		<h2 (tap)="loadDetail(item)" *ngIf="item.product_name" [innerHTML]="item.product_name"></h2>
-
-  		<ion-grid>
-        <ion-row>
-          <ion-col col-4 class="product-price"><p *ngIf="item.line_total">${{item.line_total}}</p></ion-col>
-          <ion-col col-5 text-center class="product-quantity">
-
-              <ion-icon item-start name="remove-circle" (click)="decrement( item )"></ion-icon>
-              <span>{{ item.quantity }}</span>
-              <ion-icon item-end name="add-circle" (click)="increment( item )"></ion-icon>
-
-          </ion-col>
-          <ion-col class="product-remove" col-3  text-right (click)="removeItem(item)"><ion-icon name="close" color="danger"></ion-icon></ion-col>
-        </ion-row>
-      </ion-grid>
-
-    </ion-item>
-
-    <ion-item *ngIf="cart_total">
-      {{ 'Cart total:' | translate }} $ {{cart_total}}
-    </ion-item>
-
-    <ion-item *ngIf="cart_total">
-      <button ion-button icon-left color="light" (click)="clearCart()"><ion-icon name="trash"></ion-icon> {{ 'Clear Cart' | translate }}</button>
-    </ion-item>
-
-  </ion-list>
+  <woo-cart></woo-cart>
 
 </ion-content>
-
-<ion-footer>
-  <ion-toolbar>
-
-      <button ion-button class="checkout-btn" *ngIf="products?.length" full color="primary" (click)="openCheckout()" icon-end>
-        {{ 'Checkout' | translate }}
-        <ion-icon name="arrow-forward"></ion-icon>
-      </button>
-
-  </ion-toolbar>
-</ion-footer>
