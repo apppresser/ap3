@@ -371,10 +371,10 @@ export class WooDetail {
 
 	showCart() {
 
-	    let cartPageArr = this.wooProvider.getCartPage()
-	    let cartModule = this.getPageModuleName( cartPageArr[0] )
+	    let cartPage = this.wooProvider.getWooPage()
+	    let cartModule = this.getPageModuleName( cartPage.page_id )
 
-	    this.navCtrl.push( cartModule, { title: 'Cart', slug: cartPageArr[1] } )
+	    this.navCtrl.push( cartModule, { title: 'Cart', cartPage } )
 
 	}
 
