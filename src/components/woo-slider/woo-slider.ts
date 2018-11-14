@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { WooProvider } from '../../providers/woo/woo';
 import {NavController, NavParams, ToastController, Slides, ViewController, Platform, Events} from 'ionic-angular';
 
@@ -15,7 +15,7 @@ import {Iframe} from "../../pages/iframe/iframe";
   selector: 'woo-slider',
   templateUrl: 'woo-slider.html'
 })
-export class WooSliderComponent {
+export class WooSliderComponent implements AfterViewInit, OnInit {
 
 	@ViewChild(Slides) slides: Slides;
 
@@ -31,7 +31,7 @@ export class WooSliderComponent {
 	@Input() spaceBetween: string;
 
 	items: any;
-	loading: any;
+	loading: boolean = false;
 	networkState: string;
 
 	constructor(
@@ -49,7 +49,7 @@ export class WooSliderComponent {
 
 	}
 
-	ngAfterViewInit() {
+	ngOnInit() {
 
 		if( !this.route )
 			return;
@@ -62,8 +62,6 @@ export class WooSliderComponent {
 	    } else {
 	      this.loadPosts();
 	    }
-
-	    this.cartIconEvent()
 
 		// set options based on input attributes
 		if( this.slidesPerView ) {
@@ -89,6 +87,10 @@ export class WooSliderComponent {
 		if( this.spaceBetween ) {
 			this.slides.spaceBetween = this.spaceBetween;
 		}
+
+		setTimeout( ()=> {
+			this.cartIconEvent()
+		}, 100 )
 
 	}
 

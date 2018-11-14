@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, Events, ToastController, LoadingController, Platform } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { WooProvider } from '../../providers/woo/woo';
@@ -9,6 +9,8 @@ import {InAppBrowser, InAppBrowserObject} from '@ionic-native/in-app-browser';
   templateUrl: 'woo-cart.html',
 })
 export class WooCartComponent implements OnInit {
+
+	@Output() cart = new EventEmitter<boolean>();
 
 	products: any;
 	cart_total: any;
@@ -42,6 +44,9 @@ export class WooCartComponent implements OnInit {
 	}
 
 	ngOnInit() {
+
+		// tells the custom page to get the cart
+		this.cart.emit(true);
 
 		this.getCartContents()
 		

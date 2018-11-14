@@ -105,6 +105,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	isOnline: boolean;
 	showCartIcon: boolean = false;
 	cart_count: number;
+	cart: any;
 
 	constructor(
 		public navParams: NavParams,
@@ -703,7 +704,12 @@ export class CustomPage implements OnInit, OnDestroy {
 
 	getCartFromAPI() {
 
+		if( this.cart && this.cart.length )
+			return;
+
 		this.wooProvider.getCartContents().then( cart => {
+
+			this.cart = cart
 
 			this.cart_count = ( cart && typeof cart != 'string' && (<any>cart).cart_total ? (<any>cart).cart_total.cart_contents_count : '' )
 			// don't need to save count to storage, it's already saved in woo.ts
