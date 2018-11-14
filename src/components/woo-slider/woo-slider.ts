@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, AfterViewInit, OnInit } from '@angular/core';
+import { Component, Input, ViewChild, OnInit } from '@angular/core';
 import { WooProvider } from '../../providers/woo/woo';
 import {NavController, NavParams, ToastController, Slides, ViewController, Platform, Events} from 'ionic-angular';
 
@@ -15,7 +15,7 @@ import {Iframe} from "../../pages/iframe/iframe";
   selector: 'woo-slider',
   templateUrl: 'woo-slider.html'
 })
-export class WooSliderComponent implements AfterViewInit, OnInit {
+export class WooSliderComponent implements OnInit {
 
 	@ViewChild(Slides) slides: Slides;
 

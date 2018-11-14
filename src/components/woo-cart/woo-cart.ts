@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, isDevMode } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, Events, ToastController, LoadingController, Platform } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { WooProvider } from '../../providers/woo/woo';
@@ -258,9 +258,18 @@ export class WooCartComponent implements OnInit {
         this.navCtrl.pop()
 
         // send to order complete page
-        this.navCtrl.push('ThanksPage', { 'order_id': this.order_id } )
+        let acctPage = this.wooProvider.getWooPage('account')
+        let acctModule = this.getPageModuleName( acctPage.page_id )
+        this.navCtrl.push( acctModule, { 'order_id': this.order_id } )
 
     }
+
+    getPageModuleName(page_id) {
+		if(!isDevMode())
+			return 'Page'+page_id;
+		else
+			return 'CustomPage';
+	}
 
 	browserCleanup( data ) {
     	console.log('browser closed', data)
