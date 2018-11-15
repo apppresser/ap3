@@ -61,10 +61,10 @@
 
       <button ion-button item-end *ngIf="wishlist" icon-only color="danger" clear (tap)="removeSavedItem(item)"><ion-icon name="close-circle"></ion-icon></button>
 
-      <ion-avatar (tap)="loadDetail(item)" item-left *ngIf="item.images">
+      <ion-thumbnail class="product-thumbnail" (tap)="loadDetail(item)" item-start *ngIf="item.images">
         <img *ngIf="item.images[0] && item.images[0].src" src="{{item.images[0].src}}">
         <img *ngIf="!item.images[0]" src="assets/woo-default.png">
-      </ion-avatar>
+      </ion-thumbnail>
 
       <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.above_title" [innerHTML]="item.appp.woo_list.above_title"></div>
 
