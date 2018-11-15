@@ -1,38 +1,45 @@
-<div *ngIf="order_id">
-	<h2>{{ 'Your Order' | translate }}</h2>
+<div class="woo-account-wrap" padding>
 
-	<ion-list>
+	<div *ngIf="order_id">
+		<h2>{{ 'Your Order' | translate }}</h2>
 
-		<ion-item *ngFor="let item of orders.line_items">
-			<p class="item-name">{{item.name}}</p>
-			<p class="item-total">{{item.total}}</p>
-		</ion-item>
-		<ion-item><strong>{{ 'Total:' | translate }} {{order.total}}</strong></ion-item>
-		<ion-item><p>{{ 'Status:' | translate }} {{order.status}}</p></ion-item>
-	</ion-list>
+		<ion-list *ngIf="orderConfirmation">
 
-</div>
+			<ion-item *ngFor="let item of orderConfirmation.line_items">
+				<p class="item-name">{{item.name}}</p>
+				<p class="item-total">{{item.total}}</p>
+			</ion-item>
+			<ion-item>
+				<p><strong>{{ 'Total:' | translate }} {{orderConfirmation.total}}</strong></p>
+				<p>{{ 'Status:' | translate }} {{orderConfirmation.status}}</p>
+				<p>{{ 'Number:' | translate }} {{orderConfirmation.number}}</p>
+			</ion-item>
+		</ion-list>
 
-<div *ngIf="customer && orders?.length">
+	</div>
 
-	<h2>{{ 'Your Orders' | translate }}</h2>
+	<div *ngIf="customer && orders?.length">
 
-	<ion-list no-lines class="order-list" *ngFor="let order of orders">
+		<h2>{{ 'Your Orders' | translate }}</h2>
 
-		<h4>{{ 'Order number:' | translate }} {{order.number }}</h4>
+		<ion-list no-lines class="order-list" *ngFor="let order of orders">
 
-		<ion-item>
-			<p>{{ 'Order date:' | translate }} {{order.date_created }}</p>
-			<p>{{ 'Order total:' | translate }} {{order.total }}</p>
-			<p>{{ 'Order Status:' | translate }} {{order.status}}</p>
-			<p>{{ 'Payment method:' | translate }} {{ order.payment_method_title }}</p>
-		</ion-item>
+			<h4>{{ 'Order number:' | translate }} {{order.number }}</h4>
 
-		<ion-item class="order-item" *ngFor="let item of order.line_items">
-			<p class="item-name"><strong>{{item.name}}</strong></p>
-			<p class="item-total">{{item.total}}</p>
-		</ion-item>
+			<ion-item>
+				<p>{{ 'Order date:' | translate }} {{order.date_created }}</p>
+				<p>{{ 'Order total:' | translate }} {{order.total }}</p>
+				<p>{{ 'Order Status:' | translate }} {{order.status}}</p>
+				<p>{{ 'Payment method:' | translate }} {{ order.payment_method_title }}</p>
+			</ion-item>
 
-	</ion-list>
+			<ion-item class="order-item" *ngFor="let item of order.line_items">
+				<p class="item-name"><strong>{{item.name}}</strong></p>
+				<p class="item-total">{{item.total}}</p>
+			</ion-item>
+
+		</ion-list>
+
+	</div>
 
 </div>

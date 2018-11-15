@@ -9,8 +9,9 @@ import {Storage} from '@ionic/storage';
 })
 export class WooAccountComponent implements OnInit {
 
-	order_id: any
-	orders: any
+	order_id: any;
+	orders: any;
+	orderConfirmation: any;
 	title: string;
 	login_data: any;
 	customer: any;
@@ -24,16 +25,19 @@ export class WooAccountComponent implements OnInit {
 	}
 
 	ngOnInit() {
+
 		this.order_id = this.navParams.get('order_id');
 
-		console.log('order id: ' + this.order_id)
+		console.log('params', this.navParams)
 
 		this.title = ( this.navParams.get('title') ? this.navParams.get('title') : "Your Order" )
 
-		if( this.order_id )
-			this.getOrders( this.order_id )
-
-		this.getCustomerOrders()
+		if( this.order_id ) {
+			this.getOrder( this.order_id )
+		} else {
+			this.getCustomerOrders()
+		}
+		
 	}
 
 	getCustomerOrders() {
@@ -45,6 +49,15 @@ export class WooAccountComponent implements OnInit {
 				this.getOrders( '?customer=' + login_data.user_id + '&status=pending,processing,on-hold,completed,refunded,failed' )
 			}
 		})
+	}
+
+	getOrder( id ) {
+
+		this.wooProvider.get( 'orders/' + id, 'nopaging' ).then( response => {
+			console.log(response)
+			this.orderConfirmation = response
+		})
+
 	}
 
 	getOrders( param ) {

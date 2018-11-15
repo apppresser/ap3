@@ -260,7 +260,10 @@ export class WooCartComponent implements OnInit {
         // send to order complete page
         let acctPage = this.wooProvider.getWooPage('account')
         let acctModule = this.getPageModuleName( acctPage.page_id )
-        this.navCtrl.push( acctModule, { 'order_id': this.order_id } )
+
+        // tack on order_id to display order confirmation
+        acctPage.order_id = this.order_id
+        this.navCtrl.push( acctModule, acctPage )
 
     }
 
