@@ -1,3 +1,19 @@
+<ion-toolbar class="woo-account-toolbar" color="light">
+	<ion-grid>
+		<ion-row>
+			<ion-col text-center>
+				<button ion-button clear block (click)="showOrders()">{{ 'Orders' | translate }}</button>
+			</ion-col>
+			<ion-col text-center>
+				<button ion-button clear block (click)="showAccount()">{{ 'Account' | translate }}</button>
+			</ion-col>
+			<ion-col text-center>
+				<button ion-button clear block (click)="siteLink('my-account')">{{ 'More' | translate }}</button>
+			</ion-col>
+		</ion-row>
+	</ion-grid>
+</ion-toolbar>
+
 <div class="woo-account-wrap" padding>
 
 	<div *ngIf="order_id">
@@ -18,9 +34,7 @@
 
 	</div>
 
-	<div *ngIf="customer && orders?.length">
-
-		<h2>{{ 'Your Orders' | translate }}</h2>
+	<div class="woo-orders" *ngIf="customer && orders?.length && showOrdersBool">
 
 		<ion-list no-lines class="order-list" *ngFor="let order of orders">
 
@@ -40,6 +54,35 @@
 
 		</ion-list>
 
+	</div>
+
+	<div class="account-details" *ngIf="customer && showAccountBool">
+		<ion-list *ngIf="account">
+			<ion-item>
+				<button ion-button outline item-end  icon-start (click)="siteLink('my-account')"><ion-icon name="create"></ion-icon> {{ 'Edit Account' | translate }}</button>
+				<ion-avatar item-start class="account-avatar">
+			      <img [src]="account.avatar_url" >
+			    </ion-avatar>
+				<h2>{{ account.first_name }} {{ account.last_name }}</h2>
+			</ion-item>
+			<ion-item>
+				{{ 'Email:' | translate }} {{ account.email }}
+			</ion-item>
+			<ion-item *ngIf="account.billing.address_1 != ''">
+				<strong>{{ 'Billing Details' | translate }}</strong>
+				<ion-item>
+					<p>{{ account.billing.address_1 }} {{ account.billing.address_2 }}</p>
+					<p>{{ account.billing.city }} {{ account.billing.state }} {{ account.billing.postcode }}</p>
+				</ion-item>
+			</ion-item>
+			<ion-item *ngIf="account.shipping.address_1 != ''">
+				<strong>{{ 'Shipping Details' | translate }}</strong>
+				<ion-item>
+					<p>{{ account.shipping.address_1 }} {{ account.shipping.address_2 }}</p>
+					<p>{{ account.shipping.city }} {{ account.shipping.state }} {{ account.shipping.postcode }}</p>
+				</ion-item>
+			</ion-item>
+		</ion-list>
 	</div>
 
 </div>

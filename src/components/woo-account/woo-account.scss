@@ -1,7 +1,18 @@
 woo-account {
 
+	min-height: 100px;
+
 	.order-list {
 		border-bottom: 1px solid #eee;
+	}
+
+	.woo-account-toolbar, .woo-account-toolbar .grid {
+		padding: 0;
+		min-height: 44px;
+
+		.button {
+			text-transform: none;
+		}
 	}
 
 }
