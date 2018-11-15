@@ -194,7 +194,7 @@ export class Iframe implements OnInit {
     showSpinner() {
 
         // create only one spinner
-        if(!this.loading) {
+        if(typeof this.loading == 'undefined' || this.loaded === null) {
             this.loading = this.loadingController.create({
                 showBackdrop: false,
                 dismissOnPageChange: false
