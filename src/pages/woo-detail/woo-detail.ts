@@ -1,4 +1,4 @@
-import { Component, isDevMode } from '@angular/core';
+import {Component, Renderer, ElementRef, isDevMode } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController, ModalController, Events } from 'ionic-angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Storage } from '@ionic/storage';
@@ -21,6 +21,7 @@ export class WooDetail {
 	groupedProducts: Array<any>;
 	productLoaded: boolean = false;
 	availableAttributes: any;
+	listenFunc: Function;
 
 	constructor(
 		public navCtrl: NavController, 
@@ -30,7 +31,9 @@ export class WooDetail {
 		public toastCtrl: ToastController,
 		public modalCtrl: ModalController,
 		public wooProvider: WooProvider,
-		public events: Events
+		public events: Events,
+		private elementRef: ElementRef,
+		private renderer: Renderer
 		) {
 
 		if( !this.navParams.get('item') )
@@ -100,6 +103,8 @@ export class WooDetail {
 		if( !this.selectedItem.quantity ) {
 			this.selectedItem.quantity = 1
 		}
+
+		this.listener()
 
 	}
 
@@ -353,6 +358,48 @@ export class WooDetail {
 		if( this.selectedItem.related_ids.length ) {
 			return 'products?include=' + this.selectedItem.related_ids
 		}
+
+	}
+
+	listener() {
+
+		// remove listener first so we don't set it multiple times
+	    if( this.listenFunc ) {
+	      this.listenFunc()
+	    }
+
+	    // Listen for link clicks, open in in app browser
+	    this.listenFunc = this.renderer.listen(this.elementRef.nativeElement, 'click', (event) => {
+
+	      this.iabLinks( event.target )
+
+	    });
+	}
+
+	iabLinks( el ) {
+
+		console.log('iabLinks', el)
+
+		var target = '_blank'
+		  
+		if( el.href && el.href.indexOf('http') >= 0 ) {
+
+		  if( el.classList && el.classList.contains('system') )
+		    target = '_system'
+
+		  event.preventDefault()
+		  window.open( el.href, target )
+
+		} // else if( el.tagName == 'IMG' && el.parentNode.href && el.parentNode.href.indexOf('http') >= 0 ) {
+
+		//   // handle image tags that have link as the parent
+		//   if( el.parentNode.classList && el.parentNode.classList.contains('system') )
+		//     target = '_system'
+
+		//   event.preventDefault()
+		//   window.open( el.parentNode.href, target )
+
+		// }
 
 	}
 
