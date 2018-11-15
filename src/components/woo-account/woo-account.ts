@@ -44,24 +44,28 @@ export class WooAccountComponent implements OnInit {
 
 		this.title = ( this.navParams.get('title') ? this.navParams.get('title') : "Your Order" )
 
-		if( this.order_id ) {
-			this.getOrder( this.order_id )
-		} else {
-			this.getCustomerOrders()
-		}
+		this.storage.get('user_login').then( login_data => {
+
+			this.login_data = login_data
+
+			if( this.order_id ) {
+				this.getOrder( this.order_id )
+			} else {
+				this.getCustomerOrders()
+			}
+
+		})
 		
 	}
 
 	getCustomerOrders() {
 
-		this.storage.get('user_login').then( login_data => {
-			console.log(login_data)
-			this.login_data = login_data
-			if( login_data && login_data.user_id ) {
-				this.customer = login_data.user_id
-				this.getOrders( '?customer=' + login_data.user_id + '&status=pending,processing,on-hold,completed,refunded,failed' )
-			}
-		})
+		if( this.login_data && this.login_data.user_id ) {
+			this.customer = this.login_data.user_id
+			this.getOrders( '?customer=' + this.login_data.user_id + '&status=pending,processing,on-hold,completed,refunded,failed' )
+		} else {
+			this.presentToast('Please login.')
+		}
 	}
 
 	getOrder( id ) {
