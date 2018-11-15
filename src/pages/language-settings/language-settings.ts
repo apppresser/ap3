@@ -43,7 +43,7 @@ export class LanguageSettings {
     this.storage.get('available_languages').then( langs => {
 
       if(langs) {
-        this.languageservice.setAvailable(langs);
+        // this.languageservice.setAvailable(langs);
         // this.languages = langs
         this.checkCurrent( langs )
       }
@@ -63,7 +63,6 @@ export class LanguageSettings {
           // if language codes match, save as checked
           if(langs[i].code === lang.code || langs[i].code === lang) {
             langs[i].checked = true
-            this.languageservice.setCurrentLanguage(lang);
           }
 
         }
@@ -82,8 +81,15 @@ export class LanguageSettings {
 
   toggleLanguage( new_language ) {
 
-    let dir = (new_language.dir) ? new_language.dir : 'ltr';
+    this.setLanguage(new_language);
 
+    this.translate.get('Language changed').subscribe( text => {
+      this.presentToast(text);
+    });
+
+  }
+
+  setLanguage(new_language) {
     let language = new Language({
       code: new_language.code,
       dir: (new_language.dir && new_language.dir === 'rtl') ? 'rtl' : 'ltr'
@@ -92,11 +98,6 @@ export class LanguageSettings {
     this.translate.use( language.code )
     this.storage.set( 'app_language', language )
     this.languageservice.setCurrentLanguage(language);
-
-    this.translate.get('Language changed').subscribe( text => {
-      this.presentToast(text);
-    });
-
   }
 
   presentToast(msg) {
