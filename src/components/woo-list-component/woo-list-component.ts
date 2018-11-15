@@ -19,6 +19,7 @@ export class WooListComponent implements OnInit {
 	@Input() infiniteScroll: boolean = false;
 	@Input() wp: string;
 	@Input() refresh: boolean = false;
+	@Input() wishlist: boolean = false;
 
 	page: number = 1;
 	items: any;
@@ -57,6 +58,8 @@ export class WooListComponent implements OnInit {
 
 		    this.cartIconEvent()
 
+		} else if( this.wishlist ) {
+			this.getWishlist()
 		}
 
 	}
@@ -82,6 +85,11 @@ export class WooListComponent implements OnInit {
 	}
 
 	loadPosts() {
+
+		if( this.wishlist ) {
+			this.getWishlist()
+			return;
+		}
 
 		this.loading = true;
 
@@ -112,6 +120,35 @@ export class WooListComponent implements OnInit {
 			});
 
 		});
+
+	}
+
+	getWishlist() {
+
+		console.log("getting wishlist")
+
+		this.storage.get('woo_saved_items').then( items => {
+
+			if( items && items.length ) {
+				this.items = items
+				console.log(items)
+			} else {
+				this.presentToast('No items to show.')
+			}
+
+		})
+	}
+
+	removeSavedItem(item) {
+
+		for (let i = this.items.length - 1; i >= 0; i--) {
+			if( this.items[i].id === item.id ) {
+			  this.items.splice(i, 1);
+			  break;
+			}
+		}
+
+		this.storage.set( 'woo_saved_items', this.items )
 
 	}
 

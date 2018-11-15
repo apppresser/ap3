@@ -16,7 +16,7 @@
 
 <div class="woo-account-wrap" padding>
 
-	<div *ngIf="order_id">
+	<div *ngIf="order_id && !showOrdersBool && !showAccountBool">
 		<h2>{{ 'Your Order' | translate }}</h2>
 
 		<ion-list *ngIf="orderConfirmation">
