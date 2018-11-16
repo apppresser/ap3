@@ -227,9 +227,12 @@ export class BpProvider {
       data.primary_id = group_id;
     }
 
+    let params = this.objToParams( data )
+
     return new Promise( (resolve, reject) => {
 
-      this.http.post( route, data )
+      // sending data as params avoids OPTIONS pre-flight request which doesn't work on some apache servers for an unknown reason
+      this.http.post( route + '?' + params, null )
         .map(res => res.json())
         .subscribe(data => {
           
@@ -259,9 +262,11 @@ export class BpProvider {
       token: login_data.token
     }
 
+    let params = this.objToParams( data )
+
     return new Promise( (resolve, reject) => {
 
-      this.http.post( route, data )
+      this.http.post( route + '?' + params, null )
         .map(res => res.json())
         .subscribe(data => {
 
@@ -293,9 +298,11 @@ export class BpProvider {
       token: login_data.token
     };
 
+    let params = this.objToParams( data )
+
     return new Promise( (resolve, reject) => {
 
-      this.http.post( route, data )
+      this.http.post( route + '?' + params, null )
         .map(res => res.json())
         .subscribe(data => {
           
@@ -333,9 +340,11 @@ export class BpProvider {
       token: login_data.token
     };
 
+    let params = this.objToParams( data )
+
     return new Promise( (resolve, reject) => {
 
-      this.http.post( route, data )
+      this.http.post( route + '?' + params, null )
         .map(res => res.json())
         .subscribe(data => {
           
@@ -373,9 +382,11 @@ export class BpProvider {
       token: login_data.token
     };
 
+    let params = this.objToParams( data )
+
     return new Promise( (resolve, reject) => {
 
-      this.http.post( route, data )
+      this.http.post( route + '?' + params, null )
         .map(res => res.json())
         .subscribe(data => {
           
@@ -415,11 +426,11 @@ export class BpProvider {
       data.thread_id = threadId;
     }
 
-    console.log('sendMessage', route, data );
+    let params = this.objToParams( data )
 
     return new Promise( (resolve, reject) => {
 
-      this.http.post( route, data )
+      this.http.post( route + '?' + params, null )
         .map(res => res.json())
         .subscribe(data => {
           
@@ -470,9 +481,11 @@ export class BpProvider {
       action: notification.action
     };
 
+    let params = this.objToParams( data )
+
     return new Promise( (resolve, reject) => {
 
-      this.http.post( this.url + this.restBase + 'notifications', data )
+      this.http.post( this.url + this.restBase + 'notifications?' + params, null )
           .map(res => res.json())
           .subscribe(data => {
               resolve( data );
@@ -483,6 +496,13 @@ export class BpProvider {
           })
     });
 
+  }
+
+  objToParams( data ) {
+
+    return Object.keys(data).map(function(k) {
+        return encodeURIComponent(k) + "=" + encodeURIComponent(data[k]);
+    }).join('&');
   }
 
   handleError(err) {
