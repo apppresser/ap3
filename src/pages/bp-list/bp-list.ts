@@ -268,7 +268,7 @@ export class BpList implements OnInit {
 
     if( this.bpSegments ) {
       // fixes iphoneX status bar padding
-      this.customClasses += ' has-favorites';
+      this.customClasses += ' has-toolbar';
     }
 
   }

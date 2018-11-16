@@ -22,8 +22,8 @@ export class WooListComponent implements OnInit {
 	@Input() wishlist: boolean = false;
 	@Input() hideToolbar: boolean = false;
 
-	// super confusing way to add a class of "has-favorites" when there is a toolbar
-	@HostBinding('class.has-favorites') chkToolbar: boolean = true
+	// super confusing way to add a class of "has-toolbar" when there is a toolbar
+	@HostBinding('class.has-toolbar') chkToolbar: boolean = true
 
 	page: number = 1;
 	items: any;
@@ -51,7 +51,7 @@ export class WooListComponent implements OnInit {
 	ngOnInit() {
 
 		if( this.hideToolbar ) {
-			// don't add has-favorites class
+			// don't add has-toolbar class
 			this.chkToolbar = false
 		}
 

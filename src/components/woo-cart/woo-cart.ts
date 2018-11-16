@@ -267,6 +267,20 @@ export class WooCartComponent implements OnInit {
 
     }
 
+    shopPage() {
+    	let shop = this.wooProvider.getWooPage('shop')
+    	let shopModule = this.getPageModuleName( shop.page_id )
+
+    	if( this.navCtrl.canGoBack() ) {
+    		this.navCtrl.pop().then( ()=> {
+	    		this.navCtrl.push( shopModule, shop )
+	    	})
+    	} else {
+    		this.navCtrl.setRoot( shopModule, shop )
+    	}
+    	
+    }
+
     getPageModuleName(page_id) {
 		if(!isDevMode())
 			return 'Page'+page_id;

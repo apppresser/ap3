@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostBinding } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController, ToastController } from 'ionic-angular';
 import { WooProvider } from '../../providers/woo/woo';
 import {Storage} from '@ionic/storage';
@@ -9,6 +9,9 @@ import {InAppBrowser, InAppBrowserObject} from '@ionic-native/in-app-browser';
   templateUrl: 'woo-account.html',
 })
 export class WooAccountComponent implements OnInit {
+
+	// add has-toolbar class for iPhone X fix
+	@HostBinding('class.has-toolbar') classes = true
 
 	order_id: any;
 	orders: any;

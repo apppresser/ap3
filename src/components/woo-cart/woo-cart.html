@@ -5,8 +5,9 @@
  </div>
 </div>
 
-<div *ngIf="!products?.length">
+<div *ngIf="!products?.length && !loadingItems" class="empty-cart">
   <p>{{ cartEmpty }}</p>
+  <button ion-button block (tap)="shopPage()">{{ 'Continue Shopping' | translate }}</button>
 </div>
 
 <ion-list class="post-list woocommerce" *ngIf="products">
