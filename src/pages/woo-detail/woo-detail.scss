@@ -12,6 +12,23 @@ page-woo-detail {
 		border-bottom: 1px solid #eee;
 	}
 
+	.related-products {
+		.product-description {
+			display: none;
+		}
+
+		ion-slides {
+			height: 275px;
+
+			.card {
+
+				height: 225px;
+
+			}
+
+		}
+	}
+
 	.item h2 {
 		font-size: 1.8rem;
 		font-weight: bold;

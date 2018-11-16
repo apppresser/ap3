@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, HostBinding } from '@angular/core';
 import { WooProvider } from '../../providers/woo/woo';
 import {NavController, NavParams, LoadingController, ToastController, Platform, ViewController, IonicPage, Events} from 'ionic-angular';
 
@@ -15,17 +15,23 @@ import {Iframe} from "../../pages/iframe/iframe";
 export class WooListComponent implements OnInit {
 
 	@Input() route: string;
-	@Input() card: boolean = false;
+	@Input() card: boolean = true;
 	@Input() infiniteScroll: boolean = false;
 	@Input() wp: string;
 	@Input() refresh: boolean = false;
 	@Input() wishlist: boolean = false;
+	@Input() hideToolbar: boolean = false;
+
+	// super confusing way to add a class of "has-favorites" when there is a toolbar
+	@HostBinding('class.has-favorites') chkToolbar: boolean = true
 
 	page: number = 1;
 	items: any;
 	loading: boolean = false;
 	networkState: string;
 	favoriteItems: any;
+	categories: any;
+	category: any;
 
 	constructor(
 		public nav: NavController, 
@@ -40,10 +46,14 @@ export class WooListComponent implements OnInit {
 		private translate: TranslateService,
 		public events: Events
 		) {
-
 	}
 
 	ngOnInit() {
+
+		if( this.hideToolbar ) {
+			// don't add has-favorites class
+			this.chkToolbar = false
+		}
 
 		if( this.route ) {
 
@@ -53,10 +63,12 @@ export class WooListComponent implements OnInit {
 		      // if offline, get posts from storage
 		      this.getStoredPosts();
 		    } else {
-		      this.loadPosts();
+		      this.loadProducts( this.route );
 		    }
 
 		    this.cartIconEvent()
+
+		    this.getCategories()
 
 		} else if( this.wishlist ) {
 			this.getWishlist()
@@ -84,7 +96,7 @@ export class WooListComponent implements OnInit {
 
 	}
 
-	loadPosts() {
+	loadProducts( route ) {
 
 		if( this.wishlist ) {
 			this.getWishlist()
@@ -96,7 +108,7 @@ export class WooListComponent implements OnInit {
 		this.page = 1;
 
 		// any menu imported from WP has to use same component. Other pages can be added manually with different components
-		this.wooProvider.get( this.route, this.page ).then(items => {
+		this.wooProvider.get( route, this.page ).then(items => {
 
 		  // Loads posts from WordPress API
 		  this.items = items;
@@ -120,6 +132,45 @@ export class WooListComponent implements OnInit {
 			});
 
 		});
+
+	}
+
+	getCategories() {
+
+		if( this.route.indexOf('categories') >= 0 ) {
+			return;
+		}
+
+		this.wooProvider.get( 'products/categories', null ).then(categories => {
+
+			// Loads posts from WordPress API
+			this.categories = categories;
+
+			console.log(this.categories)
+
+			// set category name in dropdown
+			if( this.route.indexOf('category') >= 0 ) {
+				let catId = this.getUrlParam( this.route, 'category=' )
+				setTimeout( () => {
+					this.category = catId
+				}, 100 )
+				
+			}
+
+
+		}).catch((err) => {
+
+		  console.warn('Error getting categories', err);
+
+		});
+
+	}
+
+	categoryChanged() {
+
+		let route = this.addQueryParam( 'products', 'category=' + this.category )
+
+		this.loadProducts( route )
 
 	}
 
@@ -153,7 +204,7 @@ export class WooListComponent implements OnInit {
 	}
 
 	doRefresh( event ) {
-		this.loadPosts()
+		this.loadProducts( this.route )
 	}
 
 	loadDetail(item) {
@@ -326,6 +377,17 @@ export class WooListComponent implements OnInit {
 
 	truncateString( string ) {
 		return string.substring(0,100);
+	}
+
+	// get category ID from url string
+	getUrlParam( url, param ) {
+		console.log('url param ' + url, param)
+		return url.split( param ).pop()
+	}
+
+	addQueryParam(url, param) {
+		const separator = (url.indexOf('?') > 0) ? '&' : '?';
+		return url + separator + param;
 	}
 
 	getBgImage( item ) {

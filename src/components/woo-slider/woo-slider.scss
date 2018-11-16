@@ -14,11 +14,11 @@ woo-slider {
 	}
 
 	ion-slides {
-		height: 350px;
+		height: 325px;
 		padding-bottom: 0 !important;
 
 		.card {
-			height: 300px;
+			height: 275px;
 			width: auto;
 			margin: 0 auto;
 
@@ -71,7 +71,7 @@ woo-slider {
 	}
 	
 	// categories are smaller because there is no description
-	&.category-slider ion-slides {
+	ion-slides.category-slider {
 		height: 250px;
 
 		.card {
@@ -86,34 +86,12 @@ woo-slider {
 		background-repeat: no-repeat;
 		background-position: center;
 	}
-}
-
-.related-products woo-slider ion-slides {
-	height: 275px;
-
-	.card {
-
-		height: 220px;
-
-	}
-
-}
-
-@keyframes loadingAnimation {
-   0% {
-     opacity: .7;
-   }
-   50% {
-   	opacity: .2;
-   }
-   100% {
-     opacity: .7;
-   }
 
 }
 
 .loading-squares {
 	width: 100%;
+	padding: 10px;
 	height: 80%;
 	position: absolute;
 	z-index: 2;
@@ -135,4 +113,17 @@ woo-slider {
 	.loading-square:last-child {
 		margin-right: 0;
 	}
+}
+
+@keyframes loadingAnimation {
+   0% {
+     opacity: .7;
+   }
+   50% {
+   	opacity: .2;
+   }
+   100% {
+     opacity: .7;
+   }
+
 }

@@ -67,44 +67,34 @@ woo-list {
 		margin-top: 15px;
 		display: none;
 	}
-
+	
+	// some global loading styles contained in woo-slider.scss
 	.loading-squares {
 		width: 100%;
-		height: 300px;
-		display: block;
+		height: auto;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
 
 		.loading-square {
-			height: 100px;
+			height: 400px;
 			margin: 10px 0;
 			width: 100%;
+			flex: none;
 			animation-name: loadingAnimation2;
 		}
-
-		// .loading-square:before {
-		//     content: '';
-		//     display: block;
-		//     float: left;
-		//     height: 50px;
-		//     width: 50px;
-		//     background-color: #fafafa;
-		//     margin: 25px;
-		//     border-radius: 50%;
-		// }
 	}
 	
-	&[card="true"] {
+	&[card="false"] {
 
 		.loading-squares {
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: space-between;
+			display: block;
+			height: 400px;
 
 			.loading-square {
-				height: 100%;
-
-				&:before {
-					display: none;
-				}
+				height: 100px;
+				width: 100%;
+				flex: none;
 			}
 		}
 
@@ -112,12 +102,22 @@ woo-list {
 
 	&.col-2 {
 
-		.loading-square {
-			height: 50%;
-			width: 48%;
-			flex: none;
+		.loading-squares {
+			height: 850px;
+
+			.loading-square {
+				height: 50%;
+				width: 48%;
+			}
+
 		}
 
+	}
+
+	&.has-favorites {
+		.loading-squares {
+			margin-top: 50px;
+		}
 	}
 
 	.product-thumbnail img {

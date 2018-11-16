@@ -14,6 +14,19 @@
   <span>{{ 'Refresh' | translate }}</span>
 </div>
 
+<ion-toolbar class="woo-list-toolbar" color="light" *ngIf="!hideToolbar">
+
+  <ion-item no-lines *ngIf="categories" id="favorites-toolbar" color="light">
+
+    <ion-select [(ngModel)]="category" (ionChange)="categoryChanged()" placeholder="{{ 'Category' | translate }}">
+
+      <ion-option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name | translate }}</ion-option>
+
+    </ion-select>
+
+  </ion-item>
+</ion-toolbar>
+
 <ion-list *ngIf="card">
 
     <ion-card *ngFor="let item of items">
@@ -23,6 +36,7 @@
       <div (tap)="loadDetail(item)" class="card-featured-wrap" *ngIf="item.images || item.image">
         <div *ngIf="item.images && item.images[0].src" class="card-featured-image" [ngStyle]="{'background-image': 'url('+ item.images[0].src +')'}"></div>
         <div *ngIf="item.image && item.image.src" class="card-featured-image" [ngStyle]="{'background-image': 'url('+ item.image.src +')'}"></div>
+        <div *ngIf="!item.image && !item.images" class="card-featured-image" [ngStyle]="{'background-image': 'url(assets/woo-default.png)'}"></div>
       </div>
 
       <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.above_title" [innerHTML]="item.appp.woo_list.above_title"></div>
@@ -39,7 +53,7 @@
 
         <p *ngIf="item.sale_price" class="product-price">Sale! ${{item.sale_price}}</p>
 
-<!--         <p *ngIf="item.description" (tap)="loadDetail(item)" [innerHTML]="item.description" class="product-description"></p> -->
+        <p *ngIf="item.description" (tap)="loadDetail(item)" [innerHTML]="truncateString(item.description)" class="product-description"></p>
 
         <star-rating *ngIf="!wishlist" [rating]="item.average_rating"></star-rating>
 
@@ -76,7 +90,7 @@
 
       <p (tap)="loadDetail(item)" *ngIf="item.sale_price" class="product-price">Sale! ${{item.sale_price}}</p>
 
-      <p (tap)="loadDetail(item)" *ngIf="item.description" [innerHTML]="item.description" class="product-description"></p>
+      <p *ngIf="item.description" (tap)="loadDetail(item)" [innerHTML]="truncateString(item.description)" class="product-description"></p>
 
       <star-rating *ngIf="!wishlist" [rating]="item.average_rating"></star-rating>
 

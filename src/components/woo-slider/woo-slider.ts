@@ -21,7 +21,7 @@ export class WooSliderComponent implements OnInit {
 
 	@Input() route: string;
 	@Input() pager: string;
-	@Input() slidesPerView: string;
+	@Input() slidesPerView: string = "2";
 	@Input() loop: string;
 	@Input() effect: string;
 	@Input() paginationType: string;
@@ -33,6 +33,7 @@ export class WooSliderComponent implements OnInit {
 	items: any;
 	loading: boolean = false;
 	networkState: string;
+	categorySlider: boolean = false;
 
 	constructor(
 		public nav: NavController, 
@@ -53,6 +54,10 @@ export class WooSliderComponent implements OnInit {
 
 		if( !this.route )
 			return;
+
+		if( this.route.indexOf('categories') >= 0 ) {
+			this.categorySlider = true
+		}
 
 		this.networkState = this.network.type;
 
@@ -181,7 +186,7 @@ export class WooSliderComponent implements OnInit {
 			  item: item
 			}, opt);
 
-		} else if( this.route.indexOf('categories') >= 0 ) {
+		} else if( this.categorySlider ) {
 
 			// this is a list of categories, so we need to show category sub-items next
 			this.nav.push('WooList', {
