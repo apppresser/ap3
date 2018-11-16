@@ -66,13 +66,13 @@ export class WooListComponent implements OnInit {
 		      this.loadProducts( this.route );
 		    }
 
-		    this.cartIconEvent()
-
 		    this.getCategories()
 
 		} else if( this.wishlist ) {
 			this.getWishlist()
 		}
+
+		this.cartIconEvent()
 
 	}
 

@@ -259,6 +259,12 @@ export class WooCartComponent implements OnInit {
 
         // send to order complete page
         let acctPage = this.wooProvider.getWooPage('account')
+
+        if( !acctPage ) {
+    		this.presentToast('No account page set.')
+    		return
+    	}
+
         let acctModule = this.getPageModuleName( acctPage.page_id )
 
         // tack on order_id to display order confirmation
@@ -269,15 +275,14 @@ export class WooCartComponent implements OnInit {
 
     shopPage() {
     	let shop = this.wooProvider.getWooPage('shop')
+
+    	if( !shop ) {
+    		this.presentToast('No shop page set.')
+    		return
+    	}
     	let shopModule = this.getPageModuleName( shop.page_id )
 
-    	if( this.navCtrl.canGoBack() ) {
-    		this.navCtrl.pop().then( ()=> {
-	    		this.navCtrl.push( shopModule, shop )
-	    	})
-    	} else {
-    		this.navCtrl.setRoot( shopModule, shop )
-    	}
+    	this.navCtrl.setRoot( shopModule, shop )
     	
     }
 

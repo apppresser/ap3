@@ -419,9 +419,13 @@ export class WooDetail {
 	showCart() {
 
 	    let cartPage = this.wooProvider.getWooPage('cart')
-	    let cartModule = this.getPageModuleName( cartPage.page_id )
 
-	    console.log(cartPage, cartModule)
+	    if( !cartPage ) {
+	    	this.presentToast("No cart page set.")
+	    	return;
+	    }
+
+	    let cartModule = this.getPageModuleName( cartPage.page_id )
 
 	    this.navCtrl.push( cartModule, cartPage )
 

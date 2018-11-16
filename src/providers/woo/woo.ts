@@ -49,6 +49,8 @@ export class WooProvider {
       }
     }
 
+    return null;
+
   }
 
   /* Returns promise.
