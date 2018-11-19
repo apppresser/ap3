@@ -81,11 +81,12 @@ export class MyApp {
   iphoneX: boolean = false;
   showingIntro: boolean = false;
   stopTabReset: boolean = false;
+  menu_all_pages: boolean = false;
 
   constructor(
     private platform: Platform,
     public appCamera: AppCamera,
-    private menu: MenuController,
+    private menuCtrl: MenuController,
     private globalvars: GlobalVars,
     private appads: AppAds,
     private appgeo: AppGeo,
@@ -125,13 +126,13 @@ export class MyApp {
 
     events.subscribe('user:login', data => {
       this.userLogin(data);
-      this.menu.close();
+      this.menuCtrl.close();
       this.analyticsservice.trackEvent('user:login');
     });
 
     events.subscribe('user:logout', data => {
       this.userLogout(data);
-      this.menu.close();
+      this.menuCtrl.close();
       this.analyticsservice.trackEvent('user:logout');
     });
 
@@ -257,6 +258,8 @@ export class MyApp {
 
     this.showLogin = ( data.side_menu_login == "on" ) ? true : false;
     this.logins.set_force_login( (data.side_menu_force_login == "on") );
+
+    this.menu_all_pages = ( data.menu_all_pages == "on" ) ? true : false;
 
     this.menu_side = ( data.meta.menu_right == true ) ? "right" : "left";
 
@@ -569,7 +572,7 @@ export class MyApp {
       return
 
     // close the menu when clicking a link from the menu
-    this.menu.close();
+    this.menuCtrl.close();
 
     if( page.target === '_blank' && typeof(page.extra_classes) !== 'undefined' && page.extra_classes.indexOf('system') >= 0 ) {
       this.openIab( page.url, '_system', null );
@@ -625,7 +628,7 @@ export class MyApp {
       return
 
     // close the menu when clicking a link from the menu
-    this.menu.close();
+    this.menuCtrl.close();
 
     if( page.target === '_blank' && page.extra_classes.indexOf('system') >= 0 ) {
       this.openIab( page.url, '_system', null );
@@ -1162,11 +1165,11 @@ export class MyApp {
   }
 
   menuOpened() {
-    this.menu.swipeEnable(true)
+    this.menuCtrl.swipeEnable(true)
   }
 
   menuClosed() {
-    this.menu.swipeEnable(false)
+    this.menuCtrl.swipeEnable(false)
   }
 
   openLoginModal(opt?: ModalOptions) {

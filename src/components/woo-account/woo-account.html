@@ -14,7 +14,7 @@
 	</ion-grid>
 </ion-toolbar>
 
-<div class="woo-account-wrap" padding>
+<div class="woo-account-wrap" padding *ngIf="order_id || login_data">
 
 	<div *ngIf="order_id && !showOrdersBool && !showAccountBool">
 		<h2>{{ 'Your Order' | translate }}</h2>

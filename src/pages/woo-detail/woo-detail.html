@@ -1,6 +1,13 @@
 <ion-header>
 
   <ion-navbar>
+
+	<ion-buttons start>
+		<button ion-button menuToggle>
+		<ion-icon name="menu"></ion-icon>
+		</button>
+	</ion-buttons>
+	
     <ion-title *ngIf="selectedItem?.name"><span [innerHTML]="selectedItem.name"></span></ion-title>
 
     <ion-buttons end>

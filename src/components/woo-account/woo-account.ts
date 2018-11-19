@@ -1,5 +1,5 @@
 import { Component, OnInit, HostBinding } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController, ToastController, ModalController, Events } from 'ionic-angular';
 import { WooProvider } from '../../providers/woo/woo';
 import {Storage} from '@ionic/storage';
 import {InAppBrowser, InAppBrowserObject} from '@ionic-native/in-app-browser';
@@ -24,6 +24,7 @@ export class WooAccountComponent implements OnInit {
 	wpUrl: string;
 	showOrdersBool: boolean = false;
 	showAccountBool: boolean = false;
+	loginModal: any;
 
 	constructor(
 		public navCtrl: NavController, 
@@ -32,7 +33,9 @@ export class WooAccountComponent implements OnInit {
 		public storage: Storage,
 		public loadingCtrl: LoadingController,
 		public iab: InAppBrowser,
-		public toastCtrl: ToastController
+		public toastCtrl: ToastController,
+		public modalCtrl: ModalController,
+		public events: Events
 		) {
 	}
 
@@ -42,8 +45,6 @@ export class WooAccountComponent implements OnInit {
     	this.wpUrl = JSON.parse( item ).wordpress_url;
 
 		this.order_id = this.navParams.get('order_id');
-
-		console.log('params', this.navParams)
 
 		this.title = ( this.navParams.get('title') ? this.navParams.get('title') : "Your Order" )
 
@@ -58,7 +59,22 @@ export class WooAccountComponent implements OnInit {
 			}
 
 		})
+
+		this.listeners()
 		
+	}
+
+	listeners() {
+
+		// set login data after modal login
+	    this.events.subscribe('user:login', data => {
+	      this.login_data = data
+	    });
+
+	    this.events.subscribe('user:logout', data => {
+	      this.login_data = null;
+	    });
+
 	}
 
 	getCustomerOrders() {
@@ -68,6 +84,7 @@ export class WooAccountComponent implements OnInit {
 			this.getOrders( '?customer=' + this.login_data.user_id + '&status=pending,processing,on-hold,completed,refunded,failed' )
 		} else {
 			this.presentToast('Please login.')
+			this.loginModal()
 		}
 	}
 
@@ -164,6 +181,14 @@ export class WooAccountComponent implements OnInit {
 
 		toast.present();
 
+	}
+
+	loginModal() {
+
+		this.loginModal = this.modalCtrl.create('LoginModal' );
+
+    	this.loginModal.present();
+		
 	}
 
 	showSpinner() {
