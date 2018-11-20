@@ -428,12 +428,22 @@ export class BpMessages {
 
       }).catch( e => {
 
-        console.warn(e)
         this.threads.messages.shift()
-        this.presentToast('There was a problem, please try again.')
+        this.handleErr(e)
 
       });
 
+  }
+
+  handleErr( err ) {
+    console.warn( err );
+
+    let msg = 'There was a problem, please try again.'
+    if( err['_body'] && JSON.parse( err['_body'] ).message ) {
+      msg += ' ' + JSON.parse( err['_body'] ).message;
+    }
+
+    this.presentToast( msg )
   }
 
   newMessage() {
