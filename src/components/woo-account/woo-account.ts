@@ -183,7 +183,7 @@ export class WooAccountComponent implements OnInit {
 
 	}
 
-	loginModal() {
+	showLoginModal() {
 
 		this.loginModal = this.modalCtrl.create('LoginModal' );
 

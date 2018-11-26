@@ -23,9 +23,9 @@ export class WooProvider {
     this.url = url + restBase;
 
     // TODO: move this
-    //this.authString = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
+    this.authString = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
     // reactordev
-    this.authString = 'Basic Y2tfMDM4NTI0M2Y1NDZmNzhmNGE3MWZiOWNkNTZmNzM4NTkyNDhmMWQ0Yzpjc19lYWUwZDVhY2FjNjBhOGZkMmY5OGNiZTQ0ZWMyMzgyNGMzZTFiNGNm'
+    // this.authString = 'Basic Y2tfMDM4NTI0M2Y1NDZmNzhmNGE3MWZiOWNkNTZmNzM4NTkyNDhmMWQ0Yzpjc19lYWUwZDVhY2FjNjBhOGZkMmY5OGNiZTQ0ZWMyMzgyNGMzZTFiNGNm'
 
     this.httpOptions = {
       headers: new HttpHeaders({
@@ -34,22 +34,6 @@ export class WooProvider {
       }),
       withCredentials: true
     };
-
-  }
-
-  // find cart, shop, etc page in menu items, return [ id, slug ]
-  getWooPage( pageName ) {
-
-    let pages = this.itemParsed.menus.items
-    pages.push( this.itemParsed.tab_menu.items )
-    
-    for(let page of pages) {
-      if( page.woo_page && page.woo_page == pageName ) {
-        return page;
-      }
-    }
-
-    return null;
 
   }
 
@@ -237,6 +221,22 @@ export class WooProvider {
         })
 
     }); // end Promise
+
+  }
+
+  // find cart, shop, etc page in menu items, return [ id, slug ]
+  getWooPage( pageName ) {
+
+    let pages = this.itemParsed.menus.items
+    pages.push( this.itemParsed.tab_menu.items )
+    
+    for(let page of pages) {
+      if( page && page.woo_page && page.woo_page == pageName ) {
+        return page;
+      }
+    }
+
+    return null;
 
   }
 
