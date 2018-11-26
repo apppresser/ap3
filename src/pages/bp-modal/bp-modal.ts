@@ -131,7 +131,7 @@ export class BpModal {
 		let rest_base = 'wp-json/ap-bp/v1/members';
 		let route = wp_url + rest_base
 
-		this.bpProvider.getItems( route + '?scope=friends&user=' + this.login_data.user_id, this.login_data, 1 ).then( items => {
+		this.bpProvider.getItems( route + '?scope=friends&user=' + this.login_data.user_id + '&per_page=99', this.login_data, 1 ).then( items => {
 
 				console.log(items)
 				this.recipientArr = (<any>items);
