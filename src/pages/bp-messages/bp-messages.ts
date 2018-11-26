@@ -428,9 +428,8 @@ export class BpMessages {
 
       }).catch( e => {
 
-        console.warn(e)
         this.threads.messages.shift()
-        this.presentToast('There was a problem, please try again.')
+        this.handleErr(e)
 
       });
 

@@ -43,7 +43,7 @@
 
   <ion-item *ngIf="bpSegments && !showSearch" id="favorites-toolbar" color="light">
 
-    <ion-select [(ngModel)]="segments" (ionChange)="segmentChanged()" placeholder="Filter">
+    <ion-select [(ngModel)]="segments" (ionChange)="segmentChanged()" placeholder="{{ 'Filter' | translate }}">
 
       <ion-option *ngFor="let segment of bpSegments" [value]="segment.name">{{ segment.name | translate }}</ion-option>
 

@@ -42,13 +42,17 @@
 
     <ion-list no-lines>
 
-        <ion-item *ngFor="let notification of items">
+      <div *ngFor="let notification of items">
+
+        <ion-item *ngIf="notification.content && notification.content != ''">
 
           <p *ngIf="notification.content" (tap)="viewNotification( notification )">{{ notification.content }}</p>
           
           <button ion-button item-end clear (tap)="viewNotification( notification )">{{ 'View' | translate }}</button> <button ion-button item-end color="light" (tap)="clearNotification( notification )">{{ 'Clear' | translate }}</button>
           
         </ion-item>
+
+      </div>
 
     </ion-list>
 

@@ -39,6 +39,7 @@ export class LanguageService {
 		this.language.code = language.code;
 		this.language.dir = language.dir;
 		this.analyticsservice.trackEvent('lang', this.language.code);
+		this.storage.set( 'app_language', language );
 		this.langObs.next(this.language);
 	}
 

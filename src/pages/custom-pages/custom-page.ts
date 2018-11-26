@@ -370,7 +370,7 @@ export class CustomPage implements OnInit, OnDestroy {
 			return;
 		}
 
-		if(page.target === '_blank' && page.extra_classes.indexOf('system') >= 0) {
+		if(page.target === '_blank' && page.extra_classes && page.extra_classes.indexOf('system') >= 0) {
 	      window.open(page.url, '_system', null);
 	      return;
 	    } else if(page.target === '_blank') {

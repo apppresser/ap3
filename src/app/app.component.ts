@@ -254,26 +254,30 @@ export class MyApp {
   afterData(data) {
 
     this.SplashScreen.hide();
-    this.loadMenu(data);
-
-    this.showLogin = ( data.side_menu_login == "on" ) ? true : false;
-    this.logins.set_force_login( (data.side_menu_force_login == "on") );
 
     this.menu_all_pages = ( data.menu_all_pages == "on" ) ? true : false;
 
-    this.menu_side = ( data.meta.menu_right == true ) ? "right" : "left";
+    this.verifyLanguageFile(data).then( lang => {
+      // set the default language before loading menu
+      this.getSetLang(data).then( lang => {
 
-    this.rtl = ( data.meta.rtl == true ) ? true : false;
+        this.loadMenu(data);
+        
+        this.showLogin = ( data.side_menu_login == "on" ) ? true : false;
+        this.logins.set_force_login( (data.side_menu_force_login == "on") );
     
-    if( this.rtl === true && this.languageservice.hasStoredLanguage === false )
-      this.platform.setDir('rtl', true)
+        this.menu_side = ( data.meta.menu_right == true ) ? "right" : "left";
     
-    this.verifyLanguageFile(data);
-    this.loadStyles(data);
-    
-    this.doStatusBar(data);
-    this.getSetLang(data);
-    this.getSetLogin();
+        this.rtl = ( data.meta.rtl == true ) ? true : false;
+        
+        if( this.rtl === true && this.languageservice.hasStoredLanguage === false )
+          this.platform.setDir('rtl', true)
+        
+        this.loadStyles(data);
+        this.doStatusBar(data);
+        this.getSetLogin();
+      });
+    });
 
     // Uncomment this when we begin using WKWebview
     // this.maybeSetCookie( data );
@@ -1468,26 +1472,34 @@ export class MyApp {
 
   getSetLang( data ) {
 
-    if(data.languages) {
-      this.storage.set('available_languages', data.languages)
-      this.languageservice.setAvailable(data.languages);
-    } else {
-      this.storage.remove('available_languages');
-      this.languageservice.setAvailable(null);
-    }
+    return new Promise( (resolve, reject) => {
 
-    this.storage.get( 'app_language' ).then( lang => {
-      if( lang ) {
-
-        let language = new Language(lang);
-
-        this.translate.use( language.code );
-        this.languageservice.setCurrentLanguage(language);
-
-        this.setBackBtnText();
-        
+      if(data.languages) {
+        this.storage.set('available_languages', data.languages)
+        this.languageservice.setAvailable(data.languages);
+      } else {
+        this.storage.remove('available_languages');
+        this.languageservice.setAvailable(null);
       }
-    })
+  
+      this.storage.get( 'app_language' ).then( lang => {
+        if( lang ) {
+  
+          let language = new Language(lang);
+  
+          this.translate.use( language.code );
+          this.languageservice.setCurrentLanguage(language);
+  
+          this.setBackBtnText();
+
+          resolve(lang);
+          
+        }
+
+        resolve(null);
+      });
+
+    });
 
   }
 
@@ -1542,22 +1554,27 @@ export class MyApp {
   }
 
   verifyLanguageFile(data) {
-    // check if language file exists. If not, default to en.json
-    this.languageservice.langFileExists(data).then( data => {
-      const langData = (<Language>data);
+    return new Promise((resolve, reject) => {
+      // check if language file exists. If not, default to en.json
+      this.languageservice.langFileExists(data).then( data => {
+        const langData = (<Language>data);
 
-      // console.log(`set language to ${langData.code} and dir to ${langData.dir}`);
+        // console.log(`set language to ${langData.code} and dir to ${langData.dir}`);
 
-      this.rtl = (langData.dir && langData.dir == 'rtl');
+        this.rtl = (langData.dir && langData.dir == 'rtl');
 
-      let language = new Language({
-        code: langData.code,
-        dir: (langData.dir && langData.dir == 'rtl') ? 'rtl' : 'ltr'
+        let language = new Language({
+          code: langData.code,
+          dir: (langData.dir && langData.dir == 'rtl') ? 'rtl' : 'ltr'
+        });
+
+        this.translate.setDefaultLang(language.code);
+        this.languageservice.setCurrentLanguage(language);
+        this.setBackBtnText();
+
+        resolve(language);
       });
 
-      this.translate.setDefaultLang(language.code);
-      this.languageservice.setCurrentLanguage(language);
-      this.setBackBtnText();
     });
   }
 
