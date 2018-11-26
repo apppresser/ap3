@@ -435,17 +435,6 @@ export class BpMessages {
 
   }
 
-  handleErr( err ) {
-    console.warn( err );
-
-    let msg = 'There was a problem, please try again.'
-    if( err['_body'] && JSON.parse( err['_body'] ).message ) {
-      msg += ' ' + JSON.parse( err['_body'] ).message;
-    }
-
-    this.presentToast( msg )
-  }
-
   newMessage() {
 
     this.nav.push( 'BpMessages', {
