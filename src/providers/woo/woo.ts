@@ -8,6 +8,8 @@ export class WooProvider {
 
   data: any = null;
   url: string;
+  wooRest: string;
+  cartRest: string;
   authString: string;
   httpOptions: any;
   itemParsed: any;
@@ -19,9 +21,9 @@ export class WooProvider {
 
     let item = window.localStorage.getItem( 'myappp' );
     this.itemParsed = JSON.parse( item );
-    let url = this.itemParsed.wordpress_url;
-    let restBase = 'wp-json/wc/v3/';
-    this.url = url + restBase;
+    this.url = this.itemParsed.wordpress_url;
+    this.wooRest = 'wp-json/wc/v3/';
+    this.cartRest = 'wp-json/appcommerce/v1/';
 
     // development API
     if( window.location && window.location.href && window.location.href.indexOf('localhost') >=0 ) {
@@ -60,7 +62,7 @@ export class WooProvider {
         concat = '?';
       }
 
-      let url = this.url + route;
+      let url = this.url + this.wooRest + route;
 
       // set pagination
       if( page === 'nopaging' ) {
@@ -96,7 +98,7 @@ export class WooProvider {
       if( !data )
         reject({ data: { message: "No data." } })
 
-      let url = this.url + route
+      let url = this.url + this.wooRest + route
 
       this.http.post( url, data, this.httpOptions )
         .subscribe(data => {
@@ -122,7 +124,7 @@ export class WooProvider {
       if( !data )
         reject({ data: { message: "No data." } })
 
-      this.http.post( this.url.replace('wc/v3/', 'wc/v2/') + 'cart/add', data, this.httpOptions )
+      this.http.post( this.url + this.cartRest + 'cart/add', data, this.httpOptions )
         .subscribe(response => {
 
           console.log(response)
@@ -143,7 +145,7 @@ export class WooProvider {
 
     return new Promise( (resolve, reject) => {
 
-      this.http.post( this.url.replace('wc/v3/', 'wc/v2/') + 'cart/clear', null, this.httpOptions )
+      this.http.post( this.url + this.cartRest + 'cart/clear', null, this.httpOptions )
         .subscribe(response => {
 
           resolve(response);
@@ -162,7 +164,7 @@ export class WooProvider {
 
     return new Promise( (resolve, reject) => {
 
-      this.http.get( this.url.replace('wc/v3/', 'wc/v2/') + 'cart?thumb=true', this.httpOptions )
+      this.http.get( this.url + this.cartRest + 'cart?thumb=true', this.httpOptions )
         .subscribe(response => {
 
           this.setCartCount(response)
@@ -194,7 +196,7 @@ export class WooProvider {
 
     return new Promise( (resolve, reject) => {
 
-      this.http.delete( this.url.replace('wc/v3/', 'wc/v2/') + 'cart/cart-item?cart_item_key=' + item.key, this.httpOptions )
+      this.http.delete( this.url + this.cartRest + 'cart/cart-item?cart_item_key=' + item.key, this.httpOptions )
         .subscribe(response => {
 
           resolve(response);
@@ -213,7 +215,7 @@ export class WooProvider {
 
     return new Promise( (resolve, reject) => {
 
-      this.http.post( this.url.replace('wc/v3/', 'wc/v2/') + 'cart/cart-item?cart_item_key=' + item.key + '&quantity=' + quantity, null, this.httpOptions )
+      this.http.post( this.url + this.cartRest + 'cart/cart-item?cart_item_key=' + item.key + '&quantity=' + quantity, null, this.httpOptions )
         .subscribe(response => {
 
           resolve(response);
@@ -248,7 +250,7 @@ export class WooProvider {
 
     return new Promise( (resolve, reject) => {
 
-      this.http.get( this.url + 'system_status', this.httpOptions )
+      this.http.get( this.url + this.wooRest + 'system_status', this.httpOptions )
         .subscribe(data => {
 
           this.data = data;
