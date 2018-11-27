@@ -23,10 +23,13 @@ export class WooProvider {
     let restBase = 'wp-json/wc/v3/';
     this.url = url + restBase;
 
-    // TODO: move this
-    this.authString = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
-    // reactordev
-    // this.authString = 'Basic Y2tfMDM4NTI0M2Y1NDZmNzhmNGE3MWZiOWNkNTZmNzM4NTkyNDhmMWQ0Yzpjc19lYWUwZDVhY2FjNjBhOGZkMmY5OGNiZTQ0ZWMyMzgyNGMzZTFiNGNm'
+    // development API
+    if( window.location && window.location.href && window.location.href.indexOf('localhost') >=0 ) {
+      // test key for local environment
+      this.authString = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
+    } else {
+      this.authString = '[[woo_auth_string]]'
+    }
 
     this.httpOptions = {
       headers: new HttpHeaders({
