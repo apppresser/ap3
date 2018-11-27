@@ -10,6 +10,18 @@
   <button ion-button block (tap)="shopPage()">{{ 'Go to Shop' | translate }}</button>
 </div>
 
+<div padding class="cart-top">
+
+  <h3 *ngIf="cart_total" class="cart-total">
+    {{ 'Cart total:' | translate }} <span *ngIf="currencySymbol" class="currency-symbol" [innerHTML]="currencySymbol"></span>{{ cart_total }}
+  </h3>
+
+  <button ion-button class="checkout-btn" *ngIf="products?.length" full color="primary" (click)="openCheckout()" icon-end>
+        {{ 'Checkout' | translate }}
+    <ion-icon name="arrow-forward"></ion-icon>
+  </button>
+</div>
+
 <ion-list class="post-list woocommerce" *ngIf="products">
 
   <ion-item *ngFor="let item of products">
@@ -22,7 +34,7 @@
 
 		<ion-grid>
       <ion-row>
-        <ion-col col-4 class="product-price"><p *ngIf="item.line_total">${{item.line_total}}</p></ion-col>
+        <ion-col col-4 class="product-price"><p *ngIf="item.line_total"><span *ngIf="currencySymbol" class="currency-symbol" [innerHTML]="currencySymbol"></span>{{item.line_total}}</p></ion-col>
         <ion-col col-5 text-center class="product-quantity">
 
             <ion-icon item-start name="remove-circle" (click)="decrement( item )"></ion-icon>
@@ -37,18 +49,7 @@
   </ion-item>
 
   <ion-item *ngIf="cart_total">
-    {{ 'Cart total:' | translate }} $ {{cart_total}}
-  </ion-item>
-
-  <ion-item *ngIf="cart_total">
     <button ion-button icon-left color="light" (click)="clearCart()"><ion-icon name="trash"></ion-icon> {{ 'Clear Cart' | translate }}</button>
   </ion-item>
 
 </ion-list>
-
-<div padding>
-  <button ion-button class="checkout-btn" *ngIf="products?.length" full color="primary" (click)="openCheckout()" icon-end>
-        {{ 'Checkout' | translate }}
-    <ion-icon name="arrow-forward"></ion-icon>
-  </button>
-</div>

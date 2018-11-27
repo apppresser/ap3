@@ -11,6 +11,7 @@ export class WooProvider {
   authString: string;
   httpOptions: any;
   itemParsed: any;
+  currencySymbol: string;
 
   constructor(
     public http: HttpClient,
@@ -238,6 +239,64 @@ export class WooProvider {
 
     return null;
 
+  }
+
+  getSetting() {
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.get( this.url + 'system_status', this.httpOptions )
+        .subscribe(data => {
+
+          this.data = data;
+
+          resolve(this.data);
+        },
+        error => {
+          // probably a bad url or 404
+          reject(error);
+          this.handleError(error)
+        })
+
+    }); // end Promise
+
+  }
+
+  getCurrencySymbol() {
+
+    return new Promise( (resolve, reject) => {
+
+      this.storage.get('woo_currency_symbol').then( symbol => {
+
+        if( symbol ) {
+          resolve( symbol );
+        } else {
+
+          this.getSetting().then( settings => {
+
+            console.log('settings', settings)
+
+            if( settings && settings.settings && settings.settings.currency_symbol ) {
+
+              this.storage.set('woo_currency_symbol', settings.settings.currency_symbol)
+
+              resolve( settings.settings.currency_symbol );
+
+            } else {
+              // default to USD
+              resolve('&#36;')
+            }
+
+          }).catch( e => {
+            console.warn(e)
+            resolve('&#36;')
+          }) // end getSetting()
+
+        }
+
+      }) // end storage.get
+
+    }) // end promise
   }
 
   handleError(err) {

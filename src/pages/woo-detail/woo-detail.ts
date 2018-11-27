@@ -70,6 +70,8 @@ export class WooDetail {
 		this.wooProvider.getCartContents().then( cart => {
 			this.cart_count = ( cart && typeof cart != 'string' && (<any>cart).cart_total ? (<any>cart).cart_total.cart_contents_count : 0 )
 			// don't need to save count to storage, it's already saved in woo.ts
+		}).catch( e => {
+			console.warn(e)
 		})
 
 	}
@@ -110,18 +112,21 @@ export class WooDetail {
 
 	variationChanged( e, attribute ) {
 
+		console.log(this.availableAttributes)
+
 		console.log(e, attribute)
 
 		if( !this.variations )
 			return;
 
-		// check what other attributes are possible with attribute.name == e, and send those to availableAttributes
-		for (let i = 0; i < this.variations.length; ++i) {
-			console.log( attribute.name + '=' + e)
-			if( this.variations[i].attributes.length ) {
-				console.log(this.variations[i].attributes)
-			}
-		}
+		/*
+		when an attribute is selected, need to query woo to get other available attributes like this:
+
+		https://appdev.local/wp-json/wc/v3/products/1758/variations?attribute=pa_color&attribute_term=229
+
+		This returns variations with that attribute, need to loop through those and get available variation attributes, then send those to this.availableAttributes.
+		*/
+		
 	}
 
 	increment( item ) {

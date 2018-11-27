@@ -36,17 +36,15 @@
 
 	    <h2 [innerHTML]="selectedItem.name"></h2>
 
-	    <p *ngIf="selectedItem.price && !selectedItem.sale_price" class="product-price">${{selectedItem.price}}</p>
+	    <p *ngIf="selectedItem.price_html" class="product-price" [innerHTML]="selectedItem.price_html"></p>
 
-	    <p *ngIf="!selectedItem.price && !selectedItem.sale_price && selectedItem.price_html" [innerHTML]="selectedItem.price_html"></p>
-
-	    <p *ngIf="selectedItem.sale_price" class="product-price">Sale! ${{selectedItem.sale_price}}</p>
+	    <p *ngIf="!selectedItem.price_html && selectedItem.price">{{ selectedItem.price }}</p>
 
 	    <star-rating [rating]="selectedItem.average_rating"></star-rating>
 
 		<div *ngIf="description" [innerHTML]="description"></div>
 
-		<p *ngIf="selectedItem.in_stock" class="product-stock">✓ In Stock.</p>
+		<p *ngIf="selectedItem.in_stock" class="product-stock">{{ '✓ In Stock.' | translate }}</p>
 
 		<form (ngSubmit)="addToCart(addToCartForm)" #addToCartForm="ngForm">
 

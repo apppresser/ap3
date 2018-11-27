@@ -23,6 +23,7 @@ export class WooCartComponent implements OnInit {
     browserSubscription2: any;
     order_id: any;
     loadingItems: boolean = false;
+    currencySymbol: string;
 
 	constructor(
 		public navCtrl: NavController,
@@ -40,6 +41,12 @@ export class WooCartComponent implements OnInit {
 		events.subscribe('cart_change', count => {
 	      this.cart_count = (<number>count)
 	    })
+
+	    this.wooProvider.getCurrencySymbol().then( symbol => {
+	    	this.currencySymbol = symbol
+	    })
+
+	    console.log('symbol ' + this.currencySymbol)
 
 	}
 

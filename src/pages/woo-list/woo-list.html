@@ -64,9 +64,9 @@
 
         <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.below_title" [innerHTML]="item.appp.woo_list.below_title"></div>
 
-        <p *ngIf="item.price && !item.sale_price" class="product-price">${{item.price}}</p>
+        <p *ngIf="item.price_html" class="product-price" [innerHTML]="item.price_html"></p>
 
-        <p *ngIf="item.sale_price" class="product-price">Sale! ${{item.sale_price}}</p>
+        <p *ngIf="!item.price_html && item.price" class="product-price">{{ item.price }}</p>
 
         <star-rating [rating]="item.average_rating"></star-rating>
 
