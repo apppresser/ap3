@@ -69,6 +69,7 @@ export class WooAccountComponent implements OnInit {
 		// set login data after modal login
 	    this.events.subscribe('user:login', data => {
 	      this.login_data = data
+	      this.getCustomerOrders()
 	    });
 
 	    this.events.subscribe('user:logout', data => {
