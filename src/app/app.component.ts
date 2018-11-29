@@ -255,7 +255,7 @@ export class MyApp {
 
     this.SplashScreen.hide();
 
-    this.menu_all_pages = ( data.menu_all_pages == "on" ) ? true : false;
+    this.menu_all_pages = ( data.menu_all_pages == true ) ? true : false;
 
     this.verifyLanguageFile(data).then( lang => {
       // set the default language before loading menu
