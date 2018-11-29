@@ -401,7 +401,12 @@ export class WooList {
 
 		// if the value is an empty string don't filter the items
 		if (val && val.trim() != '') {
-		  // set to this.route so infinite scroll works
+
+			if( this.route.indexOf('search') >= 0 ) {
+				// remove extra search param
+				this.route = this.route.split('?search')[0]
+			}
+
 		  let route = this.addQueryParam(this.route, 'search=' + val);
 		  this.loadProducts( route )
 		}
