@@ -29,16 +29,9 @@ export class LanguageService {
 	}
 
 	initStoredLanguage() {
-
-		console.log('3. get stored language');
-
 		this.storage.get( 'app_language' ).then( lang => {
-
-			console.log('4. stored language', lang);
-
 			if( lang ) {
 				this.hasStoredLanguage = true;
-				console.log('5. has stored language', true);
 				this.translate.setDefaultLang(lang.code);
 				this.setCurrentLanguage(lang);
 			}
@@ -49,15 +42,11 @@ export class LanguageService {
 		this.language.code = language.code;
 		this.language.dir = language.dir;
 		this.analyticsservice.trackEvent('lang', this.language.code);
-		console.log('2. set current language (next obs)', language);
 		this.storage.set( 'app_language', language );
 		this.langObs.next(this.language);
 	}
 
 	setAvailable(languages: any) {
-
-		console.log('12. setAvailable languages', languages);
-
 		this.language.available = languages;
 	}
 
@@ -74,9 +63,6 @@ export class LanguageService {
 	}
 
 	languageStatus(): Observable<Language> {
-
-		console.log('1. languageservice languageStatus get the Observable');
-
 		// return the observable
 		return this.langObs;
 	}
@@ -156,9 +142,6 @@ export class LanguageService {
 	}
 
 	langFileExists(data): Promise<Language> {
-
-		console.log('7. langFileExists data', data);
-
 		return new Promise<Language>( (resolve, reject) => {
 
       		let fallbackLang = new Language({
@@ -168,12 +151,10 @@ export class LanguageService {
 
 			if(data.default_language) {
 
-				console.log('7B. langFileExists data.default_language', data.default_language);
-
-        		let langDefault = new Language({
-          			code: data.default_language,
+				let langDefault = new Language({
+					code: data.default_language,
 					dir: (data.meta.rtl) ? 'rtl' : 'ltr'
-        		});
+				});
 
         		this.http.get( './assets/i18n/'+langDefault.code+'.json' )
 					.subscribe((response: Response) => {
@@ -185,19 +166,15 @@ export class LanguageService {
 							new_lang.dir = (parsedLangData.dir) ? parsedLangData.dir : langDefault.dir;
 						}
 
-						console.log('7C. langFileExists new_lang', new_lang);
-
 						// language file exists, return url 
 						resolve(new_lang);
 				},
 				error => {
 					// language file does not exist
-					console.log('7D1. langFileExists fallbackLang', fallbackLang);
 					resolve(fallbackLang);
 				});
 
 			} else {
-				console.log('7D2. langFileExists fallbackLang', fallbackLang);
 				resolve(fallbackLang);
 			}
 	    });
