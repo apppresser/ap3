@@ -164,6 +164,8 @@ export class MyApp {
     // TODO: this causes a bug when iframe page is the homepage. It calls resetTabs too many times, which loads iframe.ts twice, causing the spinner to appear for too long.
     this.languageservice.languageStatus().subscribe((language: Language) => {
 
+      console.log('2. languageservice languageStatus Obs resolved language (resetTabs)', language);
+
       let is_loggedin = (this.loginservice.user);
       this.rtl = (language.dir && language.dir == 'rtl');
       let dir: DocumentDirection = (this.rtl) ? 'rtl' : 'ltr';
@@ -253,8 +255,10 @@ export class MyApp {
 
     this.SplashScreen.hide();
     this.verifyLanguageFile(data).then( lang => {
+
+      console.log('10. afterData verifyLanguageFile then lang', lang);
       // set the default language before loading menu
-      this.getSetLang(data).then( lang => {
+      this.setAvailableLangs(data).then( lang => {
         this.loadMenu(data);
         this.showLogin = ( data.side_menu_login == "on" ) ? true : false;
         this.logins.set_force_login( (data.side_menu_force_login == "on") );
@@ -1443,34 +1447,59 @@ export class MyApp {
 
   }
 
-  getSetLang( data ) {
+  setAvailableLangs( data ) {
+
+    console.log('11. setAvailableLangs data', data);
 
     return new Promise( (resolve, reject) => {
 
       if(data.languages) {
+        console.log('set available_languages', data.languages);
         this.storage.set('available_languages', data.languages)
         this.languageservice.setAvailable(data.languages);
       } else {
         this.storage.remove('available_languages');
         this.languageservice.setAvailable(null);
       }
-  
-      this.storage.get( 'app_language' ).then( lang => {
-        if( lang ) {
-  
-          let language = new Language(lang);
-  
-          this.translate.use( language.code );
-          this.languageservice.setCurrentLanguage(language);
-  
-          this.setBackBtnText();
 
-          resolve(lang);
-          
-        }
+      console.log('13. this.languageservice.hasStoredLanguage', this.languageservice.hasStoredLanguage);
 
-        resolve(null);
-      });
+      // This logic is really weird
+      if(this.languageservice.hasStoredLanguage) {
+
+        console.log('14. YES resolve this.languageservice.language', this.languageservice.language);
+
+        console.log('setAvailableLangs langs', data.languages);
+        console.log('setAvailableLangs lang', this.languageservice.language)
+
+        resolve(this.languageservice.language);
+      } else {
+
+        console.log('14. NO resolve from storage');
+
+        // We should never get here, because the default language or stored language should already be set
+        this.storage.get( 'app_language' ).then( lang => {
+
+
+          console.log('15. from storage lang', lang);
+
+          if( lang ) {
+    
+            let language = new Language(lang);
+    
+            this.translate.use( language.code );
+            console.log('16. setCurrentLanguage from storage???', language);
+            this.languageservice.setCurrentLanguage(language);
+    
+            this.setBackBtnText();
+  
+            resolve(lang);
+            
+          }
+  
+          resolve(null);
+        }); 
+      }
 
     });
 
@@ -1527,6 +1556,7 @@ export class MyApp {
   }
 
   verifyLanguageFile(data) {
+    console.log('6. verifyLanguageFile data', true);
     return new Promise((resolve, reject) => {
       // check if language file exists. If not, default to en.json
       this.languageservice.langFileExists(data).then( data => {
@@ -1541,9 +1571,20 @@ export class MyApp {
           dir: (langData.dir && langData.dir == 'rtl') ? 'rtl' : 'ltr'
         });
 
-        this.translate.setDefaultLang(language.code);
-        this.languageservice.setCurrentLanguage(language);
-        this.setBackBtnText();
+        console.log('8?. this.languageservice.getCurrentLanguage()',  this.languageservice.getCurrentLanguage());
+        console.log('8?. this.languageservice.hasStoredLanguage',  this.languageservice.hasStoredLanguage);
+
+        if(this.languageservice.hasStoredLanguage) {
+          // from storage
+          console.log('9. YES hasStoredLanguage from storage', this.languageservice.language)
+          resolve(this.languageservice.language);
+        } else {
+          // from data
+          console.log('9. NO hasStoredLanguage from data', this.languageservice.language)
+          this.translate.setDefaultLang(language.code);
+          this.languageservice.setCurrentLanguage(language);
+          this.setBackBtnText();
+        }
 
         resolve(language);
       });
