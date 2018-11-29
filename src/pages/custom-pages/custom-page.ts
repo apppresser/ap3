@@ -1,5 +1,5 @@
-import {Component, Renderer, ElementRef, OnInit, AfterViewInit, Input, isDevMode, OnDestroy, NgZone} from '@angular/core';
-import {Nav, NavParams, ModalController, Platform, ViewController, Events, IonicPage, LoadingController, Loading} from 'ionic-angular';
+import {Component, Renderer, ElementRef, OnInit, AfterViewInit, Input, isDevMode, OnDestroy, NgZone, ViewChild} from '@angular/core';
+import {Nav, NavParams, ModalController, Platform, ViewController, Events, IonicPage, LoadingController, Loading, Content} from 'ionic-angular';
 import {TranslateService, TranslateModule} from '@ngx-translate/core';
 import {Storage} from '@ionic/storage';
 import {Network} from '@ionic-native/network';
@@ -71,6 +71,8 @@ class ModalOptions {
 })
 export class CustomPage implements OnInit, OnDestroy {
 
+	@ViewChild(Content) content: Content;
+
 	pagetitle: string;
 	user: User;
 	subscriptions = [];
@@ -107,6 +109,9 @@ export class CustomPage implements OnInit, OnDestroy {
 	showCartIcon: boolean = false;
 	cart_count: number;
 	cart: any;
+	showSearchIcon: boolean = false;
+	toggleSearch: boolean = false;
+	searchRoute: string;
 
 	constructor(
 		public navParams: NavParams,
@@ -230,6 +235,13 @@ export class CustomPage implements OnInit, OnDestroy {
 				this.cart_count = data
 			} else {
 				this.cart_count = null
+			}
+		})
+
+		this.events.subscribe( 'show_search_icon', data => {
+			if( data && data.route ) {
+				this.showSearchIcon = true;
+				this.searchRoute = data.route
 			}
 		})
 	}
@@ -730,6 +742,36 @@ export class CustomPage implements OnInit, OnDestroy {
 	    let cartModule = this.getPageModuleName( cartPage.page_id )
 
 	    this.nav.push( cartModule, cartPage )
+
+	}
+
+	toggleSearchBar() {
+		if( !this.toggleSearch ) {
+			this.toggleSearch = true
+		} else {
+			this.toggleSearch = false
+		}
+		this.content.resize()
+	}
+
+	doSearch(ev) {
+		// set val to the value of the searchbar
+		let val = ev.target.value;
+
+		// if the value is an empty string don't filter the items
+		if (val && val.trim() != '') {
+		  // set to this.route so infinite scroll works
+		  let route = this.addQueryParam( this.searchRoute, 'search=' + val);
+		  this.nav.push('WooList', { route: route, search: true })
+		}
+	}
+
+	addQueryParam(url, param) {
+		const separator = (url.indexOf('?') > 0) ? '&' : '?';
+		return url + separator + param;
+	}
+
+	clearSearch() {
 
 	}
 

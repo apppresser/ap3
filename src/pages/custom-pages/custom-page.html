@@ -19,14 +19,22 @@
 
 		<ion-buttons end>
 
-	      <button *ngIf="showCartIcon" ion-button (click)="showCart()">
-	      	<ion-icon name="cart"></ion-icon>
-	        <ion-badge color="clear" item-end>{{cart_count}}</ion-badge>
-	      </button>
+			<button ion-button *ngIf="showSearchIcon" class="search-button-header" (click)="toggleSearchBar()">
+				<ion-icon name="search"></ion-icon>
+			</button>
+
+			<button *ngIf="showCartIcon" ion-button (click)="showCart()">
+				<ion-icon name="cart"></ion-icon>
+				<ion-badge color="clear" item-end>{{cart_count}}</ion-badge>
+			</button>
 
 	    </ion-buttons>
 
 	</ion-navbar>
+
+	<ion-toolbar *ngIf="toggleSearch">
+		<ion-searchbar placeholder="{{'Search' | translate }}" debounce="1000" (ionInput)="doSearch($event)" (ionClear)="clearSearch()"></ion-searchbar>
+	</ion-toolbar>
 </ion-header>
 
 <ion-content *ngIf="!use_dynamic" [ngClass]="customClasses">

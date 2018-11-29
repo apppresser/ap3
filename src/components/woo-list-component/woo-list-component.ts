@@ -21,6 +21,7 @@ export class WooListComponent implements OnInit {
 	@Input() refresh: boolean = false;
 	@Input() wishlist: boolean = false;
 	@Input() hideToolbar: boolean = false;
+	@Input() hideSearch: boolean = false;
 
 	// super confusing way to add a class of "has-toolbar" when there is a toolbar
 	@HostBinding('class.has-toolbar') chkToolbar: boolean = true
@@ -72,6 +73,10 @@ export class WooListComponent implements OnInit {
 			this.getWishlist()
 		}
 
+		if( !this.hideSearch ) {
+			this.searchIconEvent()
+		}
+
 		this.cartIconEvent()
 
 	}
@@ -79,6 +84,10 @@ export class WooListComponent implements OnInit {
 	// this is used to show the cart icon on custom page headers
 	cartIconEvent() {
 		this.events.publish( 'show_cart_icon', true )
+	}
+
+	searchIconEvent() {
+		this.events.publish( 'show_search_icon', { route: this.route } )
 	}
 
 	// get posts from storage when we are offline

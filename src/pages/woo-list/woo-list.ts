@@ -42,6 +42,10 @@ export class WooList {
 			this.route = 'products'
 		}
 
+		if( this.navParams.get('search') == true ) {
+			this.showSearch = true;
+		}
+
 		// console.log('route ' + this.route)
 
 		this.title = this.navParams.get('title')

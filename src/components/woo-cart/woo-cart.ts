@@ -23,7 +23,7 @@ export class WooCartComponent implements OnInit {
     browserSubscription2: any;
     order_id: any;
     loadingItems: boolean = false;
-    currencySymbol: string;
+    currencySymbol: any;
 
 	constructor(
 		public navCtrl: NavController,
