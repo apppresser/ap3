@@ -14,7 +14,7 @@
   <span>{{ 'Refresh' | translate }}</span>
 </div>
 
-<ion-toolbar class="woo-list-toolbar" color="light" *ngIf="!hideToolbar && !wishlist">
+<ion-toolbar class="woo-list-toolbar" color="light" *ngIf="!hideToolbar && !wishlist && !loading">
 
   <ion-item no-lines *ngIf="categories" id="favorites-toolbar" color="light">
 

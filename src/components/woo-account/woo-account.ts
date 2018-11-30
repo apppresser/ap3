@@ -21,10 +21,10 @@ export class WooAccountComponent implements OnInit {
 	login_data: any;
 	customer: any;
 	loading: any;
-	wpUrl: string;
 	showOrdersBool: boolean = false;
 	showAccountBool: boolean = false;
 	loginModal: any;
+	accountUrl: any;
 
 	constructor(
 		public navCtrl: NavController, 
@@ -40,9 +40,6 @@ export class WooAccountComponent implements OnInit {
 	}
 
 	ngOnInit() {
-
-		let item = window.localStorage.getItem( 'myappp' );
-    	this.wpUrl = JSON.parse( item ).wordpress_url;
 
 		this.order_id = this.navParams.get('order_id');
 
@@ -159,15 +156,27 @@ export class WooAccountComponent implements OnInit {
 		}).then( ()=> {
 			this.hideSpinner()
 		})
+
+		// sucks to do an extra http request, tried hard to avoid this
+		this.wooProvider.getCustom( 'wp-json/appcommerce/v1/misc' ).then( response => {
+
+			if( response && (<any>response).account && (<any>response).account.url ) {
+				this.accountUrl = (<any>response).account.url
+			}
+			
+		}).catch( e => {
+			console.warn(e)
+		})
+
 	}
 
 	thanksContinue() {
 		this.navCtrl.pop()
 	}
 
-	siteLink( pageSlug ) {
+	iabLink( url ) {
 
-		this.iab.create( this.wpUrl + pageSlug, '_blank' )
+		this.iab.create( url, '_blank' )
 
 	}
 
@@ -190,6 +199,14 @@ export class WooAccountComponent implements OnInit {
 
     	this.loginModal.present();
 		
+	}
+
+	formatAvatar( url ) {
+		if( url.indexOf('https') >= 0 ) {
+			return url;
+		} else {
+			return 'https:' + url;
+		}
 	}
 
 	showSpinner() {

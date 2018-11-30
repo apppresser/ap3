@@ -23,7 +23,7 @@ export class WooProvider {
     this.itemParsed = JSON.parse( item );
     this.url = this.itemParsed.wordpress_url;
     this.wooRest = 'wp-json/wc/v3/';
-    this.cartRest = 'wp-json/appcommerce/v1/';
+    this.cartRest = 'wp-json/appcommerce/v1/cart';
 
     // development API
     if( window.location && window.location.href && window.location.href.indexOf('localhost') >=0 ) {
@@ -124,7 +124,7 @@ export class WooProvider {
       if( !data )
         reject({ data: { message: "No data." } })
 
-      this.http.post( this.url + this.cartRest + 'cart/add', data, this.httpOptions )
+      this.http.post( this.url + this.cartRest + '/add', data, this.httpOptions )
         .subscribe(response => {
 
           console.log(response)
@@ -145,7 +145,7 @@ export class WooProvider {
 
     return new Promise( (resolve, reject) => {
 
-      this.http.post( this.url + this.cartRest + 'cart/clear', null, this.httpOptions )
+      this.http.post( this.url + this.cartRest + '/clear', null, this.httpOptions )
         .subscribe(response => {
 
           resolve(response);
@@ -164,7 +164,7 @@ export class WooProvider {
 
     return new Promise( (resolve, reject) => {
 
-      this.http.get( this.url + this.cartRest + 'cart?thumb=true', this.httpOptions )
+      this.http.get( this.url + this.cartRest + '?thumb=true', this.httpOptions )
         .subscribe(response => {
 
           this.setCartCount(response)
@@ -196,7 +196,7 @@ export class WooProvider {
 
     return new Promise( (resolve, reject) => {
 
-      this.http.delete( this.url + this.cartRest + 'cart/cart-item?cart_item_key=' + item.key, this.httpOptions )
+      this.http.delete( this.url + this.cartRest + '/cart-item?cart_item_key=' + item.key, this.httpOptions )
         .subscribe(response => {
 
           resolve(response);
@@ -215,7 +215,7 @@ export class WooProvider {
 
     return new Promise( (resolve, reject) => {
 
-      this.http.post( this.url + this.cartRest + 'cart/cart-item?cart_item_key=' + item.key + '&quantity=' + quantity, null, this.httpOptions )
+      this.http.post( this.url + this.cartRest + '/cart-item?cart_item_key=' + item.key + '&quantity=' + quantity, null, this.httpOptions )
         .subscribe(response => {
 
           resolve(response);
@@ -255,7 +255,7 @@ export class WooProvider {
 
           this.data = data;
 
-          resolve(this.data);
+          resolve( this.data );
         },
         error => {
           // probably a bad url or 404
@@ -281,11 +281,11 @@ export class WooProvider {
 
             console.log('settings', settings)
 
-            if( settings && settings.settings && settings.settings.currency_symbol ) {
+            if( settings && (<any>settings).settings && (<any>settings).settings.currency_symbol ) {
 
-              this.storage.set('woo_currency_symbol', settings.settings.currency_symbol)
+              this.storage.set('woo_currency_symbol', (<any>settings).settings.currency_symbol)
 
-              resolve( settings.settings.currency_symbol );
+              resolve( (<any>settings).settings.currency_symbol );
 
             } else {
               // default to USD
@@ -302,6 +302,34 @@ export class WooProvider {
       }) // end storage.get
 
     }) // end promise
+  }
+
+  /* Returns promise.
+   */
+  getCustom( route ) {
+
+    return new Promise( (resolve, reject) => {
+
+      if( !route )
+        reject({ data: { message: "No URL set. " } })
+
+      let url = this.url + route;
+
+      this.http.get( url, this.httpOptions )
+        .subscribe(data => {
+
+          this.data = data;
+
+          resolve(this.data);
+        },
+        error => {
+          // probably a bad url or 404
+          reject(error);
+          this.handleError(error)
+        })
+
+    }); // end Promise
+    
   }
 
   handleError(err) {

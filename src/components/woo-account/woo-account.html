@@ -7,9 +7,6 @@
 			<ion-col text-center>
 				<button ion-button clear block (click)="showAccount()">{{ 'Account' | translate }}</button>
 			</ion-col>
-			<ion-col text-center>
-				<button ion-button clear block (click)="siteLink('my-account')">{{ 'More' | translate }}</button>
-			</ion-col>
 		</ion-row>
 	</ion-grid>
 </ion-toolbar>
@@ -59,9 +56,9 @@
 	<div class="account-details" *ngIf="login_data && showAccountBool">
 		<ion-list *ngIf="account">
 			<ion-item>
-				<button ion-button outline item-end  icon-start (click)="siteLink('my-account')"><ion-icon name="create"></ion-icon> {{ 'Edit Account' | translate }}</button>
+				<button *ngIf="accountUrl" ion-button outline item-end  icon-start (click)="iabLink( accountUrl )"><ion-icon name="create"></ion-icon> {{ 'Edit Account' | translate }}</button>
 				<ion-avatar item-start class="account-avatar">
-			      <img [src]="account.avatar_url" >
+			      <img [src]="formatAvatar( account.avatar_url )" >
 			    </ion-avatar>
 				<h2>{{ account.first_name }} {{ account.last_name }}</h2>
 			</ion-item>
