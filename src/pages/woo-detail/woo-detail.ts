@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, ToastController, ModalController, 
 import { DomSanitizer } from '@angular/platform-browser';
 import { Storage } from '@ionic/storage';
 import { WooProvider } from '../../providers/woo/woo';
+import {SocialSharing} from '@ionic-native/social-sharing';
 
 @IonicPage()
 @Component({
@@ -33,7 +34,8 @@ export class WooDetail {
 		public wooProvider: WooProvider,
 		public events: Events,
 		private elementRef: ElementRef,
-		private renderer: Renderer
+		private renderer: Renderer,
+		public socialSharing: SocialSharing,
 		) {
 
 		if( !this.navParams.get('item') )
@@ -486,6 +488,16 @@ export class WooDetail {
 	    let cartModule = this.getPageModuleName( cartPage.page_id )
 
 	    this.navCtrl.push( cartModule, cartPage )
+
+	}
+
+	share() {
+
+		this.socialSharing.share( this.selectedItem.name, null, null, this.selectedItem.permalink ).then(() => {
+	      // Sharing via email is possible
+	    }).catch(() => {
+	      // Sharing via email is not possible
+	    });
 
 	}
 

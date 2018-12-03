@@ -34,7 +34,9 @@
 
 	<div class="single-product-content">
 
-	    <h2 [innerHTML]="selectedItem.name"></h2>
+		<button class="product-share" ion-button icon-only clear (click)="share()"><ion-icon name="ios-share-outline"></ion-icon></button>
+
+	    <h2 class="product-title" [innerHTML]="selectedItem.name"></h2>
 
 	    <p *ngIf="selectedItem.price_html" class="product-price" [innerHTML]="selectedItem.price_html"></p>
 
@@ -42,7 +44,7 @@
 
 	    <star-rating [rating]="selectedItem.average_rating"></star-rating>
 
-		<div *ngIf="description" [innerHTML]="description"></div>
+		<div class="product-description" *ngIf="description" [innerHTML]="description"></div>
 
 		<p *ngIf="selectedItem.in_stock" class="product-stock">{{ '✓ In Stock.' | translate }}</p>
 
