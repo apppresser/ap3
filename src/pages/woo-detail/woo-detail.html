@@ -49,11 +49,11 @@
 		<form (ngSubmit)="addToCart(addToCartForm)" #addToCartForm="ngForm">
 
 			<!-- <div *ngIf="variations">
-				<ion-button *ngIf="variations.length">
+				<ion-item *ngIf="variations.length">
 					<ion-label stacked>Options</ion-label>
 					<ion-select ngModel name="variation_id">
 						<ion-option *ngFor="let variation of variations" value="{{variation.id}}">
-							${{variation.price}} - 
+							{{variation.price}} - 
 							<div *ngFor="let attr of variation.attributes">
 								{{attr.name}} : {{attr.option}}
 							</div>
@@ -65,7 +65,7 @@
 			<div *ngIf="!groupedProducts?.length && availableAttributes.length">
 				<ion-item *ngFor="let attribute of availableAttributes">
 					<ion-label stacked>{{attribute.name}}</ion-label>
-					<ion-select (ionChange)="variationChanged( $event, attribute )" ngModel name="attribute_id" >
+					<ion-select (ionChange)="variationChanged( $event, attribute )" ngModel name="{{attribute.id}}" >
 						<ion-option *ngFor="let option of attribute.options" value="{{option}}">
 							{{option}}
 						</ion-option>

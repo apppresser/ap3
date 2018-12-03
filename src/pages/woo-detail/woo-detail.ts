@@ -175,9 +175,15 @@ export class WooDetail {
 
 		console.log(item, this.selectedItem)
 
-		// if( this.variations.length ) {
-		// 	item.variation_id = this.getVariationId( item )
-		// }
+		if( this.variations.length ) {
+			item.variation_id = this.getVariationId( item )
+			if( item.variation_id === undefined ) {
+				this.presentToast( 'Not available, please select different options.' )
+				return;
+			}
+		}
+
+		console.log('variation id: ' + item.variation_id )
 
 		this.presentToast( this.selectedItem.name + ' added to cart.' )
 
@@ -230,9 +236,56 @@ export class WooDetail {
 
 	}
 
-	getVariationId( item ) {
+	// we need the variation ID to add item to cart, but all we have are attributes. Get variation ID from attributes
+	getVariationId( selectedAttributes ) {
+
+		console.log('get variation id', selectedAttributes, this.variations)
 
 		// match attributes with a variation ID
+		// first, loop through variations
+		for (var i = 0; i < this.variations.length; ++i) {
+
+			// see if this variation's attributes match what the user selected. If so, return the variation ID
+			let match = this.matchAttributes( this.variations[i].attributes, selectedAttributes )
+			if( match ) {
+				// if we found the right variation, return the ID. Otherwise, go to the next variation
+				return this.variations[i].id
+			}
+			
+		}
+
+	}
+
+	/* We are trying to match the selected attributes with the attributes stored in the variations, and then get the variation ID for the cart item.
+	attributeArr[z] is one of the attribute objects like { id: 1, name: "Color", option: "Green" }
+	objKeys[z] is the attribute ID, like 0 or 1
+	item[objKeys[z]] is the option value, like "Green"
+	*/
+	matchAttributes( attributeArr, selectedAttributes ) {
+
+		// these are the attribute IDs, like 0, 1 etc
+		var objKeys = Object.keys(selectedAttributes)
+
+		// loop over attributes user selected, and try to match them to a variation
+		for (var i = 0; i < objKeys.length; ++i) {
+
+			// find index of this attribute in our array of variation attributes
+			let index = attributeArr.findIndex(x => x.id== objKeys[i] );
+
+			// check if this attribute matches the variation's attribute. For example, if they are both name:"Color", option:"Green" then we have a match.
+			if( selectedAttributes[objKeys[i]] === attributeArr[index].option ) {
+				// this is a match, we should check the next attribute
+				continue;
+			} else {
+				// attributes do not match, so we should go to the next variation
+				return false;
+			}
+
+		}
+
+		// if we get here, that means all attributes in this variation checked out
+		return true;
+
 	}
 
 	addGroupedItem( item ) {
