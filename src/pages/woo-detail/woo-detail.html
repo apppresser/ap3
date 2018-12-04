@@ -130,6 +130,8 @@
 				    <!--p class="review-date">{{ review.date_created }}</p-->
 				</ion-item>
 			</ion-list>
+
+			<button ion-button block color="light" *ngIf="moreReviewsExist" (click)="moreReviews()"> {{ 'All Reviews' | translate }}</button>
 		</div>
 
 		<div class="related-products" *ngIf="selectedItem.related_ids?.length">

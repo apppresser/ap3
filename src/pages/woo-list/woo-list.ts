@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, isDevMode} from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController, ToastController, ModalController, Events, Content } from 'ionic-angular';
 import { WooProvider } from '../../providers/woo/woo';
 import { Storage } from '@ionic/storage';
@@ -377,12 +377,24 @@ export class WooList {
 
 	showCart() {
 
-	    // this.cartModal = this.modalCtrl.create( 'CartPage' );
-	    
-	    // this.cartModal.present();
+	    let cartPage = this.wooProvider.getWooPage('cart')
 
-	    this.navCtrl.push('CartPage')
+	    if( !cartPage ) {
+	    	this.presentToast("No cart page set.")
+	    	return;
+	    }
 
+	    let cartModule = this.getPageModuleName( cartPage.page_id )
+
+	    this.navCtrl.push( cartModule, cartPage )
+
+	}
+
+	getPageModuleName(page_id) {
+		if(!isDevMode())
+			return 'Page'+page_id;
+		else
+			return 'CustomPage';
 	}
 
 	toggleSearchBar() {

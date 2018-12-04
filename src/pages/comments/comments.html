@@ -1,0 +1,64 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-buttons start>
+      <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>{{ title }}</ion-title>
+
+	</ion-navbar>
+
+</ion-header>
+
+<ion-content [ngClass]="customClasses">
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-list *ngIf="isWooReviews" class="comment-list woocommerce-reviews">
+
+    <ion-item *ngFor="let item of items">
+
+      <ion-avatar item-left *ngIf="item.reviewer_avatar_urls">
+        <img *ngIf="item.reviewer_avatar_urls && item.reviewer_avatar_urls['48']" src="{{item.reviewer_avatar_urls['48']}}">
+        <img *ngIf="!item.reviewer_avatar_urls || !item.reviewer_avatar_urls['48']" src="assets/default.png">
+      </ion-avatar>
+
+      <h2 *ngIf="item.reviewer" [innerHTML]="item.reviewer"></h2>
+
+      <star-rating *ngIf="item.rating" [rating]="item.rating"></star-rating>
+
+      <p *ngIf="item.review" [innerHTML]="item.review"></p>
+
+      <p *ngIf="item.date_created" class="comment-date">{{ item.date_created }}</p>
+
+    </ion-item>
+
+  </ion-list>
+  
+  <ion-list *ngIf="!isWooReviews" class="comment-list">
+
+    <ion-item *ngFor="let item of items">
+
+      <ion-avatar item-left *ngIf="item.author_avatar_urls">
+        <img *ngIf="item.author_avatar_urls && item.author_avatar_urls['48']" src="{{item.author_avatar_urls['48']}}">
+        <img *ngIf="!item.author_avatar_urls || !item.author_avatar_urls['48']" src="assets/default.png">
+      </ion-avatar>
+
+      <h2 *ngIf="item.author_name" [innerHTML]="item.author_name"></h2>
+
+      <p *ngIf="item.content && item.content.rendered" [innerHTML]="item.content.rendered"></p>
+
+      <p *ngIf="item.date" class="comment-date">{{ item.date }}</p>
+
+    </ion-item>
+
+  </ion-list>
+
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+   <ion-infinite-scroll-content></ion-infinite-scroll-content>
+ </ion-infinite-scroll>
+
+</ion-content>

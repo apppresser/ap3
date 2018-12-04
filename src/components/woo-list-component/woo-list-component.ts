@@ -121,7 +121,6 @@ export class WooListComponent implements OnInit {
 
 		  // Loads posts from WordPress API
 		  this.items = items;
-		  console.log(items)
 
 		  this.storage.set( this.route.substr(-10, 10) + '_woo', items);
 
@@ -181,17 +180,16 @@ export class WooListComponent implements OnInit {
 
 		this.loadProducts( route )
 
+		this.items = []
+
 	}
 
 	getWishlist() {
-
-		console.log("getting wishlist")
 
 		this.storage.get('woo_saved_items').then( items => {
 
 			if( items && items.length ) {
 				this.items = items
-				console.log(items)
 			} else {
 				this.presentToast('No items to show.')
 			}

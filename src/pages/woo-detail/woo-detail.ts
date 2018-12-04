@@ -17,6 +17,7 @@ export class WooDetail {
 	cartModal: any;
 	variations: any;
 	reviews: any;
+	moreReviewsExist: boolean = false;
 	cart_count: number;
 	itemAdded: boolean = false;
 	groupedProducts: Array<any>;
@@ -404,12 +405,23 @@ export class WooDetail {
 
 	getProductReviews() {
 
-		this.wooProvider.get( 'products/reviews/?product=' + this.selectedItem.id, 'nopaging' ).then(reviews => {
+		this.wooProvider.get( 'products/reviews/?product=' + this.selectedItem.id + '&per_page=5', 1 ).then(reviews => {
 			console.log('reviews', reviews)
 			this.reviews = reviews
+
+			if( this.reviews && this.reviews.length >= 5 ) {
+				this.moreReviewsExist = true;
+			}
+
 		}).catch( e => {
 			console.warn(e)
 		})
+
+	}
+
+	moreReviews() {
+
+		this.navCtrl.push('CommentsPage', { route: 'products/reviews/?product=' + this.selectedItem.id + '&per_page=20', title: 'Reviews', woo: true } )
 
 	}
 
