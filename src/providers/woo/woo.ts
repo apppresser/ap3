@@ -28,7 +28,9 @@ export class WooProvider {
     // development API
     if( window.location && window.location.href && window.location.href.indexOf('localhost') >=0 ) {
       // test key for local environment
-      this.authString = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
+      //this.authString = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
+      // appptest.wpengine.com
+      this.authString = 'Basic Y2tfZmZkMWNhYTI1OTUzMjc0NDMzY2E2NWVjMmFhOWEyN2M1OTU3NDE3Mzpjc19kYjYxNWE1Y2FmZjMyNGVlOGQzZGJlOTFlN2IyNDU5YmFlNTM2ZDQx'
     } else {
       this.authString = '[[woo_auth_string]]'
     }
@@ -38,7 +40,7 @@ export class WooProvider {
         'Content-Type':  'application/json',
         'Authorization': this.authString
       }),
-      // withCredentials: true
+      withCredentials: true
     };
 
   }
