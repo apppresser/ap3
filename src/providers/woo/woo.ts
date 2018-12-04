@@ -38,7 +38,7 @@ export class WooProvider {
         'Content-Type':  'application/json',
         'Authorization': this.authString
       }),
-      withCredentials: true
+      // withCredentials: true
     };
 
   }

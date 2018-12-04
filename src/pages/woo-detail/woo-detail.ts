@@ -177,7 +177,7 @@ export class WooDetail {
 
 		console.log(item, this.selectedItem)
 
-		if( this.variations.length ) {
+		if( this.variations && this.variations.length ) {
 			item.variation_id = this.getVariationId( item )
 			if( item.variation_id === undefined ) {
 				this.presentToast( 'Not available, please select different options.' )

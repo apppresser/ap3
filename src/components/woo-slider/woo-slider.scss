@@ -74,6 +74,10 @@ woo-slider {
 	ion-slides.category-slider {
 		height: 250px;
 
+		.product-description {
+			display: none;
+		}
+
 		.card {
 
 			height: 175px;
