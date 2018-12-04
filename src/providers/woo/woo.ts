@@ -147,7 +147,7 @@ export class WooProvider {
 
     return new Promise( (resolve, reject) => {
 
-      this.http.post( this.url + this.cartRest + '/clear', null, this.httpOptions )
+      this.http.delete( this.url + this.cartRest + '/clear', this.httpOptions )
         .subscribe(response => {
 
           resolve(response);
