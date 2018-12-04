@@ -421,7 +421,7 @@ export class WooDetail {
 
 	moreReviews() {
 
-		this.navCtrl.push('CommentsPage', { route: 'products/reviews/?product=' + this.selectedItem.id + '&per_page=20', title: 'Reviews', woo: true } )
+		this.navCtrl.push('CommentsPage', { route: 'products/reviews/?product=' + this.selectedItem.id + '&per_page=20', title: this.selectedItem.name, woo: true } )
 
 	}
 
