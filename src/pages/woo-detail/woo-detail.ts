@@ -462,16 +462,7 @@ export class WooDetail {
 		  event.preventDefault()
 		  window.open( el.href, target )
 
-		} // else if( el.tagName == 'IMG' && el.parentNode.href && el.parentNode.href.indexOf('http') >= 0 ) {
-
-		//   // handle image tags that have link as the parent
-		//   if( el.parentNode.classList && el.parentNode.classList.contains('system') )
-		//     target = '_system'
-
-		//   event.preventDefault()
-		//   window.open( el.parentNode.href, target )
-
-		// }
+		}
 
 	}
 

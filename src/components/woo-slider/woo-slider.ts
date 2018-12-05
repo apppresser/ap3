@@ -144,11 +144,16 @@ export class WooSliderComponent implements OnInit {
 
 		}).catch((err) => {
 
-			console.error('Error getting posts', err);
 			this.loading = false;
-			this.translate.get('Error getting posts.').subscribe( text => {
-				this.presentToast(text);
-			});
+			console.error('Error getting posts', err);
+
+			if( err.error && err.error.message ) {
+				this.presentToast( err.error.message );
+			} else {
+				this.translate.get('Error getting posts.').subscribe( text => {
+					this.presentToast(text);
+				});
+			}
 
 		});
 

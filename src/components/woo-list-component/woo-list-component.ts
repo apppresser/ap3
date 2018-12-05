@@ -134,10 +134,17 @@ export class WooListComponent implements OnInit {
 
 		  this.loading = false
 
-			console.error('Error getting posts', err);
+		  if( err.error && err.error.message ) {
+		  	this.presentToast( err.error.message );
+		  } else {
 			this.translate.get('Error getting posts.').subscribe( text => {
 				this.presentToast(text);
 			});
+
+		  }
+
+		  console.error('Error getting posts', err);
+			
 
 		});
 

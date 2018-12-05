@@ -95,6 +95,8 @@ export class WooList {
 
 			this.cart_count = ( cart && typeof cart != 'string' && (<any>cart).cart_total ? (<any>cart).cart_total.cart_contents_count : '' )
 			// don't need to save count to storage, it's already saved in woo.ts
+		}).catch( err => {
+			console.warn(err)
 		})
 		
 	}
@@ -153,8 +155,9 @@ export class WooList {
 		  
 		}).catch((err) => {
 
-		  loading.dismiss();
-		  console.error('Error getting posts', err);
+			loading.dismiss();
+
+			this.handleErr( err )
 
 		});
 
@@ -195,7 +198,7 @@ export class WooList {
 
 		}).catch((err) => {
 
-		  console.warn('Error getting categories', err);
+		  this.handleErr(err)
 
 		});
 
@@ -269,7 +272,7 @@ export class WooList {
 		  if(infiniteScroll)
 		    infiniteScroll.complete();
 
-		  console.warn(e)
+		  this.handleErr(e)
 
 		});
 
@@ -360,6 +363,18 @@ export class WooList {
 
 		this.presentToast( msg ) 
 
+	}
+
+	handleErr( e ) {
+
+		console.warn(e)
+
+		if( e && e.error && e.error.message ) {
+			this.presentToast( e.error.message );
+		} else {
+			this.presentToast('Unknown error.')
+		}
+		
 	}
 
 	presentToast(msg) {
