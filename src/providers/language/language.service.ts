@@ -146,14 +146,14 @@ export class LanguageService {
 
       		let fallbackLang = new Language({
         		code:'en',
-				dir: 'ltr'
+				dir: (data.meta && data.meta.rtl) ? 'rtl' : 'ltr'
       		});
 
 			if(data.default_language) {
 
 				let langDefault = new Language({
 					code: data.default_language,
-					dir: (data.meta.rtl) ? 'rtl' : 'ltr'
+					dir: (data.meta && data.meta.rtl) ? 'rtl' : 'ltr'
 				});
 
         		this.http.get( './assets/i18n/'+langDefault.code+'.json' )
