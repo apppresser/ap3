@@ -15,7 +15,7 @@
 		<ion-card>
 
 			<div (tap)="loadDetail(item)" class="card-featured-wrap">
-				<div *ngIf="item.images && item.images[0].src" class="card-featured-image" [ngStyle]="{'background-image': 'url('+ item.images[0].src +')'}"></div>
+				<div *ngIf="item.images && item.images[0] && item.images[0].src" class="card-featured-image" [ngStyle]="{'background-image': 'url('+ item.images[0].src +')'}"></div>
 				<div *ngIf="item.image && item.image.src" class="card-featured-image" [ngStyle]="{'background-image': 'url('+ item.image.src +')'}"></div>
 				<div *ngIf="!item.image && !item.images" class="card-featured-image" [ngStyle]="{'background-image': 'url(assets/woo-default.png)'}"></div>
 			</div>

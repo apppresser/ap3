@@ -4,6 +4,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Storage } from '@ionic/storage';
 import { WooProvider } from '../../providers/woo/woo';
 import {SocialSharing} from '@ionic-native/social-sharing';
+import {TranslateService} from '@ngx-translate/core';
+import {InAppBrowser, InAppBrowserObject} from '@ionic-native/in-app-browser';
 
 @IonicPage()
 @Component({
@@ -24,6 +26,7 @@ export class WooDetail {
 	productLoaded: boolean = false;
 	availableAttributes: any;
 	listenFunc: Function;
+	currencySymbol: any;
 
 	constructor(
 		public navCtrl: NavController, 
@@ -37,6 +40,8 @@ export class WooDetail {
 		private elementRef: ElementRef,
 		private renderer: Renderer,
 		public socialSharing: SocialSharing,
+		public translate: TranslateService,
+		public inAppBrowser: InAppBrowser
 		) {
 
 		if( !this.navParams.get('item') )
@@ -108,6 +113,10 @@ export class WooDetail {
 		if( !this.selectedItem.quantity ) {
 			this.selectedItem.quantity = 1
 		}
+
+		this.wooProvider.getCurrencySymbol().then( symbol => {
+	    	this.currencySymbol = symbol
+	    })
 
 		this.listener()
 
@@ -293,6 +302,8 @@ export class WooDetail {
 
 	addGroupedItem( item ) {
 
+		console.log(item, item.quantity)
+
 		this.presentToast( this.selectedItem.name + ' added to cart.' )
 
 		var that = this;
@@ -300,13 +311,13 @@ export class WooDetail {
 		// using async/await with promise inside loop
 		(async function loop() {
 		    for ( var id in item ) {
-		        await that.addGroupItemToCart( id, item.quantity );
+		        await that.addGroupItemToCart( id, item );
 		    }
 		})();
 
 	}
 
-	addGroupItemToCart( id, quantity ) {
+	addGroupItemToCart( id, formValues ) {
 
 		return new Promise( (resolve, reject) => {
 
@@ -325,6 +336,19 @@ export class WooDetail {
 			item.product_id = id
 			item.price = ( productObject[0] ? productObject[0].price : '' )
 			item.quantity = ( productObject[0] ? productObject[0].quantity : 1 )
+
+			
+			// add variation id if this is a variable product
+			if( formValues[id + '_variation_id'] ) {
+				item.variation_id = formValues[id + '_variation_id']
+			}
+
+			// hacky fix because of the way our object is
+			if( item.product_id.indexOf('variation_id') >= 0 ) {
+				return;
+			}
+
+			console.log('item before add to cart', item)
 
 			this.wooProvider.addToCart( item ).then( data => {
 				this.productAddSuccess( item )
@@ -375,16 +399,51 @@ export class WooDetail {
 				if( !(<any>product).quantity ) {
 					(<any>product).quantity = 1
 				}
-				
-				this.groupedProducts.push( product )
 
-				this.productLoaded = true
+				// if we have a variable product as part of the groupe, we have to get all the options and display those for the user to choose from
+				if( (<any>product).type === 'variable' ) {
+
+					this.productLoaded = false
+
+					this.getGroupedVariation((<any>product).id).then( variations => {
+						(<any>product).groupVariations = variations
+						this.groupedProducts.push( product )
+						this.productLoaded = true
+						console.log('grouped', this.groupedProducts)
+					})
+					
+				} else {
+
+					this.groupedProducts.push( product )
+
+					this.productLoaded = true
+				}
+				
 
 			}).catch( e => {
 				console.warn(e)
 			})
 
 		}
+
+	}
+
+	getGroupedVariation( productId ) {
+
+		return new Promise( resolve => {
+
+			this.wooProvider.get( 'products/' + productId + '/variations', 'nopaging' ).then(variations => {
+				console.log('variations', variations)
+				resolve( variations )
+
+			}).catch( e => {
+				console.warn(e)
+				resolve( [] )
+			})
+
+		})
+
+		
 
 	}
 
@@ -460,10 +519,35 @@ export class WooDetail {
 		    target = '_system'
 
 		  event.preventDefault()
-		  window.open( el.href, target )
+		  this.iab( el.href, target )
 
 		}
 
+	}
+
+	iab( url, target ) {
+
+		if( !target ) {
+			target = '_blank'
+		}
+
+		let browser = this.inAppBrowser.create( url + '?appcommerce=1', '_blank' )
+
+		browser.on('exit').subscribe( data => {
+          console.log('browser closed', data)
+
+          // update cart in case items were changed on site
+          this.getCartFromAPI()
+        })
+	}
+
+	productSiteLink( url ) {
+
+		this.translate.get('You are visiting our site to add this product. Return to the app after adding to your cart by pressing done on iOS or the X on Android.').subscribe( text => {
+			alert( text )
+			this.iab( url, '_blank' )
+		})
+		
 	}
 
 	presentToast(msg) {
