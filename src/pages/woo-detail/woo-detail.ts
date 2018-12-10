@@ -164,6 +164,8 @@ export class WooDetail {
 		} else if( this.selectedItem.type === 'external' ) {
 			window.open( this.selectedItem.external_url, '_blank' )
 			return;
+		} else if( this.selectedItem.type === 'composite' ) {
+			return;
 		} else {
 			this.addSingleItem( item )
 			this.instantAdd( item, false )
