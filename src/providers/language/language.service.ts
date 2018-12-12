@@ -6,6 +6,7 @@ import { HttpParams } from '@angular/common/http';
 import {Storage} from '@ionic/storage';
 import { Language } from "../../models/language.model";
 import { AnalyticsService } from "../analytics/analytics.service";
+import { TranslateService } from "@ngx-translate/core";
 
 @Injectable()
 export class LanguageService {
@@ -15,6 +16,7 @@ export class LanguageService {
 
 	constructor(
 		private analyticsservice: AnalyticsService,
+		public translate: TranslateService,
 		private storage: Storage,
 		private http: Http
 	) {
@@ -30,6 +32,7 @@ export class LanguageService {
 		this.storage.get( 'app_language' ).then( lang => {
 			if( lang ) {
 				this.hasStoredLanguage = true;
+				this.translate.setDefaultLang(lang.code);
 				this.setCurrentLanguage(lang);
 			}
 		});
@@ -143,15 +146,15 @@ export class LanguageService {
 
       		let fallbackLang = new Language({
         		code:'en',
-				dir: 'ltr'
+				dir: (data.meta && data.meta.rtl) ? 'rtl' : 'ltr'
       		});
 
 			if(data.default_language) {
 
-        		let langDefault = new Language({
-          			code: data.default_language,
-					dir: (data.meta.rtl) ? 'rtl' : 'ltr'
-        		});
+				let langDefault = new Language({
+					code: data.default_language,
+					dir: (data.meta && data.meta.rtl) ? 'rtl' : 'ltr'
+				});
 
         		this.http.get( './assets/i18n/'+langDefault.code+'.json' )
 					.subscribe((response: Response) => {

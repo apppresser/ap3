@@ -258,8 +258,9 @@ export class MyApp {
     this.menu_all_pages = ( data.menu_all_pages == true ) ? true : false;
 
     this.verifyLanguageFile(data).then( lang => {
+
       // set the default language before loading menu
-      this.getSetLang(data).then( lang => {
+      this.setAvailableLangs(data).then( lang => {
 
         this.loadMenu(data);
         
@@ -1470,34 +1471,41 @@ export class MyApp {
 
   }
 
-  getSetLang( data ) {
+  setAvailableLangs( data ) {
 
     return new Promise( (resolve, reject) => {
 
       if(data.languages) {
+        console.log('set available_languages', data.languages);
         this.storage.set('available_languages', data.languages)
         this.languageservice.setAvailable(data.languages);
       } else {
         this.storage.remove('available_languages');
         this.languageservice.setAvailable(null);
       }
-  
-      this.storage.get( 'app_language' ).then( lang => {
-        if( lang ) {
-  
-          let language = new Language(lang);
-  
-          this.translate.use( language.code );
-          this.languageservice.setCurrentLanguage(language);
-  
-          this.setBackBtnText();
 
-          resolve(lang);
-          
-        }
-
-        resolve(null);
-      });
+      // This logic is really weird
+      if(this.languageservice.hasStoredLanguage) {
+        resolve(this.languageservice.language);
+      } else {
+        // We should never get here, because the default language or stored language should already be set
+        this.storage.get( 'app_language' ).then( lang => {
+          if( lang ) {
+    
+            let language = new Language(lang);
+    
+            this.translate.use( language.code );
+            this.languageservice.setCurrentLanguage(language);
+    
+            this.setBackBtnText();
+  
+            resolve(lang);
+            
+          }
+  
+          resolve(null);
+        }); 
+      }
 
     });
 
@@ -1568,9 +1576,15 @@ export class MyApp {
           dir: (langData.dir && langData.dir == 'rtl') ? 'rtl' : 'ltr'
         });
 
-        this.translate.setDefaultLang(language.code);
-        this.languageservice.setCurrentLanguage(language);
-        this.setBackBtnText();
+        if(this.languageservice.hasStoredLanguage) {
+          // from storage
+          resolve(this.languageservice.language);
+        } else {
+          // from data
+          this.translate.setDefaultLang(language.code);
+          this.languageservice.setCurrentLanguage(language);
+          this.setBackBtnText();
+        }
 
         resolve(language);
       });
