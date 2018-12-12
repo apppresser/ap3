@@ -82,7 +82,7 @@ export class WooAccountComponent implements OnInit {
 			this.getOrders( '?customer=' + this.login_data.user_id + '&status=pending,processing,on-hold,completed,refunded,failed' )
 		} else {
 			this.presentToast('Please login.')
-			this.loginModal()
+			this.showLoginModal()
 		}
 	}
 
