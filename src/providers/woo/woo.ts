@@ -235,8 +235,15 @@ export class WooProvider {
   // find cart, shop, etc page in menu items, return [ id, slug ]
   getWooPage( pageName ) {
 
-    let pages = this.itemParsed.menus.items
-    pages.push( this.itemParsed.tab_menu.items )
+    let pages = []
+
+    if( this.itemParsed.menus.items ) {
+      let pages = this.itemParsed.menus.items
+    }
+
+    if( this.itemParsed.tab_menu.items ) {
+      pages.push( this.itemParsed.tab_menu.items )
+    }
     
     for(let page of pages) {
       if( page && page.woo_page && page.woo_page == pageName ) {
