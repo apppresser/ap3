@@ -578,3 +578,8 @@ ion-item-sliding.active-slide.active-options-right ion-item-options:not([ng-refl
     visibility: visible;
 	justify-content: flex-end;
 }
+
+ion-header .badge {
+	background-color: rgba(0,0,0,.3);
+	margin-left: 3px;
+}

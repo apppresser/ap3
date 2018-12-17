@@ -24,6 +24,14 @@ woo-slider {
 
 			ion-card-content {
 				display: inline;
+				padding-top: 0;
+				padding-bottom: 0;
+				line-height: 0;
+
+				.card-title {
+					margin-top: 0;
+					padding-top: 0;
+				}
 
 				.item-content {
 					padding: 0 10px 10px;
@@ -37,7 +45,7 @@ woo-slider {
 		}
 
 		.card-featured-wrap {
-			height: 100px;
+			height: 60%;
 		}
 
 		.card-featured-image {
@@ -53,6 +61,10 @@ woo-slider {
 			font-weight: 500;
 			margin-bottom: 5px;
 			color: Green;
+		}
+
+		.product-description {
+			display: none;
 		}
 
 		.product-description, .product-rating {
@@ -73,10 +85,6 @@ woo-slider {
 	// categories are smaller because there is no description
 	ion-slides.category-slider {
 		height: 250px;
-
-		.product-description {
-			display: none;
-		}
 
 		.card {
 
