@@ -10,6 +10,7 @@ import { WooCartComponentModule } from '../../components/woo-cart/woo-cart.modul
 import { WooAccountComponentModule } from '../../components/woo-account/woo-account.module';
 import { WooSliderComponentModule } from '../../components/woo-slider/woo-slider.module';
 import { StarRatingComponentModule } from '../../components/star-rating/star-rating.module';
+import { ApFormModule } from '../../components/ap-form/ap-form.module';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { StarRatingComponentModule } from '../../components/star-rating/star-rat
     WooSliderComponentModule,
     StarRatingComponentModule,
     WooCartComponentModule,
-    WooAccountComponentModule
+    WooAccountComponentModule,
+    ApFormModule
   ],
   entryComponents: [
     CustomPage

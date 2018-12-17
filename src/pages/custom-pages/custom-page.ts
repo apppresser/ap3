@@ -34,6 +34,7 @@ import { WooListComponentModule } from '../../components/woo-list-component/woo-
 import { WooSliderComponentModule } from '../../components/woo-slider/woo-slider.module';
 import { WooCartComponentModule } from '../../components/woo-cart/woo-cart.module';
 import { WooAccountComponentModule } from '../../components/woo-account/woo-account.module';
+import { ApFormModule } from '../../components/ap-form/ap-form.module';
 import { NetworkStatusService } from '../../providers/network/network-status.service';
 
 /*
@@ -81,7 +82,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	isRTL: boolean = false;
 	language: any;
 	templateUrl: string;
-	extraModules = [IonicModule, TranslateModule, ApListComponentModule, ApSliderComponentModule, WooListComponentModule, WooSliderComponentModule, WooCartComponentModule,WooAccountComponentModule];
+	extraModules = [IonicModule, TranslateModule, ApListComponentModule, ApSliderComponentModule, WooListComponentModule, WooSliderComponentModule, WooCartComponentModule,WooAccountComponentModule, ApFormModule];
 	langs: any;
 	segments: any;
 	show_segments: boolean = false;

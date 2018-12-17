@@ -1,0 +1,36 @@
+<form (ngSubmit)="submitForm(apForm)" #apForm="ngForm">
+
+  <ion-list inset no-lines>
+
+    <ion-item *ngIf="amount" class="ap-form-amount">
+      <ion-label>{{ currencySymbol }}</ion-label>
+      <ion-input ngModel name="amount" type="text" placeholder="{{ '25' | translate }}"></ion-input>
+    </ion-item>
+
+    <ion-item *ngIf="firstName" class="ap-form-text">
+      <ion-label stacked>{{ 'First Name' | translate }}</ion-label>
+      <ion-input ngModel name="first" type="text" placeholder="{{ 'First Name' | translate }}"></ion-input>
+    </ion-item>
+
+    <ion-item *ngIf="lastName" class="ap-form-text">
+      <ion-label stacked>{{ 'Last Name' | translate }}</ion-label>
+      <ion-input ngModel name="last" type="text"></ion-input>
+    </ion-item>
+
+    <ion-item *ngIf="email" class="ap-form-email">
+      <ion-label stacked>{{ 'Email' | translate }}</ion-label>
+      <ion-input ngModel name="email" type="email"  autocomplete="true"></ion-input>
+    </ion-item>
+
+    <ion-item *ngIf="message" class="ap-form-textarea">
+      <ion-label stacked>{{ 'Messsage' | translate }}</ion-label>
+      <ion-textarea ngModel name="message"></ion-textarea>
+    </ion-item>
+
+  </ion-list>
+  
+  <div padding class="ap-form-submit">
+    <button ion-button type="submit" block>{{ 'Continue' | translate }}</button>
+  </div>
+
+</form>
