@@ -12,8 +12,7 @@ ap-form {
 	    	text-align: center;
 	    }
 	}
-	p {
-		font-size: 1.6rem;
-		line-height: 1.4;
+	.list[inset] .item:last-child {
+		border-bottom-width: 1px;
 	}
 }
