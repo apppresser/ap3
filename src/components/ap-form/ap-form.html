@@ -1,10 +1,10 @@
 <form (ngSubmit)="submitForm(apForm)" #apForm="ngForm">
 
-  <ion-list inset no-lines>
+  <ion-list inset>
 
     <ion-item *ngIf="amount" class="ap-form-amount">
-      <ion-label>{{ currencySymbol }}</ion-label>
-      <ion-input ngModel name="amount" type="text" placeholder="{{ '25' | translate }}"></ion-input>
+      <ion-label stacked>{{ 'Enter an amount' | translate }}</ion-label>
+      <ion-input ngModel name="amount" type="text" placeholder="{{ currencySymbol + '25' | translate }}"></ion-input>
     </ion-item>
 
     <ion-item *ngIf="firstName" class="ap-form-text">
@@ -18,7 +18,7 @@
     </ion-item>
 
     <ion-item *ngIf="email" class="ap-form-email">
-      <ion-label stacked>{{ 'Email' | translate }}</ion-label>
+      <ion-label stacked>{{ 'Your Email' | translate }}</ion-label>
       <ion-input ngModel name="email" type="email"  autocomplete="true"></ion-input>
     </ion-item>
 

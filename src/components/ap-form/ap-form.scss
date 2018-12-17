@@ -8,5 +8,12 @@ ap-form {
 	    display: block;
 	    font-size: 32px;
 	    border-bottom: 1px solid #eee;
+	    .label, input {
+	    	text-align: center;
+	    }
+	}
+	p {
+		font-size: 1.6rem;
+		line-height: 1.4;
 	}
 }
