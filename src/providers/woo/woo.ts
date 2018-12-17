@@ -238,11 +238,13 @@ export class WooProvider {
     let pages = []
 
     if( this.itemParsed.menus.items ) {
-      let pages = this.itemParsed.menus.items
+      pages = this.itemParsed.menus.items
     }
 
     if( this.itemParsed.tab_menu.items ) {
-      pages.push( this.itemParsed.tab_menu.items )
+      for (var i = 0; i < this.itemParsed.tab_menu.items.length; ++i) {
+        pages.push( this.itemParsed.tab_menu.items[i] )
+      }
     }
     
     for(let page of pages) {
