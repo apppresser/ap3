@@ -1,4 +1,4 @@
-import {NavParams, Nav, LoadingController, ModalController, Platform, ViewController, Loading} from 'ionic-angular';
+import {NavParams, Nav, LoadingController, ModalController, Platform, ViewController, Loading, MenuController} from 'ionic-angular';
 import {Component, HostListener, ElementRef, OnInit, Input, NgZone} from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -41,6 +41,7 @@ export class Iframe implements OnInit {
     hide_share_icon: boolean = false;
     is_registration_page: boolean = false;
     is_cached: boolean = false;
+    login_data: any;
 
     constructor(
         public navParams: NavParams,
@@ -61,7 +62,8 @@ export class Iframe implements OnInit {
         private events: Events,
         private ga: AnalyticsService,
         public zone: NgZone,
-        public iab: InAppBrowser
+        public iab: InAppBrowser,
+        private menuCtrl: MenuController
         ) {
 
             events.subscribe('user:login', data => {
@@ -144,6 +146,14 @@ export class Iframe implements OnInit {
         if(this.navParams.data.url) {
             this.ga.trackScreenView('Iframe', this.navParams.data.url);
 		}
+
+        this.storage.get('user_login').then( login_data => {
+
+            if( login_data ) {
+                this.login_data = login_data
+            }
+
+        })
     }
 
     ionViewDidLoad() {
@@ -336,7 +346,19 @@ export class Iframe implements OnInit {
                     target: this.el.nativeElement.querySelector('.ap3-iframe')
                 };
                 this.doApppGeolocation(_e);
-            }
+
+            } else if( parsed.avatar_url && parsed.message && !parsed.isloggedin && this.login_data ) {
+
+                // got a postMessage that the user is not logged in, so log them out of the app
+                this.login_data = null
+                this.storage.remove('user_login').then( () => {
+                    this.events.publish( 'modal:logindata', null )
+                    setTimeout( () => {
+                        this.events.publish('user:logout')
+                    }, 10)
+                })
+            } 
+
         }
 
     }
