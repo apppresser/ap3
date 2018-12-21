@@ -352,6 +352,8 @@ export class MyApp {
 
     if( data.menus.items ) {
 
+      data.menus.items.map(item => item.title = this.decodeHtmlEntity(item.title));
+
       this.pages = data.menus.items.slice();
       this.menuservice.menu = this.pages.slice();
 
@@ -404,7 +406,7 @@ export class MyApp {
     let page: object;
 
     this.navparams.push( { 
-      'title': item.title,
+      'title': this.decodeHtmlEntity(item.title),
       'url': item.url, 
       'root': root,
       'icon': item.class,
@@ -1702,5 +1704,11 @@ export class MyApp {
     }
 
   }
+
+  decodeHtmlEntity = function(str) {
+    return str.replace(/&#(\d+);/g, (match, dec) => {
+      return String.fromCharCode(dec);
+    });
+  };
 
 }
