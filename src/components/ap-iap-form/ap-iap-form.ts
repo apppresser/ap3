@@ -79,7 +79,7 @@ export class ApIapForm {
 			console.log(ret)
 
 			// log the user in after purchase
-			this.handleWpLogin( this.formData )
+			this.handleWpLogin( fields )
 
 
 		}).catch( e => {
