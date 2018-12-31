@@ -1,0 +1,13 @@
+in-app-purchase {
+	.list .item:first-child {
+		margin-top: 0;
+	}
+	.list[inset] .item:last-child {
+		border-bottom-width: 1px;
+	}
+	.ap-form-checkbox {
+		padding: 5px 0;
+		font-size: 16px;
+		margin-top: 10px;
+	}
+}

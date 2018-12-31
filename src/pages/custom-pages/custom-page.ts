@@ -8,11 +8,8 @@ import {HeaderLogo} from '../../providers/header-logo/header-logo';
 import {Posts} from '../../providers/posts/posts';
 import {GlobalVars} from '../../providers/globalvars/globalvars';
 import {MenuService} from "../../providers/menus/menu.service";
-import {IAP} from '../../providers/inapppurchase/inapppurchase';
 import {AnalyticsService} from '../../providers/analytics/analytics.service';
 import { WooProvider } from '../../providers/woo/woo';
-import {WPlogin} from '../../providers/wplogin/wplogin';
-
 import {Iframe} from "../iframe/iframe";
 
 /**
@@ -36,6 +33,7 @@ import { WooSliderComponentModule } from '../../components/woo-slider/woo-slider
 import { WooCartComponentModule } from '../../components/woo-cart/woo-cart.module';
 import { WooAccountComponentModule } from '../../components/woo-account/woo-account.module';
 import { ApFormModule } from '../../components/ap-form/ap-form.module';
+import { ApIapFormModule } from '../../components/ap-iap-form/ap-iap-form.module';
 import { NetworkStatusService } from '../../providers/network/network-status.service';
 
 /*
@@ -83,7 +81,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	isRTL: boolean = false;
 	language: any;
 	templateUrl: string;
-	extraModules = [IonicModule, TranslateModule, ApListComponentModule, ApSliderComponentModule, WooListComponentModule, WooSliderComponentModule, WooCartComponentModule,WooAccountComponentModule, ApFormModule];
+	extraModules = [IonicModule, TranslateModule, ApListComponentModule, ApSliderComponentModule, WooListComponentModule, WooSliderComponentModule, WooCartComponentModule,WooAccountComponentModule, ApFormModule, ApIapFormModule];
 	langs: any;
 	segments: any;
 	show_segments: boolean = false;
@@ -115,9 +113,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	showSearchIcon: boolean = false;
 	toggleSearch: boolean = false;
 	searchRoute: string;
-	email: string;
-	username: string;
-	password: string;
+	formData: any;
 
 	constructor(
 		public navParams: NavParams,
@@ -133,7 +129,6 @@ export class CustomPage implements OnInit, OnDestroy {
 		public toastCtrl: ToastController,
 		private headerLogoService: HeaderLogo,
 		public loginservice: LoginService,
-		public iap: IAP,
 		public loadingCtrl: LoadingController,
 		public postCtrl: Posts,
 		public globalvars: GlobalVars,
@@ -142,8 +137,7 @@ export class CustomPage implements OnInit, OnDestroy {
 		private zone: NgZone,
 		private analyticsservice: AnalyticsService,
 		private network: Network,
-		public wooProvider: WooProvider,
-		public wplogin: WPlogin
+		public wooProvider: WooProvider
         ) {}
 
 	ngOnInit() {
@@ -641,121 +635,6 @@ export class CustomPage implements OnInit, OnDestroy {
 
 	}
 
-	buyProduct( id ) {
-		this.iap.buy( id );
-	}
-
-	subscribe( id ) {
-
-		if( !this.username || !this.password || !this.email ) {
-			this.presentToast('Please fill out all fields.')
-			return;
-		}
-
-		let userData = { username: this.username, password: this.password, email: this.email }
-
-		this.iap.subscribe( id ).then( ret => {
-
-			console.log(ret)
-
-			// log the user in after purchase
-			this.handleWpLogin( userData )
-
-
-		}).catch( e => {
-
-			console.warn(e)
-			this.presentToast('There was a problem with your purchase, please try again.')
-
-		});
-
-	}
-
-	restoreSubscription( id ) {
-
-		if( !this.username || !this.password || !this.email ) {
-			this.presentToast('Please fill out all fields.')
-			return;
-		}
-
-		let userData = { username: this.username, password: this.password, email: this.email }
-
-		this.iap.restoreSubscription( id ).then( ret => {
-
-			console.log(ret)
-
-			if( ret ) {
-				// log the user in after purchase
-				this.handleWpLogin( userData )
-			}
-
-		}).catch( e => {
-
-			console.warn(e)
-			this.presentToast('There was a problem with your purchase, please try again.')
-
-		});
-
-	}
-
-	// send the data to WP
-	// if the user doesn't exist, register them
-	// log them in and add user meta of in_app_purchase = true
-	handleWpLogin( userData ) {
-
-		this.showSpinner()
-
-		this.presentToast('Purchase successful! Logging you in...')
-
-		this.wplogin.iapRegisterLogIn( userData ).then( data => {
-
-			console.log(data)
-
-			this.loginSuccess( data )
-	
-		}).catch( err => {
-
-			console.warn(err)
-			this.presentToast('There was a problem, please contact support.')
-			
-		}).then( () => {
-
-			this.hideSpinner()
-
-		})
-
-	}
-
-	loginSuccess( login_data ) {
-
-		this.storage.set( 'user_login', login_data )
-		this.events.publish('user:login', login_data )
-		this.login_data = login_data
-
-		alert("Success! Please use the app menu to access your content.")
-
-	}
-
-	subscribeNoAds( id ) {
-
-		this.showSpinner();
-
-		this.iap.subscribeNoAds( id );
-
-		// TODO: convert this to promise, get rid of timeout
-		setTimeout(() => {
-		    this.hideSpinner();
-		  }, 3000);
-	}
-
-	restoreNoAds( id ) {
-		this.showSpinner();
-		this.iap.restoreNoAds( id ).then( res => {
-			console.log(res)
-			this.hideSpinner();
-		});
-	}
-
 	showSpinner() {
 		if(!this.spinner) {
 			this.spinner = this.loadingCtrl.create();
@@ -913,18 +792,6 @@ export class CustomPage implements OnInit, OnDestroy {
 		},
 		showDownloads: (options?: ModalOptions) => {
 			this.showDownloads(options);
-		},
-		buyProduct: ( id ) => {
-			this.iap.buy( id );
-		},
-		subscribeNoAds: ( id ) => {
-			this.iap.subscribeNoAds( id );
-		},
-		restoreNoAds: ( id ) => {
-			this.iap.restoreNoAds( id );
-		},
-		subscribe: (id, form ) => {
-			this.subscribe( id, form );
 		}
 	}
 	/** Development mode only -- END */

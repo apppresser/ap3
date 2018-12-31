@@ -1,0 +1,40 @@
+<form (ngSubmit)="submitForm(iapForm)" #iapForm="ngForm">
+
+  <ion-list inset>
+
+    <ion-item *ngIf="firstName" class="ap-form-text">
+      <ion-label stacked>{{ 'First Name' | translate }}</ion-label>
+      <ion-input ngModel name="first" type="text" placeholder="{{ 'First Name' | translate }}"></ion-input>
+    </ion-item>
+
+    <ion-item *ngIf="lastName" class="ap-form-text">
+      <ion-label stacked>{{ 'Last Name' | translate }}</ion-label>
+      <ion-input ngModel name="last" type="text"></ion-input>
+    </ion-item>
+
+    <ion-item *ngIf="email" class="ap-form-email">
+      <ion-label stacked>{{ 'Your Email' | translate }}</ion-label>
+      <ion-input ngModel name="email" type="email"  autocomplete="true"></ion-input>
+    </ion-item>
+
+    <ion-item class="ap-form-text">
+      <ion-label stacked>{{ 'Username' | translate }}</ion-label>
+      <ion-input ngModel name="username" type="text" placeholder="{{ 'Username' | translate }}" autocorrect="off" autocapitalize="none"></ion-input>
+    </ion-item>
+
+    <ion-item class="ap-form-text">
+      <ion-label stacked>{{ 'Password' | translate }}</ion-label>
+      <ion-input ngModel name="password" type="text" placeholder="{{ 'Password' | translate }}" autocorrect="off" autocapitalize="none"></ion-input>
+    </ion-item>
+    
+    <div class="ap-form-checkbox">
+      <input type="checkbox" ngModel name="restore" aria-checked="false" checked="false"> <label for="restore">{{ 'Restore purchase?' | translate }}</label>
+    </div>
+
+  </ion-list>
+  
+  <div padding class="ap-form-submit">
+    <button ion-button type="submit" block>{{ 'Purchase' | translate }}</button>
+  </div>
+
+</form>

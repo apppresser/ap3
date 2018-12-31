@@ -11,6 +11,7 @@ import { WooAccountComponentModule } from '../../components/woo-account/woo-acco
 import { WooSliderComponentModule } from '../../components/woo-slider/woo-slider.module';
 import { StarRatingComponentModule } from '../../components/star-rating/star-rating.module';
 import { ApFormModule } from '../../components/ap-form/ap-form.module';
+import { ApIapFormModule } from '../../components/ap-iap-form/ap-iap-form.module';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { ApFormModule } from '../../components/ap-form/ap-form.module';
     StarRatingComponentModule,
     WooCartComponentModule,
     WooAccountComponentModule,
-    ApFormModule
+    ApFormModule,
+    ApIapFormModule
   ],
   entryComponents: [
     CustomPage
