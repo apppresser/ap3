@@ -11,6 +11,7 @@ import {MenuService} from "../../providers/menus/menu.service";
 import {IAP} from '../../providers/inapppurchase/inapppurchase';
 import {AnalyticsService} from '../../providers/analytics/analytics.service';
 import { WooProvider } from '../../providers/woo/woo';
+import {WPlogin} from '../../providers/wplogin/wplogin';
 
 import {Iframe} from "../iframe/iframe";
 
@@ -88,6 +89,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	show_segments: boolean = false;
 	login_modal: any;
 	login_modal_open = false;
+	login_data: any;
 	slug: string;
 	header_logo_url: string;
 	show_header_logo: boolean = false;
@@ -113,6 +115,9 @@ export class CustomPage implements OnInit, OnDestroy {
 	showSearchIcon: boolean = false;
 	toggleSearch: boolean = false;
 	searchRoute: string;
+	email: string;
+	username: string;
+	password: string;
 
 	constructor(
 		public navParams: NavParams,
@@ -137,7 +142,8 @@ export class CustomPage implements OnInit, OnDestroy {
 		private zone: NgZone,
 		private analyticsservice: AnalyticsService,
 		private network: Network,
-		public wooProvider: WooProvider
+		public wooProvider: WooProvider,
+		public wplogin: WPlogin
         ) {}
 
 	ngOnInit() {
@@ -639,6 +645,97 @@ export class CustomPage implements OnInit, OnDestroy {
 		this.iap.buy( id );
 	}
 
+	subscribe( id ) {
+
+		if( !this.username || !this.password || !this.email ) {
+			this.presentToast('Please fill out all fields.')
+			return;
+		}
+
+		let userData = { username: this.username, password: this.password, email: this.email }
+
+		this.iap.subscribe( id ).then( ret => {
+
+			console.log(ret)
+
+			// log the user in after purchase
+			this.handleWpLogin( userData )
+
+
+		}).catch( e => {
+
+			console.warn(e)
+			this.presentToast('There was a problem with your purchase, please try again.')
+
+		});
+
+	}
+
+	restoreSubscription( id ) {
+
+		if( !this.username || !this.password || !this.email ) {
+			this.presentToast('Please fill out all fields.')
+			return;
+		}
+
+		let userData = { username: this.username, password: this.password, email: this.email }
+
+		this.iap.restoreSubscription( id ).then( ret => {
+
+			console.log(ret)
+
+			if( ret ) {
+				// log the user in after purchase
+				this.handleWpLogin( userData )
+			}
+
+		}).catch( e => {
+
+			console.warn(e)
+			this.presentToast('There was a problem with your purchase, please try again.')
+
+		});
+
+	}
+
+	// send the data to WP
+	// if the user doesn't exist, register them
+	// log them in and add user meta of in_app_purchase = true
+	handleWpLogin( userData ) {
+
+		this.showSpinner()
+
+		this.presentToast('Purchase successful! Logging you in...')
+
+		this.wplogin.iapRegisterLogIn( userData ).then( data => {
+
+			console.log(data)
+
+			this.loginSuccess( data )
+	
+		}).catch( err => {
+
+			console.warn(err)
+			this.presentToast('There was a problem, please contact support.')
+			
+		}).then( () => {
+
+			this.hideSpinner()
+
+		})
+
+	}
+
+	loginSuccess( login_data ) {
+
+		this.storage.set( 'user_login', login_data )
+		this.events.publish('user:login', login_data )
+		this.login_data = login_data
+
+		alert("Success! Please use the app menu to access your content.")
+
+	}
+
 	subscribeNoAds( id ) {
 
 		this.showSpinner();
@@ -825,6 +922,9 @@ export class CustomPage implements OnInit, OnDestroy {
 		},
 		restoreNoAds: ( id ) => {
 			this.iap.restoreNoAds( id );
+		},
+		subscribe: (id, form ) => {
+			this.subscribe( id, form );
 		}
 	}
 	/** Development mode only -- END */

@@ -22,25 +22,8 @@ export class IAP {
     ) {
   }
 
-  // Get products
-  // getProducts( id ) {
-
-  //   console.log('getting products for ' + this.productId )
-
-  //   return new Promise(resolve => {
-
-  //     this.iap.getProducts( [ this.productId ] ).then( products => {
-  //       console.log('got products', products)
-  //       resolve(products)
-  //     })
-  //     .catch( err => {
-  //       console.log(err)
-  //     })
-  //   });
-  // }
-
   // buy a product, requires ID that looks like this: com.artofmanliness.artofmanliness.noadssubscription
-  buy( id ) {
+  buy( id, login = false, form = null ) {
 
     // we have to get products before we can buy
     this.iap.getProducts( [ id ] ).then( products => {
@@ -50,7 +33,9 @@ export class IAP {
 
         this.storage.set('purchases', id )
 
-        this.appads.hideAll();
+        // if( login ) {
+        //   this.handleLogin( form )
+        // }
 
       })
       .catch( err => {
@@ -66,32 +51,85 @@ export class IAP {
 
   }
 
-  // buy a product, requires ID that looks like this: com.artofmanliness.artofmanliness.noadssubscription
+  // subscribe to an app store purchase
   subscribe( id ) {
 
-    // we have to get products before we can buy
-    this.iap.getProducts( [ id ] ).then( products => {
+    return new Promise( (resolve, reject) => {
 
-      // after we get product, buy it
-      this.iap.subscribe( id ).then( result => {
+      // we have to get products before we can buy
+      this.iap.getProducts( [ id ] ).then( products => {
 
-        this.storage.set('purchased_' + id, true )
+        // after we get product, buy it
+        this.iap.subscribe( id ).then( result => {
+
+          this.storage.set('purchases', id )
+
+          resolve( true )
+
+        })
+        .catch( err => {
+          alert(err.errorMessage)
+          console.log(err)
+          reject()
+        })
 
       })
       .catch( err => {
         alert(err.errorMessage)
         console.log(err)
+        reject()
       })
 
-    })
-    .catch( err => {
-      alert(err.errorMessage)
-      console.log(err)
-    })
+    }) // end promise
 
   }
 
-  // buy a product, then remove ads
+  restoreSubscription( id ) {
+
+    this.productId = id;
+
+    return new Promise(resolve => {
+
+      this.iap.restorePurchases().then( result => {
+
+        for (var i = 0; i < result.length; ++i) {
+
+          // TODO: check result[i].state for cancelled or refunded
+
+          if( result[i].productId == this.productId ) {
+
+            this.storage.set('purchases', this.productId )
+
+            resolve(true)
+
+            return;
+
+          }
+
+        }
+
+        alert('No purchases found to restore.')
+
+        resolve(false)
+        
+      })
+      .catch( err => {
+        let error = 'Error, please try again.';
+
+        if( err && err.message ) {
+          error = err.message
+        } else if( err && err.errorMessage ) {
+          error = err.errorMessage
+        }
+
+        alert( error )
+        console.log(err)
+      })
+    });
+
+  }
+
+  // buy a product, then remove ads. Used in AOM app
   subscribeNoAds( id ) {
 
     // we have to get products before we can buy
@@ -135,28 +173,7 @@ export class IAP {
 
   }
 
-  // buy a product, requires ID from iTunes or Gplay
-  // buyProduct( id ) {
-
-  //   console.log('buying ' + id)
-
-  //   return new Promise(resolve => {
-
-  //     this.iap.buy( id ).then( result => {
-  //       console.log('bought ', result)
-  //       alert("Purchase successful, thank you!")
-
-  //       this.appads.hideAll();
-
-  //       resolve(result)
-  //     })
-  //     .catch( err => {
-  //       console.log(err)
-  //     })
-  //   });
-
-  // }
-
+  // used in AOM app
   restoreNoAds( id ) {
 
     this.productId = id;

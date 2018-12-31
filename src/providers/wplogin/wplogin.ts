@@ -224,6 +224,39 @@ export class WPlogin {
 
   }
 
+  // used for in app purchases
+  // register user if they don't exist
+  // log in and return data
+  iapRegisterLogIn( data ) {
+
+    let url = this.url + 'wp-json/appp/v1/in-app-purchase';
+    let params = Object.keys(data).map(function(k) {
+        return encodeURIComponent(k) + "=" + encodeURIComponent(data[k]);
+    }).join('&');
+
+    console.log( url + '?' + params )
+    return new Promise( (resolve, reject) => {
+
+      this.http.post( url + '?' + params, null )
+        .map(res => res.json())
+        .subscribe(data => {
+          
+            resolve(data)
+
+          },
+          error => {
+
+            console.log(error)
+
+            reject(error);
+
+          }
+        )
+
+    }) // end promise
+
+  }
+
   handleError(err) {
     console.warn(err);
   }

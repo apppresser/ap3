@@ -103,6 +103,14 @@ export class LoginModal {
 
 		this.doIphoneX()
 
+		// we can log a user in by sending their user/pass in nav params to this page
+		if( this.navParams.get('login_data') ) {
+
+			this.login = this.navParams.get('login_data')
+			this.doLogin()
+			
+		}
+
 	}
 
 	ionViewWillEnter() {

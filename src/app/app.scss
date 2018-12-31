@@ -31,6 +31,10 @@ $border-color: rgba(0,0,0,.1);
 
 ion-content {
 	background-color: #fff;
+
+	p {
+		line-height: 1.5;
+	}
 }
 
 .content .wp-caption {
