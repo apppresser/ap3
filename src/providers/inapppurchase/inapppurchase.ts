@@ -307,8 +307,13 @@ export class IAP {
               this.sendIosReceiptToServer(receipt, productId).then( validity => {
                 console.log('validity response', validity)
                 resolve( validity )
+              }).catch( err => {
+                reject( err )
               })
 
+            }).catch( err => {
+              console.warn(err)
+              reject( err )
             })
 
           })
@@ -328,9 +333,10 @@ export class IAP {
   }
 
   // validate the encoded receipt with Apple, and get back the human readable format
+  // https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html
   validateReceiptIos( receiptData ) {
 
-    return new Promise( (resolve ) => {
+    return new Promise( ( resolve, reject ) => {
 
       this.storage.get('iap_secret').then( secret => {
 
@@ -341,22 +347,31 @@ export class IAP {
 
         let data = {
           'password': secret,
-          'receipt-data': receiptData
+          'receipt-data': receiptData,
+          'exclude-old-transactions': true
         }
 
-        // https://buy.itunes.apple.com/verifyReceipt
-        this.http.post( 'https://buy.itunes.apple.com/verifyReceipt', data, this.httpOptions )
+        // prod: https://buy.itunes.apple.com/verifyReceipt
+        // sandbox: https://sandbox.itunes.apple.com/verifyReceipt
+        this.http.post( 'https://sandbox.itunes.apple.com/verifyReceipt', data, this.httpOptions )
             .subscribe(response => {
 
-              console.log('verify receipt response')
+              console.log('verify receipt response', response)
 
-              let receipt = JSON.parse(response['_body']).receipt
-              resolve(receipt)
-              // purchases can be found at receipt.in_app <Array>
-              // will need to loop through them and get most recent, then work with expiration date
+              if( response ) {
+                let receipt = (<any>response).latest_receipt_info
+                console.log(receipt)
+                resolve(receipt)
+                // purchases can be found at receipt.in_app <Array>
+                // will need to loop through them and get most recent, then work with expiration date
+              } else {
+                console.warn(response)
+                reject( response )
+              }
+              
             },
             error => {
-              // probably a bad url or 404
+              reject(error)
               console.log(error);
             })
 
@@ -368,7 +383,7 @@ export class IAP {
 
   sendIosReceiptToServer( receipt, productId ) {
 
-    return new Promise( (resolve ) => {
+    return new Promise( ( resolve, reject ) => {
 
       // get username so we can potentially cancel membership
       this.storage.get('user_login').then( userlogin => {
@@ -394,11 +409,11 @@ export class IAP {
           .subscribe(response => {
 
             console.log('server response', response)
-            resolve( response['_body'] );
+            resolve( response );
 
           },
           error => {
-            resolve(false)
+            reject( error )
             // probably a bad url or 404
             console.log(error);
           })

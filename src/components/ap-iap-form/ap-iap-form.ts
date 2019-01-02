@@ -16,8 +16,8 @@ export class ApIapForm {
 	@Input() lastName: boolean = false
 	@Input() currencySymbol: string = "$"
 	@Input() isSubscription: boolean = true
-	@Input() countSetting: number
-	@Input() iapSecret: string
+	@Input() opens: number
+	@Input() secret: string
 
 	formData: any;
 	loading: any;
@@ -41,12 +41,12 @@ export class ApIapForm {
 			this.presentToast("Product ID is required.")
 		}
 
-		if( !this.iapSecret ) {
-			this.storage.set( 'iap_secret', this.iapSecret )
+		if( this.secret ) {
+			this.storage.set( 'iap_secret', this.secret )
 		}
 
-		if( this.countSetting ) {
-			this.storage.set( 'iap_open_count_user_setting', this.countSetting )
+		if( this.opens ) {
+			this.storage.set( 'iap_open_count_user_setting', this.opens )
 		}
 	}
 

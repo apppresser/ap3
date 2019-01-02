@@ -1739,6 +1739,8 @@ export class MyApp {
 
       if( !user_count_setting ) {
         user_count_setting = 15
+      } else {
+        user_count_setting = parseInt( user_count_setting )
       }
 
       this.doOpenCount( user_count_setting );
@@ -1765,7 +1767,7 @@ export class MyApp {
         // for testing, comment this out for prod
         // count = 20
 
-        if( userlogin && userlogin.username && count > user_count_setting ) {
+        if( userlogin && userlogin.username && count >= user_count_setting ) {
           this.doIapValidation()
         }
 
@@ -1782,7 +1784,9 @@ export class MyApp {
 
     this.iap.validatePurchase().then( response => {
 
-      console.log(response)
+      if( !response ) {
+        return;
+      }
 
       if ( this.platform.is('android') ) {
 
@@ -1796,17 +1800,14 @@ export class MyApp {
 
         // iOS only checks
 
-        let res = JSON.parse( (<any>response) );
-        console.log('check status response ios', res)
-
         // verified cancelled membership
-        if( res.success && res.data && res.data === "false" ) {
+        if( false === response ) {
 
           this.purchaseInvalid()
 
-        } else if( res.success && res.data && res.data === "true" ) {
+        } else if( response ) {
 
-          // restart the counter
+          // everything is valid, restart the counter
           this.storage.remove( 'open_count' )
 
         } else {
@@ -1820,7 +1821,7 @@ export class MyApp {
     })
     .catch( err => {
       console.log('err check status response', err)
-      // this.presentToast('Problem checking the membership.' + JSON.stringify(err) )
+      this.presentToast('Problem validating subscription.' + JSON.stringify(err) )
       this.validationError()
     })
 
@@ -1833,6 +1834,8 @@ export class MyApp {
 
       if( !user_count_setting ) {
         user_count_setting = 15
+      } else {
+        user_count_setting = parseInt( user_count_setting )
       }
 
       this.storage.set('open_count', user_count_setting - 2 )
