@@ -433,7 +433,7 @@ export class IAP {
 
   // a much simpler way to check iOS iap status using status update notifications
   // the server handles everything, we just check periodically for a boolean status
-  getSubscriptionStatus() {
+  getSubscriptionStatus( user_id ) {
 
     return new Promise( (resolve, reject) => {
 
@@ -447,7 +447,7 @@ export class IAP {
 
         } else {
 
-          this.validateIosRemotely( productId ).then( response => {
+          this.validateIosRemotely( user_id, productId ).then( response => {
             resolve( response )
           }).catch( err => {
             reject(err)
@@ -495,11 +495,11 @@ export class IAP {
 
   }
 
-  validateIosRemotely( productId ) {
+  validateIosRemotely( user_id, productId ) {
 
     return new Promise( (resolve, reject) => {
 
-      this.http.get( this.wpUrl + 'wp-json/appp/v1/in-app-purchase-status?product_id=' + productId )
+      this.http.get( this.wpUrl + 'wp-json/appp/v1/in-app-purchase-status?user_id=' + user_id + '&product_id=' + productId )
         .subscribe(response => {
 
           console.log('iap check response', response)

@@ -1762,13 +1762,13 @@ export class MyApp {
       console.log('open count ' + count, user_count_setting)
 
       // need username to do membership check, make sure they are logged in
-      this.storage.get('user_login').then( userlogin => {
+      this.storage.get('user_login').then( login_data => {
 
         // for testing, comment this out for prod
         // count = 20
 
-        if( userlogin && userlogin.username && count >= user_count_setting ) {
-          this.doIapValidation()
+        if( login_data && login_data.user_id && count >= user_count_setting ) {
+          this.doIapValidation( login_data.user_id )
         }
 
         this.storage.set( 'open_count', count )
@@ -1778,9 +1778,9 @@ export class MyApp {
     })
   }
 
-  doIapValidation() {
+  doIapValidation( user_id ) {
 
-    this.iap.getSubscriptionStatus().then( response => {
+    this.iap.getSubscriptionStatus( user_id ).then( response => {
 
       if( response === false ) {
 
