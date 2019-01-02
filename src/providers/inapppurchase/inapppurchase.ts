@@ -42,6 +42,8 @@ export class IAP {
   // buy a product, requires ID that looks like this: com.artofmanliness.artofmanliness.noadssubscription
   buy( id, login = false, form = null ) {
 
+    this.storage.set('iap_product_id', id)
+
     // we have to get products before we can buy
     this.iap.getProducts( [ id ] ).then( products => {
 
@@ -81,9 +83,11 @@ export class IAP {
         // after we get product, buy it
         this.iap.subscribe( id ).then( result => {
 
+          console.log('subscribe receipt', result)
+
           this.storage.set('purchases', id )
 
-          resolve( true )
+          resolve( result.transactionId )
 
         })
         .catch( err => {
@@ -121,7 +125,10 @@ export class IAP {
 
             this.storage.set('purchases', this.productId )
 
-            resolve(true)
+            console.log('restore receipt, need original transaction id', result[i] )
+
+            // TODO: not sure if result[i].transactionId is defined
+            resolve( result[i].transactionId )
 
             return;
 
@@ -421,6 +428,91 @@ export class IAP {
       });
 
     })
+
+  }
+
+  // a much simpler way to check iOS iap status using status update notifications
+  // the server handles everything, we just check periodically for a boolean status
+  getSubscriptionStatus() {
+
+    return new Promise( (resolve, reject) => {
+
+      this.storage.get( 'iap_product_id' ).then( productId => {
+
+        if ( this.platform.is('android') ) {
+
+          this.validateAndroidReceipt( productId ).then( response => {
+            resolve( response )
+          })
+
+        } else {
+
+          this.validateIosRemotely( productId ).then( response => {
+            resolve( response )
+          }).catch( err => {
+            reject(err)
+          })
+
+        }
+
+      }) // end storage.get
+
+    }) // end promise
+
+  }
+
+  validateAndroidReceipt( productId ) {
+
+    return new Promise( (resolve, reject) => {
+
+      this.iap.restorePurchases().then( result => {
+
+          console.log('checkStatus restore purchase android', result)
+
+          let validity = false;
+
+          for (var i = 0; i < result.length; ++i) {
+
+            if( result[i].productId == productId ) {
+
+              console.log('purchase is valid')
+
+              validity = true;
+
+            }
+
+          }
+
+          console.log('validity ' + validity)
+
+          resolve( validity )
+
+        })
+
+      resolve(true)
+
+    })
+
+  }
+
+  validateIosRemotely( productId ) {
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.get( this.wpUrl + 'wp-json/appp/v1/in-app-purchase-status?product_id=' + productId )
+        .subscribe(response => {
+
+          console.log('iap check response', response)
+          resolve( response );
+
+        },
+        error => {
+          reject( false )
+          // probably a bad url or 404
+          console.warn(error);
+        })
+
+      })
 
   }
 

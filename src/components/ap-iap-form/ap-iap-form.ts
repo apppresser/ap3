@@ -84,12 +84,12 @@ export class ApIapForm {
 
 		console.log(fields)
 
-		this.iap.subscribe( this.productId ).then( ret => {
+		this.iap.subscribe( this.productId ).then( transactionId => {
 
-			console.log(ret)
+			console.log('purchase transactionId', transactionId)
 
 			// log the user in after purchase
-			this.handleWpLogin( fields )
+			this.handleWpLogin( fields, transactionId )
 
 
 		}).catch( e => {
@@ -103,13 +103,13 @@ export class ApIapForm {
 
 	restoreSubscription( fields ) {
 
-		this.iap.restoreSubscription( this.productId ).then( ret => {
+		this.iap.restoreSubscription( this.productId ).then( transactionId => {
 
-			console.log(ret)
+			console.log(transactionId)
 
-			if( ret ) {
+			if( transactionId ) {
 				// log the user in after purchase
-				this.handleWpLogin( fields )
+				this.handleWpLogin( fields, transactionId )
 			}
 
 		}).catch( e => {
@@ -124,13 +124,13 @@ export class ApIapForm {
 	// send the data to WP
 	// if the user doesn't exist, register them
 	// log them in and add user meta of in_app_purchase = true
-	handleWpLogin( userData ) {
+	handleWpLogin( userData, transactionId ) {
 
 		this.showSpinner()
 
 		this.presentToast('Purchase successful! Logging you in...')
 
-		this.wplogin.iapRegisterLogIn( userData ).then( data => {
+		this.wplogin.iapRegisterLogIn( userData, transactionId ).then( data => {
 
 			console.log(data)
 
