@@ -34,6 +34,7 @@ import { User } from '../models/user.model';
 import { LoginService } from '../providers/logins/login.service';
 import { LanguageService } from "../providers/language/language.service";
 import { MenuService } from "../providers/menus/menu.service";
+import { IAP } from "../providers/inapppurchase/inapppurchase";
 
 import {Iframe} from "../pages/iframe/iframe";
 import { Language } from '../models/language.model';
@@ -119,7 +120,8 @@ export class MyApp {
     private menuservice: MenuService,
     private analyticsservice: AnalyticsService,
     private download: Download,
-    public iab: InAppBrowser
+    public iab: InAppBrowser,
+    private iap: IAP
   ) {
 
     this.initializeApp();
@@ -193,6 +195,8 @@ export class MyApp {
       this.attachListeners();
       
       this.maybeDoPush();
+
+      this.maybeValidateIap();
 
       this.doIphoneX();
 
@@ -1710,5 +1714,154 @@ export class MyApp {
       return String.fromCharCode(dec);
     });
   };
+
+  // check if there is an in app purchase
+  maybeValidateIap() {
+
+    console.log('maybe validate in app purchase')
+
+    this.storage.get( 'purchases' ).then( purchases => {
+
+      console.log('purchases', purchases )
+
+      if( purchases ) {
+        this.getCountSetting()
+      }
+
+    })
+
+  }
+
+  // get user setting for how many opens until we validate
+  getCountSetting() {
+
+    this.storage.get( 'iap_open_count_user_setting' ).then( user_count_setting => {
+
+      if( !user_count_setting ) {
+        user_count_setting = 15
+      }
+
+      this.doOpenCount( user_count_setting );
+    })
+
+  }
+
+  // count number of times app has been opened since membership was purchased. this is more reliable than checking every 30 days. we don't want to validate every time app is opened
+  doOpenCount( user_count_setting ) {
+
+    this.storage.get( 'open_count' ).then( data => {
+
+      let count = 1;
+
+      if( data ) {
+        count = data + 1
+      }
+
+      console.log('open count ' + count, user_count_setting)
+
+      // need username to do membership check, make sure they are logged in
+      this.storage.get('user_login').then( userlogin => {
+
+        // for testing, comment this out for prod
+        // count = 20
+
+        if( userlogin && userlogin.username && count > user_count_setting ) {
+          this.doIapValidation()
+        }
+
+        this.storage.set( 'open_count', count )
+
+      })
+
+    })
+  }
+
+  doIapValidation() {
+
+    console.log('doing iap validation')
+
+    this.iap.validatePurchase().then( response => {
+
+      console.log(response)
+
+      if ( this.platform.is('android') ) {
+
+        if( response === false ) {
+
+          this.purchaseInvalid()
+          
+        }
+
+      } else if( this.platform.is('ios') ) {
+
+        // iOS only checks
+
+        let res = JSON.parse( (<any>response) );
+        console.log('check status response ios', res)
+
+        // verified cancelled membership
+        if( res.success && res.data && res.data === "false" ) {
+
+          this.purchaseInvalid()
+
+        } else if( res.success && res.data && res.data === "true" ) {
+
+          // restart the counter
+          this.storage.remove( 'open_count' )
+
+        } else {
+
+          // some sort of error, try again later
+          this.validationError()
+        }
+
+      }
+        
+    })
+    .catch( err => {
+      console.log('err check status response', err)
+      // this.presentToast('Problem checking the membership.' + JSON.stringify(err) )
+      this.validationError()
+    })
+
+  }
+
+  // set the open counter back so we can validate again later
+  validationError() {
+
+    this.storage.get( 'iap_open_count_user_setting' ).then( user_count_setting => {
+
+      if( !user_count_setting ) {
+        user_count_setting = 15
+      }
+
+      this.storage.set('open_count', user_count_setting - 2 )
+    })
+
+  }
+
+  // user's purchase has expired, log them out
+  // this can be reversed with "restore purchase"
+  purchaseInvalid() {
+
+    this.translate.get('Your membership has expired or been cancelled. Please contact us if you need assistance.').subscribe( text => {
+
+      this.presentToast( text );
+
+    })
+
+    this.storage.remove( 'purchases' )
+    this.storage.remove( 'login_data' )
+    this.storage.remove( 'open_count' )
+    this.login_data = null
+    this.events.publish( 'modal:logindata', null )
+
+    if( this.pages )
+      this.resetSideMenu(false)
+
+    if( this.tabs )
+      this.resetTabs(false)
+
+  }
 
 }
