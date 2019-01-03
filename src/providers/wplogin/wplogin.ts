@@ -226,16 +226,19 @@ export class WPlogin {
 
   // used for in app purchases
   // register user if they don't exist
-  // store receipt in user meta
+  // store transaction_id from app store purchase in user meta
   // log in and return data
-  iapRegisterLogIn( userData, receipt ) {
+  iapRegisterLogIn( userData, transaction_id ) {
 
     let url = this.url + 'wp-json/appp/v1/in-app-purchase';
     let params = Object.keys(userData).map(function(k) {
         return encodeURIComponent(k) + "=" + encodeURIComponent(userData[k]);
     }).join('&');
 
-    params += '&transaction_id=' + encodeURIComponent( receipt )
+    // transaction_id is only sent on initial purchase, not restore
+    if( transaction_id ) {
+      params += '&transaction_id=' + encodeURIComponent( transaction_id )
+    }
 
     console.log( url + '?' + params )
     return new Promise( (resolve, reject) => {

@@ -117,6 +117,9 @@ export class IAP {
 
       this.iap.restorePurchases().then( result => {
 
+        // this is an array of purchases
+        console.log( 'restore purchases result', result )
+
         for (var i = 0; i < result.length; ++i) {
 
           // TODO: check result[i].state for cancelled or refunded
@@ -127,7 +130,7 @@ export class IAP {
 
             console.log('restore receipt, need original transaction id', result[i] )
 
-            // TODO: not sure if result[i].transactionId is defined
+            // TODO: we need to send back original transaction ID, not transaction for this purchase
             resolve( result[i].transactionId )
 
             return;
@@ -251,6 +254,7 @@ export class IAP {
 
   }
 
+  /* Deprecated: we use server side validation now.
   // Validate an in app purchase subscription
   // First we get the receipt, which is an array with all purchases
   // Apple requires us to make sure the receipt is not valid, apparently they are easy to fake
@@ -429,7 +433,7 @@ export class IAP {
 
     })
 
-  }
+  } */
 
   // a much simpler way to check iOS iap status using status update notifications
   // the server handles everything, we just check periodically for a boolean status

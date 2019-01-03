@@ -84,6 +84,8 @@ export class ApIapForm {
 
 		console.log(fields)
 
+		this.showSpinner()
+
 		this.iap.subscribe( this.productId ).then( transactionId => {
 
 			console.log('purchase transactionId', transactionId)
@@ -97,6 +99,8 @@ export class ApIapForm {
 			console.warn(e)
 			this.presentToast('There was a problem with your purchase, please try again.')
 
+		}).then( ()=> {
+			this.hideSpinner()
 		});
 
 	}
@@ -107,10 +111,9 @@ export class ApIapForm {
 
 			console.log(transactionId)
 
-			if( transactionId ) {
-				// log the user in after purchase
-				this.handleWpLogin( fields, transactionId )
-			}
+			// log the user in after purchase
+			this.handleWpLogin( fields, null )
+
 
 		}).catch( e => {
 
@@ -154,7 +157,7 @@ export class ApIapForm {
 		this.storage.set( 'user_login', login_data )
 		this.events.publish('user:login', login_data )
 
-		alert("Success! Please use the app menu to access your content.")
+		this.presentToast("Success! Please use the app menu to access your content.")
 
 	}
 

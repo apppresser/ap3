@@ -1799,51 +1799,6 @@ export class MyApp {
 
     })
 
-    // console.log('doing iap validation')
-
-    // this.iap.validatePurchase().then( response => {
-
-    //   if( !response ) {
-    //     return;
-    //   }
-
-    //   if ( this.platform.is('android') ) {
-
-    //     if( response === false ) {
-
-    //       this.purchaseInvalid()
-          
-    //     }
-
-    //   } else if( this.platform.is('ios') ) {
-
-    //     // iOS only checks
-
-    //     // verified cancelled membership
-    //     if( false === response ) {
-
-    //       this.purchaseInvalid()
-
-    //     } else if( response ) {
-
-    //       // everything is valid, restart the counter
-    //       this.storage.remove( 'open_count' )
-
-    //     } else {
-
-    //       // some sort of error, try again later
-    //       this.validationError()
-    //     }
-
-    //   }
-        
-    // })
-    // .catch( err => {
-    //   console.log('err check status response', err)
-    //   this.presentToast('Problem validating subscription.' + JSON.stringify(err) )
-    //   this.validationError()
-    // })
-
   }
 
   // set the open counter back so we can validate again later
