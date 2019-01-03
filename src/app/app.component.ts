@@ -1718,13 +1718,13 @@ export class MyApp {
   // check if there is an in app purchase
   maybeValidateIap() {
 
-    console.log('maybe validate in app purchase')
+    console.log('maybe validate in app purchase subscription')
 
-    this.storage.get( 'purchases' ).then( purchases => {
+    this.storage.get( 'iap_subscription' ).then( productId => {
 
-      console.log('purchases', purchases )
+      console.log('subscription productId', productId )
 
-      if( purchases ) {
+      if( productId ) {
         this.getCountSetting()
       }
 

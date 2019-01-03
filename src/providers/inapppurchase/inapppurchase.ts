@@ -50,7 +50,7 @@ export class IAP {
       // after we get product, buy it
       this.iap.buy( id ).then( result => {
 
-        this.storage.set('purchases', id )
+        this.storage.set('iap_purchase', id )
 
         // if( login ) {
         //   this.handleLogin( form )
@@ -85,7 +85,7 @@ export class IAP {
 
           console.log('subscribe receipt', result)
 
-          this.storage.set('purchases', id )
+          this.storage.set('iap_subscription', id )
 
           resolve( result.transactionId )
 
@@ -126,11 +126,11 @@ export class IAP {
 
           if( result[i].productId == this.productId ) {
 
-            this.storage.set('purchases', this.productId )
+            this.storage.set('iap_subscription', this.productId )
 
             console.log('restore receipt, need original transaction id', result[i] )
 
-            // TODO: we need to send back original transaction ID, not transaction for this purchase
+            // we aren't using this transaction ID
             resolve( result[i].transactionId )
 
             return;
@@ -445,8 +445,10 @@ export class IAP {
 
         if ( this.platform.is('android') ) {
 
-          this.validateAndroidReceipt( productId ).then( response => {
+          this.validateAndroid( user_id, productId ).then( response => {
             resolve( response )
+          }).catch( err => {
+            reject( err )
           })
 
         } else {
@@ -465,40 +467,72 @@ export class IAP {
 
   }
 
-  validateAndroidReceipt( productId ) {
+  validateAndroid( user_id, productId ) {
 
     return new Promise( (resolve, reject) => {
 
       this.iap.restorePurchases().then( result => {
 
-          console.log('checkStatus restore purchase android', result)
+        console.log('Restore purchase android', result)
 
-          let validity = false;
+        this.validateAndroidRemotely( user_id, result, productId ).then( validity => {
+          resolve( validity )
+        }).catch( err => {
+          reject( err )
+        })
 
-          for (var i = 0; i < result.length; ++i) {
+          
+        /*
+         * We could validate simply like this, but then the server wouldn't be able to cancel memberships.
+        for (var i = 0; i < result.length; ++i) {
 
-            if( result[i].productId == productId ) {
+          if( result[i].productId == productId ) {
 
-              console.log('purchase is valid')
+            console.log('purchase is valid')
 
-              validity = true;
-
-            }
+            validity = true;
 
           }
 
-          console.log('validity ' + validity)
+        } */
 
-          resolve( validity )
+      }) // end restore purchases
 
-        })
-
-      resolve(true)
-
-    })
+    }) // end promise
 
   }
 
+  // this is actually easier to do in app, but we send it to the server to allow customers to modify it easily
+  validateAndroidRemotely( user_id, purchases, productId ) {
+
+    return new Promise( (resolve, reject) => {
+
+      let data = {
+        user_id: user_id,
+        sec: 'jk39DLKj!',
+        purchases: JSON.stringify( purchases ),
+        product_id: productId
+      }
+
+      this.http.post( this.wpUrl + 'wp-json/appp/v1/in-app-purchase-validate', data, this.httpOptions )
+        .subscribe(response => {
+
+          console.log('validateAndroidRemotely response', response)
+
+          resolve( response );
+
+        },
+        error => {
+          reject( error )
+          // probably a bad url or 404
+          console.warn('validateAndroidRemotely error', error);
+        })
+
+      })
+
+  }
+
+  // iOS doesn't validate purchases on server, because we use Apple subscription notifications. We just check for a boolean based on user meta here.
   validateIosRemotely( user_id, productId ) {
 
     return new Promise( (resolve, reject) => {
@@ -511,7 +545,7 @@ export class IAP {
 
         },
         error => {
-          reject( false )
+          reject( error )
           // probably a bad url or 404
           console.warn(error);
         })
