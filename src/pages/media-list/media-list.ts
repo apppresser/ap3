@@ -78,18 +78,19 @@ export class MediaList implements OnInit {
       this.doLogo()
     }
 
-    if( navParams.data.allow_downloads && navParams.data.allow_downloads === "true" ) {
-      this.doDownloads = true;
-    }
-
     if( navParams.data.download_list_image && navParams.data.download_list_image === "image" ) {
       this.showFeaturedImage = true;
     }
 
     this.previewAlert(this.route);
 
-    this.customClasses = 'post-list has-favorites' + ((navParams.data.slug) ? ' page-' + navParams.data.slug : '');
+    this.customClasses = 'post-list' + ((navParams.data.slug) ? ' page-' + navParams.data.slug : '');
     this.customHeaderClasses = (navParams.data.slug) ? ' header-' + navParams.data.slug : '';
+
+    if( navParams.data.allow_downloads && navParams.data.allow_downloads === "true" ) {
+      this.doDownloads = true;
+      this.customClasses += ' has-favorites'
+    }
 
     this.zone = new NgZone({ enableLongStackTrace: false });
     
