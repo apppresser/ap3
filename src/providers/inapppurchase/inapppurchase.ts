@@ -475,6 +475,7 @@ export class IAP {
 
         console.log('Restore purchase android', result)
 
+        // send receipts to server to validate
         this.validateAndroidRemotely( user_id, result, productId ).then( validity => {
           resolve( validity )
         }).catch( err => {
@@ -483,7 +484,7 @@ export class IAP {
 
           
         /*
-         * We could validate simply like this, but then the server wouldn't be able to cancel memberships.
+         * We could validate on the device like this, but then the server wouldn't be able to cancel memberships.
         for (var i = 0; i < result.length; ++i) {
 
           if( result[i].productId == productId ) {
