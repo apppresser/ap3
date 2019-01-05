@@ -196,7 +196,7 @@ export class WooCartComponent implements OnInit {
 			return;
 		}
 
-		this.browser = this.iab.create( url + '?appcommerce=1', '_blank', 'location=no,toolbarcolor=#ffffff,navigationbuttoncolor=#444444,closebuttoncolor=#444444' )
+		this.browser = this.iab.create( url + '?appcommerce=1&appp_bypass=true', '_blank', 'location=no,toolbarcolor=#ffffff,navigationbuttoncolor=#444444,closebuttoncolor=#444444' )
 
 		this.browserSubscription1 = this.browser.on('exit').subscribe( data => {
           console.log('browser closed', data)
