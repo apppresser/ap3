@@ -11,6 +11,7 @@ import {IAP} from '../../providers/inapppurchase/inapppurchase';
 export class ApIapForm {
 
 	@Input() productId: string;
+	@Input() productIdAndroid: string;
 	@Input() email: boolean = true
 	@Input() firstName: boolean = false
 	@Input() lastName: boolean = false
@@ -37,7 +38,7 @@ export class ApIapForm {
 	}
 
 	ngAfterViewInit() {
-		if( !this.productId || this.productId === '' ) {
+		if( !this.productId && !this.productIdAndroid ) {
 			this.presentToast("Product ID is required.")
 		}
 
@@ -48,6 +49,17 @@ export class ApIapForm {
 		if( this.opens ) {
 			this.storage.set( 'iap_open_count_user_setting', this.opens )
 		}
+	}
+
+	// If we have 2 product IDs, get the right one
+	getProductId() {
+
+		if( this.productIdAndroid && this.platform.is('android') ) {
+			return this.productIdAndroid
+		} else {
+			return this.productId
+		}
+
 	}
 
 	submitForm( form ) {
@@ -77,7 +89,8 @@ export class ApIapForm {
 	}
 
 	buyProduct() {
-		this.iap.buy( this.productId );
+		let id = this.getProductId()
+		this.iap.buy( id );
 	}
 
 	subscribe( fields ) {
@@ -86,7 +99,9 @@ export class ApIapForm {
 
 		this.showSpinner()
 
-		this.iap.subscribe( this.productId ).then( transactionId => {
+		let productId = this.getProductId()
+
+		this.iap.subscribe( productId ).then( transactionId => {
 
 			console.log('purchase transactionId', transactionId)
 
@@ -107,12 +122,17 @@ export class ApIapForm {
 
 	restoreSubscription( fields ) {
 
-		this.iap.restoreSubscription( this.productId ).then( transactionId => {
+		let productId = this.getProductId()
+
+		this.iap.restoreSubscription( productId ).then( transactionId => {
 
 			console.log(transactionId)
 
-			// log the user in after purchase
-			this.handleWpLogin( fields, null )
+			// transactionID number if successful, false if no purchase to restore
+			if( transactionId ) {
+				// log the user in after purchase
+				this.handleWpLogin( fields, null )
+			}
 
 
 		}).catch( e => {

@@ -1797,6 +1797,9 @@ export class MyApp {
         this.validationError()
       }
 
+    }).catch( err => {
+      console.log('getSubscriptionStatus catch', err)
+      this.validationError()
     })
 
   }
@@ -1828,10 +1831,7 @@ export class MyApp {
     })
 
     this.storage.remove( 'purchases' )
-    this.storage.remove( 'login_data' )
     this.storage.remove( 'open_count' )
-    this.login_data = null
-    this.events.publish( 'modal:logindata', null )
 
     if( this.pages )
       this.resetSideMenu(false)

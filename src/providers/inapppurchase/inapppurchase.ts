@@ -52,11 +52,14 @@ export class IAP {
       // after we get product, buy it
       this.iap.buy( id ).then( result => {
 
-        this.storage.set('iap_purchase', id )
-
-        // if( login ) {
-        //   this.handleLogin( form )
-        // }
+        this.storage.get('iap_purchase_ids').then( ids => {
+          if( ids ) {
+            ids.push(id)
+          } else {
+            ids = [id]
+          }
+          this.storage.set('iap_purchase_ids', ids )
+        })
 
       })
       .catch( err => {
@@ -256,189 +259,9 @@ export class IAP {
 
   }
 
-  /* Deprecated: we use server side validation now.
-  // Validate an in app purchase subscription
-  // First we get the receipt, which is an array with all purchases
-  // Apple requires us to make sure the receipt is not valid, apparently they are easy to fake
-  // Next we see if this productId is in that array, and has a recent purchase
-  // For iOS we have to send the receipt to the server to parse and see if it's valid
-  // more info https://github.com/AlexDisler/cordova-plugin-inapppurchase/issues/32
-  validatePurchase() {
-
-    // nested promises, oh my!
-    return new Promise( (resolve, reject) => {
-
-      this.storage.get( 'iap_product_id' ).then( productId => {
-
-        if ( this.platform.is('android') ) {
-
-          this.iap.restorePurchases().then( result => {
-
-            console.log('checkStatus restore purchase android', result)
-
-            let validity = false;
-
-            for (var i = 0; i < result.length; ++i) {
-
-              if( result[i].productId == productId ) {
-
-                console.log('purchase is valid')
-
-                validity = true;
-
-              }
-
-            }
-
-            console.log('validity ' + validity)
-
-            resolve( validity )
-
-          })
-
-        } else if ( this.platform.is('ios') ) {
-
-          // proceed with iOS
-
-          // first, ask Apple for the receipt. We get back an encrypted string.
-          this.iap.getReceipt()
-          .then( receipt => {
-
-            console.log('encoded', receipt)
-            
-            return receipt
-
-          })
-          .then( receiptData => {
-
-            // next, validate the encoded receipt with Apple, and get back the human readable format
-            this.validateReceiptIos( receiptData ).then( receipt => {
-
-              console.log('validate receipt response', receipt)
-
-              // finally, send the receipt to the server and resolve the promise with the result. This is the final validity response that is returned
-              this.sendIosReceiptToServer(receipt, productId).then( validity => {
-                console.log('validity response', validity)
-                resolve( validity )
-              }).catch( err => {
-                reject( err )
-              })
-
-            }).catch( err => {
-              console.warn(err)
-              reject( err )
-            })
-
-          })
-          .catch( err => {
-
-            reject( err )
-            console.warn(err)
-
-          })
-
-        } // end if platform.is
-
-      }) // end storage.get
-
-    }) // end promise
-
-  }
-
-  // validate the encoded receipt with Apple, and get back the human readable format
-  // https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html
-  validateReceiptIos( receiptData ) {
-
-    return new Promise( ( resolve, reject ) => {
-
-      this.storage.get('iap_secret').then( secret => {
-
-        if( !secret ) {
-          alert('Missing iOS in app purchase secret.')
-          resolve(false);
-        }
-
-        let data = {
-          'password': secret,
-          'receipt-data': receiptData,
-          'exclude-old-transactions': true
-        }
-
-        // prod: https://buy.itunes.apple.com/verifyReceipt
-        // sandbox: https://sandbox.itunes.apple.com/verifyReceipt
-        this.http.post( 'https://sandbox.itunes.apple.com/verifyReceipt', data, this.httpOptions )
-            .subscribe(response => {
-
-              console.log('verify receipt response', response)
-
-              if( response ) {
-                let receipt = (<any>response).latest_receipt_info
-                console.log(receipt)
-                resolve(receipt)
-                // purchases can be found at receipt.in_app <Array>
-                // will need to loop through them and get most recent, then work with expiration date
-              } else {
-                console.warn(response)
-                reject( response )
-              }
-              
-            },
-            error => {
-              reject(error)
-              console.log(error);
-            })
-
-      }) // end storage.get
-
-    })
-
-  }
-
-  sendIosReceiptToServer( receipt, productId ) {
-
-    return new Promise( ( resolve, reject ) => {
-
-      // get username so we can potentially cancel membership
-      this.storage.get('user_login').then( userlogin => {
-
-        let username = ''
-
-        if( userlogin && userlogin.username ) {
-          username = userlogin.username
-        }
-
-        console.log( 'sendIosReceiptToServer', receipt )
-
-        let url = this.wpUrl + 'wp-json/appp/v1/in-app-purchase-validate'
-
-        let data = {
-          sec: 'jk39DLKj!',
-          receipt: JSON.stringify( receipt ),
-          username: username,
-          product_id: productId
-        }
-
-        this.http.post( url, data, this.httpOptions )
-          .subscribe(response => {
-
-            console.log('server response', response)
-            resolve( response );
-
-          },
-          error => {
-            reject( error )
-            // probably a bad url or 404
-            console.log(error);
-          })
-
-      });
-
-    })
-
-  } */
-
   // a much simpler way to check iOS iap status using status update notifications
   // the server handles everything, we just check periodically for a boolean status
+  // Returns: boolean
   getSubscriptionStatus( user_id ) {
 
     return new Promise( (resolve, reject) => {
@@ -476,6 +299,8 @@ export class IAP {
       this.iap.restorePurchases().then( result => {
 
         console.log('Restore purchase android', result)
+
+        // when an Android subscription expires, restorePurchases is empty. We still send to the server
 
         // send receipts to server to validate
         this.validateAndroidRemotely( user_id, result, productId ).then( validity => {
