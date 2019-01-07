@@ -65,7 +65,7 @@
 
           <h2 *ngIf="item.title && item.title.rendered" [innerHTML]="item.title.rendered"></h2>
 
-          <p class="downloaded-text" *ngIf="item.downloaded">Downloaded</p>
+          <p class="downloaded-text" *ngIf="item.downloaded">{{ 'Downloaded' | translate }}</p>
 
           <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_title" [innerHTML]="item.appp.post_list.below_title"></div>
 
@@ -90,7 +90,7 @@
 
 <ion-footer>
   <ion-toolbar color="light" *ngIf="loadProgress > 0">
-    <p align="center">Downloading...</p>
+    <p align="center">{{ 'Downloading...' || translate }}</p>
     <div class="progress-outer">
         <div class="progress-inner" [style.width]="loadProgress + '%'">
             {{loadProgress}}%

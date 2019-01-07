@@ -250,15 +250,21 @@ export class BpList implements OnInit {
 
   setupSegments() {
 
+    let translateAll = this.translate.instant('All');
+    let translateMyGroups = this.translate.instant('My Groups');
+    let translateFriends = this.translate.instant('Friends');
+    let translateMentions = this.translate.instant('Mentions');
+    let translateMe = this.translate.instant('Me');
+
     if( this.navParams.data.user_activity ) {
       this.bpSegments = null;
       this.isUserActivity = true;
     } else if( this.groupList ) {
-      this.bpSegments = [ { name: 'My Groups' },{ name: 'All' } ];
+      this.bpSegments = [ { name: translateMyGroups },{ name: translateAll } ];
     } else if( this.activityList ) {
-      this.bpSegments = [ { name: 'All' }, { name: 'Friends' }, { name: 'Mentions' }, { name: 'Me' } ];
+      this.bpSegments = [ { name: translateAll }, { name: translateFriends }, { name: translateMentions }, { name: translateMe } ];
     } else if( this.memberList ) {
-      this.bpSegments = [ { name: 'All' }, { name: 'Friends' } ];
+      this.bpSegments = [ { name: translateAll }, { name: translateFriends } ];
     }
 
     // no segments in group activity

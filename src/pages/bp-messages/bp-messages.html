@@ -37,7 +37,7 @@
 
   <ion-item *ngIf="messageSegments" id="favorites-toolbar" color="light">
 
-    <ion-select [(ngModel)]="segment" (ionChange)="segmentChanged()" placeholder="Inbox">
+    <ion-select [(ngModel)]="segment" (ionChange)="segmentChanged()" placeholder="{{ 'Inbox' | translate }}">
 
       <ion-option *ngFor="let segment of messageSegments" [value]="segment.name">{{ segment.name | translate }}</ion-option>
 
@@ -63,7 +63,7 @@
             <img *ngIf="!thread.sender_data || !thread.sender_data.avatar" src="assets/default.png">
           </ion-avatar>
           <p *ngIf="thread.sender_data && thread.sender_data.name"><strong>{{ thread.sender_data.name }}</strong></p>
-          <p class="message-preview"><strong *ngIf="thread.subject && thread.subject != 'undefined'" [innerHTML]="getSubject( thread.subject )"></strong> <span [innerHTML]=" thread.message"></span></p>
+          <p class="message-preview"><strong *ngIf="thread.subject && thread.subject != 'undefined'" [innerHTML]="getSubject( thread.subject )"></strong> <span [innerHTML]="thread.message"></span></p>
           <p *ngIf="thread.date" class="message-date">{{ thread.date }}</p>
           
         </ion-item>

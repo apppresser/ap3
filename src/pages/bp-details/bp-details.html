@@ -69,7 +69,7 @@
 
 				<span class="comment-name" [innerHTML]="comment.title" *ngIf="comment.title && !comment.display_name"></span>
 
-				<span class="comment-content" [innerHTML]="comment.content"></span>
+				<span class="comment-content" [innerHTML]="comment.content | doLinks"></span>
 
 			</ion-card-content>
 

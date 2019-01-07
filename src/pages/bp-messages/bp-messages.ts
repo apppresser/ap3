@@ -244,8 +244,11 @@ export class BpMessages {
   }
 
   setupSegments() {
+    
+    let translateInbox = this.translate.instant('Inbox');
+    let translateSent  = this.translate.instant('Sent');
 
-    this.messageSegments = [ { name: 'Inbox', value: 'inbox' },{ name: 'Sent', value: 'sentbox' } ];
+    this.messageSegments = [ { name: translateInbox, value: 'inbox' },{ name: translateSent, value: 'sentbox' } ];
 
     // fixes iphoneX status bar padding
     this.customClasses += ' has-favorites';
