@@ -29,7 +29,9 @@ export class IAP {
     ) {
 
     let item = window.localStorage.getItem( 'myappp' );
-    this.wpUrl = JSON.parse( item ).wordpress_url;
+
+    if( item )
+      this.wpUrl = JSON.parse( item ).wordpress_url;
 
     this.httpOptions = {
       headers: new HttpHeaders({
