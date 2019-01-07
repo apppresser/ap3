@@ -22,7 +22,7 @@
 
       <ion-label *ngIf="!recipientArr?.length">To:</ion-label>
 
-      <ion-select *ngIf="recipientArr?.length" [(ngModel)]="recipients" (ionChange)="recipientSelected()" name="recipients" placeholder="To:">
+      <ion-select *ngIf="recipientArr?.length" [(ngModel)]="recipients" (ionChange)="recipientSelected()" name="recipients" placeholder="{{ 'To:' | translate }}'">
 
         <ion-option *ngFor="let recipient of recipientArr" [value]="recipient.id">{{recipient.mention_name}}</ion-option>
 
@@ -31,7 +31,7 @@
     </ion-item>
 
     <ion-item *ngIf="isMessage">
-      <ion-input type="text" [(ngModel)]="activity.subject" name="subject" placeholder="Subject"></ion-input>
+      <ion-input type="text" [(ngModel)]="activity.subject" name="subject" placeholder="{{ 'Subject:' | translate }}"></ion-input>
     </ion-item>
     
     <ion-item>
