@@ -37,6 +37,6 @@
     <button ion-button type="submit" block>{{ 'Purchase' | translate }}</button>
   </div>
 
-  <p class="manage-subscriptions-link"><a href="https://buy.itunes.apple.com/WebObjects/MZFinance.woa/wa/manageSubscriptions" target="_system">Manage subscription</a></p>
+  <p *ngIf="isIos" class="manage-subscriptions-link"><a href="https://buy.itunes.apple.com/WebObjects/MZFinance.woa/wa/manageSubscriptions" target="_system">Manage subscription</a></p>
 
 </form>

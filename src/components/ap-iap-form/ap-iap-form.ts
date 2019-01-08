@@ -23,6 +23,7 @@ export class ApIapForm {
 
 	formData: any;
 	loading: any;
+	isIos: boolean = false;
 
 	constructor(
 		public navCtrl: NavController,
@@ -50,6 +51,10 @@ export class ApIapForm {
 
 		if( this.opens ) {
 			this.storage.set( 'iap_open_count_user_setting', this.opens )
+		}
+
+		if( this.platform.is('ios') ) {
+			this.isIos = true
 		}
 	}
 
