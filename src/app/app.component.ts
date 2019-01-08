@@ -1718,8 +1718,6 @@ export class MyApp {
   // check if there is an in app purchase
   maybeValidateIap() {
 
-    console.log('maybe validate in app purchase subscription')
-
     this.storage.get( 'iap_subscription' ).then( productId => {
 
       console.log('subscription productId', productId )
@@ -1732,18 +1730,19 @@ export class MyApp {
 
   }
 
-  // get user setting for how many opens until we validate
+  // get user setting for how many opens until we validate, default to 1 (check every app open)
   getCountSetting() {
 
     this.storage.get( 'iap_open_count_user_setting' ).then( user_count_setting => {
 
       if( !user_count_setting ) {
-        user_count_setting = 15
+        this.doOpenCount( 1 );
       } else {
         user_count_setting = parseInt( user_count_setting )
+        this.doOpenCount( user_count_setting )
       }
 
-      this.doOpenCount( user_count_setting );
+      
     })
 
   }
@@ -1759,13 +1758,8 @@ export class MyApp {
         count = data + 1
       }
 
-      console.log('open count ' + count, user_count_setting)
-
       // need username to do membership check, make sure they are logged in
       this.storage.get('user_login').then( login_data => {
-
-        // for testing, comment this out for prod
-        // count = 20
 
         if( login_data && login_data.user_id && count >= user_count_setting ) {
           this.doIapValidation( login_data.user_id )
@@ -1804,18 +1798,16 @@ export class MyApp {
 
   }
 
-  // set the open counter back so we can validate again later
+  // maybe set the open counter back so we can validate again later
   validationError() {
 
     this.storage.get( 'iap_open_count_user_setting' ).then( user_count_setting => {
 
-      if( !user_count_setting ) {
-        user_count_setting = 15
-      } else {
+      if( user_count_setting ) {
         user_count_setting = parseInt( user_count_setting )
+        this.storage.set('open_count', user_count_setting - 1 )
       }
 
-      this.storage.set('open_count', user_count_setting - 2 )
     })
 
   }

@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, ViewController, Events, ToastContr
 import { Storage } from '@ionic/storage';
 import {WPlogin} from '../../providers/wplogin/wplogin';
 import {IAP} from '../../providers/inapppurchase/inapppurchase';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'in-app-purchase',
@@ -33,7 +34,8 @@ export class ApIapForm {
 		public loadingCtrl: LoadingController,
 		public platform: Platform,
 		public iap: IAP,
-		public wplogin: WPlogin
+		public wplogin: WPlogin,
+		public translate: TranslateService
 		) {
 	}
 
@@ -112,7 +114,9 @@ export class ApIapForm {
 		}).catch( e => {
 
 			console.warn(e)
-			this.presentToast('There was a problem with your purchase, please try again.')
+			this.translate.get(e).subscribe( text => {
+				this.presentToast( e )
+			})
 
 		}).then( ()=> {
 			this.hideSpinner()
@@ -138,7 +142,10 @@ export class ApIapForm {
 		}).catch( e => {
 
 			console.warn(e)
-			this.presentToast('There was a problem with your purchase, please try again.')
+
+			this.translate.get(e).subscribe( text => {
+				this.presentToast( e )
+			})
 
 		});
 

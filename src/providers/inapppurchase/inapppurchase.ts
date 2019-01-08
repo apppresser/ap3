@@ -63,13 +63,15 @@ export class IAP {
 
       })
       .catch( err => {
-        alert(err)
+        let error = this.getErrMsg( err )
+        alert(error)
         console.log(err)
       })
 
     })
     .catch( err => {
-      alert(err)
+      let error = this.getErrMsg( err )
+       alert(error)
       console.log(err)
     })
 
@@ -96,16 +98,14 @@ export class IAP {
 
         })
         .catch( err => {
-          alert(err.errorMessage)
-          console.log(err)
-          reject()
+          let error = this.getErrMsg(err)
+          reject( error )
         })
 
       })
       .catch( err => {
-        alert(err.errorMessage)
-        console.log(err)
-        reject()
+        let error = this.getErrMsg(err)
+        reject( error )
       })
 
     }) // end promise
@@ -118,12 +118,12 @@ export class IAP {
 
     this.storage.set('iap_product_id', id)
 
-    return new Promise(resolve => {
+    return new Promise( (resolve, reject) => {
 
       this.iap.restorePurchases().then( result => {
 
         // this is an array of purchases
-        console.log( 'restore purchases result', result )
+        //console.log( 'restore purchases result', result )
 
         for (var i = 0; i < result.length; ++i) {
 
@@ -132,8 +132,6 @@ export class IAP {
           if( result[i].productId == this.productId ) {
 
             this.storage.set('iap_subscription', this.productId )
-
-            console.log('restore receipt, need original transaction id', result[i] )
 
             // we aren't using this transaction ID
             resolve( result[i].transactionId )
@@ -144,22 +142,12 @@ export class IAP {
 
         }
 
-        alert('No purchases found to restore.')
-
-        resolve(false)
+        reject( 'No purchases found to restore.' )
         
       })
       .catch( err => {
-        let error = 'Error, please try again.';
-
-        if( err && err.message ) {
-          error = err.message
-        } else if( err && err.errorMessage ) {
-          error = err.errorMessage
-        }
-
-        alert( error )
-        console.log(err)
+        let error = this.getErrMsg(err)
+        reject( error )
       })
     });
 
@@ -195,13 +183,7 @@ export class IAP {
     })
     .catch( err => {
 
-      let error = 'Error, please try again.';
-
-      if( err && err.message ) {
-        error = err.message
-      } else if( err && err.errorMessage ) {
-        error = err.errorMessage
-      }
+      let error = this.getErrMsg( err )
 
       alert( error )
       console.log(err)
@@ -244,13 +226,7 @@ export class IAP {
         
       })
       .catch( err => {
-        let error = 'Error, please try again.';
-
-        if( err && err.message ) {
-          error = err.message
-        } else if( err && err.errorMessage ) {
-          error = err.errorMessage
-        }
+        let error = this.getErrMsg( err )
 
         alert( error )
         console.log(err)
@@ -281,7 +257,8 @@ export class IAP {
           this.validateIosRemotely( user_id, productId ).then( response => {
             resolve( response )
           }).catch( err => {
-            reject(err)
+            let error = this.getErrMsg( err )
+            reject( error )
           })
 
         }
@@ -306,7 +283,8 @@ export class IAP {
         this.validateAndroidRemotely( user_id, result, productId ).then( validity => {
           resolve( validity )
         }).catch( err => {
-          reject( err )
+          let error = this.getErrMsg( err )
+          reject( error )
         })
 
           
@@ -350,7 +328,8 @@ export class IAP {
           resolve( response );
 
         },
-        error => {
+        err => {
+          let error = this.getErrMsg( err )
           reject( error )
           // probably a bad url or 404
           console.warn('validateAndroidRemotely error', error);
@@ -379,6 +358,22 @@ export class IAP {
         })
 
       })
+
+  }
+
+  getErrMsg( err ) {
+
+    let error;
+
+    if( err && err.message ) {
+      error = err.message
+    } else if( err && err.errorMessage ) {
+      error = err.errorMessage
+    } else {
+      error = err
+    }
+
+    return error;
 
   }
 
