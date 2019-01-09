@@ -5,6 +5,9 @@
   <span (tap)="doRefresh()">{{ 'Refresh' | translate }}</span>
 </div>
 
+<div [ngClass]="showItemsCss">
+	<h3 *ngIf="title">{{ title | translate }}</h3>
+
 <ion-list *ngIf="card">
 
     <ion-card (click)="loadDetail(item)" *ngFor="let item of items">
@@ -68,6 +71,10 @@
     </ion-item-sliding>
 
 </ion-list>
+
+  <ng-content></ng-content>
+
+</div>
 
 <ion-infinite-scroll *ngIf="infiniteScroll" (ionInfinite)="loadMore($event)">
 <ion-infinite-scroll-content></ion-infinite-scroll-content>
