@@ -16,18 +16,20 @@ export class GlobalVars {
   // url should be WP site with AP installed, dynamically changes based on build form
   appid: string = '[[appp_app_id]]';
   apiurl: string = '[[myappp_url]]'
-  endpoint: string = 'wp-json/ap3/v1/app/[[appp_app_id]]';
-  api: string = this.apiurl + this.endpoint;
+  endpoint: string = 'wp-json/ap3/v1/app/';
+  api: string;
 
-  constructor( public http: Http ) {}
-
-  getApi() {
-
+  constructor( public http: Http ) {
     // development API
     if( window.location && window.location.href && window.location.href.indexOf('localhost') >=0 ) {
-      return 'https://myapppresser.local/test/wp-json/ap3/v1/app/764'
+      this.appid = '764';
+      this.apiurl = 'https://myapppresser.local/test/';
     }
+    this.endpoint += this.appid;
+    this.api = this.apiurl + this.endpoint
+  }
 
+  getApi() {
     return this.api;
   }
 
