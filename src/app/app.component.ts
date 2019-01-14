@@ -442,8 +442,11 @@ export class MyApp {
     this.showingIntro = true;
 
     let page_id = this.getPageIdBySlug(slug);
-    if(!page_id) {
-      page_id = this.getTabIndexBySlug(slug);
+    if(!page_id && this.tabs.length) {
+      let tab_menu_index = this.getTabIndexBySlug(slug);
+      if( tab_menu_index === 0 || tab_menu_index ) {
+        page_id = this.tabs[tab_menu_index];
+      }
     }
 
     if(page_id) {
