@@ -27,7 +27,7 @@
   </ion-item>
 </ion-toolbar>
 
-<ion-list *ngIf="card">
+<ion-list *ngIf="card && card != 'false'">
 
     <ion-card *ngFor="let item of items">
 
@@ -71,7 +71,7 @@
 
 </ion-list>
 
-<ion-list *ngIf="!card">
+<ion-list *ngIf="card == 'false'">
 
 	<ion-item *ngFor="let item of items">
 
