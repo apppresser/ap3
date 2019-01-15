@@ -38,6 +38,7 @@ import { MenuService } from "../providers/menus/menu.service";
 import {Iframe} from "../pages/iframe/iframe";
 import { Language } from '../models/language.model';
 import { DocumentDirection } from 'ionic-angular/umd/platform/platform';
+import { ErrorLogService } from '../providers/appdata/error-log.service';
 
 /**
  * Customizable options for our
@@ -119,6 +120,7 @@ export class MyApp {
     private menuservice: MenuService,
     private analyticsservice: AnalyticsService,
     private download: Download,
+    private errorlogs: ErrorLogService,
     public iab: InAppBrowser
   ) {
 
@@ -309,6 +311,9 @@ export class MyApp {
       console.log('no analytics: missing tracking_id');
     }
 
+    if(data.error_logs) {
+      this.errorlogs.enableLogging(data.error_logs.timestamp, data.error_logs.token);
+    }
   }
 
   loadMenu(data) {
