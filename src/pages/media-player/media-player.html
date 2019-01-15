@@ -17,7 +17,7 @@
 
     <pdf-viewer *ngIf="isPdf" [src]="pdfSrc" [original-size]="false" [render-text]="false" style="display: block;max-width:100%"></pdf-viewer>
 
-    <vg-player *ngIf="showVideoPlayer">
+    <vg-player *ngIf="showVideoPlayer" (onPlayerReady)="onPlayerReady($event)">
         <vg-overlay-play [ngStyle]="{'background-image': 'url(' + image + ')'}"></vg-overlay-play>
         <vg-buffering></vg-buffering>
 
@@ -44,7 +44,7 @@
             <vg-fullscreen></vg-fullscreen>
         </vg-controls>
 
-        <video [vgMedia]="media" #media preload="auto" crossorigin autoplay>
+        <video [vgMedia]="media" #media preload="auto" crossorigin>
             <source [src]="source">
         </video>
     </vg-player>

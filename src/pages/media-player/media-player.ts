@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {NavParams, ViewController, IonicPage} from 'ionic-angular';
 import {AnalyticsService} from '../../providers/analytics/analytics.service';
+import { VgAPI } from 'videogular2/core';
 
 @IonicPage()
 @Component({
@@ -10,12 +11,17 @@ import {AnalyticsService} from '../../providers/analytics/analytics.service';
 export class MediaPlayer {
 
   source: any;
+  source_index: any;
+  sources: any;
+  autoPlay: boolean = false;
+  playList: 
   image: any;
   title: string = '';
   showVideoPlayer: boolean = true;
   imageSrc: string;
   isPdf: boolean = false;
   pdfSrc: any;
+  api: VgAPI;
 
   constructor( 
     public navParams: NavParams, 
@@ -24,6 +30,9 @@ export class MediaPlayer {
     ) {
     this.source = navParams.get('source');
     this.image = navParams.get('image');
+    this.source_index = navParams.get('index');
+    this.sources = navParams.get('sources');
+    this.autoPlay = navParams.get('autoPlay');
 
     if(this.navParams.get('title')) {
       this.title = this.navParams.get('title');
@@ -52,6 +61,34 @@ export class MediaPlayer {
       this.ga.trackScreenView('MediaPlayer', action + '/' + this.source);
     }
   }
+
+  onPlayerReady(api: VgAPI) {
+
+    console.log('onPlayerReady autoPlay', this.autoPlay);
+
+    this.api = api;
+
+    this.api.getDefaultMedia().subscriptions.loadedMetadata.subscribe(this.playMedia.bind(this));
+
+    if(this.autoPlay) {
+      this.api.getDefaultMedia().subscriptions.ended.subscribe(this.nextMedia.bind(this));
+    }
+  }
+
+  playMedia() {
+    this.api.play();
+  }
+
+  nextMedia() {
+    console.log('play the next media', this.sources, this.source_index+1);
+    if( this.sources[this.source_index+1] ) {
+      console.log('now play', this.sources[this.source_index+1]);
+      this.source_index++;
+      this.source = this.sources[this.source_index];
+      this.api.
+      this.playMedia();
+    }
+}
 
   // https://github.com/VadimDez/ng2-pdf-viewer/issues/180
   loadPdf() {

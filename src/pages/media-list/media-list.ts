@@ -33,6 +33,7 @@ export class MediaList implements OnInit {
   cardlist: boolean = false;
   downloads: any = [];
   doDownloads: boolean = false;
+  doAutoPlay: boolean = false;
   showSearch: boolean = false;
   rtlBack: boolean = false;
   networkState: any;
@@ -68,6 +69,8 @@ export class MediaList implements OnInit {
       this.doProgress(progress);
     });
 
+    console.log('MediaList navParams.data', navParams.data)
+
     this.selectedItem = navParams.data;
 
     this.route = navParams.data.list_route;
@@ -90,6 +93,10 @@ export class MediaList implements OnInit {
     if( navParams.data.allow_downloads && navParams.data.allow_downloads === "true" ) {
       this.doDownloads = true;
       this.customClasses += ' has-favorites'
+    }
+
+    if( navParams.data.auto_play_next && navParams.data.auto_play_next === "true" ) {
+      this.doAutoPlay = true;
     }
 
     this.zone = new NgZone({ enableLongStackTrace: false });
@@ -528,9 +535,9 @@ export class MediaList implements OnInit {
     })
   }
 
-  mediaModal( item ) {
+  mediaModal( item, index ) {
 
-    console.log(item)
+    console.log('MediaList.mediaModal', item, index)
 
     let url = ''
 
@@ -540,7 +547,16 @@ export class MediaList implements OnInit {
       url = item.appp_media.media_url
     }
 
-    let modal = this.modalCtrl.create('MediaPlayer', {source: url });
+    let sources = [];
+    for(let i=0;i<this.items.length;i++) {
+      if( this.items[i].downloaded && this.items[i].download_url ) {
+        sources.push(this.items[i].download_url);
+      } else {
+        sources.push(this.items[i].appp_media.media_url);
+      }
+    }
+
+    let modal = this.modalCtrl.create('MediaPlayer', {source: url, index: index, sources: sources, autoPlay: this.doAutoPlay});
     modal.present();
 
   }
