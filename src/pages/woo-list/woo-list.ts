@@ -24,6 +24,7 @@ export class WooList {
 	title: string;
 	stopLoop: boolean = false;
 	showingSavedItems: boolean = false;
+	card: boolean = true;
 
 	constructor(
 		public navCtrl: NavController, 
@@ -44,6 +45,10 @@ export class WooList {
 
 		if( this.navParams.get('search') == true ) {
 			this.showSearch = true;
+		}
+
+		if( this.navParams.get('card') ) {
+			this.card = this.navParams.get('card')
 		}
 
 		// console.log('route ' + this.route)

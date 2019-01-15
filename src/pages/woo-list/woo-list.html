@@ -45,7 +45,7 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
   
-  <ion-list class="woocommerce-list">
+  <ion-list class="woocommerce-list" *ngIf="card && card !='false'">
 
     <ion-card *ngFor="let item of items">
 
@@ -96,6 +96,37 @@
       </div>
 
     </ion-card>
+
+  </ion-list>
+
+  <ion-list *ngIf="card && card == 'false'">
+
+    <ion-item *ngFor="let item of items">
+
+        <button ion-button item-end *ngIf="wishlist" icon-only color="danger" clear (tap)="removeSavedItem(item)"><ion-icon name="close-circle"></ion-icon></button>
+
+        <ion-thumbnail class="product-thumbnail" (tap)="loadDetail(item)" item-start *ngIf="item.images">
+          <img *ngIf="item.images[0] && item.images[0].src" src="{{item.images[0].src}}">
+          <img *ngIf="!item.images[0]" src="assets/woo-default.png">
+        </ion-thumbnail>
+
+        <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.above_title" [innerHTML]="item.appp.woo_list.above_title"></div>
+
+        <h2 (tap)="loadDetail(item)" *ngIf="item.name" [innerHTML]="item.name"></h2>
+
+        <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.below_title" [innerHTML]="item.appp.woo_list.below_title"></div>
+
+        <p (tap)="loadDetail(item)" *ngIf="item.price_html" class="product-price" [innerHTML]="item.price_html"></p>
+
+        <p (tap)="loadDetail(item)" *ngIf="!item.price_html && item.price" class="product-price">{{ item.price }}</p>
+
+        <p *ngIf="item.description" (tap)="loadDetail(item)" [innerHTML]="item.description" class="product-description"></p>
+
+        <star-rating *ngIf="!wishlist" [rating]="item.average_rating"></star-rating>
+
+        <div *ngIf="item.appp && item.appp.woo_list && item.appp.woo_list.below_content" [innerHTML]="item.appp.woo_list.below_content"></div>
+
+      </ion-item>
 
   </ion-list>
 

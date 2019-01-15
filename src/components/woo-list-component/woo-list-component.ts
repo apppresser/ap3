@@ -87,7 +87,7 @@ export class WooListComponent implements OnInit {
 	}
 
 	searchIconEvent() {
-		this.events.publish( 'show_search_icon', { route: this.route } )
+		this.events.publish( 'show_search_icon', { route: this.route, card: this.card } )
 	}
 
 	// get posts from storage when we are offline
