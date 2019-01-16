@@ -80,12 +80,14 @@ export class MediaPlayer {
   }
 
   nextMedia() {
+
+    // https://github.com/videogular/videogular2-showroom/blob/master/src/app/smart-playlist/smart-playlist.component.html
+
     console.log('play the next media', this.sources, this.source_index+1);
     if( this.sources[this.source_index+1] ) {
       console.log('now play', this.sources[this.source_index+1]);
       this.source_index++;
       this.source = this.sources[this.source_index];
-      this.api.
       this.playMedia();
     }
 }
