@@ -118,6 +118,7 @@ export class ApIapForm {
 		if( fields.restore === true ) {
 
 			this.iap.restorePurchase( id, fields ).then( result => {
+
 				this.presentToast('Purchase restored!')
 
 				if( fields.removeAds === true ) {
@@ -132,11 +133,7 @@ export class ApIapForm {
 
 			this.iap.buy( id, fields ).then( result => {
 
-				if( fields.removeAds === true ) {
-	              this.removeAppAds()
-	            }
-
-				this.presentToast('Purchase successful, thank you!')
+				this.purchaseSuccess( result, fields )
 
 			}).catch( err => {
 
@@ -158,13 +155,7 @@ export class ApIapForm {
 
 			console.log('purchase transactionId', transactionId)
 
-			// log the user in after purchase
-			this.handleWpLogin( fields, transactionId )
-
-			// maybe remove ads
-			if( fields.removeAds === true ) {
-			  this.removeAppAds()
-			}
+			this.purchaseSuccess( transactionId, fields )
 
 		}).catch( e => {
 
@@ -210,6 +201,27 @@ export class ApIapForm {
 
 	}
 
+	purchaseSuccess( transactionId, fields ) {
+
+		// in some cases we don't need to communicate with WP, like for removing ads
+		if( this.noLogin === "true" ) {
+
+			this.translate.get( 'Purchase successful, thank you!' ).subscribe( text => {
+				this.presentToast( text )
+			})
+			
+		} else {
+			// log the user in after purchase
+			this.handleWpLogin( fields, transactionId )
+		}
+
+		// maybe remove ads
+		if( fields.removeAds === true ) {
+		  this.removeAppAds()
+		}
+
+	}
+
 	// send the data to WP
 	// if the user doesn't exist, register them
 	// log them in and add user meta of in_app_purchase = true
@@ -222,7 +234,9 @@ export class ApIapForm {
 
 		this.showSpinner()
 
-		this.presentToast('Purchase successful! Logging you in...')
+		this.translate.get( 'Purchase successful! Logging you in...' ).subscribe( text => {
+			this.presentToast( text )
+		})
 
 		this.wplogin.iapRegisterLogIn( userData, transactionId ).then( data => {
 
@@ -248,7 +262,9 @@ export class ApIapForm {
 		this.storage.set( 'user_login', login_data )
 		this.events.publish('user:login', login_data )
 
-		this.presentToast("Success! Please use the app menu to access your content.")
+		this.translate.get( "Success! Please use the app menu to access your content." ).subscribe( text => {
+			this.presentToast( text )
+		})
 
 	}
 
