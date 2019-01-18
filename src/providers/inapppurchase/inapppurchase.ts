@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {Device} from '@ionic-native/device';
 import {InAppPurchase} from '@ionic-native/in-app-purchase';
 import {Storage} from '@ionic/storage';
-import {AppAds} from '../appads/appads';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import {Platform} from 'ionic-angular';
@@ -22,7 +21,6 @@ export class IAP {
 
   constructor( 
     private iap: InAppPurchase,
-    public appads: AppAds,
     public storage: Storage,
     public http: HttpClient,
     public platform: Platform
@@ -41,39 +39,90 @@ export class IAP {
 
   }
 
-  // buy a product, requires ID that looks like this: com.artofmanliness.artofmanliness.noadssubscription
-  buy( id, login = false, form = null ) {
+  // buy a product
+  buy( id, form = null ) {
 
-    this.storage.set('iap_product_id', id)
+    return new Promise( ( resolve, reject ) => {
 
-    // we have to get products before we can buy
-    this.iap.getProducts( [ id ] ).then( products => {
+      // we have to get products before we can buy
+      this.iap.getProducts( [ id ] ).then( products => {
 
-      // after we get product, buy it
-      this.iap.buy( id ).then( result => {
+        // after we get product, buy it
+        this.iap.buy( id ).then( result => {
 
-        this.storage.get('iap_purchase_ids').then( ids => {
-          if( ids ) {
-            ids.push(id)
-          } else {
-            ids = [id]
-          }
-          this.storage.set('iap_purchase_ids', ids )
+          this.storage.get('iap_purchase_ids').then( ids => {
+            if( ids ) {
+              ids.push(id)
+            } else {
+              ids = [id]
+            }
+            this.storage.set('iap_purchase_ids', ids )
+          })
+
+          resolve( result )
+
+        })
+        .catch( err => {
+          let error = this.getErrMsg( err )
+          reject(error)
+          console.log(err)
         })
 
       })
       .catch( err => {
         let error = this.getErrMsg( err )
-        alert(error)
+        reject(error)
         console.log(err)
       })
 
-    })
-    .catch( err => {
-      let error = this.getErrMsg( err )
-       alert(error)
-      console.log(err)
-    })
+    }) // end promise
+
+  }
+
+  // generic restore purchase
+  restorePurchase( id, form = null ) {
+
+    console.log('restore ' + id, form)
+
+    this.productId = id;
+
+    return new Promise( ( resolve, reject ) => {
+
+      this.iap.restorePurchases().then( result => {
+
+        for (var i = 0; i < result.length; ++i) {
+
+          // TODO: check result[i].state for cancelled or refunded
+
+          if( result[i].productId == this.productId ) {
+
+            this.storage.get('iap_purchase_ids').then( ids => {
+              if( ids ) {
+                ids.push(this.productId)
+              } else {
+                ids = [this.productId]
+              }
+              this.storage.set('iap_purchase_ids', ids )
+            })
+
+            resolve(result)
+
+            return;
+
+          }
+
+        }
+
+        reject("No purchases found to restore.")
+        
+      })
+      .catch( err => {
+        let error = this.getErrMsg( err )
+
+        reject( error )
+        console.log(err)
+      })
+    });
 
   }
 
@@ -154,86 +203,40 @@ export class IAP {
   }
 
   // buy a product, then remove ads. Used in AOM app
-  subscribeNoAds( id ) {
+  // subscribeNoAds( id ) {
 
-    // we have to get products before we can buy
-    this.iap.getProducts( [ id ] ).then( products => {
+  //   // we have to get products before we can buy
+  //   this.iap.getProducts( [ id ] ).then( products => {
 
-      // after we get product, buy it
-      this.iap.subscribe( id ).then( result => {
+  //     // after we get product, buy it
+  //     this.iap.subscribe( id ).then( result => {
 
-        this.storage.set('purchased_ad_removal', true )
+  //       this.removeAds()
 
-        this.appads.hideAll();
+  //     })
+  //     .catch( err => {
+  //       let error = 'Error, please try again.';
 
-      })
-      .catch( err => {
-        let error = 'Error, please try again.';
+  //       if( err && err.message ) {
+  //         error = err.message
+  //       } else if( err && err.errorMessage ) {
+  //         error = err.errorMessage
+  //       }
 
-        if( err && err.message ) {
-          error = err.message
-        } else if( err && err.errorMessage ) {
-          error = err.errorMessage
-        }
+  //       alert( error )
+  //       console.log(err)
+  //     })
 
-        alert( error )
-        console.log(err)
-      })
+  //   })
+  //   .catch( err => {
 
-    })
-    .catch( err => {
+  //     let error = this.getErrMsg( err )
 
-      let error = this.getErrMsg( err )
+  //     alert( error )
+  //     console.log(err)
+  //   })
 
-      alert( error )
-      console.log(err)
-    })
-
-  }
-
-  // used in AOM app
-  restoreNoAds( id ) {
-
-    this.productId = id;
-
-    return new Promise(resolve => {
-
-      this.iap.restorePurchases().then( result => {
-
-        for (var i = 0; i < result.length; ++i) {
-
-          // TODO: check result[i].state for cancelled or refunded
-
-          if( result[i].productId == this.productId ) {
-
-            this.storage.set('purchased_ad_removal', true )
-
-            this.appads.hideAll();
-
-            alert("Purchase restored, thank you!")
-
-            resolve(result)
-
-            return;
-
-          }
-
-        }
-
-        alert('No purchases found to restore.')
-
-        resolve(result)
-        
-      })
-      .catch( err => {
-        let error = this.getErrMsg( err )
-
-        alert( error )
-        console.log(err)
-      })
-    });
-
-  }
+  // }
 
   // a much simpler way to check iOS iap status using status update notifications
   // the server handles everything, we just check periodically for a boolean status

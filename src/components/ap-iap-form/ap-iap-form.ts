@@ -4,6 +4,7 @@ import { Storage } from '@ionic/storage';
 import {WPlogin} from '../../providers/wplogin/wplogin';
 import {IAP} from '../../providers/inapppurchase/inapppurchase';
 import {TranslateService} from '@ngx-translate/core';
+import {AppAds} from '../../providers/appads/appads';
 
 @Component({
   selector: 'in-app-purchase',
@@ -17,9 +18,11 @@ export class ApIapForm {
 	@Input() firstName: boolean = false
 	@Input() lastName: boolean = false
 	@Input() currencySymbol: string = "$"
-	@Input() isSubscription: boolean = true
+	@Input() isSubscription: any
 	@Input() opens: number
 	@Input() secret: string
+	@Input() removeAds: boolean = false
+	@Input() noLogin: string
 
 	formData: any;
 	loading: any;
@@ -36,7 +39,8 @@ export class ApIapForm {
 		public platform: Platform,
 		public iap: IAP,
 		public wplogin: WPlogin,
-		public translate: TranslateService
+		public translate: TranslateService,
+		public appads: AppAds
 		) {
 	}
 
@@ -75,12 +79,21 @@ export class ApIapForm {
 
 		console.log(fields)
 
-		if( !fields.username || !fields.password || !fields.email ) {
-			this.presentToast('Please fill out all fields.')
-			return;
+		if( this.noLogin != 'true' ) {
+
+			// only validate if fields are needed
+			if( !fields.username || !fields.password || !fields.email ) {
+				this.presentToast('Please fill out all fields.')
+				return;
+			}
+
 		}
 
-		if( this.isSubscription ) {
+		if( this.removeAds ) {
+			fields.removeAds = true
+		}
+
+		if( this.isSubscription != "false"  ) {
 
 			// are we restoring a purchase?
 			if( fields.restore === true ) {
@@ -90,14 +103,47 @@ export class ApIapForm {
 			}
 			
 		} else {
-			this.buyProduct()
+
+			this.buyProduct( fields )
+			
 		}
 
 	}
 
-	buyProduct() {
+	buyProduct( fields ) {
+		console.log('buyProduct', fields)
+
 		let id = this.getProductId()
-		this.iap.buy( id );
+
+		if( fields.restore === true ) {
+
+			this.iap.restorePurchase( id, fields ).then( result => {
+				this.presentToast('Purchase restored!')
+
+				if( fields.removeAds === true ) {
+	              this.removeAppAds()
+	            }
+
+			}).catch( err => {
+				this.presentToast("There was a problem with your purchase " + err )
+			})
+
+		} else {
+
+			this.iap.buy( id, fields ).then( result => {
+
+				if( fields.removeAds === true ) {
+	              this.removeAppAds()
+	            }
+
+				this.presentToast('Purchase successful, thank you!')
+
+			}).catch( err => {
+
+				this.presentToast("There was a problem with your purchase " + err )
+
+			})
+		}
 	}
 
 	subscribe( fields ) {
@@ -115,6 +161,10 @@ export class ApIapForm {
 			// log the user in after purchase
 			this.handleWpLogin( fields, transactionId )
 
+			// maybe remove ads
+			if( fields.removeAds === true ) {
+			  this.removeAppAds()
+			}
 
 		}).catch( e => {
 
@@ -141,6 +191,10 @@ export class ApIapForm {
 			if( transactionId ) {
 				// log the user in after purchase
 				this.handleWpLogin( fields, null )
+
+				if( fields.removeAds === true ) {
+	              this.removeAppAds()
+	            }
 			}
 
 
@@ -160,6 +214,11 @@ export class ApIapForm {
 	// if the user doesn't exist, register them
 	// log them in and add user meta of in_app_purchase = true
 	handleWpLogin( userData, transactionId ) {
+
+		// in some cases we don't need to communicate with WP, like for removing ads
+		if( this.noLogin === "true" ) {
+			return;
+		}
 
 		this.showSpinner()
 
@@ -190,6 +249,16 @@ export class ApIapForm {
 		this.events.publish('user:login', login_data )
 
 		this.presentToast("Success! Please use the app menu to access your content.")
+
+	}
+
+	removeAppAds() {
+
+		console.log('removing app ads')
+
+		this.storage.set('purchased_ad_removal', true )
+
+		this.appads.hideAll();
 
 	}
 

@@ -12,17 +12,17 @@
       <ion-input ngModel name="last" type="text"></ion-input>
     </ion-item>
 
-    <ion-item *ngIf="email" class="ap-form-email">
+    <ion-item *ngIf="email && noLogin != 'true'" class="ap-form-email">
       <ion-label>{{ 'Your Email' | translate }}</ion-label>
       <ion-input ngModel name="email" type="email"  autocomplete="true"></ion-input>
     </ion-item>
 
-    <ion-item class="ap-form-text">
+    <ion-item *ngIf="noLogin != 'true'" class="ap-form-text">
       <ion-label>{{ 'Username' | translate }}</ion-label>
       <ion-input ngModel name="username" type="text"  autocorrect="off" autocapitalize="none"></ion-input>
     </ion-item>
 
-    <ion-item class="ap-form-text">
+    <ion-item *ngIf="noLogin != 'true'" class="ap-form-text">
       <ion-label>{{ 'Password' | translate }}</ion-label>
       <ion-input ngModel name="password" type="text"  autocorrect="off" autocapitalize="none"></ion-input>
     </ion-item>
@@ -37,6 +37,6 @@
     <button ion-button type="submit" block>{{ 'Purchase' | translate }}</button>
   </div>
 
-  <p *ngIf="isIos" class="manage-subscriptions-link"><a href="https://buy.itunes.apple.com/WebObjects/MZFinance.woa/wa/manageSubscriptions" target="_system">Manage subscription</a></p>
+  <p *ngIf="isIos && isSubscription != 'false'" class="manage-subscriptions-link"><a href="https://buy.itunes.apple.com/WebObjects/MZFinance.woa/wa/manageSubscriptions" target="_system">Manage subscription</a></p>
 
 </form>
