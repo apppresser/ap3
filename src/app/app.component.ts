@@ -39,6 +39,7 @@ import { IAP } from "../providers/inapppurchase/inapppurchase";
 import {Iframe} from "../pages/iframe/iframe";
 import { Language } from '../models/language.model';
 import { DocumentDirection } from 'ionic-angular/umd/platform/platform';
+import { ErrorLogService } from '../providers/appdata/error-log.service';
 
 /**
  * Customizable options for our
@@ -121,7 +122,8 @@ export class MyApp {
     private analyticsservice: AnalyticsService,
     private download: Download,
     public iab: InAppBrowser,
-    private iap: IAP
+    private iap: IAP,
+    private errorlogs: ErrorLogService,
   ) {
 
     this.initializeApp();
@@ -313,6 +315,9 @@ export class MyApp {
       console.log('no analytics: missing tracking_id');
     }
 
+    if(data.error_logs) {
+      this.errorlogs.enableLogging(data.error_logs.timestamp, data.error_logs.token);
+    }
   }
 
   loadMenu(data) {
@@ -446,8 +451,11 @@ export class MyApp {
     this.showingIntro = true;
 
     let page_id = this.getPageIdBySlug(slug);
-    if(!page_id) {
-      page_id = this.getTabIndexBySlug(slug);
+    if(!page_id && this.tabs.length) {
+      let tab_menu_index = this.getTabIndexBySlug(slug);
+      if( tab_menu_index === 0 || tab_menu_index ) {
+        page_id = this.tabs[tab_menu_index];
+      }
     }
 
     if(page_id) {

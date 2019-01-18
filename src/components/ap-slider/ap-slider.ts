@@ -30,10 +30,13 @@ export class ApSliderComponent {
 	@Input() wp: string;
 	@Input() spaceBetween: string;
 	@Input() card: boolean = false;
+	@Input() title: string;
+	@Input() hideEmpty: boolean = false;
 
 	items: any;
 	loading: any;
 	networkState: string;
+	showSlidesCss: string = 'show-slides';
 
 	constructor(
 		public nav: NavController, 
@@ -97,7 +100,9 @@ export class ApSliderComponent {
 
 		this.storage.get( this.route.substr(-10, 10) + '_slides' ).then( posts => {
 		  if( posts ) {
-		    this.items = posts;
+				this.items = posts;
+				
+				this.afterLoadItems();
 		  } else {
 				this.translate.get('No data available, pull to refresh when you are online.').subscribe( text => {
 					this.presentToast(text);
@@ -107,6 +112,12 @@ export class ApSliderComponent {
 
 	}
 
+	afterLoadItems() {
+		if(this.items.length === 0 && this.hideEmpty) {
+			this.showSlidesCss = 'hide-slides';
+		}
+	}
+
 	loadPosts() {
 
 		// any menu imported from WP has to use same component. Other pages can be added manually with different components
@@ -114,6 +125,8 @@ export class ApSliderComponent {
 
 			// Loads posts from WordPress API
 			this.items = items;
+
+			this.afterLoadItems();
 
 			this.storage.set( this.route.substr(-10, 10) + '_slides', items);
 

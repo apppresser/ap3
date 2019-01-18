@@ -1,3 +1,7 @@
+<div [ngClass]="showSlidesCss">
+	<h3 *ngIf="title">{{ title | translate }}</h3>
+
+
 <ion-slides *ngIf="!card" pager>
 
 	<ion-slide *ngFor="let item of items" [ngStyle]="{'background-image': 'url(' + ( item.featured_image_urls.large ? item.featured_image_urls.large : item.featured_image_urls.medium ) + ')'}" (click)="loadDetail(item)">
@@ -42,3 +46,6 @@
 	</ion-slide>
 
 </ion-slides>
+
+	<ng-content></ng-content>
+</div>

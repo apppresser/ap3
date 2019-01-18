@@ -1,4 +1,9 @@
 ap-list {
+
+	.hide-empty-items {
+		display: none;
+	}
+
 	.list-loading-spinner {
 	    text-align: center;
 	    margin: 5px;

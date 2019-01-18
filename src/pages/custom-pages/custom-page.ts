@@ -114,6 +114,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	toggleSearch: boolean = false;
 	searchRoute: string;
 	formData: any;
+	searchCard: any;
 
 	constructor(
 		public navParams: NavParams,
@@ -243,6 +244,7 @@ export class CustomPage implements OnInit, OnDestroy {
 			if( data && data.route ) {
 				this.showSearchIcon = true;
 				this.searchRoute = data.route
+				this.searchCard = data.card
 			}
 		})
 	}
@@ -739,7 +741,7 @@ export class CustomPage implements OnInit, OnDestroy {
 		if (val && val.trim() != '') {
 		  // set to this.route so infinite scroll works
 		  let route = this.addQueryParam( this.searchRoute, 'search=' + val);
-		  this.nav.push('WooList', { route: route, search: true })
+		  this.nav.push('WooList', { route: route, search: true, card: this.searchCard })
 		}
 	}
 

@@ -26,12 +26,15 @@ export class ApListComponent implements OnInit {
 	@Input() infiniteScroll: boolean = false;
 	@Input() wp: string;
 	@Input() refresh: boolean = false;
+	@Input() title: string;
+	@Input() hideEmpty: boolean = false;
 
 	page: number = 1;
 	items: any;
 	loading: boolean = false;
 	networkState: string;
 	favoriteItems: any;
+	showItemsCss: string = 'show-list-items';
 
 	constructor(
 		public nav: NavController, 
@@ -71,7 +74,8 @@ export class ApListComponent implements OnInit {
 
 		this.storage.get( this.route.substr(-10, 10) + '_posts' ).then( posts => {
 		  if( posts ) {
-		    this.items = posts;
+				this.items = posts;
+				this.afterLoadItems();
 		  } else {
 				this.translate.get('No data available, pull to refresh when you are online.').subscribe( text => {
 					this.presentToast(text);
@@ -91,7 +95,8 @@ export class ApListComponent implements OnInit {
 		this.postService.load( this.route, this.page ).then(items => {
 
 		  // Loads posts from WordPress API
-		  this.items = items;
+			this.items = items;
+			this.afterLoadItems();
 
 		  this.storage.set( this.route.substr(-10, 10) + '_posts', items);
 
@@ -112,6 +117,12 @@ export class ApListComponent implements OnInit {
 
 		});
 
+	}
+
+	afterLoadItems() {
+		if(this.items.length === 0 && this.hideEmpty) {
+			this.showItemsCss = 'hide-empty-items';
+		}
 	}
 
 	loadDetail(item) {
