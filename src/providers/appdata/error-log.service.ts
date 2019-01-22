@@ -38,6 +38,7 @@ export class ErrorLogService {
 			this.enableLogging(data.error_logs.timestamp, data.error_logs.token);
 			this.remoteData.sendStoredData('log-app-push', this.token);
 		} else {
+			console.log('error logging is [DISABLED] for myapppresser.com');
 			this.clearRemoteDataLogs();
 		}
 		

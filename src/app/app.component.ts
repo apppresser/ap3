@@ -155,12 +155,6 @@ export class MyApp {
   }
 
   initializeApp() {
-
-    
-
-    let error = 'uuid: "fake uuid", deviceToken: "fake deviceToken"';
-    this.errorlogs.addLog(error, 'push');
-
     // Login status
     this.bodyTag = document.getElementsByTagName('body')[0];
     this.loginservice.loginStatus().subscribe(user => {
@@ -1064,16 +1058,9 @@ export class MyApp {
 
     push.on('registration').subscribe((data: any) => {
 
-      this.remoteData.createRemoteData(this.globalvars.getApiRoot() + '/wp-json/ap3/v1/remote/data/push/',
-        {
-          uuid: this.Device.uuid,
-          deviceToken: data.registrationId
-        },
-        {
-          type: 'push',
-          isLog: true
-        }
-      );
+      // Debugging with the error log
+      let error = `push registration of uuid: ${this.Device.uuid}, deviceToken: ${data.registrationId}`;
+      this.errorlogs.addLog(error, 'push');
 
       this.storage.set('deviceToken', data.registrationId)
 
@@ -1113,6 +1100,10 @@ export class MyApp {
     });
 
     push.on('notification').subscribe((data: any) => {
+
+      // Debugging with the error log
+      let error = 'notification received: ' + JSON.stringify(data);
+      this.errorlogs.addLog(error, 'push');
 
       let isAppPushPostURL = ( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 && data.additionalData.target && data.additionalData.target == '_self' );
       let isAppPushCustomURL = ( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 );
@@ -1171,7 +1162,7 @@ export class MyApp {
     });
 
     push.on('error').subscribe((e) => {
-      this.errorlogs.addLog('error '+e.message, 'push');
+      this.errorlogs.addLog('notification error: '+e.message, 'push');
       console.log(e.message);
     });
 
