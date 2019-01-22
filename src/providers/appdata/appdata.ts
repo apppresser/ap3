@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import 'rxjs/add/operator/map';
 import {Device} from '@ionic-native/device';
+import { ErrorLogService } from './error-log.service';
 
 /* 
 // on first load, use app-data.json file and save to localstorage.
@@ -15,7 +16,10 @@ export class AppData {
   updateNeeded: boolean = false;
   notAuthorized: boolean = false;
 
-  constructor(public http: Http, private Device: Device) {
+  constructor(
+    private errorlogs: ErrorLogService,
+    public http: Http,
+    private Device: Device) {
   }
 
   /*
@@ -135,6 +139,8 @@ export class AppData {
 
   /* 
    * When you click "go live" in the app builder, it increments the update version, and this function tells the app to get new data on the next load.
+   * 
+   * New!!! Maybe start debug logging; no sense calling the API multiple times to get the same data
    */
   checkForUpdates( apiurl ) {
 
@@ -151,6 +157,9 @@ export class AppData {
     this.http.get( apiurl )
       .map(res => res.json())
       .subscribe(data => {
+
+        this.errorlogs.init(data);
+
         // we've got back the raw data, now generate the core schedule data
         // and save the data for later reference
         if( this.local && this.local.meta && data.meta && this.local.meta.app_update_version != data.meta.app_update_version ) {
