@@ -6,6 +6,7 @@ import {GlobalVars} from '../globalvars/globalvars';
 
 import {Device} from '@ionic-native/device';
 import {Storage} from '@ionic/storage';
+import { ErrorLogService } from '../appdata/error-log.service';
 
 declare var AWS:any;
 
@@ -26,6 +27,7 @@ export class PushService {
     public http: Http, 
     public globalvars: GlobalVars,
     public storage: Storage,
+    private errorlogs: ErrorLogService,
     private Device: Device
     ) {
   }
@@ -42,13 +44,19 @@ export class PushService {
 
     return new Promise(resolve => {
 
+      this.errorlogs.addLog('subscribeDevice ' + this.api + params, 'push');
+
       this.http.post( this.api + params, null, null )
         .map(res => res.json())
         .subscribe(
           data => {
+            this.errorlogs.addLog('subscribeDevice response ' + data, 'push');
           resolve(data);
           },
-          error => console.warn('subscribeDevice error' + error) 
+          error => {
+            console.warn('subscribeDevice error' + error);
+            this.errorlogs.addLog('subscribeDevice error' + error, 'push');
+          }
         );
     });
   }
