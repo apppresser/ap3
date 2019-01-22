@@ -51,7 +51,9 @@ import { MenuService } from "../providers/menus/menu.service";
 import { NetworkStatusService } from "../providers/network/network-status.service";
 import { Angulartics2GoogleAnalytics } from 'angulartics2/ga';
 import { Angulartics2RouterlessModule } from 'angulartics2/routerlessmodule';
-import { AnalyticsService } from '../providers/analytics/analytics.service'
+import { AnalyticsService } from '../providers/analytics/analytics.service';
+import { ErrorLogService } from "../providers/appdata/error-log.service";
+import { RemoteDataService } from "../providers/appdata/remote-data";
 
 import {Iframe} from "../pages/iframe/iframe";
 
@@ -114,6 +116,8 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     AppGeo,
     LoginService,
     LanguageService,
+    ErrorLogService,
+    RemoteDataService,
     Logins,
     WPlogin,
     HeaderLogo,
