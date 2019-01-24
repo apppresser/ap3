@@ -540,7 +540,13 @@ export class MediaList implements OnInit {
       url = item.appp_media.media_url
     }
 
-    let modal = this.modalCtrl.create('MediaPlayer', {source: url });
+    let data = { source: url }
+
+    if( item.appp_media.media_image ) {
+      (<any>data).image = item.appp_media.media_image
+    }
+
+    let modal = this.modalCtrl.create('MediaPlayer', data );
     modal.present();
 
   }
