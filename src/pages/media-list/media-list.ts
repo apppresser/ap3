@@ -604,7 +604,13 @@ export class MediaList implements OnInit {
 
     let title = (item.title && item.title.rendered) ? item.title.rendered : '';
     let sources: Array<IMedia> = (this.doAutoPlay) ? this.getMediaSources() : [];
-    let modal = this.modalCtrl.create('MediaPlayer', {source: url, title: title, index: index, sources: sources, autoPlay: this.doAutoPlay});
+    let data = {source: url, title: title, index: index, sources: sources, autoPlay: this.doAutoPlay};
+
+    if( item.appp_media.media_image ) {
+      (<any>data).image = item.appp_media.media_image
+    }
+
+    let modal = this.modalCtrl.create('MediaPlayer', data );
     modal.present();
 
   }
