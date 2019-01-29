@@ -8,10 +8,11 @@
 <div [ngClass]="showItemsCss">
 	<h3 *ngIf="title">{{ title | translate }}</h3>
 
+    <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_list" [innerHTML]="item.appp.post_list.above_list | sanitizeHtml"></div>
 <ion-list *ngIf="card">
 
     <ion-card (click)="loadDetail(item)" *ngFor="let item of items">
-      
+
       <div class="card-featured-wrap" *ngIf="item.featured_image_urls">
         <div class="card-featured-image" [ngStyle]="{'background-image': 'url('+ getBgImage( item ) +')'}"></div>
       </div>
@@ -73,6 +74,8 @@
 </ion-list>
 
   <ng-content></ng-content>
+
+    <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_list" [innerHTML]="item.appp.post_list.below_list | sanitizeHtml"></div>
 
 </div>
 
