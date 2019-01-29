@@ -65,6 +65,8 @@
 			</ion-col>
 		</ion-row>
 
+		<div *ngIf="userData && userData.appp && userData.appp.user_actions" [innerHTML]="userData.appp.user_actions | sanitizeHtml"></div>
+
 	</ion-card>
 
 	<ion-card class="last-activity" *ngIf="userData && userData.last_activity" (click)="userActivity( userData )">
