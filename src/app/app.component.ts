@@ -419,6 +419,7 @@ export class MyApp {
       'list_display': item.list_display,
       'favorites': item.favorites,
       'allow_downloads': item.allow_downloads,
+      'auto_play_next': item.auto_play_next,
       'extra_classes': item.extra_classes,
       'show' : item.show,
       'show_slider': item.show_slider,

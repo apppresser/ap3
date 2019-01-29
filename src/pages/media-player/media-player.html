@@ -1,9 +1,14 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-      {{ title | translate }}
+      <div [ngClass]="{'toolbar-title':true, 'toolbar-title-md':device.platform != 'iOS', 'toolbar-title-io':device.platform == 'iOS'}" [innerHTML]="title | sanitizeHtml"></div>
     </ion-title>
     <ion-buttons end>
+      <!-- remove autoplay button for PDFs -->
+      <button ion-button *ngIf="currentItem.type!=''" [ngClass]="{'autoplay-btn':true, 'deactivate':!autoPlay}" (click)="toggleAutoPlay()">
+        <span *ngIf="autoPlay">{{'Autoplay:on' | translate}}</span>
+        <span *ngIf="!autoPlay">{{'Autoplay:off' | translate}}</span>
+      </button>
       <button ion-button (click)="dismiss()">
         <ion-icon name="close"></ion-icon>
       </button>
@@ -17,8 +22,9 @@
 
     <pdf-viewer *ngIf="isPdf" [src]="pdfSrc" [original-size]="false" [render-text]="false" style="display: block;max-width:100%"></pdf-viewer>
 
-    <vg-player *ngIf="showVideoPlayer">
-        <vg-overlay-play [ngStyle]="{'background-image': 'url(' + image + ')'}"></vg-overlay-play>
+    <vg-player *ngIf="showVideoPlayer" (onPlayerReady)="onPlayerReady($event)">
+        <vg-overlay-play *ngIf="image" [ngStyle]="{'background-image': 'url(' + image + ')'}"></vg-overlay-play>
+        <vg-overlay-play *ngIf="!image"></vg-overlay-play>
         <vg-buffering></vg-buffering>
 
         <vg-scrub-bar>
@@ -44,8 +50,15 @@
             <vg-fullscreen></vg-fullscreen>
         </vg-controls>
 
-        <video [vgMedia]="media" #media preload="auto" crossorigin autoplay>
+        <!-- <video [vgMedia]="media" #media preload="auto" crossorigin>
             <source [src]="source">
+        </video> -->
+        <video #media
+           [vgMedia]="media"
+           [src]="currentItem.src"
+           id="singleVideo"
+           preload="auto"
+           crossorigin>
         </video>
     </vg-player>
 
