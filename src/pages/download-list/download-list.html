@@ -13,27 +13,31 @@
 
 <ion-content>
 
-<ion-list>
+  <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_list" [innerHTML]="item.appp.post_list.above_list | sanitizeHtml"></div>
 
-  <ion-item-sliding *ngFor="let download of downloads" #slidingItem>
+  <ion-list>
 
-    <button ion-item (click)="mediaModal(download)">
+    <ion-item-sliding *ngFor="let download of downloads" #slidingItem>
 
-      <h2>{{download.title}}</h2>
+      <button ion-item (click)="mediaModal(download)">
 
-    </button>
+        <h2>{{download.title}}</h2>
 
-    <ion-item-options side="right">
-      <button ion-button color="danger" (click)="removeDownload(download)">
-        <ion-icon name="remove-circle"></ion-icon>
-        {{ 'Delete' | translate }}
       </button>
-    </ion-item-options>
 
-  </ion-item-sliding>
+      <ion-item-options side="right">
+        <button ion-button color="danger" (click)="removeDownload(download)">
+          <ion-icon name="remove-circle"></ion-icon>
+          {{ 'Delete' | translate }}
+        </button>
+      </ion-item-options>
 
-  <ion-item *ngIf="!downloads">{{ 'No Downloads available.' | translate }}</ion-item>
+    </ion-item-sliding>
 
-</ion-list>
+    <ion-item *ngIf="!downloads">{{ 'No Downloads available.' | translate }}</ion-item>
+
+  </ion-list>
+
+  <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_list" [innerHTML]="item.appp.post_list.below_list | sanitizeHtml"></div>
 
 </ion-content>
