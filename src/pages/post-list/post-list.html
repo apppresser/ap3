@@ -49,6 +49,8 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
+  <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_slides" [innerHTML]="item.appp.post_list.above_slides | sanitizeHtml"></div>
+
   <ion-slides *ngIf="showSlider" pager>
 
     <ion-slide *ngFor="let slide of slides" [ngStyle]="{'background-image': 'url(' + (slide.featured_image_urls ? slide.featured_image_urls.large : null) + ')'}" (click)="itemTapped($event, slide)">
@@ -60,6 +62,9 @@
     </ion-slide>
 
   </ion-slides>
+
+  <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_slides" [innerHTML]="item.appp.post_list.below_slides | sanitizeHtml"></div>
+  <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_list" [innerHTML]="item.appp.post_list.above_list | sanitizeHtml"></div>
   
   <ion-list *ngIf="defaultlist">
 
@@ -124,5 +129,7 @@
   <ion-infinite-scroll (ionInfinite)="loadMore($event)">
    <ion-infinite-scroll-content></ion-infinite-scroll-content>
  </ion-infinite-scroll>
+
+  <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_list" [innerHTML]="item.appp.post_list.below_list | sanitizeHtml"></div>
 
 </ion-content>
