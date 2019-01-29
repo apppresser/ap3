@@ -48,7 +48,8 @@
   <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  
+
+  <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_list" [innerHTML]="item.appp.post_list.above_list | sanitizeHtml"></div>
   <ion-list class="media-list">
 
       <ion-item *ngFor="let item of items; let i = index">
@@ -85,6 +86,8 @@
   <ion-infinite-scroll (ionInfinite)="loadMore($event)">
    <ion-infinite-scroll-content></ion-infinite-scroll-content>
  </ion-infinite-scroll>
+
+  <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.below_list" [innerHTML]="item.appp.post_list.below_list | sanitizeHtml"></div>
 
 </ion-content>
 
