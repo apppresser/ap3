@@ -9,6 +9,7 @@ import {Network} from '@ionic-native/network';
 import {Download} from '../../providers/download/download';
 import {File} from '@ionic-native/file';
 import {TranslateService} from '@ngx-translate/core';
+import { IMedia } from "../media-player/media-player";
 
 declare var cordova:any;
 
@@ -33,6 +34,7 @@ export class MediaList implements OnInit {
   cardlist: boolean = false;
   downloads: any = [];
   doDownloads: boolean = false;
+  doAutoPlay: boolean = true;
   showSearch: boolean = false;
   rtlBack: boolean = false;
   networkState: any;
@@ -116,10 +118,12 @@ export class MediaList implements OnInit {
         this.rtlBack = true
     }
 
-    this.storage.get( this.route.substr(-10, 10) + '_downloads' ).then( (downloads) => {
-      if( downloads )
-        this.downloads = downloads
-    })
+    if( this.route ) {
+      this.storage.get( this.route.substr(-10, 10) + '_downloads' ).then( (downloads) => {
+        if( downloads )
+          this.downloads = downloads
+      })
+    }
  
   }
 
@@ -528,9 +532,67 @@ export class MediaList implements OnInit {
     })
   }
 
-  mediaModal( item ) {
+  getMediaSources() {
 
-    console.log(item)
+    let sources: Array<IMedia> = [];
+    let mediaUrl = '';
+
+    for(let i=0;i<this.items.length;i++) {
+      if( this.items[i].downloaded && this.items[i].download_url ) {
+        mediaUrl = this.items[i].download_url;
+      } else {
+        mediaUrl = this.items[i].appp_media.media_url;
+      }
+
+      
+
+      sources.push({
+        title: (this.items[i].title && this.items[i].title.rendered) ? this.items[i].title.rendered : '',
+        src: mediaUrl,
+        type: this.getMimeType(mediaUrl),
+        image: ''
+      });
+    }
+
+    return sources;
+  }
+
+  /**
+   * Tip: we use mimetype to know when to remove/stop autoplay.
+   * A PDF can't autoplay, so we don't give it a mimetype.
+   * @param mediaUrl 
+   */
+  getMimeType( mediaUrl ) {
+
+    if(!mediaUrl)
+      return '';
+
+    let fileExt = mediaUrl.split('.').pop();
+    let mimeType = '';
+
+    // .mp3, .m4a, .mov, .mp4
+    switch(fileExt) {
+      case 'mp3':
+        mimeType = 'audio/mp3';
+        break;
+      case 'mp4':
+        mimeType = 'video/mp4';
+        break;
+      case 'mov':
+        mimeType = 'video/quicktime';
+        break;
+      case 'm4a':
+        mimeType = 'audio/mp4a-latm';
+        break;
+      default:
+        mimeType = '';
+        break;
+    }
+
+    return mimeType;
+  }
+
+  mediaModal( item, index ) {
 
     let url = ''
 
@@ -540,7 +602,15 @@ export class MediaList implements OnInit {
       url = item.appp_media.media_url
     }
 
-    let modal = this.modalCtrl.create('MediaPlayer', {source: url });
+    let title = (item.title && item.title.rendered) ? item.title.rendered : '';
+    let sources: Array<IMedia> = (this.doAutoPlay) ? this.getMediaSources() : [];
+    let data = {source: url, title: title, index: index, sources: sources, autoPlay: this.doAutoPlay};
+
+    if( item.appp_media.media_image ) {
+      (<any>data).image = item.appp_media.media_image
+    }
+
+    let modal = this.modalCtrl.create('MediaPlayer', data );
     modal.present();
 
   }

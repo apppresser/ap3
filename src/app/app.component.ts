@@ -40,6 +40,7 @@ import {Iframe} from "../pages/iframe/iframe";
 import { Language } from '../models/language.model';
 import { DocumentDirection } from 'ionic-angular/umd/platform/platform';
 import { ErrorLogService } from '../providers/appdata/error-log.service';
+import { RemoteDataService } from '../providers/appdata/remote-data';
 
 /**
  * Customizable options for our
@@ -124,6 +125,7 @@ export class MyApp {
     public iab: InAppBrowser,
     private iap: IAP,
     private errorlogs: ErrorLogService,
+    private remoteData: RemoteDataService
   ) {
 
     this.initializeApp();
@@ -155,7 +157,6 @@ export class MyApp {
   }
 
   initializeApp() {
-
     // Login status
     this.bodyTag = document.getElementsByTagName('body')[0];
     this.loginservice.loginStatus().subscribe(user => {
@@ -315,9 +316,6 @@ export class MyApp {
       console.log('no analytics: missing tracking_id');
     }
 
-    if(data.error_logs) {
-      this.errorlogs.enableLogging(data.error_logs.timestamp, data.error_logs.token);
-    }
   }
 
   loadMenu(data) {
@@ -425,6 +423,7 @@ export class MyApp {
       'list_display': item.list_display,
       'favorites': item.favorites,
       'allow_downloads': item.allow_downloads,
+      'auto_play_next': item.auto_play_next,
       'extra_classes': item.extra_classes,
       'show' : item.show,
       'show_slider': item.show_slider,
@@ -1064,6 +1063,10 @@ export class MyApp {
 
     push.on('registration').subscribe((data: any) => {
 
+      // Debugging with the error log
+      let error = `push registration of uuid: ${this.Device.uuid}, deviceToken: ${data.registrationId}`;
+      this.errorlogs.addLog(error, 'push');
+
       this.storage.set('deviceToken', data.registrationId)
 
       this.regId = data.registrationId;
@@ -1084,6 +1087,17 @@ export class MyApp {
 
           this.storage.set('endpointArn', newresult.endpointArn )
 
+          this.remoteData.createRemoteData(this.globalvars.getApiRoot() + '/wp-json/ap3/v1/remote/data/push/',
+            {
+              uuid: this.Device.uuid,
+              endpointArn: newresult.endpointArn
+            },
+            {
+              type: 'push',
+              isLog: true
+            }
+          );
+
         });
 
       } );
@@ -1091,6 +1105,10 @@ export class MyApp {
     });
 
     push.on('notification').subscribe((data: any) => {
+
+      // Debugging with the error log
+      let error = 'notification received: ' + JSON.stringify(data);
+      this.errorlogs.addLog(error, 'push');
 
       let isAppPushPostURL = ( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 && data.additionalData.target && data.additionalData.target == '_self' );
       let isAppPushCustomURL = ( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 );
@@ -1119,6 +1137,9 @@ export class MyApp {
 
         // if there's an external url from apppush custom url field, open in IAB
         if(isAppPushCustomURL) {
+
+          this.errorlogs.addLog('custom url '+data.additionalData.url, 'push');
+
           this.openIab( data.additionalData.url, '_blank' );
           return;
         }
@@ -1130,10 +1151,13 @@ export class MyApp {
 
           // if page is external, fire the in app browser
           if( page.target === '_blank' ) {
+            this.errorlogs.addLog('page url '+page.url, 'push');
             this.openIab( page.url, page.target );
             return;
           }
-
+          
+          this.errorlogs.addLog('page slug '+(<any>data).additionalData.page, 'push');
+          
           // if they included an app page, load the page
           this.pushPage( (<any>data).additionalData.page );
         }
@@ -1143,6 +1167,7 @@ export class MyApp {
     });
 
     push.on('error').subscribe((e) => {
+      this.errorlogs.addLog('notification error: '+e.message, 'push');
       console.log(e.message);
     });
 
