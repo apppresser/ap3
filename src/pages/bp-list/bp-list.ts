@@ -250,11 +250,12 @@ export class BpList implements OnInit {
 
   setupSegments() {
 
-    let translateAll = this.translate.instant('All');
-    let translateMyGroups = this.translate.instant('My Groups');
-    let translateFriends = this.translate.instant('Friends');
-    let translateMentions = this.translate.instant('Mentions');
-    let translateMe = this.translate.instant('Me');
+    // Well those translations didn't work, messed up the routes
+    let translateAll = 'All'; // this.translate.instant('All');
+    let translateMyGroups = 'My Groups'; // this.translate.instant('My Groups');
+    let translateFriends = 'Friends'; // this.translate.instant('Friends');
+    let translateMentions = 'Mentions'; // this.translate.instant('Mentions');
+    let translateMe = 'Me'; // this.translate.instant('Me');
 
     if( this.navParams.data.user_activity ) {
       this.bpSegments = null;
