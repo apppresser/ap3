@@ -8,6 +8,7 @@
     "quick": "ionic-app-scripts build --webpack ./config/webpack.dev.config.js --sourceMapType eval --enableLint false",
     "serve": "ionic-app-scripts serve",
     "pages": "cd mkpages && node app",
+    "big-app-build": "node --max-old-space-size=8192 ./node_modules/@ionic/app-scripts/bin/ionic-app-scripts.js build",
     "ios": "ionic-app-scripts build && cordova build ios"
   },
   "dependencies": {
