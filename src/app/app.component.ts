@@ -657,6 +657,8 @@ export class MyApp {
     } else if( typeof(page.extra_classes) !== 'undefined' && (page.extra_classes.indexOf('loginmodal') >= 0||page.extra_classes.indexOf('logoutmodal') >= 0) ) {
       this.openLoginModal({title:page.title});
       return;
+    } else if( page.slug ) {
+      page = this.getPage( page.slug )
     }
 
     let opt = {};
@@ -1713,6 +1715,36 @@ export class MyApp {
       }
     }
 
+  }
+
+  /**
+   * Search both menus for a page
+   * 
+   * @param page_slug
+   */
+  getPage(page_slug: string) {
+
+    let menu_index: number;
+    let page: object;
+
+    menu_index = this.getMenuIndexBySlug(page_slug);
+
+    if(menu_index || menu_index === 0) {
+      return this.pages[menu_index];
+    }
+
+    menu_index = this.getTabIndexBySlug(page_slug);
+
+    if(menu_index || menu_index === 0) {
+      return this.tabs[menu_index];
+    }
+
+    // otherwise . . .
+    this.translate.get('Page not found').subscribe(text => {
+      this.presentToast(text);
+    });
+
+    return false;
   }
 
   getPageType( page ) {
