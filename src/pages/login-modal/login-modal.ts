@@ -408,7 +408,15 @@ export class LoginModal {
 
 			this.dismiss()
 
-			this.events.publish('pushpage', { url: this.api_register_setting.url, title: title, is_register_page: true } )
+			// link to custom registration url
+			if( this.api_register_setting.url.indexOf('https') >= 0 ) {
+
+				this.events.publish('pushpage', { url: this.api_register_setting.url, title: title, is_register_page: true } )
+
+			} else {
+				// link to app page, for example for in app purchases
+				this.events.publish( 'pushpage', { type: 'apppages', page_id: this.api_register_setting.url } )
+			}
 
 		}
 
