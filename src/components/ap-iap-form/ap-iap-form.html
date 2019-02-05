@@ -17,12 +17,12 @@
       <ion-input ngModel name="email" type="email"  autocomplete="true"></ion-input>
     </ion-item>
 
-    <ion-item *ngIf="noLogin != 'true'" class="ap-form-text">
+    <ion-item *ngIf="!login_data && noLogin != 'true'" class="ap-form-text">
       <ion-label>{{ 'Username' | translate }}</ion-label>
       <ion-input ngModel name="username" type="text"  autocorrect="off" autocapitalize="none"></ion-input>
     </ion-item>
 
-    <ion-item *ngIf="noLogin != 'true'" class="ap-form-text">
+    <ion-item *ngIf="!login_data && noLogin != 'true'" class="ap-form-text">
       <ion-label>{{ 'Password' | translate }}</ion-label>
       <ion-input ngModel name="password" type="text"  autocorrect="off" autocapitalize="none"></ion-input>
     </ion-item>

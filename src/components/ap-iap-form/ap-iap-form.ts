@@ -27,6 +27,7 @@ export class ApIapForm {
 	formData: any;
 	loading: any;
 	isIos: boolean = false;
+	login_data: any;
 
 	constructor(
 		public navCtrl: NavController,
@@ -42,6 +43,23 @@ export class ApIapForm {
 		public translate: TranslateService,
 		public appads: AppAds
 		) {
+
+		this.listeners()
+
+	}
+
+	listeners() {
+
+		this.events.subscribe( 'user:login', login_data => {
+			if( login_data ) {
+				this.login_data = login_data
+			}
+		})
+
+		this.events.subscribe( 'user:logout', response => {
+			this.login_data = null
+		})
+
 	}
 
 	ngAfterViewInit() {
@@ -60,6 +78,13 @@ export class ApIapForm {
 		if( this.platform.is('ios') ) {
 			this.isIos = true
 		}
+
+		this.storage.get('user_login').then( login_data => {
+
+			if( login_data )
+				this.login_data = login_data
+
+		})
 	}
 
 	// If we have 2 product IDs, get the right one
@@ -91,6 +116,10 @@ export class ApIapForm {
 
 		if( this.removeAds ) {
 			fields.removeAds = true
+		}
+
+		if( this.login_data && this.login_data.user_id ) {
+			fields.user_id = this.login_data.user_id
 		}
 
 		if( this.isSubscription != "false"  ) {
