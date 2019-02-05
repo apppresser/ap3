@@ -1700,7 +1700,7 @@ export class MyApp {
     if( this.Device && this.Device.model ) {
       let model = this.Device.model.toLowerCase();
 
-      if( model.indexOf('iphone10') >= 0 ) {
+      if( model.indexOf('iphone10') >= 0 || model.indexOf('iphone11') >= 0 ) {
 
         this.iphoneX = true;
 
