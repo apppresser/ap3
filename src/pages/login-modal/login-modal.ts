@@ -415,7 +415,6 @@ export class LoginModal {
 
 			} else {
 				// link to app page, for example for in app purchases
-				console.log('iap page')
 				this.events.publish( 'pushpage', { type: 'apppages', slug: this.api_register_setting.url } )
 			}
 
