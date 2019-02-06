@@ -102,12 +102,12 @@ export class ApIapForm {
 
 		let fields = form.value
 
-		console.log(fields)
+		console.log( fields )
 
 		if( this.noLogin != 'true' ) {
 
 			// only validate if fields are needed
-			if( !fields.username || !fields.password || !fields.email ) {
+			if( !this.login_data && !fields.username || !this.login_data && !fields.password || !fields.email ) {
 				this.presentToast('Please fill out all fields.')
 				return;
 			}
