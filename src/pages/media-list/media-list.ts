@@ -134,7 +134,9 @@ export class MediaList implements OnInit {
       if( posts ) {
         this.items = posts;
       } else {
-        this.presentToast('No data available, pull to refresh when you are online.');
+        this.translate.get('No data available, pull to refresh when you are online.').subscribe( text => {
+          this.presentToast(text);
+        })
       }
     });
 
@@ -166,7 +168,9 @@ export class MediaList implements OnInit {
       // console.log(this.items)
 
       if( !this.items.length ) {
-        this.presentToast('No media urls are defined.')
+        this.translate.get('No media urls are defined.').subscribe( text => {
+          this.presentToast(text);
+        })
         console.log("Please add media urls according to the AppPresser documentation.")
         return;
       }
@@ -181,7 +185,9 @@ export class MediaList implements OnInit {
     }).catch((err) => {
       loading.dismiss();
       console.error('Error getting posts', err);
-      this.presentToast('Error getting posts.');
+      this.translate.get('Error getting posts.').subscribe( text => {
+        this.presentToast(text);
+      })
     });
 
     setTimeout(() => {
@@ -271,7 +277,9 @@ export class MediaList implements OnInit {
   addDownload(item) {
 
     if( typeof this.Device.platform != 'string' ) {
-      this.presentToast("Please try from a device.")
+      this.translate.get('Please try from a device.').subscribe( text => {
+        this.presentToast(text);
+      })
       return;
     }
 
@@ -303,11 +311,15 @@ export class MediaList implements OnInit {
 
           this.saveDownload( item )
 
-          this.presentToast('Downloaded!');
+          this.translate.get('Downloaded!').subscribe( text => {
+            this.presentToast(text);
+          })
 
         } else {
 
-          this.presentToast('Problem downloading file.');
+          this.translate.get('Problem downloading file.').subscribe( text => {
+            this.presentToast(text);
+          })
 
         }
 
@@ -359,7 +371,9 @@ export class MediaList implements OnInit {
 
     this.storage.set( this.route.substr(-10, 10) + '_downloads', this.downloads );
 
-    this.presentToast('Download Removed');
+    this.translate.get('Download Removed').subscribe( text => {
+      this.presentToast(text);
+    })
 
   }
 
