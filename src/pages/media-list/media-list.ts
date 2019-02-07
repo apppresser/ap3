@@ -66,6 +66,10 @@ export class MediaList implements OnInit {
     public zone: NgZone
   ) {
 
+    this.storage.get('media-list-autoplay').then( value => {
+      this.doAutoPlay = ( value === false ) ? false : true;
+    });
+
     events.subscribe('load:progress', (progress) => {
       this.doProgress(progress);
     });

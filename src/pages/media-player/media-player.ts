@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {NavParams, ViewController, IonicPage} from 'ionic-angular';
+import {Storage} from '@ionic/storage';
 import {AnalyticsService} from '../../providers/analytics/analytics.service';
 import { VgAPI } from 'videogular2/core';
 import { Device } from '@ionic-native/device';
@@ -35,6 +36,7 @@ export class MediaPlayer {
   constructor( 
     public navParams: NavParams, 
     private ga: AnalyticsService,
+    private storage: Storage,
     public device: Device,
     public viewCtrl: ViewController 
   ) {
@@ -140,6 +142,8 @@ export class MediaPlayer {
 
   toggleAutoPlay() {
     this.autoPlay = (!this.autoPlay);
+
+    this.storage.set('media-list-autoplay', this.autoPlay);
 
     if(this.autoPlay && this.api.state == 'ended')
       this.nextMedia();
