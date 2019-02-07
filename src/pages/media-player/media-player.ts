@@ -50,7 +50,7 @@ export class MediaPlayer {
       image: navParams.get('image')
     };
     this.sources = navParams.get('sources');
-    this.autoPlay = navParams.get('autoPlay');
+    this.storage.get('media-list-autoplay').then( v => this.autoPlay = (v === false ) ? false:true );
     this.playlist = navParams.get('sources');
 
     if(this.navParams.get('title')) {
