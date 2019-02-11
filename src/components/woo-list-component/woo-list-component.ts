@@ -158,7 +158,7 @@ export class WooListComponent implements OnInit {
 			return;
 		}
 
-		this.wooProvider.get( 'products/categories', null ).then(categories => {
+		this.wooProvider.get( 'products/categories?per_page=50', null ).then(categories => {
 
 			// Loads posts from WordPress API
 			this.categories = categories;
