@@ -1,0 +1,28 @@
+<ion-header class="{{customClasses}}">
+  <ion-toolbar>
+    <ion-title>{{ 'Edit Profile' | translate }}</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="{{customClasses}}">
+  <div class="profile-avatar" text-center>
+    <img *ngIf="profileAvatar" [src]="profileAvatar" (click)="editAvatar()">
+    <img *ngIf="!profileAvatar" src="assets/default.png">
+    <a (click)="editAvatar()">
+      <span>{{ 'Edit' | translate }}</span>
+    </a>
+  </div>
+  <ion-list>
+    <button ion-item *ngFor="let field of profileFields" (click)="editFieldValue(field)" detail-none>
+      <p>{{ field.name }}</p>
+      <h2 *ngIf="field.type !== 'textarea'">{{ field.value }}</h2>
+      <h2 *ngIf="field.type === 'textarea'" [innerHTML]="field.value"></h2>
+      <ion-spinner item-end *ngIf="field.loading"></ion-spinner>
+    </button>
+  </ion-list>
+</ion-content>

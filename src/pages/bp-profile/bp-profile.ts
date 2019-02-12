@@ -222,6 +222,18 @@ export class BpProfilePage implements OnInit {
     window.open( link, '_blank' );
   }
 
+  /**
+   * Opens the edit profile modal and updates the user data on dismiss
+   */
+  public openEditProfileModal(): void {
+    const editProfileModal = this.modalCtrl.create('EditProfileModal');
+    // Update user data after closing the edit profile modal
+    editProfileModal.onDidDismiss(() => {
+      this.setupUser(true);
+    });
+    editProfileModal.present();
+  }
+
   openLoginModal() {
 
     const loginModal = this.modalCtrl.create('LoginModal' );
