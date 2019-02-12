@@ -37,7 +37,7 @@
 			</ion-avatar>
 			<p class="user-name" *ngIf="userData.name" [innerHTML]="userData.name"></p>
 			<p class="mention-name" *ngIf="userData.mention_name" [innerHTML]="'@' + userData.mention_name"></p>
-			<button ion-button block (click)="iabLink(userData.link )" color="light">{{ 'View Full Profile' | translate }}</button>
+			<button ion-button block (click)="openEditProfileModal()" color="light">{{ 'Edit Profile' | translate }}</button>
 			
 		</ion-item>
 

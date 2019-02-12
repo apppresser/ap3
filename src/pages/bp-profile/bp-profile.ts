@@ -209,6 +209,11 @@ export class BpProfilePage implements OnInit {
     window.open( link, '_blank' );
   }
 
+  openEditProfileModal() {
+    const editProfileModal = this.modalCtrl.create('EditProfileModal');
+    editProfileModal.present();
+  }
+
   openLoginModal() {
 
     const loginModal = this.modalCtrl.create('LoginModal' );
