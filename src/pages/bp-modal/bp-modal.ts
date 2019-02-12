@@ -94,7 +94,11 @@ export class BpModal {
 				}
 
 			} else {
-				this.presentToast('Please logout then log back in.')
+
+				this.translate.get('Please logout then log back in.').subscribe( text => {
+					this.presentToast(text);
+				  })
+
 			}
 
 		});
@@ -149,7 +153,9 @@ export class BpModal {
 	submitForm() {
 
 		if( !this.activity && !this.uploadedImage ) {
-			this.presentToast("Please enter some content.")
+			this.translate.get('Please enter some content.').subscribe( text => {
+				this.presentToast(text);
+			  })
 			return;
 		}
 
@@ -163,7 +169,9 @@ export class BpModal {
 
 					console.log(ret)
 
-					this.presentToast('Update posted!')
+					this.translate.get('Update posted!').subscribe( text => {
+						this.presentToast(text);
+					  })
 					this.events.publish('bp-add-activity', ret )
 					setTimeout( ()=> {
 						this.dismiss()
@@ -181,7 +189,9 @@ export class BpModal {
 		} else if( this.isMessage ) {
 
 			if( !this.activity.content ) {
-				this.presentToast('Please enter some content.')
+				this.translate.get('Please enter some content.').subscribe( text => {
+					this.presentToast(text);
+				  })
 				return;
 			}
 
@@ -191,7 +201,9 @@ export class BpModal {
 
 				console.log(ret)
 				if( ret ) {
-					this.presentToast( "Message sent." )
+					this.translate.get('Message sent.').subscribe( text => {
+						this.presentToast(text);
+					  })
 					this.events.publish('bp-add-message', { subject: this.activity.subject, content: this.activity.content, threadId: ret } )
 				}
 
@@ -213,7 +225,9 @@ export class BpModal {
 				this.activity.parent = this.navParams.get('parent');
 
 				if( !this.activity.content ) {
-					this.presentToast('Please enter some content.')
+					this.translate.get('Please enter some content.').subscribe( text => {
+						this.presentToast(text);
+					  })
 					return;
 				}
 
@@ -226,10 +240,14 @@ export class BpModal {
 					console.log(ret)
 
 					if( this.isReply ) {
-						this.presentToast('Comment posted!')
+						this.translate.get('Comment posted!').subscribe( text => {
+							this.presentToast(text);
+						  })
 						this.events.publish('bp-add-comment', ret )
 					} else {
-						this.presentToast('Update posted!')
+						this.translate.get('Update posted!').subscribe( text => {
+							this.presentToast(text);
+						  })
 						this.events.publish('bp-add-activity', ret )
 					}
 
