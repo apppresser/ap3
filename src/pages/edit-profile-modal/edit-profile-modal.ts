@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { IonicPage, Platform, ViewController } from 'ionic-angular';
+import { IonicPage, Platform, ViewController, AlertController } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
 import { Device } from '@ionic-native/device';
 import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { Subscription } from 'rxjs/Subscription';
-import { LoginService } from '../../providers/logins/login.service';
 import { TranslateService } from '@ngx-translate/core';
+import { LoginService } from '../../providers/logins/login.service';
+import { BpProvider } from '../../providers/buddypress/bp-provider';
 
 @IonicPage()
 @Component({
@@ -19,21 +21,38 @@ export class EditProfileModal {
   public profileAvatar: string;
   public isReadyToSave: boolean;
   public customClasses: string;
+  private login_data: any;
   private formValuechanges: Subscription;
 
   constructor(
     public platform: Platform,
     public viewCtrl: ViewController,
+    public alertCtrl: AlertController,
     public formBuilder: FormBuilder,
     public device: Device,
     public actionSheet: ActionSheet,
     public camera: Camera,
+    public storage: Storage,
     public translate: TranslateService,
-    public loginservice: LoginService) {
+    public loginservice: LoginService,
+    public bpProvider: BpProvider) {
 
     this.profileAvatar = String(this.loginservice.user.avatar);
+    this._getLoginData();
     this._createForm();
     this._doIphoneX();
+  }
+
+  /**
+   * Get the login data from the storage
+   * @TODO consider putting this on a provider to be used as a service
+   */
+  private _getLoginData() {
+    this.storage.get('user_login').then(login_data => {
+      if (login_data) {
+        this.login_data = login_data
+      }
+    })
   }
 
   /**
@@ -46,7 +65,7 @@ export class EditProfileModal {
       avatar: null
     }); // @TODO consider showing validation error messages
 
-    // Watch the form for changes, and
+    // Watch the form for changes
     this.formValuechanges = this.form.valueChanges.subscribe(() => {
       this.isReadyToSave = this.form.valid;
     });
@@ -155,10 +174,42 @@ export class EditProfileModal {
   /**
    * Submits the data 
    */
-  public submitForm(): void {
+  public editProfile(): void {
     console.log(this.form.value);
-    // Dismiss modal after handling the fields
-    this.viewCtrl.dismiss();
+
+    interface Field { fieldId: number, fieldValue: string };
+    let fields: Field[] = [];
+
+    if (this.form.value.firstname) {
+      fields.push({ fieldId: 1, fieldValue: this.form.value.firstname });
+    }
+
+    // Add as many fields as you want following the above example
+
+    let prepareDataFieldPromises: Promise<any>[] = [];
+    fields.forEach(field => {
+      prepareDataFieldPromises.push(this.bpProvider.updateProfileField(this.login_data, field.fieldId, field.fieldValue));
+    });
+
+    // Update avatar only if a new avatar picture is selected for upload
+    if (this.form.value.avatar) {
+      prepareDataFieldPromises.push(this.bpProvider.updateProfileAvatar(this.login_data, this.form.value.avatar));
+    }
+
+    // Wait until all promises have finished
+    Promise.all(prepareDataFieldPromises)
+      .then(() => {
+        this.viewCtrl.dismiss();
+      })
+      .catch(error => {
+        console.log(error);
+        const alert = this.alertCtrl.create({
+          title: this.translate.instant('Error'),
+          subTitle: this.translate.instant('Could not update your profile. Please try again.'),
+          buttons: ['OK']
+        });
+        alert.present();
+      });
   }
 
   /**

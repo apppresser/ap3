@@ -288,6 +288,37 @@ export class BpProvider {
 
   }
 
+  /**
+   * Updates the specified profile field
+   * @param {*} login_data
+   * @param {number} fieldId
+   * @param {string} fieldValue
+   * @returns {Promise<any>}
+   */
+  public updateProfileField (login_data: any, fieldId: number, fieldValue: string): Promise<any> {
+    let objectParams: any = { token: login_data.token, value: fieldValue };
+    let route: string = this.url + this.restBase + 'xprofile/' + fieldId + '/data/' + login_data.user_id;
+    let params: string = this.objToParams(objectParams);
+
+    return this.http.post(route + '?' + params, null).toPromise();
+  }
+
+  /**
+   * Update the profile avatar picture
+   * @param {*} login_data
+   * @param {string} avatar
+   * @returns {Promise<any>}
+   */
+  public updateProfileAvatar (login_data: any, avatar: string): Promise<any> {
+    let objectParams: any = { token: login_data.token };
+    let route: string = this.url + this.restBase + 'members/' + login_data.user_id + '/avatar';
+    let params: string = this.objToParams(objectParams);
+    let body: FormData = new FormData();
+    body.append('avatar', avatar);
+
+    return this.http.post(route + '?' + params, body).toPromise();
+  }
+
   joinGroup( item, login_data ) {
 
     let route = this.url + this.restBase + 'groups/join-group';

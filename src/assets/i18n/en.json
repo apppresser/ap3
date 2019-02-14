@@ -17,5 +17,7 @@
 	"Email": "Email",
 	"Choose an image": "Choose an image",
 	"Take Photo": "Take Photo",
-	"Photo Library": "Photo Library"
+	"Photo Library": "Photo Library",
+	"Error": "Error",
+	"Could not update your profile. Please try again.": "Could not update your profile. Please try again."
 }
