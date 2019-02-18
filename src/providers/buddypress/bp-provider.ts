@@ -106,6 +106,19 @@ export class BpProvider {
 
   }
 
+  /**
+   * Gets current fields from profile
+   * @param {*} login_data
+   * @returns {Promise<any>}
+   */
+  public getField(login_data: any, fieldId: number): Promise<any> {
+    let objectParams: any = { token: login_data.token, user_id: login_data.user_id };
+    let route: string = this.url + this.restBase + 'xprofile/fields/' + fieldId;
+    let params: string = this.objToParams(objectParams);
+
+    return this.http.get(route + '?' + params, null).toPromise();
+  }
+
   doCamera( type ) {
 
     if( type === 'camera' ) {

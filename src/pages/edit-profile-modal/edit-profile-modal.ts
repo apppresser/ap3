@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { IonicPage, Platform, ViewController, AlertController } from 'ionic-angular';
+import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
+import { IonicPage, Platform, ViewController, AlertController, LoadingController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Device } from '@ionic-native/device';
 import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
@@ -23,11 +23,15 @@ export class EditProfileModal {
   public customClasses: string;
   private login_data: any;
   private formValuechanges: Subscription;
+  private readonly FIELDS = {
+    FIRSTNAME: 1
+  };
 
   constructor(
     public platform: Platform,
     public viewCtrl: ViewController,
     public alertCtrl: AlertController,
+    public loadingCtrl: LoadingController,
     public formBuilder: FormBuilder,
     public device: Device,
     public actionSheet: ActionSheet,
@@ -38,9 +42,15 @@ export class EditProfileModal {
     public bpProvider: BpProvider) {
 
     this.profileAvatar = String(this.loginservice.user.avatar);
-    this._getLoginData();
     this._createForm();
     this._doIphoneX();
+  }
+
+  /**
+   * Tasks you want to do every time you enter in the view (setting event listeners, updating a table, etc.)
+   */
+  public ionViewWillEnter() {
+    this._getLoginData();
   }
 
   /**
@@ -48,11 +58,59 @@ export class EditProfileModal {
    * @TODO consider putting this on a provider to be used as a service
    */
   private _getLoginData() {
-    this.storage.get('user_login').then(login_data => {
-      if (login_data) {
-        this.login_data = login_data
-      }
-    })
+    this.storage.get('user_login')
+      .then(login_data => {
+        if (login_data) {
+          this.login_data = login_data;
+          this._getFieldsFromAPI();
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
+  /**
+   * Gets profile fields from API
+   */
+  private _getFieldsFromAPI(): void {
+    const loading = this.loadingCtrl.create({
+      showBackdrop: false,
+      dismissOnPageChange: false
+    });
+    loading.present();;
+
+    let getFieldsPromises: Promise<any>[] = [];
+
+    // Add firstname to promise of all
+    getFieldsPromises.push(this._getField(this.FIELDS.FIRSTNAME, this.form.controls.firstname))
+
+    // Add as many fields as you want following the above example
+
+    // Wait until all promises have finished
+    Promise.all(getFieldsPromises)
+      .then(() => {
+        loading.dismiss();
+      })
+      .catch(error => {
+        loading.dismiss();
+      });
+  }
+
+  /**
+   * Gets the field value from the api and shows it to the form field
+   * @param {number} fieldId
+   * @param {AbstractControl} formControl
+   * @returns {Promise<any>}
+   */
+  private _getField(fieldId: number, formControl: AbstractControl): Promise<any> {
+    return this.bpProvider.getField(this.login_data, fieldId)
+      .then(field => {
+        formControl.patchValue(field.data.value);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   /**
@@ -110,13 +168,17 @@ export class EditProfileModal {
       destructiveButtonLast: true
     };
 
-    this.actionSheet.show(actionSheetOptions).then((buttonIndex: number) => {
-      if (buttonIndex === 1) {
-        this._takePhoto();
-      } else if (buttonIndex === 2) {
-        this._chooseFromLibrary();
-      }
-    });
+    this.actionSheet.show(actionSheetOptions)
+      .then((buttonIndex: number) => {
+        if (buttonIndex === 1) {
+          this._takePhoto();
+        } else if (buttonIndex === 2) {
+          this._chooseFromLibrary();
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }
 
   /**
@@ -175,13 +237,19 @@ export class EditProfileModal {
    * Submits the data 
    */
   public editProfile(): void {
-    console.log(this.form.value);
+    const loading = this.loadingCtrl.create({
+      showBackdrop: false,
+      dismissOnPageChange: false
+    });
+    loading.present();;
+
+    // console.log(this.form.value);
 
     interface Field { fieldId: number, fieldValue: string };
     let fields: Field[] = [];
 
     if (this.form.value.firstname) {
-      fields.push({ fieldId: 1, fieldValue: this.form.value.firstname });
+      fields.push({ fieldId: this.FIELDS.FIRSTNAME, fieldValue: this.form.value.firstname });
     }
 
     // Add as many fields as you want following the above example
@@ -199,10 +267,12 @@ export class EditProfileModal {
     // Wait until all promises have finished
     Promise.all(prepareDataFieldPromises)
       .then(() => {
+        loading.dismiss();
         this.viewCtrl.dismiss();
       })
       .catch(error => {
         console.log(error);
+        loading.dismiss();
         const alert = this.alertCtrl.create({
           title: this.translate.instant('Error'),
           subTitle: this.translate.instant('Could not update your profile. Please try again.'),
