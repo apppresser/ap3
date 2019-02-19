@@ -108,7 +108,7 @@ export class MyApp {
     public modalCtrl: ModalController,
     public events: Events,
     public translate: TranslateService,
-    private Keyboard: Keyboard,
+    private keyboard: Keyboard,
     private SplashScreen: SplashScreen,
     private StatusBar: StatusBar,
     private Network: Network,
@@ -203,8 +203,18 @@ export class MyApp {
 
       this.doIphoneX();
 
+      this.keyboard.onKeyboardShow().subscribe(data => {
+        this.bodyTag.classList.remove('keyboard-close');
+        this.bodyTag.classList.add('keyboard-open');
+      });
+
+      this.keyboard.onKeyboardHide().subscribe(data => {
+        this.bodyTag.classList.remove('keyboard-open');
+        this.bodyTag.classList.add('keyboard-close');
+      });
+
       // prevents bug where select done button didn't display
-      this.Keyboard.hideFormAccessoryBar(false);
+      this.keyboard.hideFormAccessoryBar(false);
       // Disable scroll fixes webview displacement, but hides content lower on page. Can't use
       //Keyboard.disableScroll(true);
 
