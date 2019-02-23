@@ -175,14 +175,18 @@ export class BpDetailsPage implements OnInit {
   flag() {
 
     if( !this.login_data || !this.login_data.user_id ) {
-      this.presentToast('You must be logged in to do that.')
+      this.translate.get('You must be logged in to do that.').subscribe( text => {
+        this.presentToast(text);
+        })
     }
 
     this.selectedItem.flagged = true
 
     this.bpProvider.updateItem( 'activity_flag', this.login_data, this.selectedItem.id ).then( ret => {
 
-      this.presentToast('Activity has been marked as flagged.')
+      this.translate.get('Activity has been marked as flagged.').subscribe( text => {
+        this.presentToast(text);
+        })
 
     }).catch( e => {
       console.warn(e)

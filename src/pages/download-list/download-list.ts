@@ -92,7 +92,9 @@ export class DownloadList {
 
     this.storage.set( 'downloads', this.downloads )
 
-    this.presentToast('Download Removed');
+    this.translate.get('Download Removed').subscribe( text => {
+      this.presentToast(text);
+    })
 
   }
 

@@ -77,7 +77,9 @@ export class WooListComponent implements OnInit {
 			this.searchIconEvent()
 		}
 
-		this.cartIconEvent()
+		setTimeout(()=>{
+			this.cartIconEvent();
+		});
 
 	}
 

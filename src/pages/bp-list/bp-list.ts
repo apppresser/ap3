@@ -348,7 +348,9 @@ export class BpList implements OnInit {
         this.items = posts;
         this.setListener()
       } else {
-        this.presentToast('No data available, pull to refresh when you are online.');
+        this.translate.get('No data available, pull to refresh when you are online.').subscribe( text => {
+          this.presentToast(text);
+        })
       }
     });
 
@@ -598,11 +600,15 @@ export class BpList implements OnInit {
 
   		if( !ret ) {
         this.undoFavCount(item)
-  			this.presentToast('Cannot favorite this item.')
+        this.translate.get('Cannot favorite this item.').subscribe( text => {
+          this.presentToast(text);
+        })
   		}
       
   	}).catch( e => {
-      this.presentToast('There was a problem favoriting this item.')
+      this.translate.get('There was a problem favoriting this item.').subscribe( text => {
+        this.presentToast(text);
+      })
       this.undoFavCount(item)
       console.warn(e)
     })
@@ -797,7 +803,9 @@ export class BpList implements OnInit {
   loginCheck() {
 
     if( !this.login_data || !this.login_data.user_id ) {
-      this.presentToast('Please log in or sign up.')
+      this.translate.get('Please log in or sign up.').subscribe( text => {
+        this.presentToast(text);
+      })
       const loginModal = this.modalCtrl.create('LoginModal' );
       loginModal.present();
       return false;
