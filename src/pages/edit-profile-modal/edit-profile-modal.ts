@@ -1,14 +1,21 @@
 import { Component } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { IonicPage, Platform, ViewController, AlertController, LoadingController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Device } from '@ionic-native/device';
 import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
 import { Camera, CameraOptions } from '@ionic-native/camera';
-import { Subscription } from 'rxjs/Subscription';
 import { TranslateService } from '@ngx-translate/core';
 import { LoginService } from '../../providers/logins/login.service';
 import { BpProvider } from '../../providers/buddypress/bp-provider';
+
+export interface Field {
+  id: number,
+  name: string,
+  value: string,
+  type: string,
+  loading: boolean,
+  order: number
+};
 
 @IonicPage()
 @Component({
@@ -17,22 +24,16 @@ import { BpProvider } from '../../providers/buddypress/bp-provider';
 })
 export class EditProfileModal {
 
-  public form: FormGroup;
+  public profileFields: Array<Field>;
   public profileAvatar: string;
-  public isReadyToSave: boolean;
   public customClasses: string;
   private login_data: any;
-  private formValuechanges: Subscription;
-  private readonly FIELDS = {
-    FIRSTNAME: 1
-  };
 
   constructor(
     public platform: Platform,
     public viewCtrl: ViewController,
     public alertCtrl: AlertController,
     public loadingCtrl: LoadingController,
-    public formBuilder: FormBuilder,
     public device: Device,
     public actionSheet: ActionSheet,
     public camera: Camera,
@@ -41,15 +42,15 @@ export class EditProfileModal {
     public loginservice: LoginService,
     public bpProvider: BpProvider) {
 
+    this.profileFields = [];
     this.profileAvatar = String(this.loginservice.user.avatar);
-    this._createForm();
     this._doIphoneX();
   }
 
   /**
    * Tasks you want to do every time you enter in the view (setting event listeners, updating a table, etc.)
    */
-  public ionViewWillEnter() {
+  public ionViewWillEnter(): void {
     this._getLoginData();
   }
 
@@ -57,12 +58,12 @@ export class EditProfileModal {
    * Get the login data from the storage
    * @TODO consider putting this on a provider to be used as a service
    */
-  private _getLoginData() {
+  private _getLoginData(): void {
     this.storage.get('user_login')
       .then(login_data => {
         if (login_data) {
           this.login_data = login_data;
-          this._getFieldsFromAPI();
+          this._getAllFields();
         }
       })
       .catch(error => {
@@ -73,60 +74,32 @@ export class EditProfileModal {
   /**
    * Gets profile fields from API
    */
-  private _getFieldsFromAPI(): void {
+  private _getAllFields(): void {
     const loading = this.loadingCtrl.create({
       showBackdrop: false,
       dismissOnPageChange: false
     });
-    loading.present();;
+    loading.present();
 
-    let getFieldsPromises: Promise<any>[] = [];
-
-    // Add firstname to promise of all
-    getFieldsPromises.push(this._getField(this.FIELDS.FIRSTNAME, this.form.controls.firstname))
-
-    // Add as many fields as you want following the above example
-
-    // Wait until all promises have finished
-    Promise.all(getFieldsPromises)
-      .then(() => {
+    this.bpProvider.getFields(this.login_data)
+      .then(response => {
+        let fields: Array<any> = response.json();
+        fields.forEach(field => {
+          this.profileFields[field.field_order] = {
+            id: field.id,
+            name: field.name,
+            value: field.data.value,
+            type: field.type,
+            loading: false,
+            order: field.field_order
+          };
+        });
         loading.dismiss();
-      })
-      .catch(error => {
-        loading.dismiss();
-      });
-  }
-
-  /**
-   * Gets the field value from the api and shows it to the form field
-   * @param {number} fieldId
-   * @param {AbstractControl} formControl
-   * @returns {Promise<any>}
-   */
-  private _getField(fieldId: number, formControl: AbstractControl): Promise<any> {
-    return this.bpProvider.getField(this.login_data, fieldId)
-      .then(field => {
-        formControl.patchValue(field.data.value);
       })
       .catch(error => {
         console.log(error);
+        loading.dismiss();
       });
-  }
-
-  /**
-   * Creates a form using formBuilder
-   */
-  private _createForm() {
-    this.form = this.formBuilder.group({
-      firstname: [this.loginservice.user.firstname, Validators.required],
-      email: [this.loginservice.user.email, Validators.compose([Validators.required, Validators.email])],
-      avatar: null
-    }); // @TODO consider showing validation error messages
-
-    // Watch the form for changes
-    this.formValuechanges = this.form.valueChanges.subscribe(() => {
-      this.isReadyToSave = this.form.valid;
-    });
   }
 
   /**
@@ -184,7 +157,7 @@ export class EditProfileModal {
   /**
    * Takse photo from camera
    */
-  private _takePhoto() {
+  private _takePhoto(): void {
     const cameraOptions: CameraOptions = {
       sourceType: this.camera.PictureSourceType.CAMERA,
       mediaType: this.camera.MediaType.PICTURE,
@@ -197,10 +170,8 @@ export class EditProfileModal {
 
     this.camera.getPicture(cameraOptions)
       .then((imageData) => {
-        this.form.controls.avatar.patchValue(imageData);
-        // imageData is either a base64 encoded string or a file URI
-        // If it's base64:
-        this.profileAvatar = 'data:image/jpeg;base64,' + imageData;
+        let profileAvatar = 'data:image/jpeg;base64,' + imageData;
+        this._updateAvatarToApi(profileAvatar);
       })
       .catch(error => {
         console.error(error);
@@ -210,7 +181,7 @@ export class EditProfileModal {
   /**
    * Chooses a photo from library
    */
-  private _chooseFromLibrary() {
+  private _chooseFromLibrary(): void {
     const cameraOptions: CameraOptions = {
       sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
       mediaType: this.camera.MediaType.PICTURE,
@@ -223,69 +194,149 @@ export class EditProfileModal {
 
     this.camera.getPicture(cameraOptions)
       .then((imageData) => {
-        this.profileAvatar = 'data:image/jpeg;base64,' + imageData;
-        // imageData is either a base64 encoded string or a file URI
-        // If it's base64:
-        this.form.controls.avatar.patchValue(imageData);
+        let profileAvatar = 'data:image/jpeg;base64,' + imageData;
+        this._updateAvatarToApi(profileAvatar);
       })
       .catch(error => {
         console.error(error);
       });
   }
 
+
   /**
-   * Submits the data 
+   * Opens the right alert controller to
+   * @param {Field} field
    */
-  public editProfile(): void {
-    const loading = this.loadingCtrl.create({
-      showBackdrop: false,
-      dismissOnPageChange: false
-    });
-    loading.present();;
+  public editFieldValue(field: Field): void {
+    let fieldType = field.type;
+    switch (fieldType) {
+      case 'textbox': {
+        this._editTextField(field, 'text');
+        break;
+      }
 
-    // console.log(this.form.value);
+      case 'telephone': {
+        this._editTextField(field, 'tel');
+        break;
+      }
 
-    interface Field { fieldId: number, fieldValue: string };
-    let fields: Field[] = [];
+      case 'number': {
+        this._editTextField(field, 'number');
+        break;
+      }
 
-    if (this.form.value.firstname) {
-      fields.push({ fieldId: this.FIELDS.FIRSTNAME, fieldValue: this.form.value.firstname });
+      case 'url': {
+        this._editTextField(field, 'url');
+        break;
+      }
+
+      /*
+      case 'radio': {
+        // https://ionicframework.com/docs/v3/components/#alert-radio
+        break;
+      }
+
+      case 'checkbox': {
+        // https://ionicframework.com/docs/v3/components/#alert-checkbox
+        break;
+      }
+      */
+
+      default: {
+        this._editFieldNotAvailable();
+        break;
+      }
     }
+  }
 
-    // Add as many fields as you want following the above example
-
-    let prepareDataFieldPromises: Promise<any>[] = [];
-    fields.forEach(field => {
-      prepareDataFieldPromises.push(this.bpProvider.updateProfileField(this.login_data, field.fieldId, field.fieldValue));
+  /**
+   * Shows an alert to edit text fields
+   * @param {Field} field
+   * @param {string} fieldType
+   */
+  private _editTextField(field: Field, fieldType: string): void {
+    const prompt = this.alertCtrl.create({
+      title: this.translate.instant('Edit field'),
+      subTitle: field.name,
+      inputs: [
+        {
+          name: 'current_field_name',
+          placeholder: field.name,
+          type: fieldType,
+          value: field.value
+        },
+      ],
+      buttons: [
+        {
+          text: this.translate.instant('Cancel'),
+        },
+        {
+          text: this.translate.instant('Save'),
+          handler: data => {
+            this._updateFieldToApi(field, data.current_field_name);
+          }
+        }
+      ]
     });
+    prompt.present();
+  }
 
-    // Update avatar only if a new avatar picture is selected for upload
-    if (this.form.value.avatar) {
-      prepareDataFieldPromises.push(this.bpProvider.updateProfileAvatar(this.login_data, this.form.value.avatar));
-    }
 
-    // Wait until all promises have finished
-    Promise.all(prepareDataFieldPromises)
+  /**
+   * Shows an alert that field edit is not available
+   */
+  private _editFieldNotAvailable(): void {
+    const alert = this.alertCtrl.create({
+      title: this.translate.instant('Edit field'),
+      subTitle: this.translate.instant('Editing this field is not available yet.'),
+      buttons: ['OK']
+    });
+    alert.present();
+  }
+
+  /**
+   * Updates the current field with the new value to the API
+   * @param {Field} field
+   * @param {string} updatedFieldValue
+   */
+  private _updateFieldToApi(field: Field, updatedFieldValue: string): void {
+    this.profileFields[field.order].loading = true;
+    this.bpProvider.updateProfileField(this.login_data, this.profileFields[field.order].id, updatedFieldValue)
       .then(() => {
-        loading.dismiss();
-        this.viewCtrl.dismiss();
+        this.profileFields[field.order].value = updatedFieldValue;
+        this.profileFields[field.order].loading = false;
       })
       .catch(error => {
         console.log(error);
-        loading.dismiss();
-        const alert = this.alertCtrl.create({
-          title: this.translate.instant('Error'),
-          subTitle: this.translate.instant('Could not update your profile. Please try again.'),
-          buttons: ['OK']
-        });
-        alert.present();
+        this._handleErrorFromApi();
+        this.profileFields[field.order].loading = false;
       });
   }
 
   /**
-   * Destroys subcriptions when you are leaving the page
+   * Updates the new pofile's avatar to the API
+   * @param {string} profileAvatar
    */
-  public ionViewWillLeave(): void {
-    this.formValuechanges.unsubscribe();
+  private _updateAvatarToApi(profileAvatar: string): void {
+    this.bpProvider.updateProfileAvatar(this.login_data, profileAvatar)
+      .then(() => {
+        this.profileAvatar = profileAvatar;
+      })
+      .catch(error => {
+        console.log(error);
+        this._handleErrorFromApi();
+      });
+  }
+
+  /**
+   * Shows an alert if the update to the API fails
+   */
+  private _handleErrorFromApi(): void {
+    const alert = this.alertCtrl.create({
+      title: this.translate.instant('Error'),
+      subTitle: this.translate.instant('Could not update your profile. Please try again.'),
+      buttons: ['OK']
+    });
+    alert.present();
   }
 }

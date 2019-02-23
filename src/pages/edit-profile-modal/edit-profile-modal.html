@@ -1,47 +1,28 @@
 <ion-header class="{{customClasses}}">
   <ion-toolbar>
-    <ion-buttons left>
-      <button ion-button icon-only (click)="dismiss()">
-        <span showWhen="ios">{{ 'Cancel' | translate }}</span>
-        <ion-icon name="close" showWhen="android"></ion-icon>
-      </button>
-    </ion-buttons>
     <ion-title>{{ 'Edit Profile' | translate }}</ion-title>
     <ion-buttons end>
-      <button ion-button (click)="editProfile()" [disabled]="!isReadyToSave" strong>
-        <span>{{ 'Done' | translate }}</span>
+      <button ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
       </button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="{{customClasses}}">
-
-  <form *ngIf="form" [formGroup]="form">
-
-    <ion-list>
-      <ion-item class="small-input">
-        <ion-icon name="person-outline" item-start></ion-icon>
-        <ion-input type="text" formControlName="firstname" placeholder="{{ 'First Name' | translate }}"></ion-input>
-      </ion-item>
-      <ion-item class="small-item">
-        <ion-icon name="at-outline" item-start></ion-icon>
-        <ion-input type="email" formControlName="email" placeholder="{{ 'Email' | translate }}"></ion-input>
-      </ion-item>
-    </ion-list>
-    <div class="profile-avatar">
-      <img [src]="profileAvatar" (click)="editAvatar()">
-      <a (click)="editAvatar()">
-        <span>{{ 'Edit' | translate }}</span>
-      </a>
-    </div>
-
-    <div padding>
-      <button ion-button (click)="editProfile()" [disabled]="!isReadyToSave" block>
-        <span>{{ 'Done' | translate }}</span>
-      </button>
-    </div>
-
-  </form>
-
+  <div class="profile-avatar" text-center>
+    <img *ngIf="profileAvatar" [src]="profileAvatar" (click)="editAvatar()">
+    <img *ngIf="!profileAvatar" src="assets/default.png">
+    <a (click)="editAvatar()">
+      <span>{{ 'Edit' | translate }}</span>
+    </a>
+  </div>
+  <ion-list>
+    <button ion-item *ngFor="let field of profileFields" (click)="editFieldValue(field)" detail-none>
+      <p>{{ field.name }}</p>
+      <h2 *ngIf="field.type !== 'textarea'">{{ field.value }}</h2>
+      <h2 *ngIf="field.type === 'textarea'" [innerHTML]="field.value"></h2>
+      <ion-spinner item-end *ngIf="field.loading"></ion-spinner>
+    </button>
+  </ion-list>
 </ion-content>

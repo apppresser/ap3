@@ -111,9 +111,9 @@ export class BpProvider {
    * @param {*} login_data
    * @returns {Promise<any>}
    */
-  public getField(login_data: any, fieldId: number): Promise<any> {
-    let objectParams: any = { token: login_data.token, user_id: login_data.user_id };
-    let route: string = this.url + this.restBase + 'xprofile/fields/' + fieldId;
+  public getFields(login_data: any): Promise<any> {
+    let objectParams: any = { user_id: login_data.user_id, fetch_field_data: true };
+    let route: string = this.url + this.restBase + 'xprofile/fields';
     let params: string = this.objToParams(objectParams);
 
     return this.http.get(route + '?' + params, null).toPromise();
@@ -309,7 +309,7 @@ export class BpProvider {
    * @returns {Promise<any>}
    */
   public updateProfileField (login_data: any, fieldId: number, fieldValue: string): Promise<any> {
-    let objectParams: any = { token: login_data.token, value: fieldValue };
+    let objectParams: any = { value: fieldValue };
     let route: string = this.url + this.restBase + 'xprofile/' + fieldId + '/data/' + login_data.user_id;
     let params: string = this.objToParams(objectParams);
 

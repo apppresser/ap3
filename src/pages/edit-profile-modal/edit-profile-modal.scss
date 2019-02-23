@@ -1,17 +1,13 @@
 page-edit-profile-modal {
-    /* @TODO adjust/test the above class when RTL */
-    .small-input .item-inner {
-        margin-right: 100px
-    }
     .profile-avatar {
-        position: absolute;
-        right: 20px;
-        top: 10px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+
         img {
             border-radius: 50%;
-            height: 50px;
+            height: 100px;
             overflow: hidden;
-            width: 50px;
+            width: 100px;
         }
         a {
             display: block;
