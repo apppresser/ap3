@@ -178,12 +178,12 @@ export class MyApp {
       this.platform.setDir(dir, true);
       this.platform.setLang(language.code, true);
 
+      this.setBackBtnText();
+
       const lang_updated = true;
 
       this.resetTabs(is_loggedin, lang_updated);
     });
-    // Let's not wait for the data if it's already in local storge
-    this.languageservice.initStoredLanguage();
 
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
@@ -274,29 +274,31 @@ export class MyApp {
 
     this.menu_all_pages = ( data.menu_all_pages == true ) ? true : false;
 
-    this.verifyLanguageFile(data).then( lang => {
+    this.languageservice.initStoredLanguage().then(hasStoredLanuage => {
+      this.verifyLanguageFile(data).then( lang => {
 
-      // set the default language before loading menu
-      this.setAvailableLangs(data).then( lang => {
+          // set the default language before loading menu
+          this.setAvailableLangs(data).then( lang => {
 
-        this.loadMenu(data);
+            this.loadMenu(data);
+            
+            this.showLogin = ( data.side_menu_login == "on" ) ? true : false;
+            this.logins.set_force_login( (data.side_menu_force_login == "on") );
         
-        this.showLogin = ( data.side_menu_login == "on" ) ? true : false;
-        this.logins.set_force_login( (data.side_menu_force_login == "on") );
-    
-        this.menu_side = ( data.meta.menu_right == true ) ? "right" : "left";
-    
-        this.rtl = ( data.meta.rtl == true ) ? true : false;
+            this.menu_side = ( data.meta.menu_right == true ) ? "right" : "left";
         
-        if( this.rtl === true && this.languageservice.hasStoredLanguage === false )
-          this.platform.setDir('rtl', true)
+            this.rtl = ( data.meta.rtl == true ) ? true : false;
+            
+            if( this.rtl === true && this.languageservice.hasStoredLanguage === false )
+              this.platform.setDir('rtl', true)
+            
+            this.loadStyles(data);
+            this.doStatusBar(data);
+            this.getSetLogin();
+          });
         
-        this.loadStyles(data);
-        this.doStatusBar(data);
-        this.getSetLogin();
       });
     });
-
     // Uncomment this when we begin using WKWebview
     // this.maybeSetCookie( data );
 
@@ -1535,29 +1537,7 @@ export class MyApp {
         this.languageservice.setAvailable(null);
       }
 
-      // This logic is really weird
-      if(this.languageservice.hasStoredLanguage) {
-        resolve(this.languageservice.language);
-      } else {
-        // We should never get here, because the default language or stored language should already be set
-        this.storage.get( 'app_language' ).then( lang => {
-          if( lang ) {
-    
-            let language = new Language(lang);
-    
-            this.translate.use( language.code );
-            this.languageservice.setCurrentLanguage(language);
-    
-            this.setBackBtnText();
-  
-            resolve(lang);
-            
-          }
-  
-          resolve(null);
-        }); 
-      }
-
+      resolve();
     });
 
   }
@@ -1618,8 +1598,6 @@ export class MyApp {
       this.languageservice.langFileExists(data).then( data => {
         const langData = (<Language>data);
 
-        // console.log(`set language to ${langData.code} and dir to ${langData.dir}`);
-
         this.rtl = (langData.dir && langData.dir == 'rtl');
 
         let language = new Language({
@@ -1632,9 +1610,7 @@ export class MyApp {
           resolve(this.languageservice.language);
         } else {
           // from data
-          this.translate.setDefaultLang(language.code);
           this.languageservice.setCurrentLanguage(language);
-          this.setBackBtnText();
         }
 
         resolve(language);

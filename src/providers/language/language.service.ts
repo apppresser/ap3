@@ -7,6 +7,7 @@ import {Storage} from '@ionic/storage';
 import { Language } from "../../models/language.model";
 import { AnalyticsService } from "../analytics/analytics.service";
 import { TranslateService } from "@ngx-translate/core";
+import { Config } from "ionic-angular";
 
 @Injectable()
 export class LanguageService {
@@ -17,6 +18,7 @@ export class LanguageService {
 	constructor(
 		private analyticsservice: AnalyticsService,
 		public translate: TranslateService,
+		private config: Config,
 		private storage: Storage,
 		private http: Http
 	) {
@@ -29,12 +31,19 @@ export class LanguageService {
 	}
 
 	initStoredLanguage() {
-		this.storage.get( 'app_language' ).then( lang => {
-			if( lang ) {
-				this.hasStoredLanguage = true;
-				this.translate.setDefaultLang(lang.code);
-				this.setCurrentLanguage(lang);
-			}
+		return new Promise((resolve, reject) => {
+			this.storage.get( 'app_language' ).then( lang => {
+
+				if( lang ) {
+					this.hasStoredLanguage = true;
+					this.translate.setDefaultLang(lang.code);
+					this.setCurrentLanguage(lang);
+				} else {
+					this.hasStoredLanguage = false;
+				}
+
+				resolve(this.hasStoredLanguage);
+			});
 		});
 	}
 
@@ -42,6 +51,7 @@ export class LanguageService {
 		this.language.code = language.code;
 		this.language.dir = language.dir;
 		this.analyticsservice.trackEvent('lang', this.language.code);
+		this.translate.use(language.code);
 		this.storage.set( 'app_language', language );
 		this.langObs.next(this.language);
 	}
@@ -143,11 +153,12 @@ export class LanguageService {
 
 	langFileExists(data): Promise<Language> {
 		return new Promise<Language>( (resolve, reject) => {
+			
 
-      		let fallbackLang = new Language({
-        		code:'en',
+			let fallbackLang = new Language({
+				code:'en',
 				dir: (data.meta && data.meta.rtl) ? 'rtl' : 'ltr'
-      		});
+			});
 
 			if(data.default_language) {
 
