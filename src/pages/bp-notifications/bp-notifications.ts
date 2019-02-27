@@ -216,31 +216,33 @@ export class BpNotifications {
     setTimeout( ()=> refresh.complete(), 500);
   }
 
-  acceptFriendship( friend, withdraw ) {
-
+  /**
+   * Accepts or Withdraws a friend request
+   * @param {*} friend
+   * @param {string} withdraw
+   */
+  public acceptOrWithdrawFriendship(friend: any, withdraw: string): void {
     var friend = friend;
+    console.log(friend);
 
-    console.log(friend)
+    this.bpProvider.acceptOrWithdrawFriendship(friend.id, this.login_data, withdraw)
+      .then(response => {
+        let message: string = response.json();
 
-    this.bpProvider.acceptWithdrawFriendship( friend.id, this.login_data, withdraw ).then( ret => {
-
-      for (let i = this.items.length - 1; i >= 0; i--) {
-        if( this.items[i].id === friend.id ) {
-          console.log(this.items[i])
-          this.items.splice(i, 1);
-          break;
+        for (let i = this.items.length - 1; i >= 0; i--) {
+          if (this.items[i].id === friend.id) {
+            console.log(this.items[i])
+            this.items.splice(i, 1);
+            break;
+          }
         }
-      }
 
-      this.presentToast(ret)
-
-    }).catch( e => {
-
-      this.presentToast("There was a problem.")
-      console.warn(e)
-
-    });
-
+        this.presentToast(message);
+      })
+      .catch(error => {
+        this.presentToast('There was a problem.');
+        console.warn(error);
+      });
   }
 
   viewNotification( notification ) {
@@ -282,20 +284,20 @@ export class BpNotifications {
 
   }
 
-  presentToast(msg) {
-
-    this.translate.get(msg).subscribe( translation => {
-
+  /**
+   * Shows a translated message to the toast, if exists
+   * @param {string} message
+   */
+  public presentToast(message: string): void {
+    if(message) {
       let toast = this.toastCtrl.create({
-        message: msg,
+        message:  this.translate.instant(message),
         duration: 3000,
         position: 'bottom'
       });
 
       toast.present();
-
-    })
-
+    }
   }
 
   iabLink(link) {

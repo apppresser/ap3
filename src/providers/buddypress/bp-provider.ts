@@ -364,46 +364,20 @@ export class BpProvider {
 
   }
 
-  acceptWithdrawFriendship( friendId, login_data, withdraw ) {
+  /**
+   * Accepts or Withdraws a friend request to the API
+   * @param {number} friendId
+   * @param {*} login_data
+   * @param {string} withdraw
+   * @returns {Promise<any>}
+   */
+  public acceptOrWithdrawFriendship(friendId: number, login_data: any, withdraw: string): Promise<any> {
+    let route: string = this.url + this.restBase + 'friends/requests/' + friendId;
+    let action: string = (withdraw) ? 'withdraw' : 'accept';
+    let data: any = { action: action, user_id: login_data.user_id, token: login_data.token };
+    let params: string = this.objToParams(data);
 
-    let route = this.url + this.restBase + 'friends/requests/' + friendId;
-
-    let action;
-
-    if( withdraw ) {
-      action = 'withdraw'
-    } else {
-      action = 'accept'
-    }
-
-    let data = {
-      action: action,
-      user_id: login_data.user_id,
-      token: login_data.token
-    };
-
-    let params = this.objToParams( data )
-
-    return new Promise( (resolve, reject) => {
-
-      this.http.post( route + '?' + params, null )
-        .map(res => res.json())
-        .subscribe(data => {
-          
-            resolve(data)
-
-          },
-          error => {
-
-            console.log(error)
-
-            reject(error);
-
-          }
-        )
-
-    }) // end promise
-
+    return this.http.post(route + '?' + params, null).toPromise();
   }
 
   sendMessage( recipients, login_data, subject, content, threadId ) {
