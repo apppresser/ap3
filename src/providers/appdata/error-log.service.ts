@@ -38,7 +38,7 @@ export class ErrorLogService {
 			this.enableLogging(data.error_logs.timestamp, data.error_logs.token);
 			this.remoteData.sendStoredData('log-app-push', this.token);
 		} else {
-			console.log('error logging is [DISABLED] for myapppresser.com');
+			console.log('logging is [DISABLED] for myapppresser.com');
 			this.clearRemoteDataLogs();
 		}
 		
@@ -59,9 +59,9 @@ export class ErrorLogService {
 		if(expireTime.getTime() > now.getTime()) {
 			this.token = token;
 			this.loggingEnabled = true;
-			console.log('error logging is [ENABLED] for myapppresser.com');
+			console.log('logging is [ENABLED] for myapppresser.com');
 		} else {
-			console.log('error logging has [EXPIRED] for myapppresser.com');
+			console.log('logging has [EXPIRED] for myapppresser.com');
 		}
 
 	}
