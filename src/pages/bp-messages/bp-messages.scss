@@ -130,6 +130,43 @@ bp-messages {
 			}
 		}
 	}
+	.progress-message {
+		float: right !important;
+		margin-right: 15px !important;
+		.item-inner {
+			background-color: #fff;
+			color: #ccc;
+			font-size: 12px;
+			padding: 0;
+		}
+		.label{
+			margin: 0;
+		}
+	}
+	.image-reply {
+		width: 250px;
+		max-height: none;
+	}
+	ion-footer {
+		.reply-container {
+			display: table;
+		}
+		.reply-row-container {
+			display: table-row;
+		}
+		.input-container {
+			display: table-cell;
+			padding: 5px;
+			vertical-align: middle;
+			width: 100%;
+		}
+		.buttons-container {
+			display: table-cell;
+			padding: 5px 5px 5px 0px;
+			vertical-align: middle;
+			white-space:nowrap;
+		}
+	}
 }
 
 .iphoneX-portrait .footer .toolbar.statusbar-padding:first-child {

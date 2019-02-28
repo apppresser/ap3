@@ -6,6 +6,8 @@ import {HeaderLogo} from '../../providers/header-logo/header-logo';
 import {Storage} from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {Network} from '@ionic-native/network';
+import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
+import { Camera, CameraOptions } from '@ionic-native/camera';
 import {BpProvider} from '../../providers/buddypress/bp-provider';
 import {AnalyticsService} from '../../providers/analytics/analytics.service';
 
@@ -35,6 +37,7 @@ export class BpMessages {
   segment: any;
   boxArg: string = '?box=inbox'
   threadReply: string;
+  progressMessage: string;
   listenFunc: Function;
 
   constructor(
@@ -49,6 +52,8 @@ export class BpMessages {
     private headerLogoService: HeaderLogo,
     private Network: Network,
     private Device: Device,
+    public actionSheet: ActionSheet,
+    public camera: Camera,
     public modalCtrl: ModalController,
     private events: Events,
     private ga: AnalyticsService,
@@ -58,6 +63,7 @@ export class BpMessages {
     public elementRef: ElementRef
   ) {
 
+    this.threadReply = '';
     let item = window.localStorage.getItem( 'myappp' );
 
     this.route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/messages'
@@ -412,30 +418,122 @@ export class BpMessages {
 
   }
 
-  // this pushes the message text to the thread, then sends it to the server. If there is an error, we remove the message.
-  replyToThread() {
+  /**
+   * This pushes the message text to the thread, then sends it to the server.
+   * If there is an error, we remove the message.
+   */
+  public replyToThread(): void {
+    let recipients = Object.keys(this.threads.recipients);
 
-    // fake delay
-    setTimeout( () => {
-      this.addMessage( { subject: null, content: this.threadReply } )
-      this.threadReply = ''
-      this.scrollDown(1)
-    }, 500 )
+    this.addMessage({ subject: null, content: this.threadReply });
+    this.scrollDown(1);
+    this.progressMessage = this.translate.instant('Sending...');
     
-
-    let recipients = Object.keys( this.threads.recipients )
-    
-    this.bpProvider.sendMessage( recipients, this.login_data, '', this.threadReply, this.threads.thread_id ).then( ret => {
-
+    this.bpProvider.sendMessage(recipients, this.login_data, '', this.threadReply, this.threads.thread_id)
+      .then(ret => {
+        this.progressMessage = null;
         console.log('message sent, thread id: ', ret)
-
-      }).catch( e => {
-
+      })
+      .catch(e => {
         this.threads.messages.shift()
         this.handleErr(e)
-
       });
 
+    this.threadReply = '';
+  }
+
+  /**
+   * Sends an image from camera or library as a private message
+   */
+  public sendImage(): void {
+    const actionSheetOptions: ActionSheetOptions = {
+      title: this.translate.instant('Choose an image'),
+      buttonLabels: [
+        this.translate.instant('Take Photo'),
+        this.translate.instant('Photo Library')
+      ],
+      addCancelButtonWithLabel: this.translate.instant('Cancel'),
+      androidTheme: 5,
+      androidEnableCancelButton: true,
+      destructiveButtonLast: true
+    };
+
+    this.actionSheet.show(actionSheetOptions)
+      .then((buttonIndex: number) => {
+        if (buttonIndex === 1) {
+          this._takePhoto();
+        } else if (buttonIndex === 2) {
+          this._chooseFromLibrary();
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
+  /**
+   * Takes photo from camera
+   */
+  private _takePhoto(): void {
+    const cameraOptions: CameraOptions = {
+      sourceType: this.camera.PictureSourceType.CAMERA,
+      mediaType: this.camera.MediaType.PICTURE,
+      encodingType: this.camera.EncodingType.JPEG,
+      destinationType: this.camera.DestinationType.DATA_URL,
+      quality: 50,
+      targetWidth: 1204,
+      targetHeight: 1204
+    }
+
+    this.camera.getPicture(cameraOptions)
+      .then((imageData) => {
+        let profileAvatar = 'data:image/jpeg;base64,' + imageData;
+        this._replyToThreadWithImage(profileAvatar);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
+  /**
+   * Chooses a photo from library
+   */
+  private _chooseFromLibrary(): void {
+    const cameraOptions: CameraOptions = {
+      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
+      mediaType: this.camera.MediaType.PICTURE,
+      encodingType: this.camera.EncodingType.JPEG,
+      destinationType: this.camera.DestinationType.DATA_URL,
+      quality: 50,
+      targetWidth: 1204,
+      targetHeight: 1204
+    }
+
+    this.camera.getPicture(cameraOptions)
+      .then((imageData) => {
+        let profileAvatar: string = 'data:image/jpeg;base64,' + imageData;
+        this._replyToThreadWithImage(profileAvatar);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
+  /**
+   * 1) Show image in thread
+   * 2) Show progress message = 'Uploading...';
+   * 3) Send image to API
+   * 3.1) Remove progress message (when promise from API ends)
+   * @param {string} profileAvatar
+   */
+  private _replyToThreadWithImage(profileAvatar: string): void {
+    let imageTag: string = '<img class="image-reply" src="' + profileAvatar + '" style="width: 250px; max-height: none;" >';
+    this.addMessage({ subject: null, content: imageTag });
+    this.scrollDown(1);
+    this.progressMessage = this.translate.instant('Uploading...');
+    // @TODO 3) Send image to API
+    // @TODO 3.1) Remove progress message (when promise from API ends)
+                  // this.progressMessage = null;
   }
 
   newMessage() {

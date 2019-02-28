@@ -8,5 +8,7 @@
 	"Media Player": "Media Player",
 	"Username": "Username",
 	"Password": "Password",
-	"Click here to logout": "Click here to logout"
+	"Click here to logout": "Click here to logout",
+	"Sending...": "Sending...",
+	"Uploading...": "Uploading..."
 }
