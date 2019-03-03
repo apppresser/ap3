@@ -143,9 +143,9 @@ bp-messages {
 			margin: 0;
 		}
 	}
-	.image-reply {
+	ion-item img {
 		width: 250px;
-		max-height: none;
+		max-height: none !important;
 	}
 	ion-footer {
 		.reply-container {

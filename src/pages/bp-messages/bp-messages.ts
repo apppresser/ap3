@@ -446,77 +446,37 @@ export class BpMessages {
    * Sends an image from camera or library as a private message
    */
   public sendImage(): void {
-    const actionSheetOptions: ActionSheetOptions = {
+    let options = {
       title: this.translate.instant('Choose an image'),
       buttonLabels: [
         this.translate.instant('Take Photo'),
         this.translate.instant('Photo Library')
       ],
       addCancelButtonWithLabel: this.translate.instant('Cancel'),
-      androidTheme: 5,
-      androidEnableCancelButton: true,
       destructiveButtonLast: true
-    };
-
-    this.actionSheet.show(actionSheetOptions)
-      .then((buttonIndex: number) => {
-        if (buttonIndex === 1) {
-          this._takePhoto();
-        } else if (buttonIndex === 2) {
-          this._chooseFromLibrary();
-        }
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }
-
-  /**
-   * Takes photo from camera
-   */
-  private _takePhoto(): void {
-    const cameraOptions: CameraOptions = {
-      sourceType: this.camera.PictureSourceType.CAMERA,
-      mediaType: this.camera.MediaType.PICTURE,
-      encodingType: this.camera.EncodingType.JPEG,
-      destinationType: this.camera.DestinationType.DATA_URL,
-      quality: 50,
-      targetWidth: 1204,
-      targetHeight: 1204
     }
 
-    this.camera.getPicture(cameraOptions)
-      .then((imageData) => {
-        let profileAvatar = 'data:image/jpeg;base64,' + imageData;
-        this._replyToThreadWithImage(profileAvatar);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }
-
-  /**
-   * Chooses a photo from library
-   */
-  private _chooseFromLibrary(): void {
-    const cameraOptions: CameraOptions = {
-      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
-      mediaType: this.camera.MediaType.PICTURE,
-      encodingType: this.camera.EncodingType.JPEG,
-      destinationType: this.camera.DestinationType.DATA_URL,
-      quality: 50,
-      targetWidth: 1204,
-      targetHeight: 1204
-    }
-
-    this.camera.getPicture(cameraOptions)
-      .then((imageData) => {
-        let profileAvatar: string = 'data:image/jpeg;base64,' + imageData;
-        this._replyToThreadWithImage(profileAvatar);
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    this.actionSheet.show(options).then((buttonIndex: number) => {
+      if (buttonIndex === 1) {
+        this.bpProvider.doCamera('camera')
+          .then(image => {
+            let uploadedImage = (<string>image);
+            this._replyToThreadWithImage(uploadedImage);
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      } else if (buttonIndex === 2) {
+        this.bpProvider.doCamera('library')
+          .then(image => {
+            let uploadedImage = (<string>image);
+            this._replyToThreadWithImage(uploadedImage);
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      }
+    })
   }
 
   /**
@@ -524,16 +484,28 @@ export class BpMessages {
    * 2) Show progress message = 'Uploading...';
    * 3) Send image to API
    * 3.1) Remove progress message (when promise from API ends)
-   * @param {string} profileAvatar
+   * @param {string} imageMessage
    */
-  private _replyToThreadWithImage(profileAvatar: string): void {
-    let imageTag: string = '<img class="image-reply" src="' + profileAvatar + '" style="width: 250px; max-height: none;" >';
+  private _replyToThreadWithImage(imageMessage: string): void {
+    // 1) Show image in thread
+    let imageTag: string = '<img src="' + imageMessage + '">';
     this.addMessage({ subject: null, content: imageTag });
     this.scrollDown(1);
+
+    // 2) Show progress message = 'Uploading...';
     this.progressMessage = this.translate.instant('Uploading...');
-    // @TODO 3) Send image to API
-    // @TODO 3.1) Remove progress message (when promise from API ends)
-                  // this.progressMessage = null;
+
+    // 3) Send image to API
+    let recipients = Object.keys(this.threads.recipients);
+    this.bpProvider.sendMessageWithImage(recipients, this.login_data, imageMessage, this.threads.thread_id)
+      .then(ret => {
+        // 3.1) Remove progress message
+        this.progressMessage = null;
+      })
+      .catch(e => {
+        this.threads.messages.shift()
+        this.handleErr(e)
+      });
   }
 
   newMessage() {

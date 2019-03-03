@@ -450,6 +450,70 @@ export class BpProvider {
 
   }
 
+  /**
+   * Sends an image as a private message (@TODO refactor this when testing on device)
+   *
+   * @param {*} recipients
+   * @param {*} login_data
+   * @param {string} image
+   * @param {number} threadId
+   * @returns {Promise<any>}
+   */
+  sendMessageWithImage(recipients: any, login_data: any, imageUrl: string, threadId: number): Promise<any> {
+    let route: string = this.url + this.restBase + 'messages/send';
+
+    return new Promise((resolve, reject) => {
+      let imageURI = '';
+      const fileTransfer: TransferObject = this.Transfer.create();
+      let options: FileUploadOptions = {};
+
+      if (imageUrl.indexOf('{') === 0) { // from cordova-plugin-camera-with-exif
+        let img = JSON.parse(imageUrl);
+        imageURI = img.filename;
+      } else { // from cordova-plugin-camera
+        imageURI = imageUrl;
+      }
+
+      let image = imageURI.substr(imageURI.lastIndexOf('/') + 1);
+      let name = image.split("?")[0];
+      let anumber = image.split("?")[1];
+
+      if ('Android' === this.Device.platform) {
+        image = anumber + '.jpg';
+      }
+
+      // this creates a random string based on the date
+      let d = new Date().toTimeString();
+      let random = d.replace(/[\W_]+/g, "").substr(0, 6);
+
+      options = {
+        fileKey: 'message_image',
+        // prepend image name with random string to avoid duplicate upload errors
+        fileName: imageURI ? random + image : random,
+        mimeType: 'image/jpeg',
+        httpMethod: "POST",
+        chunkedMode: false
+      }
+
+      let params: any = {
+        recipients: recipients,
+        user_id: login_data.user_id,
+        token: login_data.token,
+        thread_id: threadId
+      };
+
+      options.params = params;
+
+      fileTransfer.upload(imageURI, route, options, true).then((data) => {
+        console.log(data)
+        resolve(JSON.parse(data.response))
+      }).catch((FileTransferError) => {
+        this.handleError(FileTransferError);
+        reject(FileTransferError)
+      })
+    }); // end promise
+  }
+
   getNotifications( login_data ) {
 
     // let user_id = ( login_data && login_data.user_id ? '&user_id=' + login_data.user_id : '' );
