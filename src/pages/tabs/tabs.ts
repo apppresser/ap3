@@ -22,6 +22,7 @@ export class TabsPage implements OnInit {
   mySelectedIndex: number;
   login_modal: any;
   login_modal_open = false;
+  force_login_active = false;
 
   constructor(
     private modalCtrl: ModalController,
@@ -47,6 +48,7 @@ export class TabsPage implements OnInit {
 
 
     this.mySelectedIndex = this.navParams.data.tabIndex || 0;
+    this.force_login_active = (this.navParams.data[0] && this.navParams.data[0].force_login_active);
 
     // root=null if opening in the IAB
     for(let tab of this.navParams.data) {

@@ -2,6 +2,7 @@ import {Injectable, isDevMode} from '@angular/core';
 
 import {GlobalVars} from "../../providers/globalvars/globalvars";
 import {Iframe} from "../../pages/iframe/iframe";
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable()
 export class MenuService {
@@ -10,7 +11,8 @@ export class MenuService {
   tabs: any[] = [];
 
   constructor(
-    private globalvars: GlobalVars
+    private globalvars: GlobalVars,
+    private translate: TranslateService
   ) {}
 
   /**
@@ -94,5 +96,15 @@ export class MenuService {
 			console.log('Are you looking for page slugs?', pages); // you can find the slugs here
 
     	return menu_index;
+  }
+
+  getLoginModalPage(force_login_active?:boolean) {
+    return {
+      title: this.translate.instant('Login'),
+      show: true,
+      root: 'LoginModal',
+      extra_classes: 'loggedout',
+      force_login_active: (force_login_active)
+    }
   }
 }

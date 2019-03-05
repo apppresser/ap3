@@ -1,3 +1,3 @@
-<ion-tabs [selectedIndex]="mySelectedIndex" #myTabs>
+<ion-tabs [ngClass]="{'forcing-login-active':force_login_active}" [selectedIndex]="mySelectedIndex" #myTabs>
   <ion-tab *ngFor="let tab of tabs" [root]="tab.root" tabTitle="{{tab.title | translate}}" [tabIcon]="tab.icon" [rootParams]="tab" [ngClass]="tab.extra_classes" [show]="tab.show" (ionSelect)="onIonSelect($event, tab);"></ion-tab>
 </ion-tabs>
