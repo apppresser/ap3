@@ -304,7 +304,6 @@ export class MyApp {
             
             this.loadStyles(data);
             this.doStatusBar(data);
-            this.getSetLogin();
           });
         
       });
@@ -1349,7 +1348,12 @@ export class MyApp {
         let page_slug = url;
         page = this.getPageBySlug(page_slug);
         if(page) {
-          this.pushPage(page);
+          if(this.myLoginModal) {
+            this.myLoginModal.dismiss()
+          }
+          setTimeout(()=>{
+            this.pushPage(page);
+          },800);
         } else {
           this.translate.get('Page not found').subscribe( text => {
             this.presentToast(text);
@@ -1368,9 +1372,7 @@ export class MyApp {
           extra_classes: '',
         };
 
-        this.stopTabReset = true;
         this.pushPage(page);
-        this.stopTabReset = false;
         this.resetTabs(this.loginservice.user);
       }   
     }
@@ -1434,10 +1436,11 @@ export class MyApp {
    */
   resetTabs( login, lang_updated? ) {
 
-    
-    if(this.stopTabReset)
+    if(this.stopTabReset) {
+      this.stopTabReset = false;
       return; // We can't reset the tabs now if a push notification has opened the app and has a pushPage included
-    
+    }
+
     this.navparams = []
 
     if(typeof(this.tabs) === 'undefined')
