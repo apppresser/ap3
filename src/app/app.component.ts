@@ -149,7 +149,10 @@ export class MyApp {
     });
 
     events.subscribe('login:force_login', () => {
-      // this.openLoginModal();
+      if(!this.user && this.myapppsettings.isForcedLogin() && this.myapppsettings.isPreview()) {
+        // only do this in the preview, at other times the loginModal becomes a page when the menus are reset
+        this.openLoginModal();
+      }
     });
 
     events.subscribe('pushpage', page => {
@@ -363,9 +366,8 @@ export class MyApp {
 
     const data = this.myapppsettings.settings;
 
-    if(!this.user && this.myapppsettings.isForcedLogin()) {
-
-      // force login
+    if(!this.user && this.myapppsettings.isForcedLogin() && !this.myapppsettings.isPreview()) {
+      // force login, but not when in the preview
       this.nav.setRoot( 'LoginModal', [this.menuservice.getLoginModalPage()] );
     } else if( this.tabs ) {
 
@@ -422,15 +424,12 @@ export class MyApp {
       if(typeof this.originalTabs === 'undefined')
         this.originalTabs = this.tabs.slice(); // make a copy
 
-        if(!this.user && this.myapppsettings.isForcedLogin() && !this.myapppsettings.isPreview()) {
-
-          const loginModalPage = this.menuservice.getLoginModalPage(true);
-
-          this.nav.setRoot('TabsPage', [loginModalPage]);
-          
-        } else {
-          this.nav.setRoot('TabsPage', this.tabs);
-        }
+      if(!this.user && this.myapppsettings.isForcedLogin() && !this.myapppsettings.isPreview()) {
+        const loginModalPage = this.menuservice.getLoginModalPage(true);
+        this.nav.setRoot('TabsPage', [loginModalPage]);
+      } else {
+        this.nav.setRoot('TabsPage', this.tabs);
+      }
     }
   }
 
@@ -1399,8 +1398,10 @@ export class MyApp {
       this.presentToast(text);
     });
 
-    if(this.myapppsettings.isForcedLogin()) {
-      // this.openLoginModal();
+    if(this.myapppsettings.isForcedLogin() && this.myapppsettings.isPreview()) {
+      setTimeout(()=>{
+        this.openLoginModal();
+      }, 1500);
     } else if(logout_response && logout_response.data && logout_response.data.logout_redirect) {
       this.maybeLogInOutRedirect(logout_response.data);
     }
@@ -1433,14 +1434,15 @@ export class MyApp {
    */
   resetTabs( login, lang_updated? ) {
 
+    
     if(this.stopTabReset)
       return; // We can't reset the tabs now if a push notification has opened the app and has a pushPage included
-
+    
     this.navparams = []
 
     if(typeof(this.tabs) === 'undefined')
       return;
-
+    
     login = (typeof login === 'undefined') ? false : login;
     
     for( let item of this.tabs ) {
@@ -1485,17 +1487,9 @@ export class MyApp {
     // "refresh" the view by resetting to home tab
     //this.openPage( { 'title': this.tabs[0].title, 'url': '', 'component': 'TabsPage', 'navparams': this.navparams, 'class': this.tabs[0].icon } )
 
-    if(!this.user && this.myapppsettings.isForcedLogin()) {
-
-
-      /**
-       * NEW IDEA!  Just add extra_class="loggedout" this page and loggedin on the other menu items
-       */
-
+    if(!this.user && this.myapppsettings.isForcedLogin() && !this.myapppsettings.isPreview()) {
       const loginModal = this.menuservice.getLoginModalPage(true);
-
       this.nav.setRoot('TabsPage', [loginModal]);
-
       return;
     }
     
