@@ -27,6 +27,7 @@ import { Geolocation } from "@ionic-native/geolocation";
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
 
 /* Providers */
+import { MyApppSettingsService } from "../providers/appdata/myappp.settings.service";
 import {AppCamera} from '../providers/camera/app-camera';
 import {Posts} from '../providers/posts/posts';
 import {GlobalVars} from '../providers/globalvars/globalvars';
@@ -102,6 +103,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
   providers: [
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     {provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler},
+    MyApppSettingsService,
     AppCamera,
     Posts,
     GlobalVars,

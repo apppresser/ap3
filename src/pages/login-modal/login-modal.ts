@@ -11,6 +11,7 @@ import {Device} from '@ionic-native/device';
 import {TranslateService} from '@ngx-translate/core';
 import { LoginService } from '../../providers/logins/login.service';
 import {BpProvider} from '../../providers/buddypress/bp-provider';
+import { MyApppSettingsService } from '../../providers/appdata/myappp.settings.service';
 
 @IonicPage()
 @Component({
@@ -43,6 +44,7 @@ export class LoginModal {
 		public viewCtrl: ViewController,
 		public loadingCtrl: LoadingController,
 		public wplogin: WPlogin,
+		public myapppsettings: MyApppSettingsService,
 		private logins: Logins,
 		public events: Events,
 		public storage: Storage,
@@ -99,7 +101,7 @@ export class LoginModal {
 
 		this.initFBLogin();
 
-		this.is_preview = (location.href.indexOf('myapppresser') > 0);
+		this.is_preview = this.myapppsettings.isPreview();
 
 		this.doIphoneX()
 
@@ -364,6 +366,7 @@ export class LoginModal {
 			this.events.publish('user:logout', response )
 			this.login_data = null
 			this.hideSpinner()
+			this.dismiss();
 
 		}, (err) => {
 
@@ -373,6 +376,7 @@ export class LoginModal {
 			this.events.publish('user:logout' )
 			this.login_data = null
 			this.hideSpinner()
+			this.dismiss();
 
 			console.log(err)
 

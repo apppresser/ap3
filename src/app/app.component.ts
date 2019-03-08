@@ -41,6 +41,7 @@ import { Language } from '../models/language.model';
 import { DocumentDirection } from 'ionic-angular/umd/platform/platform';
 import { ErrorLogService } from '../providers/appdata/error-log.service';
 import { RemoteDataService } from '../providers/appdata/remote-data';
+import { MyApppSettingsService } from '../providers/appdata/myappp.settings.service';
 
 /**
  * Customizable options for our
@@ -88,6 +89,7 @@ export class MyApp {
 
   constructor(
     private platform: Platform,
+    public myapppsettings: MyApppSettingsService,
     public appCamera: AppCamera,
     private menuCtrl: MenuController,
     private globalvars: GlobalVars,
@@ -147,7 +149,10 @@ export class MyApp {
     });
 
     events.subscribe('login:force_login', () => {
-      this.openLoginModal();
+      if(!this.user && this.myapppsettings.isForcedLogin() && this.myapppsettings.isPreview()) {
+        // only do this in the preview, at other times the loginModal becomes a page when the menus are reset
+        this.openLoginModal();
+      }
     });
 
     events.subscribe('pushpage', page => {
@@ -167,6 +172,7 @@ export class MyApp {
         this.bodyTag.classList.remove('loggedin')
       }
     });
+    this.getSetLogin();
 
     // TODO: this causes a bug when iframe page is the homepage. It calls resetTabs too many times, which loads iframe.ts twice, causing the spinner to appear for too long.
     this.languageservice.languageStatus().subscribe((language: Language) => {
@@ -251,7 +257,8 @@ export class MyApp {
 
       console.log('Got data', data);
 
-      this.afterData(data);
+      this.myapppsettings.setData(data);
+      this.afterData();
 
     }).catch( e => {
 
@@ -261,14 +268,17 @@ export class MyApp {
       this.appdata.getData( 'app-data.json' ).then( (data:any) => {
         console.log('Got local data file.');
 
-        this.afterData(data);
+        this.myapppsettings.setData(data);
+        this.afterData();
 
       });
 
     });
   }
 
-  afterData(data) {
+  afterData() {
+
+    const data = this.myapppsettings.settings;
 
     this.SplashScreen.hide();
 
@@ -280,7 +290,7 @@ export class MyApp {
           // set the default language before loading menu
           this.setAvailableLangs(data).then( lang => {
 
-            this.loadMenu(data);
+            this.loadMenus();
             
             this.showLogin = ( data.side_menu_login == "on" ) ? true : false;
             this.logins.set_force_login( (data.side_menu_force_login == "on") );
@@ -294,7 +304,6 @@ export class MyApp {
             
             this.loadStyles(data);
             this.doStatusBar(data);
-            this.getSetLogin();
           });
         
       });
@@ -330,18 +339,67 @@ export class MyApp {
 
   }
 
-  loadMenu(data) {
+  loadSideMenu() {
 
-    // console.log('loadmenu', data);
-    // any menu imported from WP has to use same component. Other pages can be added manually with different components
+    // Add pages manually here, can use different components like this... (then use the slug name to create your page, etc. www/build/custom.html)
+    // let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': { slug: 'custom' }, extra_classes: '' };
+    // this.pages.push( e );
 
-    // If we have a tab menu, set that up
-    if( data.tab_menu.items ) {
+    const data = this.myapppsettings.settings;
+
+    if( data.menus.items ) {
+
+      data.menus.items.map(item => item.title = this.decodeHtmlEntity(item.title));
+
+      this.pages = data.menus.items.slice();
+      this.menuservice.menu = this.pages.slice();
+
+      this.showmenu = true;
+
+      // set the home page to the proper component
+      this.setHomePageComponent()
+    }
+  }
+
+  setHomePageComponent() {
+
+    const data = this.myapppsettings.settings;
+
+    if(!this.user && this.myapppsettings.isForcedLogin() && !this.myapppsettings.isPreview()) {
+      // force login, but not when in the preview
+      this.nav.setRoot( 'LoginModal', [this.menuservice.getLoginModalPage()] );
+    } else if( this.tabs ) {
+
+      this.pages.unshift( { 'title': data.tab_menu.name, 'url': '', 'component': 'TabsPage', 'navparams': this.navparams, 'class': 'home', 'extra_classes':'hide', 'is_home': true } );
+    } else if( !this.tabs && data.menus.items[0].type === 'apppages' ) {
+
+      // used for custom logo
+      data.menus.items[0].is_home = true;
+
+      let root = this.getPageType( data.menus.items[0] );
+
+      this.nav.setRoot( root, data.menus.items[0] );
+
+    } else {
+
+      // used for custom logo
+      data.menus.items[0].is_home = true;
+
+      // anything else uses Iframe component
+      this.nav.setRoot( Iframe, data.menus.items[0] );
+
+    }
+  }
+
+  loadTabMenu() {
+
+    const data = this.myapppsettings.settings;
+
+     // If we have a tab menu, set that up
+     if(this.myapppsettings.hasTabsMenu()) {
 
       // Add pages manually here, can use different components like this... (then use the slug name to create your page, etc. www/build/custom.html)
       // let e = { 'title': "Downloads", 'type': 'apppages', 'page_type' : 'media-list', 'class': "information-circle", 'slug': 'custom', 'extra_classes': '', 'allow_downloads': '', 'list_route': 'http://appdev.local/wp-json/wp/v2/posts' };
-
-      // data.tab_menu.items.push( e );
 
       for( let item of data.tab_menu.items ) {
 
@@ -365,48 +423,22 @@ export class MyApp {
       if(typeof this.originalTabs === 'undefined')
         this.originalTabs = this.tabs.slice(); // make a copy
 
-      this.nav.setRoot('TabsPage', this.tabs);
-
-    }
-
-    if( data.menus.items ) {
-
-      data.menus.items.map(item => item.title = this.decodeHtmlEntity(item.title));
-
-      this.pages = data.menus.items.slice();
-      this.menuservice.menu = this.pages.slice();
-
-      this.showmenu = true;
-
-      // Add pages manually here, can use different components like this... (then use the slug name to create your page, etc. www/build/custom.html)
-      // let e = { 'title': "Custom Page", 'component': CustomPage, 'class': "information-circle", 'navparams': { slug: 'custom' }, extra_classes: '' };
-
-      // this.pages.push( e );
-
-      // set the home page to the proper component
-      if( this.tabs ) {
-
-        this.pages.unshift( { 'title': data.tab_menu.name, 'url': '', 'component': 'TabsPage', 'navparams': this.navparams, 'class': 'home', 'extra_classes':'hide', 'is_home': true } );
-      } else if( !this.tabs && data.menus.items[0].type === 'apppages' ) {
-
-        // used for custom logo
-        data.menus.items[0].is_home = true;
-
-        let root = this.getPageType( data.menus.items[0] );
-
-        this.nav.setRoot( root, data.menus.items[0] );
-
+      if(!this.user && this.myapppsettings.isForcedLogin() && !this.myapppsettings.isPreview()) {
+        const loginModalPage = this.menuservice.getLoginModalPage(true);
+        this.nav.setRoot('TabsPage', [loginModalPage]);
       } else {
-
-        // used for custom logo
-        data.menus.items[0].is_home = true;
-
-        // anything else uses Iframe component
-        this.nav.setRoot( Iframe, data.menus.items[0] );
-
+        this.nav.setRoot('TabsPage', this.tabs);
       }
-
     }
+  }
+
+  loadMenus() {
+
+    const data = this.myapppsettings.settings;
+
+    // any menu imported from WP has to use same component. Other pages can be added manually with different components
+    this.loadTabMenu();
+    this.loadSideMenu();
 
     // Only show the intro if there's a slug
     if( data.meta.intro_slug && data.meta.intro_slug != '' )
@@ -1316,7 +1348,12 @@ export class MyApp {
         let page_slug = url;
         page = this.getPageBySlug(page_slug);
         if(page) {
-          this.pushPage(page);
+          if(this.myLoginModal) {
+            this.myLoginModal.dismiss()
+          }
+          setTimeout(()=>{
+            this.pushPage(page);
+          },800);
         } else {
           this.translate.get('Page not found').subscribe( text => {
             this.presentToast(text);
@@ -1335,13 +1372,12 @@ export class MyApp {
           extra_classes: '',
         };
 
-        this.stopTabReset = true;
         this.pushPage(page);
-        this.stopTabReset = false;
         this.resetTabs(this.loginservice.user);
       }   
     }
   }
+
   userLogout(logout_response?) {
     // this.storage.remove('user_login').then( () => {
     //   this.presentToast('Logged out successfully.')
@@ -1364,15 +1400,13 @@ export class MyApp {
       this.presentToast(text);
     });
 
-    this.storage.get('force_login').then( data => {
-      if(data) {
+    if(this.myapppsettings.isForcedLogin() && this.myapppsettings.isPreview()) {
+      setTimeout(()=>{
         this.openLoginModal();
-      } else if(logout_response && logout_response.data && logout_response.data.logout_redirect) {
-        this.maybeLogInOutRedirect(logout_response.data);
-      }
-    }).catch( e => {
-      console.warn(e)
-    });
+      }, 1500);
+    } else if(logout_response && logout_response.data && logout_response.data.logout_redirect) {
+      this.maybeLogInOutRedirect(logout_response.data);
+    }
 
   }
 
@@ -1391,6 +1425,9 @@ export class MyApp {
       }
 
     }
+
+    this.setHomePageComponent();
+    
   }
 
   /**
@@ -1399,14 +1436,16 @@ export class MyApp {
    */
   resetTabs( login, lang_updated? ) {
 
-    if(this.stopTabReset)
+    if(this.stopTabReset) {
+      this.stopTabReset = false;
       return; // We can't reset the tabs now if a push notification has opened the app and has a pushPage included
+    }
 
     this.navparams = []
 
     if(typeof(this.tabs) === 'undefined')
       return;
-
+    
     login = (typeof login === 'undefined') ? false : login;
     
     for( let item of this.tabs ) {
@@ -1450,6 +1489,12 @@ export class MyApp {
 
     // "refresh" the view by resetting to home tab
     //this.openPage( { 'title': this.tabs[0].title, 'url': '', 'component': 'TabsPage', 'navparams': this.navparams, 'class': this.tabs[0].icon } )
+
+    if(!this.user && this.myapppsettings.isForcedLogin() && !this.myapppsettings.isPreview()) {
+      const loginModal = this.menuservice.getLoginModalPage(true);
+      this.nav.setRoot('TabsPage', [loginModal]);
+      return;
+    }
     
     this.zone.run( () => {
       // If the login/out has a redirect, we don't want to set the root here
@@ -1485,22 +1530,22 @@ export class MyApp {
         this.nav.setRoot( 'TabsPage', this.navparams );
 
       }
-
-      if(!this.user) {
-        this.storage.get('force_login').then((data) => {
-          if(data && !this.user) {
-            setTimeout( () => {
-              this.openLoginModal();
-            }, 800); // a little time to load smoother
-          }
-        });
-      }
       
     } )
 
   }
 
   getSetLogin() {
+
+    if(this.loginservice.user) {
+      if( this.pages )
+            this.resetSideMenu(true)
+
+      if( this.tabs )
+        this.resetTabs(true)
+
+        return;
+    }
 
     this.storage.get('user_login').then( data => {
         if(data) {

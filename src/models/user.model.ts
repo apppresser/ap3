@@ -4,6 +4,7 @@ export class User {
 	public lastname: String;
 	public email: String;
 	public avatar: String;
+	public role: String;
 	public lang: String;
 	public rtl: Boolean;
 	
@@ -15,6 +16,7 @@ export class User {
 			this.lastname = (data.lastname) ? data.lastname : '';
 			this.email = (data.email) ? data.email : '';
 			this.avatar = (data.avatar) ? data.avatar : '';
+			this.role = (data.role) ? data.role : '';
 			this.lang = (data.lang) ? data.lang : '';
 			this.rtl = (data.rtl);
 		}
