@@ -1181,7 +1181,13 @@ export class MyApp {
         this.stopTabReset = false;
 
         // allow the language and user to be set and menus to reset before redirecting
-        let wait = (this.app_recently_started) ? 5000 : 0;
+        let wait = 0;
+        if(this.app_recently_started) {
+          wait = 5000;
+          if(this.myapppsettings.isForcedLogin()) {
+            wait += 3500;
+          }
+        }
 
         // if apppush post URL
         if(isAppPushPostURL) {
