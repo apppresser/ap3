@@ -69,7 +69,8 @@
           </ion-avatar>
           <p *ngIf="request.name" (tap)="viewMember( request )"><strong>{{ request.name }}</strong></p>
           
-          <button ion-button (tap)="acceptFriendship( request, false )">{{ 'Accept' | translate }}</button>
+          <button ion-button (tap)="acceptOrWithdrawFriendship(request, false)">{{ 'Accept' | translate }}</button>
+          <button ion-button (tap)="acceptOrWithdrawFriendship(request, true)">{{ 'Reject' | translate }}</button>
           
         </ion-item>
 

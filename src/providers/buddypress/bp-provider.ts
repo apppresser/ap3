@@ -364,46 +364,20 @@ export class BpProvider {
 
   }
 
-  acceptWithdrawFriendship( friendId, login_data, withdraw ) {
+  /**
+   * Accepts or Withdraws a friend request to the API
+   * @param {number} friendId
+   * @param {*} login_data
+   * @param {string} withdraw
+   * @returns {Promise<any>}
+   */
+  public acceptOrWithdrawFriendship(friendId: number, login_data: any, withdraw: string): Promise<any> {
+    let route: string = this.url + this.restBase + 'friends/requests/' + friendId;
+    let action: string = (withdraw) ? 'withdraw' : 'accept';
+    let data: any = { action: action, user_id: login_data.user_id, token: login_data.token };
+    let params: string = this.objToParams(data);
 
-    let route = this.url + this.restBase + 'friends/requests/' + friendId;
-
-    let action;
-
-    if( withdraw ) {
-      action = 'withdraw'
-    } else {
-      action = 'accept'
-    }
-
-    let data = {
-      action: action,
-      user_id: login_data.user_id,
-      token: login_data.token
-    };
-
-    let params = this.objToParams( data )
-
-    return new Promise( (resolve, reject) => {
-
-      this.http.post( route + '?' + params, null )
-        .map(res => res.json())
-        .subscribe(data => {
-          
-            resolve(data)
-
-          },
-          error => {
-
-            console.log(error)
-
-            reject(error);
-
-          }
-        )
-
-    }) // end promise
-
+    return this.http.post(route + '?' + params, null).toPromise();
   }
 
   sendMessage( recipients, login_data, subject, content, threadId ) {
@@ -448,6 +422,70 @@ export class BpProvider {
 
     }) // end promise
 
+  }
+
+  /**
+   * Sends an image as a private message (@TODO refactor this when testing on device)
+   *
+   * @param {*} recipients
+   * @param {*} login_data
+   * @param {string} image
+   * @param {number} threadId
+   * @returns {Promise<any>}
+   */
+  sendMessageWithImage(recipients: any, login_data: any, imageUrl: string, threadId: number): Promise<any> {
+    let route: string = this.url + this.restBase + 'messages/send';
+
+    return new Promise((resolve, reject) => {
+      let imageURI = '';
+      const fileTransfer: TransferObject = this.Transfer.create();
+      let options: FileUploadOptions = {};
+
+      if (imageUrl.indexOf('{') === 0) { // from cordova-plugin-camera-with-exif
+        let img = JSON.parse(imageUrl);
+        imageURI = img.filename;
+      } else { // from cordova-plugin-camera
+        imageURI = imageUrl;
+      }
+
+      let image = imageURI.substr(imageURI.lastIndexOf('/') + 1);
+      let name = image.split("?")[0];
+      let anumber = image.split("?")[1];
+
+      if ('Android' === this.Device.platform) {
+        image = anumber + '.jpg';
+      }
+
+      // this creates a random string based on the date
+      let d = new Date().toTimeString();
+      let random = d.replace(/[\W_]+/g, "").substr(0, 6);
+
+      options = {
+        fileKey: 'message_image',
+        // prepend image name with random string to avoid duplicate upload errors
+        fileName: imageURI ? random + image : random,
+        mimeType: 'image/jpeg',
+        httpMethod: "POST",
+        chunkedMode: false
+      }
+
+      let params: any = {
+        recipients: recipients,
+        user_id: login_data.user_id,
+        token: login_data.token,
+        thread_id: threadId
+      };
+
+      options.params = params;
+
+      fileTransfer.upload(imageURI, route, options, true).then((data) => {
+        console.log(data)
+        resolve(JSON.parse(data.response))
+      }).catch((FileTransferError) => {
+        this.handleError(FileTransferError);
+        reject(FileTransferError)
+      })
+    }); // end promise
   }
 
   getNotifications( login_data ) {

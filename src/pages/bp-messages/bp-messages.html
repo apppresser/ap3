@@ -86,7 +86,9 @@
             <p class="message-preview"><strong>{{ getSubject( message.subject ) }}</strong> <span [innerHTML]=" message.message | doLinks"></span></p>
 
         </ion-item>
-
+        <ion-item class="progress-message" *ngIf="progressMessage">
+          {{ progressMessage }}
+        </ion-item>
     </ion-list>
 
   </div>
@@ -97,17 +99,20 @@
 
 <ion-footer no-border>
   <ion-toolbar *ngIf="threads && singleThread">
-    <ion-grid>
-      <ion-row>
-        <ion-col col-10>
-          <ion-input [(ngModel)]="threadReply" name="threadReply" type="text" (keyup.enter)="replyToThread()"></ion-input>
-        </ion-col>
-        <ion-col col-2 text-center>
-          <button block ion-button icon-only (tap)="replyToThread()">
+    <div class="reply-container">
+      <div class="reply-row-container">
+        <div class="input-container">
+          <ion-input [(ngModel)]="threadReply" name="threadReply" type="text"></ion-input>
+        </div>
+        <div class="buttons-container">
+          <button ion-button icon-only (click)="sendImage()">
+            <ion-icon name="ios-camera"></ion-icon>
+          </button>
+          <button ion-button icon-only (click)="replyToThread()" [disabled]="threadReply === ''">
             <ion-icon name="ios-send"></ion-icon>
           </button>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+        </div>
+      </div>
+    </div>
   </ion-toolbar>
 </ion-footer>
