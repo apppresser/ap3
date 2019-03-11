@@ -86,6 +86,7 @@ export class MyApp {
   showingIntro: boolean = false;
   stopTabReset: boolean = false;
   menu_all_pages: boolean = false;
+  app_recently_started: boolean = true;
 
   constructor(
     private platform: Platform,
@@ -236,6 +237,11 @@ export class MyApp {
 
       // for pdf viewer in media modal
       (<any>window).pdfWorkerSrc = 'assets/lib/pdf-worker.min.js';
+
+      setTimeout(() => {
+        // on startup, wait a little while before doing a push notification redirect
+        this.app_recently_started = false;
+      }, 10000);
 
     });
 
@@ -1174,10 +1180,15 @@ export class MyApp {
         // Now we can allow resetTabs to happen
         this.stopTabReset = false;
 
+        // allow the language and user to be set and menus to reset before redirecting
+        let wait = (this.app_recently_started) ? 5000 : 0;
+
         // if apppush post URL
         if(isAppPushPostURL) {
           let page = { title: data.title, component: Iframe, url: data.additionalData.url, classes: null };
-          this.pushPage( page );
+          setTimeout(()=>{
+            this.pushPage( page );
+          }, wait);
           return;
         }
 
@@ -1198,14 +1209,18 @@ export class MyApp {
           // if page is external, fire the in app browser
           if( page.target === '_blank' ) {
             this.errorlogs.addLog('page url '+page.url, 'push');
-            this.openIab( page.url, page.target );
+            setTimeout(()=>{
+              this.openIab( page.url, page.target );
+            }, wait);
             return;
           }
           
           this.errorlogs.addLog('page slug '+(<any>data).additionalData.page, 'push');
           
           // if they included an app page, load the page
-          this.pushPage( (<any>data).additionalData.page );
+          setTimeout(()=>{
+            this.pushPage( (<any>data).additionalData.page );
+          }, wait);
         }
 
       }); // then
