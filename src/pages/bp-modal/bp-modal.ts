@@ -182,13 +182,16 @@ export class BpModal {
 				}).catch( e => {
 
 					this.handleErr(e)
-					this.hideSpinner()
+					this.hideSpinner();
 
 				});
 
 		} else if( this.isMessage ) {
 
 			if( !this.activity.content ) {
+
+				this.hideSpinner();
+
 				this.translate.get('Please enter some content.').subscribe( text => {
 					this.presentToast(text);
 				  })

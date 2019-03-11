@@ -478,6 +478,7 @@ export class MyApp {
       'show' : item.show,
       'show_slider': item.show_slider,
       'slide_route': item.slide_route,
+      'woo_page': item.woo_page,
       'type': item.type,
       'page_type': item.page_type,
       'page_id': item.page_id,

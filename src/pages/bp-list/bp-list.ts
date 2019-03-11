@@ -162,6 +162,11 @@ export class BpList implements OnInit {
  
   }
 
+  ionSelected() {
+    console.log('onIonSelected BpList');
+    this.getStarted();
+  }
+
   // set this.route with correct url
   getRoute() {
 

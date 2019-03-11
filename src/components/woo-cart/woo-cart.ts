@@ -40,13 +40,18 @@ export class WooCartComponent implements OnInit {
 
 		events.subscribe('cart_change', count => {
 	      this.cart_count = (<number>count)
-	    })
+		})
 
-	    this.wooProvider.getCurrencySymbol().then( symbol => {
-	    	this.currencySymbol = symbol
-	    })
+		this.wooProvider.getCurrencySymbol().then( symbol => {
+			this.currencySymbol = symbol
+		})
 
-	    console.log('symbol ' + this.currencySymbol)
+		console.log('symbol ' + this.currencySymbol)
+
+		events.subscribe('cart_get_latest', data => {
+			this.cart.emit(true);
+			this.getCartContents();
+		});
 
 	}
 

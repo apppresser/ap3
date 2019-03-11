@@ -166,7 +166,7 @@ export class Iframe implements OnInit {
     ionViewDidEnter() {
 
         // this message fires when entering a cached view so we can update any data with ajax. For example, learndash course progress
-        if( this.iframe && this.is_cached ) {
+        if( this.iframe && this.iframe.contentWindow && this.is_cached ) {
             this.iframe.contentWindow.postMessage('app_view_enter', '*');
         }
 
@@ -225,6 +225,8 @@ export class Iframe implements OnInit {
 
     ionSelected() {
         // fires when an active menu item is pressed again, causing a refresh
+
+        console.log('ionSelected Iframe');
 
         this.showSpinner()
 

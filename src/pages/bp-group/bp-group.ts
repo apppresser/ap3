@@ -66,6 +66,10 @@ export class BpGroupPage {
 
   }
 
+  onIonSelected() {
+    console.log('onIonSelected BpGroupPage');
+  }
+
   setupGroup() {
 
     this.bpProvider.getItem( 'groups/' + this.groupId, this.login_data ).then( data => {

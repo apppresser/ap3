@@ -103,7 +103,10 @@ export class MediaList implements OnInit {
   }
 
   ngOnInit() {
+    this.getPosts();
+  }
 
+  getPosts() {
     this.networkState = this.Network.type;
 
     if( this.networkState === 'none' || this.networkState === 'unknown' ) {
@@ -112,7 +115,6 @@ export class MediaList implements OnInit {
     } else {
       this.loadPosts( this.route );
     }
-
   }
 
   ionViewWillEnter() {
@@ -129,6 +131,10 @@ export class MediaList implements OnInit {
       })
     }
  
+  }
+
+  ionSelected() {
+    this.getPosts();
   }
 
   // get posts from storage when we are offline

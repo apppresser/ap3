@@ -201,12 +201,26 @@ export class CustomPage implements OnInit, OnDestroy {
 			this.analyticsservice.trackScreenView('CustomPage', this.slug);
 		}
 
-        if(this.platform.isRTL && this.viewCtrl.enableBack()) {
-            this.viewCtrl.showBackButton(false)
-            this.rtlBack = true
-        }
+		if(this.platform.isRTL && this.viewCtrl.enableBack()) {
+				this.viewCtrl.showBackButton(false)
+				this.rtlBack = true
+		}
 
-    }
+		if(this.navParams.data.woo_page == 'cart' && this.navParams.data.is_nav_push !== true) {
+			this.events.publish('cart_get_latest');
+		}
+
+	}
+	
+	ionSelected() {
+
+		console.log('CustomPage ionSelected', this.navParams.data);
+
+		if(this.navParams.data.woo_page == 'cart') {
+			this.events.publish('cart_get_latest');
+		}
+
+	}
 
 	listener() {
 		// Listen for link clicks, open in in app browser
@@ -242,9 +256,11 @@ export class CustomPage implements OnInit, OnDestroy {
 
 		this.events.subscribe( 'show_search_icon', data => {
 			if( data && data.route ) {
-				this.showSearchIcon = true;
-				this.searchRoute = data.route
-				this.searchCard = data.card
+				setTimeout(() => {
+					this.showSearchIcon = true;
+					this.searchRoute = data.route
+					this.searchCard = data.card
+				});
 			}
 		})
 	}
@@ -718,7 +734,9 @@ export class CustomPage implements OnInit, OnDestroy {
 	    if( !cartPage ) {
 	    	this.presentToast("No cart page set.")
 	    	return;
-	    }
+			}
+			
+			cartPage.is_nav_push = true;
 	    
 	    let cartModule = this.getPageModuleName( cartPage.page_id )
 

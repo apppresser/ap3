@@ -180,6 +180,10 @@ export class PostList implements OnInit {
     this.nav.push(nav.root, nav.navParams, nav.opt);
   }
 
+  ionSelected() {
+    this.loadPosts( this.route );
+  }
+
   doRefresh(refresh) {
     this.loadPosts( this.route );
     this.loadSlides( this.navParams.data.slide_route );

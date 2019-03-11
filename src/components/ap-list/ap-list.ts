@@ -49,11 +49,17 @@ export class ApListComponent implements OnInit {
 		private translate: TranslateService,
 		public events: Events
 		) {
-
+			this.events.subscribe('get_latest_ap_posts', data => {
+				// listen for ionSelected events on the tab nav
+				this.getPosts();
+			});
 	}
 
 	ngOnInit() {
+		this.getPosts();
+	}
 
+	getPosts() {
 		if( this.route ) {
 
 			this.networkState = this.network.type;
@@ -66,7 +72,6 @@ export class ApListComponent implements OnInit {
 		    }
 
 		}
-
 	}
 
 	// get posts from storage when we are offline

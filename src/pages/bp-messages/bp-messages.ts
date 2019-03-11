@@ -23,6 +23,7 @@ export class BpMessages {
   selectedItem: any;
   threads: any;
   page: number = 1;
+  base_route: string;
   route: string;
   siteurl: string;
   title: string;
@@ -66,7 +67,8 @@ export class BpMessages {
     this.threadReply = '';
     let item = window.localStorage.getItem( 'myappp' );
 
-    this.route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/messages'
+    this.base_route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/messages';
+    this.route = this.base_route;
 
     this.customClasses = 'bp-messages';
 
@@ -103,6 +105,18 @@ export class BpMessages {
     
   }
 
+  ionSelected() {
+    console.log('onIonSelected BpMessages');
+    if( this.singleThread ) {
+      console.log('this.singleThread', this.singleThread);
+      console.log('this.navParams.data.threadId', this.navParams.data.threadId)
+      if(this.navParams.data.threadId)
+        this.doSingleThread();
+    } else {
+      this.getStarted();
+    }
+  }
+
   eventSubscribe() {
 
     // push new activity item after posted
@@ -111,7 +125,7 @@ export class BpMessages {
       if( this.singleThread ) {
 
         if( !this.threads || !this.threads.messages ) {
-          this.getThreads( this.route + '/' + data.threadId )
+          this.getThreads( this.base_route + '/' + data.threadId )
         } else {
           this.addMessage( data )
 
@@ -202,7 +216,7 @@ export class BpMessages {
 
     if( this.navParams.data.threadId ) {
 
-      this.route = this.route + '/' + this.navParams.data.threadId;
+      this.route = this.base_route + '/' + this.navParams.data.threadId;
       this.getStarted()
 
     } else if( this.navParams.data.newThread ) {

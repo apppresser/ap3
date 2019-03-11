@@ -77,6 +77,13 @@ export class BpProfilePage implements OnInit {
 
   }
 
+  ionSelected() {
+    if( this.userData ) {
+      this.setupUser( false )
+    }
+    this.getNotifications();
+  }
+
   checkLogin() {
 
     // if we are here it's probably because this page was loaded from the menu, not from the members list page

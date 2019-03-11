@@ -40,6 +40,10 @@ export class DownloadList {
     this.getDownloads()
   }
 
+  ionSelected() {
+    this.getDownloads()
+  }
+
   // first get existing checked segments
   getDownloads() {
   
