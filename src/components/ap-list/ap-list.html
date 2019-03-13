@@ -13,7 +13,7 @@
     <ion-card (click)="loadDetail(item)" *ngFor="let item of items">
       
       <div class="card-featured-wrap" *ngIf="item.featured_image_urls">
-        <div class="card-featured-image" [ngStyle]="{'background-image': 'url('+ getBgImage( item ) +')'}"></div>
+        <div class="card-featured-image" *ngIf="getBgImage( item )" [ngStyle]="{'background-image': 'url('+ getBgImage( item ) +')'}"></div>
       </div>
 
       <div *ngIf="item.appp && item.appp.post_list && item.appp.post_list.above_title" [innerHTML]="item.appp.post_list.above_title"></div>

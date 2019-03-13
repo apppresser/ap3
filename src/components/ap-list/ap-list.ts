@@ -49,7 +49,7 @@ export class ApListComponent implements OnInit {
 		private translate: TranslateService,
 		public events: Events
 		) {
-			this.events.subscribe('get_latest_ap_posts', data => {
+			this.events.subscribe('custom_page_tab_selected', data => {
 				// listen for ionSelected events on the tab nav
 				this.getPosts();
 			});
@@ -96,14 +96,18 @@ export class ApListComponent implements OnInit {
 
 		this.page = 1;
 
+		if( !this.route || !this.page) {
+			return;
+		}
+
 		// any menu imported from WP has to use same component. Other pages can be added manually with different components
 		this.postService.load( this.route, this.page ).then(items => {
 
-		  // Loads posts from WordPress API
+			// Loads posts from WordPress API
 			this.items = items;
 			this.afterLoadItems();
 
-		  this.storage.set( this.route.substr(-10, 10) + '_posts', items);
+			this.storage.set( this.route.substr(-10, 10) + '_posts', items);
 
 		  // load more right away
 		  if( this.infiniteScroll )
@@ -160,6 +164,10 @@ export class ApListComponent implements OnInit {
 	}
 
 	loadMore(infiniteScroll) {
+
+		if( !this.route || !this.page ) {
+			return;
+		}
 
 		this.page++;
 
@@ -286,6 +294,8 @@ export class ApListComponent implements OnInit {
 			return item.featured_image_urls.large;
 		} else if( item.featured_image_urls.medium ) {
 			return item.featured_image_urls.medium;
+		} else {
+			return '';
 		}
 
 	}

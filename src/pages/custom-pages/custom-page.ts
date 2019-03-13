@@ -213,26 +213,24 @@ export class CustomPage implements OnInit, OnDestroy {
 	}
 	
 	ionSelected() {
-
-		console.log('CustomPage ionSelected', this.navParams.data);
-
 		if(this.navParams.data.woo_page == 'cart') {
 			this.events.publish('cart_get_latest');
+		} else {
+			this.events.publish('custom_page_tab_selected');
 		}
-
 	}
 
 	listener() {
 		// Listen for link clicks, open in in app browser
 	    this.listenFunc = this.renderer.listen(this.elementRef.nativeElement, 'click', (event) => {
 
-	    	if(event.target.href && event.target.href.indexOf('http') >= 0) {
-				event.preventDefault();
-				if(event.target.target && event.target.target) {
-					window.open(event.target.href, event.target.target);
-				} else {
-					window.open(event.target.href, '_blank');
-				}
+				if(event.target.href && event.target.href.indexOf('http') >= 0) {
+					event.preventDefault();
+					if(event.target.target && event.target.target) {
+						window.open(event.target.href, event.target.target);
+					} else {
+						window.open(event.target.href, '_blank');
+					}
 	      }
 	    });
 	}

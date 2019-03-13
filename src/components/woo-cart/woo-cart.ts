@@ -46,7 +46,6 @@ export class WooCartComponent implements OnInit {
 			this.currencySymbol = symbol
 		})
 
-		console.log('symbol ' + this.currencySymbol)
 
 		events.subscribe('cart_get_latest', data => {
 			this.cart.emit(true);
