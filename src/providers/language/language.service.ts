@@ -25,6 +25,10 @@ export class LanguageService {
 		this.language = new Language();
 	}
 
+	getLanguage() {
+		return this.language;
+	}
+
 	setLanguage(language: Language) {
 		this.language = language;
 		this.langObs.next(this.language);

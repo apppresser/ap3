@@ -11,6 +11,8 @@ import {MenuService} from "../../providers/menus/menu.service";
 import {AnalyticsService} from '../../providers/analytics/analytics.service';
 import { WooProvider } from '../../providers/woo/woo';
 import {Iframe} from "../iframe/iframe";
+import { Language } from "../../models/language.model";
+import { LanguageService } from '../../providers/language/language.service';
 
 /**
  * Any changes done to this file needs to be copied over to
@@ -79,7 +81,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	listenFunc: Function;
 	rtlBack: boolean = false;
 	isRTL: boolean = false;
-	language: any;
+	language: Language;
 	templateUrl: string;
 	extraModules = [IonicModule, TranslateModule, ApListComponentModule, ApSliderComponentModule, WooListComponentModule, WooSliderComponentModule, WooCartComponentModule,WooAccountComponentModule, ApFormModule, ApIapFormModule];
 	langs: any;
@@ -134,12 +136,15 @@ export class CustomPage implements OnInit, OnDestroy {
 		public postCtrl: Posts,
 		public globalvars: GlobalVars,
 		private menuservice: MenuService,
+		private languageservice: LanguageService,
 		private networkstatus: NetworkStatusService,
 		private zone: NgZone,
 		private analyticsservice: AnalyticsService,
 		private network: Network,
 		public wooProvider: WooProvider
-        ) {}
+        ) {
+					this.language = this.languageservice.language;
+				}
 
 	ngOnInit() {
 
@@ -156,6 +161,12 @@ export class CustomPage implements OnInit, OnDestroy {
 			this.inputData.user = user;
 			/** Development mode only -- END */
 		}));
+
+		this.subscriptions.push(this.languageservice.languageStatus().subscribe(language => {
+			this.language = language;
+		}));
+
+		this.language = this.languageservice.language;
 
 		this.initNetworkStatus();
 
@@ -779,6 +790,7 @@ export class CustomPage implements OnInit, OnDestroy {
 		pages: this.getPages(),
 		segments: this.getSegments(),
 		platform: this.platform,
+		language: this.languageservice.getLanguage(),
 		customClasses: this.customClasses,
 		customHeaderClasses: this.customHeaderClasses,
 		isOffline: this.isOffline,
