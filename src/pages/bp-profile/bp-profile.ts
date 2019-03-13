@@ -78,6 +78,12 @@ export class BpProfilePage implements OnInit {
   }
 
   ionSelected() {
+
+    // close stacked pages if their open
+    if(this.nav.length() > 1)
+      this.nav.pop();
+
+
     if( this.userData ) {
       this.setupUser( false )
     }

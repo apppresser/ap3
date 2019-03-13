@@ -163,7 +163,11 @@ export class BpList implements OnInit {
   }
 
   ionSelected() {
-    console.log('onIonSelected BpList');
+
+    // close stacked pages if their open
+    if(this.nav.length() > 1)
+      this.nav.pop();
+     
     this.getStarted();
   }
 

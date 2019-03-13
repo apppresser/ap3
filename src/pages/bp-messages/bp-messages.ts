@@ -106,10 +106,13 @@ export class BpMessages {
   }
 
   ionSelected() {
-    console.log('onIonSelected BpMessages');
+
+    // close stacked pages if their open
+    if(this.nav.length() > 1)
+      this.nav.pop();
+
+    
     if( this.singleThread ) {
-      console.log('this.singleThread', this.singleThread);
-      console.log('this.navParams.data.threadId', this.navParams.data.threadId)
       if(this.navParams.data.threadId)
         this.doSingleThread();
     } else {
