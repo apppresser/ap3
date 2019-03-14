@@ -61,6 +61,7 @@ import {Iframe} from "../pages/iframe/iframe";
 /* Other */
 import { IonicStorageModule } from '@ionic/storage';
 import { WooProvider } from '../providers/woo/woo';
+import { LdProvider } from '../providers/learndash/learndash';
 import { IonicImageViewerModule } from 'ionic-img-viewer';
 
 // required for ng translate, tells it to look in assets folder for trans files
@@ -147,7 +148,8 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     BpProvider,
     MenuService,
     NetworkStatusService,
-    WooProvider
+    WooProvider,
+    LdProvider
   ]
 })
 export class AppModule {}

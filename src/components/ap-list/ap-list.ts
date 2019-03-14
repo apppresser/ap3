@@ -28,6 +28,7 @@ export class ApListComponent implements OnInit {
 	@Input() refresh: boolean = false;
 	@Input() title: string;
 	@Input() hideEmpty: boolean = false;
+	@Input() learndashCourses: string;
 
 	page: number = 1;
 	items: any;
@@ -157,9 +158,16 @@ export class ApListComponent implements OnInit {
 		if( this.platform.isRTL && this.platform.is('ios') )
 		  opt = { direction: 'back' }
 
-		this.nav.push('PostDetailsPage', {
-		  item: item
-		}, opt);
+		if( this.learndashCourses === 'true' ) {
+			this.nav.push('LdCoursePage', {
+			  item: item
+			}, opt);
+		} else {
+			this.nav.push('PostDetailsPage', {
+			  item: item
+			}, opt);
+		}
+		
 
 	}
 

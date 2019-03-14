@@ -22,7 +22,7 @@ export class GlobalVars {
   constructor( public http: Http ) {
     // development API
     if( window.location && window.location.href && window.location.href.indexOf('localhost') >=0 ) {
-      this.appid = '764';
+      this.appid = '18';
       this.apiurl = 'https://myapppresser.local/test/';
     }
     this.endpoint += this.appid;

@@ -1,0 +1,56 @@
+<ion-header>
+	<ion-navbar>
+
+		<ion-buttons start>
+			<button *ngIf="rtlBack" (click)="backRtlTransition()" ion-button class="custom-back-button">
+			    <ion-icon name="arrow-back"></ion-icon>
+			    {{'Back' | translate }}
+			</button>
+
+			<button ion-button menuToggle *ngIf="!selectedItem">
+			  <ion-icon name="menu"></ion-icon>
+			</button>
+
+		</ion-buttons>
+
+		<ion-title><span [innerHTML]="selectedItem.title.rendered"></span></ion-title>
+
+		<ion-buttons end>
+			<button *ngIf="showShare" ion-button (click)="share()">
+				<ion-icon name="share"></ion-icon>
+			</button>
+		</ion-buttons>
+		
+	</ion-navbar>
+</ion-header>
+
+<ion-content>
+
+ <div *ngIf="selectedItem" class="selection">
+
+ 	<div *ngIf="selectedItem.appp && selectedItem.appp.post_detail && selectedItem.appp.post_detail.above_title" [innerHTML]="selectedItem.appp.post_detail.above_title | sanitizeHtml"></div>
+
+    <h2 [innerHTML]="selectedItem.title.rendered"></h2>
+
+    <div *ngIf="selectedItem.appp && selectedItem.appp.post_detail && selectedItem.appp.post_detail.below_title" [innerHTML]="selectedItem.appp.post_detail.below_title | sanitizeHtml"></div>
+
+    <div *ngIf="selectedItem.content.rendered" [innerHTML]="selectedItem.content.rendered"></div>
+
+    <div *ngIf="video" [innerHTML]="video"></div>
+
+    <div *ngIf="selectedItem.appp && selectedItem.appp.post_detail && selectedItem.appp.post_detail.below_content" [innerHTML]="selectedItem.appp.post_detail.below_content | sanitizeHtml"></div>
+ </div>
+
+ <ion-list *ngIf="topics">
+
+	<button ion-item *ngFor="let topic of topics" (click)="topicTapped( topic )">
+
+	<h2 *ngIf="topic.title && topic.title.rendered" [innerHTML]="topic.title.rendered"></h2>
+
+	<p *ngIf="topic.excerpt && topic.excerpt.rendered" [innerHTML]="topic.excerpt.rendered"></p>
+
+	</button>
+
+</ion-list>
+
+</ion-content>

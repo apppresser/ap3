@@ -1,0 +1,57 @@
+<ion-header>
+	<ion-navbar>
+
+		<ion-buttons start>
+			<button *ngIf="rtlBack" (click)="backRtlTransition()" ion-button class="custom-back-button">
+			    <ion-icon name="arrow-back"></ion-icon>
+			    {{'Back' | translate }}
+			</button>
+
+			<button ion-button menuToggle *ngIf="!selectedItem">
+			  <ion-icon name="menu"></ion-icon>
+			</button>
+
+		</ion-buttons>
+
+		<ion-title><span *ngIf="course "[innerHTML]="course.title.rendered"></span></ion-title>
+
+		<ion-buttons end>
+			<button *ngIf="showShare" ion-button (click)="share()">
+				<ion-icon name="share"></ion-icon>
+			</button>
+		</ion-buttons>
+		
+	</ion-navbar>
+</ion-header>
+
+<ion-content>
+
+ <div *ngIf="course" padding class="learndash-course">
+
+ 	<div *ngIf="course.appp && course.appp.post_detail && course.appp.post_detail.above_title" [innerHTML]="course.appp.post_detail.above_title | sanitizeHtml"></div>
+
+    <h2 [innerHTML]="course.title.rendered"></h2>
+
+    <div *ngIf="course.appp && course.appp.post_detail && course.appp.post_detail.below_title" [innerHTML]="course.appp.post_detail.below_title | sanitizeHtml"></div>
+
+    <div *ngIf="course.content.rendered" [innerHTML]="course.content.rendered | sanitizeHtml"></div>
+
+    <div *ngIf="course.appp && course.appp.post_detail && course.appp.post_detail.below_content" [innerHTML]="course.appp.post_detail.below_content | sanitizeHtml"></div>
+
+    <div *ngIf="course.course_materials" [innerHTML]="course.course_materials | sanitizeHtml"></div>
+
+ </div>
+
+<ion-list *ngIf="lessons">
+
+	<button ion-item *ngFor="let lesson of lessons" (click)="lessonTapped( lesson )">
+
+	<h2 *ngIf="lesson.title && lesson.title.rendered" [innerHTML]="lesson.title.rendered"></h2>
+
+	<p *ngIf="lesson.excerpt && lesson.excerpt.rendered" [innerHTML]="lesson.excerpt.rendered"></p>
+
+	</button>
+
+</ion-list>
+
+</ion-content>
