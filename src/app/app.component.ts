@@ -329,6 +329,8 @@ export class MyApp {
 
     if( data.show_registration_link === 'on' ) {
       this.storage.set( 'api_register_setting', { "registration": true, "url": data.registration_url } );
+    } else {
+      this.storage.remove('api_register_setting');
     }
 
 
