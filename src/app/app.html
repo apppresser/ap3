@@ -11,10 +11,10 @@
   <ion-content>
     <ion-list>
       <ion-list-header text-wrap *ngIf="login_data">
-        <ion-avatar *ngIf="login_data.avatar">
-          <img [src]="login_data.avatar" />
+        <ion-avatar *ngIf="loginservice.user.avatar">
+          <img [src]="loginservice.user.avatar" />
         </ion-avatar>
-        <p class="loggedin-msg"><b>{{login_data.message | translate}}</b></p>
+        <p class="loggedin-msg"><b>{{ 'WELCOME_MESSAGE' | translate:userloginMessage }}</b></p>
         
       </ion-list-header>
 

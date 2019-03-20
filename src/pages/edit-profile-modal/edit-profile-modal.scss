@@ -1,0 +1,18 @@
+page-edit-profile-modal {
+    .profile-avatar {
+        padding-top: 15px;
+        padding-bottom: 15px;
+
+        img {
+            border-radius: 50%;
+            height: 100px;
+            overflow: hidden;
+            width: 100px;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 3px;
+        }
+    }
+}

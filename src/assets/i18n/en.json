@@ -2,6 +2,7 @@
 	"Login": "Login",
 	"Logout": "Logout",
 	"Back": "Back",
+	"WELCOME_MESSAGE": "Welcome back {{name}}!",
 	"All": "All",
 	"Favorites": "Favorites",
 	"Language": "Language",
@@ -10,5 +11,16 @@
 	"Password": "Password",
 	"Click here to logout": "Click here to logout",
 	"Sending...": "Sending...",
-	"Uploading...": "Uploading..."
+	"Uploading...": "Uploading...",
+	"Cancel": "Cancel",
+	"Done": "Done",
+	"Edit Profile": "Edit Profile",
+	"Choose an image": "Choose an image",
+	"Take Photo": "Take Photo",
+	"Photo Library": "Photo Library",
+	"Edit field": "Edit field",
+	"Error": "Error",
+	"Could not update your profile. Please try again.": "Could not update your profile. Please try again.",
+	"Editing this field is not available yet.": "Editing this field is not available yet.",
+	"Save": "Save"
 }

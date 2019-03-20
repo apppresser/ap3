@@ -497,26 +497,32 @@ export class BpMessages {
   }
 
   /**
-   * 1) Show image in thread
-   * 2) Show progress message = 'Uploading...';
-   * 3) Send image to API
-   * 3.1) Remove progress message (when promise from API ends)
+   * 1) Reply to thread if text exists
+   * 2) Show image in thread
+   * 3) Show progress message = 'Uploading...';
+   * 4) Send image to API
+   * 4.1) Remove progress message (when promise from API ends)
    * @param {string} imageMessage
    */
   private _replyToThreadWithImage(imageMessage: string): void {
-    // 1) Show image in thread
+    // 1) Reply to thread if text exists
+    if (this.threadReply) {
+      this.replyToThread();
+    }
+
+    // 2) Show image in thread
     let imageTag: string = '<img src="' + imageMessage + '">';
     this.addMessage({ subject: null, content: imageTag });
     this.scrollDown(1);
 
-    // 2) Show progress message = 'Uploading...';
+    // 3) Show progress message = 'Uploading...';
     this.progressMessage = this.translate.instant('Uploading...');
 
-    // 3) Send image to API
+    // 4) Send image to API
     let recipients = Object.keys(this.threads.recipients);
     this.bpProvider.sendMessageWithImage(recipients, this.login_data, imageMessage, this.threads.thread_id)
       .then(ret => {
-        // 3.1) Remove progress message
+        // 4.1) Remove progress message
         this.progressMessage = null;
       })
       .catch(e => {
