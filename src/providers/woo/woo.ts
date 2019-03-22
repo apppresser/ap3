@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { Storage } from '@ionic/storage';
+import { GlobalVars } from '../globalvars/globalvars';
 
 @Injectable()
 export class WooProvider {
@@ -17,6 +18,7 @@ export class WooProvider {
 
   constructor(
     public http: HttpClient,
+    private globalvars: GlobalVars,
     public storage: Storage ) {
 
     let item = window.localStorage.getItem( 'myappp' );
@@ -24,16 +26,8 @@ export class WooProvider {
     this.url = this.itemParsed.wordpress_url;
     this.wooRest = 'wp-json/wc/v3/';
     this.cartRest = 'wp-json/appcommerce/v1/cart';
-
-    // development API
-    if( window.location && window.location.href && window.location.href.indexOf('localhost') >=0 ) {
-      // test key for local environment
-      //this.authString = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
-      // appptest.wpengine.com
-      this.authString = 'Basic Y2tfZmZkMWNhYTI1OTUzMjc0NDMzY2E2NWVjMmFhOWEyN2M1OTU3NDE3Mzpjc19kYjYxNWE1Y2FmZjMyNGVlOGQzZGJlOTFlN2IyNDU5YmFlNTM2ZDQx'
-    } else {
-      this.authString = '[[woo_auth_string]]'
-    }
+    this.authString = this.globalvars.getWooAuth();
+    
 
     this.httpOptions = {
       headers: new HttpHeaders({

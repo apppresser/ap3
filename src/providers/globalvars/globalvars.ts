@@ -17,6 +17,7 @@ export class GlobalVars {
   appid: string = '[[appp_app_id]]';
   apiurl: string = '[[myappp_url]]'
   endpoint: string = 'wp-json/ap3/v1/app/';
+  wooAuth: string = '[[woo_auth_string]]';
   api: string;
 
   constructor( public http: Http ) {
@@ -24,6 +25,7 @@ export class GlobalVars {
     if( window.location && window.location.href && window.location.href.indexOf('localhost') >=0 ) {
       this.appid = '764';
       this.apiurl = 'https://myapppresser.local/test/';
+      //this.authString = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
     }
     this.endpoint += this.appid;
     this.api = this.apiurl + this.endpoint
@@ -43,6 +45,10 @@ export class GlobalVars {
 
   getUseDynamicPageModule() {
     return this.useDynamicContentModule;
+  }
+
+  getWooAuth() {
+    return this.wooAuth;
   }
 
 }
