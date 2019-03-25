@@ -25,7 +25,7 @@ export class GlobalVars {
     if( window.location && window.location.href && window.location.href.indexOf('localhost') >=0 ) {
       this.appid = '764';
       this.apiurl = 'https://myapppresser.local/test/';
-      //this.authString = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
+      //this.wooAuth = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
     }
     this.endpoint += this.appid;
     this.api = this.apiurl + this.endpoint

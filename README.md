@@ -23,6 +23,12 @@ apiurl: string = 'https://myapppresser.com/site-slug/'
 endpoint: string = 'wp-json/ap3/v1/app/12';
 ```
 
+For your Woocommerce API keys, get base64 values by running through btoa('key . . .', 'secret . . .' ).
+
+```
+wooAuth = 'Basic . . .';
+```
+
 3. Run `ionic serve` to preview the app in your browser
 
 Consult the [Ionic documentation](http://ionicframework.com/docs/v2/cli/) for cli commands, custom components, and more.
