@@ -93,30 +93,33 @@ export class WooDetail {
 	 */
 	verifyAttributes() {
 
-		let ids = [];
-		let unique_ids = true;
-		let valid_ids = true;
+		if(this.selectedItem.type == 'variable') {
+			
+			let ids = [];
+			let unique_ids = true;
+			let valid_ids = true;
 
-		console.log('verifyAttributes', this.selectedItem.attributes)
+			console.log('verifyAttributes', this.selectedItem.attributes)
 
-		if(this.selectedItem.attributes && this.selectedItem.attributes.length) {
-			this.selectedItem.attributes.forEach((obj, index)=>{
-				if(obj.id === 0) {
-					console.warn('The id for this item is zero', obj);
-					valid_ids = false;
-				} else if(ids.indexOf(obj.id) >= 0) {
-					console.warn('This id is already there ', obj.id);
-					unique_ids = false;
-				} else {
-					ids.push(obj.id);
+			if(this.selectedItem.attributes && this.selectedItem.attributes.length) {
+				this.selectedItem.attributes.forEach((obj, index)=>{
+					if(obj.id === 0) {
+						console.warn('The id for this item is zero', obj);
+						valid_ids = false;
+					} else if(ids.indexOf(obj.id) >= 0) {
+						console.warn('This id is already there ', obj.id);
+						unique_ids = false;
+					} else {
+						ids.push(obj.id);
+					}
+				});
+			}
+
+			if(!unique_ids || !valid_ids) {
+				if(this.myapppsettings.isPreview()) {
+					alert( 'Admin Notice: This product has variations, but they were not created as taxonomies. Because of this they have no unique IDs and can not be used now.' );
+					return [];
 				}
-			});
-		}
-
-		if(!unique_ids || !valid_ids) {
-			if(this.myapppsettings.isPreview()) {
-				alert( 'Admin Notice: This product has variations, but they were not created as taxonomies. Because of this they have no unique IDs and can not be used now.' );
-				return [];
 			}
 		}
 
@@ -489,18 +492,21 @@ export class WooDetail {
 	}
 
 	verifyVariations() {
-		let can_purchase = true;
 
-		if(this.variations && this.variations.length) {
+		if(this.selectedItem.type == 'variable') {
+			let can_purchase = true;
 
-			this.variations.forEach((variation, index) => {
-				// console.log('verifyVariations variation', variation);
-				if(this.myapppsettings.isPreview() && can_purchase && variation.price === '' && variation.purchasable === false) {
-					can_purchase = false;
-					console.warn('This variation can not be purchased, because no price has been set', variation);
-					alert('Admin Notice: You have a variation that has no price and cannot be purchased. You can view the JavaScript console to see which one.');
-				}
-			});
+			if(this.variations && this.variations.length) {
+
+				this.variations.forEach((variation, index) => {
+					// console.log('verifyVariations variation', variation);
+					if(this.myapppsettings.isPreview() && can_purchase && variation.price === '' && variation.purchasable === false) {
+						can_purchase = false;
+						console.warn('This variation can not be purchased, because no price has been set', variation);
+						alert('Admin Notice: You have a variation that has no price and cannot be purchased. You can view the JavaScript console to see which one.');
+					}
+				});
+			}
 		}
 	}
 
