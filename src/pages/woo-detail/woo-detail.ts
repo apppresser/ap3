@@ -1,4 +1,4 @@
-import {Component, Renderer, ElementRef, isDevMode } from '@angular/core';
+import {Component, Renderer, ElementRef, isDevMode, ComponentFactoryResolver } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController, ModalController, Events } from 'ionic-angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Storage } from '@ionic/storage';
@@ -6,6 +6,7 @@ import { WooProvider } from '../../providers/woo/woo';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import {TranslateService} from '@ngx-translate/core';
 import {InAppBrowser, InAppBrowserObject} from '@ionic-native/in-app-browser';
+import { MyApppSettingsService } from '../../providers/appdata/myappp.settings.service';
 
 @IonicPage()
 @Component({
@@ -39,6 +40,7 @@ export class WooDetail {
 		public events: Events,
 		private elementRef: ElementRef,
 		private renderer: Renderer,
+		private myapppsettings: MyApppSettingsService,
 		public socialSharing: SocialSharing,
 		public translate: TranslateService,
 		public inAppBrowser: InAppBrowser
@@ -84,6 +86,43 @@ export class WooDetail {
 
 	}
 
+	/**
+	 * Variations must be created as taxonomies in Woocommerce in order to have unique variation IDs.
+	 * Because these IDs are required for the items to be added to the card, the variations, must be 
+	 * verified before they can be used.
+	 */
+	verifyAttributes() {
+
+		let ids = [];
+		let unique_ids = true;
+		let valid_ids = true;
+
+		console.log('verifyAttributes', this.selectedItem.attributes)
+
+		if(this.selectedItem.attributes && this.selectedItem.attributes.length) {
+			this.selectedItem.attributes.forEach((obj, index)=>{
+				if(obj.id === 0) {
+					console.warn('The id for this item is zero', obj);
+					valid_ids = false;
+				} else if(ids.indexOf(obj.id) >= 0) {
+					console.warn('This id is already there ', obj.id);
+					unique_ids = false;
+				} else {
+					ids.push(obj.id);
+				}
+			});
+		}
+
+		if(!unique_ids || !valid_ids) {
+			if(this.myapppsettings.isPreview()) {
+				alert( 'Admin Notice: This product has variations, but they were not created as taxonomies. Because of this they have no unique IDs and can not be used now.' );
+				return [];
+			}
+		}
+
+		return this.selectedItem.attributes;
+	}
+
 	loadProduct() {
 
 		this.selectedItem = this.navParams.get('item');
@@ -96,7 +135,7 @@ export class WooDetail {
 			this.description = '';
 		}
 
-		this.availableAttributes = this.selectedItem.attributes
+		this.availableAttributes = this.verifyAttributes();
 
 		if( this.selectedItem.type === 'variable' ) {
 			this.getVariations()
@@ -435,7 +474,7 @@ export class WooDetail {
 		return new Promise( resolve => {
 
 			this.wooProvider.get( 'products/' + productId + '/variations', 'nopaging' ).then(variations => {
-				console.log('variations', variations)
+				console.log('getGroupedVariation variations', variations)
 				resolve( variations )
 
 			}).catch( e => {
@@ -449,13 +488,30 @@ export class WooDetail {
 
 	}
 
+	verifVariations() {
+		let can_purchase = true;
+
+		if(this.variations && this.variations.length) {
+
+			this.variations.forEach((variation, index) => {
+				// console.log('verifVariations variation', variation);
+				if(this.myapppsettings.isPreview() && can_purchase && variation.price === '' && variation.purchasable === false) {
+					can_purchase = false;
+					console.warn('This variation can not be purchased, because no price has been set', variation);
+					alert('Admin Notice: You have a variation that has no price and cannot be purchased. You can view the JavaScript console to see which one.');
+				}
+			});
+		}
+	}
+
 	getVariations( arg = null ) {
 
 		let param = ( arg ? '/?' + arg : '' )
 
 		this.wooProvider.get( 'products/' + this.selectedItem.id + '/variations' + param, 'nopaging' ).then(variations => {
-			console.log('variations', variations)
+			// console.log('getVariations variations', variations)
 			this.variations = variations
+			this.verifVariations();
 		}).catch( e => {
 			console.warn(e)
 		}).then( () => { 
