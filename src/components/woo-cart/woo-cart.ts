@@ -184,11 +184,22 @@ export class WooCartComponent implements OnInit {
 		let opt = {};
 
 		if( this.platform.isRTL && this.platform.is('ios') )
-		  opt = { direction: 'back' }
+			opt = { direction: 'back' }
 			
-		this.navCtrl.push('WooDetail', {
-		  item: item
-		}, opt);
+		// The cart only has limited details of the product, so we need to get the full thing from the API.
+		this.wooProvider.get(`products/${item.product_id}/`, '').then(response =>{
+
+			let product: any = response;
+
+			if(response && product.id == item.product_id) {
+				this.navCtrl.push('WooDetail', {
+					item: response
+				}, opt);
+			} else {
+				this.presentToast("Product not found.");
+			}
+			
+		});
 
 	}
 
