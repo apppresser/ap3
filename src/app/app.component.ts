@@ -69,7 +69,6 @@ export class MyApp {
   originalTabs: any;
   login_data: any;
   user: User;
-  userloginMessage: any;
   showmenu: boolean = false;
   apptitle: string;
   introshown: any;
@@ -167,9 +166,7 @@ export class MyApp {
     // Login status
     this.bodyTag = document.getElementsByTagName('body')[0];
     this.loginservice.loginStatus().subscribe(user => {
-      this.user = user
-      let name = (user.firstname) ? user.firstname : user.username;
-      this.userloginMessage = { name: name };
+      this.user = user;
       if(user) {
         this.bodyTag.classList.add('loggedin')
       } else {

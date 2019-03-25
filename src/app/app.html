@@ -14,7 +14,7 @@
         <ion-avatar *ngIf="loginservice.user.avatar">
           <img [src]="loginservice.user.avatar" />
         </ion-avatar>
-        <p class="loggedin-msg"><b>{{ 'WELCOME_MESSAGE' | translate:userloginMessage }}</b></p>
+        <p class="loggedin-msg"><b>{{ login_data.message | translate }}</b></p>
         
       </ion-list-header>
 
