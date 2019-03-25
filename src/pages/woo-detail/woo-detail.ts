@@ -231,7 +231,7 @@ export class WooDetail {
 		if( this.variations && this.variations.length ) {
 			item.variation_id = this.getVariationId( item )
 			if( item.variation_id === undefined ) {
-				this.presentToast( 'Not available, please select different options.' )
+				this.presentToast( 'Please select from available options.' )
 				return;
 			}
 		}
@@ -488,13 +488,13 @@ export class WooDetail {
 
 	}
 
-	verifVariations() {
+	verifyVariations() {
 		let can_purchase = true;
 
 		if(this.variations && this.variations.length) {
 
 			this.variations.forEach((variation, index) => {
-				// console.log('verifVariations variation', variation);
+				// console.log('verifyVariations variation', variation);
 				if(this.myapppsettings.isPreview() && can_purchase && variation.price === '' && variation.purchasable === false) {
 					can_purchase = false;
 					console.warn('This variation can not be purchased, because no price has been set', variation);
@@ -509,9 +509,9 @@ export class WooDetail {
 		let param = ( arg ? '/?' + arg : '' )
 
 		this.wooProvider.get( 'products/' + this.selectedItem.id + '/variations' + param, 'nopaging' ).then(variations => {
-			// console.log('getVariations variations', variations)
+			console.log('getVariations variations', variations)
 			this.variations = variations
-			this.verifVariations();
+			this.verifyVariations();
 		}).catch( e => {
 			console.warn(e)
 		}).then( () => { 
