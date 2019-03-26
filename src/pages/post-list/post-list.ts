@@ -186,7 +186,9 @@ export class PostList implements OnInit {
 
   doRefresh(refresh) {
     this.loadPosts( this.route );
-    this.loadSlides( this.navParams.data.slide_route );
+    if( this.navParams.data.slide_route ) {
+      this.loadSlides( this.navParams.data.slide_route );
+    }
     // refresh.complete should happen when posts are loaded, not timeout
     setTimeout( ()=> refresh.complete(), 500);
   }
