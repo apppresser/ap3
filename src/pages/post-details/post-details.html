@@ -25,7 +25,7 @@
 </ion-header>
 
 <ion-content>
- <div *ngIf="selectedItem" class="selection">
+ <div *ngIf="selectedItem" class="selection post-detail">
 
  	<div *ngIf="selectedItem.appp && selectedItem.appp.post_detail && selectedItem.appp.post_detail.above_title" [innerHTML]="selectedItem.appp.post_detail.above_title | sanitizeHtml"></div>
 

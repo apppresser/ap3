@@ -1,0 +1,149 @@
+.design1 {
+
+	$font-family-base: "Roboto", sans-serif !default;
+
+	h1, h2 {
+		margin-bottom: 10px;
+	}
+
+	h1 {
+		font-size: 4rem;
+	}
+
+	h2 {
+		font-size: 3rem;
+	}
+
+	h3 {
+		font-size: 2rem;
+	}
+
+	h4 {
+		font-size: 1.8rem;
+	}
+
+	blockquote {
+		font-style: italic;
+	}
+
+	// global styles
+	.post-detail, .post-detail p {
+		font-size: 1.6rem;
+		line-height: 1.5;
+
+		
+	}
+	
+	// android styles
+	.md {
+		
+		.card-md {
+			border-radius: 4px;
+			box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+			margin-top: 10px;
+			margin-bottom: 10px;
+			border-bottom: none;
+
+			.card-title-md  {
+				padding-bottom: 0;
+				h2 {
+					font-size: 2rem;
+				}
+			}
+
+			p {
+				font-size: 1.6rem;
+			}
+		}
+
+		.button-default {
+			box-shadow: 0 3px 1px -2px rgba(0,0,0,0.2),0 2px 2px 0 rgba(0,0,0,0.14),0 1px 5px 0 rgba(0,0,0,0.12);
+			letter-spacing: .06em;
+		}
+
+		.list {
+			.item h2 {
+				font-size: 1.6rem;
+				margin-bottom: 5px;
+			}
+		}
+
+		.menu-inner {
+
+			ion-avatar {
+				float: left;
+    			margin-left: 15px;
+    			margin-right: 20px;
+			}
+
+			p.loggedin-msg {
+				text-align: left;
+			}
+
+			.content-md {
+				background-image: linear-gradient(to bottom, rgba(255,255,255,.1), rgba(0,0,0,.3));
+			}
+
+			.list-md {
+
+				.item {
+					border-bottom: none;
+					font-size: 1.6rem;
+					background-color: transparent;
+
+					ion-icon {
+						margin-right: 0;
+					}
+				}
+			}
+
+			.list-header {
+				background-color: rgba(0,0,0,.15);
+			}
+
+		}
+
+		.bp-list, bp-details {
+
+			.comment-name {
+				margin-bottom: 5px;
+				display: block;
+			}
+
+			.card-md {
+				padding-top: 5px;
+
+				.card-content img {
+					margin: 10px -15px;
+					min-width: calc( 100% + 30px);
+				}
+			}
+		}
+
+	}
+
+	.ios {
+
+		.card-ios {
+			border-radius: 8px;
+			box-shadow: 0 4px 16px rgba(0,0,0,.12);
+			margin-top: 24px;
+			margin-bottom: 24px;
+		}
+
+		.button-default.button-md, .button-default.button-ios {
+			border-radius: 25px;
+			box-shadow: none;
+
+			&.button-large {
+				border-radius: 50px;
+			}
+		}
+
+		.button-small {
+			border-radius: 15px;
+		}
+
+	}
+
+}
