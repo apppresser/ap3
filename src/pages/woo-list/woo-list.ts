@@ -223,7 +223,7 @@ export class WooList {
 
 		console.log( item )
 
-		if( item.price ) {
+		if( item.price || item.price === '' ) {
 			
 			this.navCtrl.push('WooDetail', {
 			  item: item
