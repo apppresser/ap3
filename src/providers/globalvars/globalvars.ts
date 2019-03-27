@@ -23,9 +23,10 @@ export class GlobalVars {
   constructor( public http: Http ) {
     // development API
     if( window.location && window.location.href && window.location.href.indexOf('localhost') >=0 ) {
-      this.appid = '764';
-      this.apiurl = 'https://myapppresser.local/test/';
-      //this.wooAuth = 'Basic Y2tfZGY3NjBlMmIxYjYxNGQ3MmEwZTliMmFkMTA5NTVhZTM3YWE5ZDUwYzpjc185ZTRhYjI2OTBjZjIxM2Q2YTk3YmYyZGFjMzI2Yjg5MjkzOTAyYTBh'
+      this.appid = '11';
+      this.apiurl = 'http://staging.myapppresser.com/staging/';
+      // auth for appptest.wpengine.com
+      this.wooAuth = 'Basic Y2tfMmRhZTNmMzg0NDg2MGIxNmEyNzgwNjY0ODMzNjgwNzIyYjBiZTAzNzpjc183NDE3ZmFjYzJmMmVkNjQ1Zjc4NjBjOWNiOTE2MTBiZjVmY2Y2ZjVl';
     }
     this.endpoint += this.appid;
     this.api = this.apiurl + this.endpoint

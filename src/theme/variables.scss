@@ -3,12 +3,15 @@
 @import "ionic.globals";
 
 // Font Awesome
+$font-path: "../assets/fonts";
 $fa-font-path: $font-path;
 @import "font-awesome";
 @import "font-awesome/menu";
 
 // Custom fonts
 @import "fonts/roboto-font";
+@import "fonts/oswald-font";
+@import "fonts/merriweather-font";
 
 // Shared Variables
 // --------------------------------------------------
@@ -46,5 +49,5 @@ $colors: (
 // The premium icon font for Ionic. For more info, please see:
 // http://ionicframework.com/docs/v2/ionicons/
 
-$ionicons-font-path: "../assets/fonts";
+$ionicons-font-path: $font-path;
 @import "ionicons";
