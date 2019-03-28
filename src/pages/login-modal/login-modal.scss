@@ -18,6 +18,10 @@ page-login-modal {
 		color: #777;
 	}
 
+	form .item {
+		background-color: transparent;
+	}
+
 	.modal-footer {
 
 		body.keyboard-open .platform-android & {

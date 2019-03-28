@@ -16,7 +16,7 @@
 
 <ion-content class="{{customClasses}}">
 
-	<form (ngSubmit)="doLogin()" padding *ngIf="!login_data && !show_registration && !show_pw_reset" class="fade-in">
+	<form (ngSubmit)="doLogin()" padding *ngIf="!login_data && !show_registration && !show_pw_reset" class="login-form fade-in">
 
       <ion-item>
         <ion-label stacked>{{ 'Username' | translate }}</ion-label>
@@ -104,7 +104,7 @@
 
   </div>
 
-  <div *ngIf="show_pw_reset && !login_data && !show_registration" class="fade-in">
+  <div *ngIf="show_pw_reset && !login_data && !show_registration" class="fade-in lost-pw-form">
 
       <form (ngSubmit)="doResetPassword()" padding>
     

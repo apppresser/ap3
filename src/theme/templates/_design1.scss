@@ -14,6 +14,78 @@ $design1-heading-base: "Oswald", "Helvetica Neue", sans-serif;
 		font-size: 1.6rem;
 	}
 
+	.post-list, ap-list .list {
+		.item {
+			border-bottom: 1px solid #eee;
+		}
+		.item-inner {
+			border-bottom: none;
+		}
+	}
+
+	.header .bar-button .icon[name="menu"] {
+		font-size: 3rem;
+		&:before {
+			content: "\f1c2";
+		}
+		
+	}
+
+	.menu-inner  {
+
+		.content {
+			background-image: linear-gradient(to bottom, rgba(255,255,255,.2), rgba(0,0,0,.2));
+		}
+
+		.item {
+			background: transparent;
+		}
+
+		ion-list .button.menu-login-button {
+			margin: 15px 0;
+			width: 100%;
+			border-radius: 0;
+			box-shadow: none;
+			min-height: 50px;
+		}
+	}
+
+	page-login-modal {
+
+		.scroll-content {
+			display: flex;
+			align-items: center;
+		}
+
+		.login-form, #registration-form, .lost-pw-form {
+			width: 100%;
+			border-radius: 5px;
+			padding: 15px;
+			background: #eee;
+			margin: -10px 15px 15px;
+
+			div[padding] {
+				padding: 0;
+				margin: 20px 0;
+			}
+
+			.gray-text {
+				margin-top: 0;
+			}
+
+			.appforgotpassword {
+				margin-top: 15px;
+				display: inline-block;
+				width: 100%;
+			}
+		}
+
+		.item-input {
+			padding-left: 0;
+		}
+
+	}
+
 }
 
 // android only
@@ -51,7 +123,6 @@ $design1-heading-base: "Oswald", "Helvetica Neue", sans-serif;
 		
 	}
 	
-	// android styles
 	.card-md {
 		border-radius: 4px;
 		box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
@@ -77,6 +148,7 @@ $design1-heading-base: "Oswald", "Helvetica Neue", sans-serif;
 	}
 
 	.list {
+
 		.item h2 {
 			font-size: 1.6rem;
 			margin-bottom: 5px;
@@ -95,15 +167,11 @@ $design1-heading-base: "Oswald", "Helvetica Neue", sans-serif;
 			text-align: left;
 		}
 
-		.content-md {
-			background-image: linear-gradient(to bottom, rgba(255,255,255,.1), rgba(0,0,0,.3));
-		}
-
 		.list-md {
 
 			.item {
 				border-bottom: none;
-				font-size: 1.6rem;
+				font-size: 1.8rem;
 				background-color: transparent;
 
 				ion-icon {
@@ -200,6 +268,11 @@ $design1-heading-base: "Oswald", "Helvetica Neue", sans-serif;
 				min-width: calc( 100% + 30px);
 			}
 		}
+	}
+
+	.menu-inner ion-list .button.menu-login-button {
+		margin: 15px auto;
+    	width: 275px;
 	}
 
 }

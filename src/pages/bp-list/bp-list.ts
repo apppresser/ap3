@@ -647,6 +647,7 @@ export class BpList implements OnInit {
   doActivity() {
 
   	if( !this.login_data ) {
+      console.log('doActivity force login')
   		this.events.publish('login:force_login')
   	} else {
   		const bpModal = this.modalCtrl.create('BpModal', { route: this.route, group: this.groupId });
