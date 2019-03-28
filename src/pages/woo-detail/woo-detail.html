@@ -107,7 +107,7 @@
 				</ion-grid>
 			</div>
 
-			<ion-item class="product-quantity" *ngIf="!groupedProducts?.length && productLoaded">
+			<ion-item class="product-quantity" *ngIf="!groupedProducts?.length && productLoaded && selectedItem.price">
 				<ion-icon name="remove-circle" (tap)="decrement( selectedItem )" item-start></ion-icon>
 				<ion-label>{{ selectedItem.quantity }}</ion-label>
 				
