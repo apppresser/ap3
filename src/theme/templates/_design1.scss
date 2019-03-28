@@ -1,10 +1,14 @@
 $design1-font-base: "Roboto", "Helvetica Neue", sans-serif !default;
-$design1-heading-base: $design1-font-base;
+$design1-heading-base: "Oswald", "Helvetica Neue", sans-serif;
 
 // global styles
 .design1 {
 
 	$font-family-base: $design1-font-base;
+
+	h1, h2, h3, h4, h5, h6, .menu-inner .item, .menu-login-button span, .button-default, .tab-button-text, .toolbar-title, .toolbar .button-inner, #favorites-toolbar ion-select {
+		font-family: $design1-heading-base;
+	}
 
 	.post-detail {
 		font-size: 1.6rem;
@@ -13,7 +17,7 @@ $design1-heading-base: $design1-font-base;
 }
 
 // android only
-ion-app.md .design1 {
+.design1 ion-app.md {
 
 	h1, h2 {
 		margin-bottom: 10px;
@@ -134,13 +138,9 @@ ion-app.md .design1 {
 }
 
 // ios only
-ion-app.ios .design1 {
+.design1 ion-app.ios {
 	
 	font-family: $design1-font-base;
-
-	h1, h2, h3, h4, h5, h6 {
-		font-family: $design1-heading-base;
-	}
 
 	.card-ios {
 		border-radius: 8px;
@@ -182,6 +182,23 @@ ion-app.ios .design1 {
 		.item h2 {
 			font-size: 1.8rem;
 			margin-bottom: 5px;
+		}
+	}
+
+	.bp-list, bp-details {
+
+		.comment-name {
+			margin-bottom: 5px;
+			display: block;
+		}
+
+		.card-ios {
+			padding-top: 5px;
+
+			.card-content img {
+				margin: 10px -15px;
+				min-width: calc( 100% + 30px);
+			}
 		}
 	}
 

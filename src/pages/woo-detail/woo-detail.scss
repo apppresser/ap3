@@ -90,6 +90,15 @@ page-woo-detail {
 		ion-icon[name="remove-circle"] {
 			float:left;
 		}
+		.item-select {
+			width: 100%;
+			padding: 0;
+			margin: 5px 0;
+		}
+	}
+
+	.item-select {
+		background: transparent;
 	}
 
 	.item ion-icon[item-left], .item ion-icon[item-right], .item ion-icon[item-start], .item ion-icon[item-end] {
