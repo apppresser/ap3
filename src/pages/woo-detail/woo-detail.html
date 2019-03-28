@@ -116,7 +116,7 @@
 			
 			<button *ngIf="productLoaded && selectedItem.type === 'composite'" ion-button block (tap)="productSiteLink(selectedItem.permalink)">{{ 'Choose options on website' | translate }}</button>
 
-			<button *ngIf="productLoaded && selectedItem.type != 'composite' && item.price" ion-button type="submit" block>{{ 'Add to Cart' | translate }}</button>
+			<button *ngIf="productLoaded && selectedItem.type != 'composite' && selectedItem.price" ion-button type="submit" block>{{ 'Add to Cart' | translate }}</button>
 
 		</form>
 
