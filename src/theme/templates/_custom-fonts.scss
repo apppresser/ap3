@@ -1,0 +1,42 @@
+$roboto-font: "Roboto", "Helvetica Neue", sans-serif !default;
+$oswald-font: "Oswald", "Helvetica Neue", sans-serif !default;
+$merriweather-font: "Merriweather", Times, serif !default;
+
+.body-font-roboto ion-app.md, .body-font-roboto ion-app.ios {
+	$font-family-base: $roboto-font;
+	ion-menu, ion-page, ion-content {
+		font-family: $roboto-font;
+	}
+}
+
+.body-font-oswald ion-app.md, .body-font-oswald ion-app.ios {
+	$font-family-base: $oswald-font;
+	ion-menu, ion-page, ion-content {
+		font-family: $oswald-font;
+	}
+}
+
+.body-font-merriweather ion-app.md, .body-font-merriweather ion-app.ios {
+	$font-family-base: $merriweather-font;
+	ion-menu, ion-page, ion-content {
+		font-family: $merriweather-font;
+	}
+}
+
+.headings-font-roboto ion-app.md, .headings-font-roboto ion-app.ios {
+	h1, h2, h3, h4, h5, h6, .menu-inner .item, .menu-login-button span, .button-default, .tab-button-text, .toolbar-title, .toolbar .button-inner, #favorites-toolbar ion-select {
+	 	font-family: $roboto-font;
+	}
+}
+
+.headings-font-oswald ion-app.md, .headings-font-oswald ion-app.ios {
+	h1, h2, h3, h4, h5, h6, .menu-inner .item, .menu-login-button span, .button-default, .tab-button-text, .toolbar-title, .toolbar .button-inner, #favorites-toolbar ion-select {
+	 	font-family: $oswald-font;
+	}
+}
+
+.headings-font-merriweather ion-app.md, .headings-font-merriweather ion-app.ios {
+	h1, h2, h3, h4, h5, h6, .menu-inner .item, .menu-login-button span, .button-default, .tab-button-text, .toolbar-title, .toolbar .button-inner, #favorites-toolbar ion-select {
+	 	font-family: $merriweather-font;
+	}
+}

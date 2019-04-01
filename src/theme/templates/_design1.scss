@@ -1,14 +1,5 @@
-$design1-font-base: "Roboto", "Helvetica Neue", sans-serif !default;
-$design1-heading-base: "Oswald", "Helvetica Neue", sans-serif;
-
 // global styles
 .design1 {
-
-	$font-family-base: $design1-font-base;
-
-	h1, h2, h3, h4, h5, h6, .menu-inner .item, .menu-login-button span, .button-default, .tab-button-text, .toolbar-title, .toolbar .button-inner, #favorites-toolbar ion-select {
-		font-family: $design1-heading-base;
-	}
 
 	.post-detail {
 		font-size: 1.6rem;
@@ -207,8 +198,6 @@ $design1-heading-base: "Oswald", "Helvetica Neue", sans-serif;
 
 // ios only
 .design1 ion-app.ios {
-	
-	font-family: $design1-font-base;
 
 	.card-ios {
 		border-radius: 8px;

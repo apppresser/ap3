@@ -173,6 +173,7 @@ export class MyApp {
         this.bodyTag.classList.remove('loggedin')
       }
     });
+
     this.getSetLogin();
 
     // TODO: this causes a bug when iframe page is the homepage. It calls resetTabs too many times, which loads iframe.ts twice, causing the spinner to appear for too long.
@@ -873,7 +874,19 @@ export class MyApp {
 
   loadStyles( data ) {
 
-    // console.log( data );
+    // handle design settings
+    if( data.meta.design.app_design ) {
+      this.bodyTag.classList.add( data.meta.design.app_design );
+    }
+
+    // handle font settings
+    if( data.meta.design.fonts && data.meta.design.fonts.body ) {
+      this.bodyTag.classList.add( 'body-font-' + data.meta.design.fonts.body );
+    }
+
+    if( data.meta.design.fonts && data.meta.design.fonts.headings ) {
+      this.bodyTag.classList.add( 'headings-font-' + data.meta.design.fonts.headings );
+    }
 
     // kinda hacky, but it works
     let styles = "<style>";
