@@ -1,6 +1,13 @@
+// Custom fonts
+@import "../fonts/roboto-font";
+@import "../fonts/oswald-font";
+@import "../fonts/merriweather-font";
+@import "../fonts/lato-font";
+
 $roboto-font: "Roboto", "Helvetica Neue", sans-serif !default;
 $oswald-font: "Oswald", "Helvetica Neue", sans-serif !default;
 $merriweather-font: "Merriweather", Times, serif !default;
+$lato-font: "Lato", "Helvetica Neue", sans-serif !default;
 
 .body-font-roboto ion-app.md, .body-font-roboto ion-app.ios {
 	$font-family-base: $roboto-font;
@@ -23,6 +30,13 @@ $merriweather-font: "Merriweather", Times, serif !default;
 	}
 }
 
+.body-font-lato ion-app.md, .body-font-lato ion-app.ios {
+	$font-family-base: $lato-font;
+	ion-menu, ion-page, ion-content {
+		font-family: $lato-font;
+	}
+}
+
 .headings-font-roboto ion-app.md, .headings-font-roboto ion-app.ios {
 	h1, h2, h3, h4, h5, h6, .menu-inner .item, .menu-login-button span, .button-default, .tab-button-text, .toolbar-title, .toolbar .button-inner, #favorites-toolbar ion-select {
 	 	font-family: $roboto-font;
@@ -38,5 +52,11 @@ $merriweather-font: "Merriweather", Times, serif !default;
 .headings-font-merriweather ion-app.md, .headings-font-merriweather ion-app.ios {
 	h1, h2, h3, h4, h5, h6, .menu-inner .item, .menu-login-button span, .button-default, .tab-button-text, .toolbar-title, .toolbar .button-inner, #favorites-toolbar ion-select {
 	 	font-family: $merriweather-font;
+	}
+}
+
+.headings-font-lato ion-app.md, .headings-font-lato ion-app.ios {
+	h1, h2, h3, h4, h5, h6, .menu-inner .item, .menu-login-button span, .button-default, .tab-button-text, .toolbar-title, .toolbar .button-inner, #favorites-toolbar ion-select {
+	 	font-family: $lato-font;
 	}
 }
