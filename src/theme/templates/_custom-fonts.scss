@@ -3,8 +3,10 @@
 @import "../fonts/oswald-font";
 @import "../fonts/merriweather-font";
 @import "../fonts/lato-font";
+@import "../fonts/roboto-slab-font";
 
 $roboto-font: "Roboto", "Helvetica Neue", sans-serif !default;
+$roboto-slab-font: "Roboto Slab", sans-serif !default;
 $oswald-font: "Oswald", "Helvetica Neue", sans-serif !default;
 $merriweather-font: "Merriweather", Times, serif !default;
 $lato-font: "Lato", "Helvetica Neue", sans-serif !default;
@@ -13,6 +15,13 @@ $lato-font: "Lato", "Helvetica Neue", sans-serif !default;
 	$font-family-base: $roboto-font;
 	ion-menu, ion-page, ion-content {
 		font-family: $roboto-font;
+	}
+}
+
+.body-font-roboto-slab ion-app.md, .body-font-roboto-slab ion-app.ios {
+	$font-family-base: $roboto-slab-font;
+	ion-menu, ion-page, ion-content {
+		font-family: $roboto-slab-font;
 	}
 }
 
@@ -40,6 +49,12 @@ $lato-font: "Lato", "Helvetica Neue", sans-serif !default;
 .headings-font-roboto ion-app.md, .headings-font-roboto ion-app.ios {
 	h1, h2, h3, h4, h5, h6, .menu-inner .item, .menu-login-button span, .button-default, .tab-button-text, .toolbar-title, .toolbar .button-inner, #favorites-toolbar ion-select {
 	 	font-family: $roboto-font;
+	}
+}
+
+.headings-font-roboto-slab ion-app.md, .headings-font-roboto-slab ion-app.ios {
+	h1, h2, h3, h4, h5, h6, .menu-inner .item, .menu-login-button span, .button-default, .tab-button-text, .toolbar-title, .toolbar .button-inner, #favorites-toolbar ion-select {
+	 	font-family: $roboto-slab-font;
 	}
 }
 
