@@ -1,5 +1,5 @@
 // global styles
-.design1 {
+.design-2019 {
 
 	.post-detail {
 		font-size: 1.6rem;
@@ -97,7 +97,7 @@
 }
 
 // android only
-.design1 ion-app.md {
+.design-2019 ion-app.md {
 
 	h1, h2 {
 		margin-bottom: 10px;
@@ -127,8 +127,11 @@
 	.post-detail, .post-detail p {
 		font-size: 1.6rem;
 		line-height: 1.5;
+	}
 
-		
+	.related-products .card h3 {
+		font-size: 1.6rem;
+		font-weight: normal;
 	}
 	
 	.card-md {
@@ -214,7 +217,7 @@
 }
 
 // ios only
-.design1 ion-app.ios {
+.design-2019 ion-app.ios {
 
 	.card-ios {
 		border-radius: 8px;
