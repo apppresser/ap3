@@ -42,13 +42,29 @@
 	}
 
 	page-login-modal {
+	
+		.scroll-content, .button-block {
+			// fixes button positioning in chrome
+			contain: none;
+		}
+
+		#registration-form {
+			margin: 40px 0 80px 0;
+			width: 100%;
+		}
+
+		.logout-message {
+			width: 500px;
+			margin: 0 auto;
+			text-align: center;
+		}
 
 		.scroll-content {
 			display: flex;
 			align-items: center;
 		}
 
-		.login-form, #registration-form, .lost-pw-form {
+		.login-form, .lost-pw-form {
 			width: 100%;
 			border-radius: 5px;
 			padding: 15px;
@@ -76,6 +92,7 @@
 		}
 
 	}
+
 
 }
 
@@ -262,6 +279,14 @@
 	.menu-inner ion-list .button.menu-login-button {
 		margin: 15px auto;
     	width: 275px;
+	}
+
+	page-login-modal .modal-footer {
+
+		.button-default.button-ios {
+			border-radius: 0;
+		}
+		
 	}
 
 }

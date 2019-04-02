@@ -133,7 +133,7 @@
     
   </div>
 
-	<div padding *ngIf="login_data">
+	<div class="logout-message" padding *ngIf="login_data">
 		<p>{{login_data.message}}</p>
     	<button ion-button block (click)="doLogout()">{{ 'Click here to logout' | translate }}</button>
   </div>
