@@ -891,6 +891,10 @@ export class MyApp {
     // kinda hacky, but it works
     let styles = "<style>";
 
+    if( data.meta.design.fonts && data.meta.design.fonts.custom_font ) {
+      styles += "@import url('" + data.meta.design.fonts.custom_font + "');"
+    }
+
     // toolbar color
     styles += ".toolbar-background-md, .toolbar-background-ios, .tabs-md .tabbar, .tabs-ios .tabbar, .custom-page .menu-card { background: " + data.meta.design.toolbar_background + " }";
 
