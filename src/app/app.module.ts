@@ -33,6 +33,7 @@ import {Posts} from '../providers/posts/posts';
 import {GlobalVars} from '../providers/globalvars/globalvars';
 import {AppAds} from '../providers/appads/appads';
 import {Logins} from "../providers/logins/logins";
+import { RolesService } from "../providers/logins/roles.service";
 import {FbConnectIframe} from '../providers/facebook/login-iframe';
 import {FbConnectApp} from '../providers/facebook/login-app';
 import {FBConnectAppSettings} from '../providers/facebook/fbconnect-settings';
@@ -121,6 +122,7 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     ErrorLogService,
     RemoteDataService,
     Logins,
+    RolesService,
     WPlogin,
     HeaderLogo,
     ActionSheet,

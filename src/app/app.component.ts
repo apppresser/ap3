@@ -42,6 +42,7 @@ import { DocumentDirection } from 'ionic-angular/umd/platform/platform';
 import { ErrorLogService } from '../providers/appdata/error-log.service';
 import { RemoteDataService } from '../providers/appdata/remote-data';
 import { MyApppSettingsService } from '../providers/appdata/myappp.settings.service';
+import { RolesService } from '../providers/logins/roles.service';
 
 /**
  * Customizable options for our
@@ -99,6 +100,7 @@ export class MyApp {
     private fbconnectvars: FBConnectAppSettings,
     private fbconnectIframe: FbConnectIframe,
     private loginservice: LoginService,
+    private rolesservice: RolesService,
     private languageservice: LanguageService,
     private sanitizer: DomSanitizer,
     private pushService: PushService,
@@ -362,6 +364,17 @@ export class MyApp {
       this.pages = data.menus.items.slice();
       this.menuservice.menu = this.pages.slice();
 
+      this.menuservice.menu.map(item => {
+
+        if(this.rolesservice.test_user_role(item.extra_classes) === false) {
+          item.extra_classes += ' role-hide';
+        } else {
+          item.extra_classes.replace(' role-hide', '');
+        }
+
+        console.log('loadSideMenu', item)
+      });
+
       this.showmenu = true;
 
       // set the home page to the proper component
@@ -419,6 +432,10 @@ export class MyApp {
         // hide the tab if user added class of hide
         item.show = true;
         if( item.extra_classes.indexOf('hide') >= 0 || item.extra_classes.indexOf('loggedin') >= 0 ) {
+          item.show = false;
+        }
+
+        if(this.rolesservice.test_user_role(item.extra_classes) === false) {
           item.show = false;
         }
 
@@ -1436,6 +1453,12 @@ export class MyApp {
 
   // show or hide menu items on login or logout. resetSideMenu(false) for logout
   resetSideMenu( login ) {
+
+    let updated_pages = [];
+
+
+    alert('reset side menu login ' + login)
+
     for( let item of this.pages ) {
 
       if( login === true && item.extra_classes.indexOf('loggedin') >= 0 ) {
@@ -1448,7 +1471,21 @@ export class MyApp {
         item.extra_classes = item.extra_classes.replace(" hide", "");
       }
 
+      if(this.rolesservice.test_user_role(item.extra_classes) === false) {
+        item.extra_classes += ' role-hide';
+      } else {
+        item.extra_classes.replace(' role-hide', '');
+      }
+
+      updated_pages.push(item);
+
     }
+
+    this.zone.run( () => {
+      this.pages = updated_pages;
+
+      console.log('resetSideMenu pages', this.pages)
+    });
 
     this.setHomePageComponent();
     
@@ -1492,6 +1529,8 @@ export class MyApp {
       if( !login && item.extra_classes.indexOf('loggedin') >= 0 ) {
         item.show = false;
       } else if( login && item.extra_classes.indexOf('loggedout') >= 0 ) {
+        item.show = false;
+      } else if(this.rolesservice.test_user_role(item.extra_classes) === false) {
         item.show = false;
       }
 
