@@ -601,8 +601,10 @@ export class MyApp {
    * @param {*} p
    */
   private _openTabFromMenu(p: any): void {
-    // Get all tabs
-    let allTabs = this.nav.getActiveChildNav();
+    // Get a list of the active child navigation.
+    let activeNavigation = this.nav.getActiveChildNavs();
+    // Get all tabs (assume the tab controller is the only child nav)
+    let allTabs = activeNavigation[0];
     // Get the index of the tab that has the same page id, as the selected menu
     let tabIndex: number = allTabs._tabs.findIndex(tab => {
       return tab.rootParams.page_id === p.page_id;
