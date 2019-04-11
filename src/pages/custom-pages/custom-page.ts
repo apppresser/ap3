@@ -468,6 +468,28 @@ export class CustomPage implements OnInit, OnDestroy {
 		this.nav.setRoot( root, page );
 	}
 
+	/**
+	 * Opens a tab (global tab) from a custom page
+	 * @param {*} page
+	 */
+	public openTab(page: any): void {
+		// Get a list of the active child navigation.
+		let activeNavigation = this.nav.getActiveChildNavs();
+		// Get all tabs (assume the tab controller is the only child nav)
+		let allTabs = activeNavigation[0];
+		// Get the index of the tab that has the same page id, as the selected menu
+		let tabIndex: number = allTabs._tabs.findIndex(tab => {
+			return tab.rootParams.page_id === page.page_id;
+		});
+		// Select the tab using the tabIndex only if the same page_id exist
+		if (tabIndex >= 0) {
+			allTabs.select(tabIndex);
+		} else {
+			// If the tab with the same page_id does not exists push page
+			this.pushPage(page);
+		}
+	}
+
 	back() {
 		this.nav.pop();
 	}
@@ -800,6 +822,9 @@ export class CustomPage implements OnInit, OnDestroy {
 		},
 		openPage: ( page ) => {
 			this.openPage(page);
+		},
+		openTab: (page) => {
+			this.openTab(page);
 		},
 		back: () => {
 			this.back();
