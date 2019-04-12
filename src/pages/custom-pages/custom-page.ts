@@ -14,16 +14,6 @@ import {Iframe} from "../iframe/iframe";
 import { Language } from "../../models/language.model";
 import { LanguageService } from '../../providers/language/language.service';
 
-/**
- * Any changes done to this file needs to be copied over to
- * mkpages/templates/custom-html-template/ for the production
- * script.
- * 
- * When copying over code take care not to include sections
- * marked as "Development mode only"
- * 
- */
-
 /** Development mode only -- START */
 import { IComponentInputData } from 'angular2-dynamic-component/index';
 import { User } from '../../models/user.model';
@@ -402,6 +392,10 @@ export class CustomPage implements OnInit, OnDestroy {
 				return;
 		}
 
+		if (page && page.extra_classes && page.extra_classes.indexOf('tabs') >= 0) {
+			this._openTab(page);
+			return;
+		}
 		if(page && page.extra_classes && this.yieldLogin(page.extra_classes))
 			return;
 
@@ -472,7 +466,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	 * Opens a tab (global tab) from a custom page
 	 * @param {*} page
 	 */
-	public openTab(page: any): void {
+	private _openTab(page: any): void {
 		// Get a list of the active child navigation.
 		let activeNavigation = this.nav.getActiveChildNavs();
 		// Get all tabs (assume the tab controller is the only child nav)
@@ -822,9 +816,6 @@ export class CustomPage implements OnInit, OnDestroy {
 		},
 		openPage: ( page ) => {
 			this.openPage(page);
-		},
-		openTab: (page) => {
-			this.openTab(page);
 		},
 		back: () => {
 			this.back();
