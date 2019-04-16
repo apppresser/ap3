@@ -90,7 +90,7 @@
 
 <ion-footer>
   <ion-toolbar color="light" *ngIf="loadProgress > 0">
-    <p align="center">{{ 'Downloading...' || translate }}</p>
+    <p align="center">{{ 'Downloading...' | translate }}</p>
     <div class="progress-outer">
         <div class="progress-inner" [style.width]="loadProgress + '%'">
             {{loadProgress}}%

@@ -34,7 +34,11 @@
 
 		<ion-grid>
       <ion-row>
-        <ion-col col-4 class="product-price"><p *ngIf="item.line_total"><span *ngIf="currencySymbol" class="currency-symbol" [innerHTML]="currencySymbol"></span>{{item.line_total}}</p></ion-col>
+        <ion-col col-4 class="product-price">
+          <p *ngIf="item.line_total">
+            <span *ngIf="currencySymbol" class="currency-symbol" [innerHTML]="currencySymbol"></span>{{ item.line_total | number : '1.2-2' }}
+          </p>
+        </ion-col>
         <ion-col col-5 text-center class="product-quantity">
 
             <ion-icon item-start name="remove-circle" (click)="decrement( item )"></ion-icon>

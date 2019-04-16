@@ -583,18 +583,57 @@ export class MyApp {
     return mypage;
   }
 
-  // side menu link. determine which func to use
-  menuLink(p, e) {
-
-    if( p.extra_classes.indexOf('submenu-parent') >= 0 ) {
-      this.doSubMenus(e)
+  /**
+   * Determines which function to use (Side menu link)
+   * @param {*} p
+   * @param {*} e
+   * @returns {void}
+   */
+  public menuLink(p: any, e: any): void {
+    if (p.extra_classes.indexOf('submenu-parent') >= 0) {
+      this.doSubMenus(e);
       return;
     }
+    if (this.bothMenus && (p.extra_classes && p.extra_classes.indexOf('tabs') >= 0)) {
+      this._openTabFromMenu(p);
+    } else {
+      this._pushOrOpenPage(p);
+    }
+  }
 
-    if( this.bothMenus || ( p.extra_classes && p.extra_classes.indexOf('push-page') >= 0 ) ) {
+  /**
+   * Pushes or opens the selected page
+   * @param {*} p
+   */
+  private _pushOrOpenPage(p: any): void {
+    if (this.bothMenus || (p.extra_classes && p.extra_classes.indexOf('push-page') >= 0)) {
       this.pushPage(p);
     } else {
       this.openPage(p);
+    }
+  }
+
+  /**
+   * Opens a tab (global tab) from the side menu
+   * @param {*} p
+   */
+  private _openTabFromMenu(p: any): void {
+    // Get a list of the active child navigation.
+    let activeNavigation = this.nav.getActiveChildNavs();
+    // Get all tabs (assume the tab controller is the only child nav)
+    let allTabs = activeNavigation[0];
+    // Get the index of the tab that has the same page id, as the selected menu
+    let tabIndex: number = allTabs._tabs.findIndex(tab => {
+      return tab.rootParams.page_id === p.page_id;
+    });
+    // Select the tab using the tabIndex only if the same page_id exist
+    if (tabIndex >= 0) {
+      allTabs.select(tabIndex);
+      // Close the side menu
+      this.menuCtrl.close();
+    } else {
+      // If the tab with the same page_id does not exists push or open page
+      this._pushOrOpenPage(p);
     }
   }
 
