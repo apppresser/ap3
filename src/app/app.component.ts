@@ -1495,9 +1495,6 @@ export class MyApp {
 
     let updated_pages = [];
 
-
-    alert('reset side menu login ' + login)
-
     for( let item of this.pages ) {
 
       if( login === true && item.extra_classes.indexOf('loggedin') >= 0 ) {
@@ -1510,10 +1507,12 @@ export class MyApp {
         item.extra_classes = item.extra_classes.replace(" hide", "");
       }
 
+      if(item.extra_classes) {
+        // always remove this to avoid adding twice
+        item.extra_classes = item.extra_classes.replace(' role-hide', '');
+      }
       if(this.rolesservice.test_user_role(item.extra_classes) === false) {
         item.extra_classes += ' role-hide';
-      } else {
-        item.extra_classes.replace(' role-hide', '');
       }
 
       updated_pages.push(item);
@@ -1522,8 +1521,6 @@ export class MyApp {
 
     this.zone.run( () => {
       this.pages = updated_pages;
-
-      console.log('resetSideMenu pages', this.pages)
     });
 
     this.setHomePageComponent();
