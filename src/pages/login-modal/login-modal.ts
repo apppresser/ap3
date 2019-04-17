@@ -410,7 +410,7 @@ export class LoginModal {
 
 			let title = e.target.innerText
 
-			// this.dismiss() // There is no need for modal to be dismissed (it is automaticaly dismised when pushing the new page)
+			this.dismiss()
 
 			// link to custom registration url
 			if( this.api_register_setting.url.indexOf('https') >= 0 ) {
