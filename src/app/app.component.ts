@@ -371,8 +371,6 @@ export class MyApp {
         } else {
           item.extra_classes.replace(' role-hide', '');
         }
-
-        console.log('loadSideMenu', item)
       });
 
       this.showmenu = true;
