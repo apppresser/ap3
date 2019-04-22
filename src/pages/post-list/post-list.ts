@@ -132,16 +132,17 @@ export class PostList implements OnInit {
 
   }
 
-  loadPosts( route, doing_search? ) {
+  loadPosts( route ) {
 
     let loading = this.loadingController.create({
         showBackdrop: false,
         //dismissOnPageChange: true
     });
 
-    // If doing search, don't show the loader because it will cause the search input to lose focus
-    if(doing_search)
+    // If doing search, don't show the loader because it will cause the search input to lose focus, then hides the keyboard
+    if(!this.showSearch) {
       loading.present(loading);
+    }
 
     this.page = 1;
     
@@ -213,7 +214,7 @@ export class PostList implements OnInit {
     if (val && val.trim() != '') {
       // set to this.route so infinite scroll works
       this.route = this.addQueryParam(this.navParams.data.list_route, 'search=' + val);
-      this.loadPosts( this.route, true )
+      this.loadPosts( this.route );
     }
 
   }
