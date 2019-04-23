@@ -14,16 +14,6 @@ import {Iframe} from "../iframe/iframe";
 import { Language } from "../../models/language.model";
 import { LanguageService } from '../../providers/language/language.service';
 
-/**
- * Any changes done to this file needs to be copied over to
- * mkpages/templates/custom-html-template/ for the production
- * script.
- * 
- * When copying over code take care not to include sections
- * marked as "Development mode only"
- * 
- */
-
 /** Development mode only -- START */
 import { IComponentInputData } from 'angular2-dynamic-component/index';
 import { User } from '../../models/user.model';
@@ -402,6 +392,10 @@ export class CustomPage implements OnInit, OnDestroy {
 				return;
 		}
 
+		if (page && page.extra_classes && page.extra_classes.indexOf('tabs') >= 0) {
+			this._openTab(page);
+			return;
+		}
 		if(page && page.extra_classes && this.yieldLogin(page.extra_classes))
 			return;
 
@@ -466,6 +460,28 @@ export class CustomPage implements OnInit, OnDestroy {
 		let root = this.getPageType( page );
 
 		this.nav.setRoot( root, page );
+	}
+
+	/**
+	 * Opens a tab (global tab) from a custom page
+	 * @param {*} page
+	 */
+	private _openTab(page: any): void {
+		// Get a list of the active child navigation.
+		let activeNavigation = this.nav.getActiveChildNavs();
+		// Get all tabs (assume the tab controller is the only child nav)
+		let allTabs = activeNavigation[0];
+		// Get the index of the tab that has the same page id, as the selected menu
+		let tabIndex: number = allTabs._tabs.findIndex(tab => {
+			return tab.rootParams.page_id === page.page_id;
+		});
+		// Select the tab using the tabIndex only if the same page_id exist
+		if (tabIndex >= 0) {
+			allTabs.select(tabIndex);
+		} else {
+			// If the tab with the same page_id does not exists push page
+			this.pushPage(page);
+		}
 	}
 
 	back() {

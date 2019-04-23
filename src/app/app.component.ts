@@ -42,6 +42,7 @@ import { DocumentDirection } from 'ionic-angular/umd/platform/platform';
 import { ErrorLogService } from '../providers/appdata/error-log.service';
 import { RemoteDataService } from '../providers/appdata/remote-data';
 import { MyApppSettingsService } from '../providers/appdata/myappp.settings.service';
+import { RolesService } from '../providers/logins/roles.service';
 
 /**
  * Customizable options for our
@@ -99,6 +100,7 @@ export class MyApp {
     private fbconnectvars: FBConnectAppSettings,
     private fbconnectIframe: FbConnectIframe,
     private loginservice: LoginService,
+    private rolesservice: RolesService,
     private languageservice: LanguageService,
     private sanitizer: DomSanitizer,
     private pushService: PushService,
@@ -363,6 +365,15 @@ export class MyApp {
       this.pages = data.menus.items.slice();
       this.menuservice.menu = this.pages.slice();
 
+      this.menuservice.menu.map(item => {
+
+        if(this.rolesservice.test_user_role(item.extra_classes) === false) {
+          item.extra_classes += ' role-hide';
+        } else {
+          item.extra_classes.replace(' role-hide', '');
+        }
+      });
+
       this.showmenu = true;
 
       // set the home page to the proper component
@@ -420,6 +431,10 @@ export class MyApp {
         // hide the tab if user added class of hide
         item.show = true;
         if( item.extra_classes.indexOf('hide') >= 0 || item.extra_classes.indexOf('loggedin') >= 0 ) {
+          item.show = false;
+        }
+
+        if(this.rolesservice.test_user_role(item.extra_classes) === false) {
           item.show = false;
         }
 
@@ -567,18 +582,57 @@ export class MyApp {
     return mypage;
   }
 
-  // side menu link. determine which func to use
-  menuLink(p, e) {
-
-    if( p.extra_classes.indexOf('submenu-parent') >= 0 ) {
-      this.doSubMenus(e)
+  /**
+   * Determines which function to use (Side menu link)
+   * @param {*} p
+   * @param {*} e
+   * @returns {void}
+   */
+  public menuLink(p: any, e: any): void {
+    if (p.extra_classes.indexOf('submenu-parent') >= 0) {
+      this.doSubMenus(e);
       return;
     }
+    if (this.bothMenus && (p.extra_classes && p.extra_classes.indexOf('tabs') >= 0)) {
+      this._openTabFromMenu(p);
+    } else {
+      this._pushOrOpenPage(p);
+    }
+  }
 
-    if( this.bothMenus || ( p.extra_classes && p.extra_classes.indexOf('push-page') >= 0 ) ) {
+  /**
+   * Pushes or opens the selected page
+   * @param {*} p
+   */
+  private _pushOrOpenPage(p: any): void {
+    if (this.bothMenus || (p.extra_classes && p.extra_classes.indexOf('push-page') >= 0)) {
       this.pushPage(p);
     } else {
       this.openPage(p);
+    }
+  }
+
+  /**
+   * Opens a tab (global tab) from the side menu
+   * @param {*} p
+   */
+  private _openTabFromMenu(p: any): void {
+    // Get a list of the active child navigation.
+    let activeNavigation = this.nav.getActiveChildNavs();
+    // Get all tabs (assume the tab controller is the only child nav)
+    let allTabs = activeNavigation[0];
+    // Get the index of the tab that has the same page id, as the selected menu
+    let tabIndex: number = allTabs._tabs.findIndex(tab => {
+      return tab.rootParams.page_id === p.page_id;
+    });
+    // Select the tab using the tabIndex only if the same page_id exist
+    if (tabIndex >= 0) {
+      allTabs.select(tabIndex);
+      // Close the side menu
+      this.menuCtrl.close();
+    } else {
+      // If the tab with the same page_id does not exists push or open page
+      this._pushOrOpenPage(p);
     }
   }
 
@@ -1453,6 +1507,9 @@ export class MyApp {
 
   // show or hide menu items on login or logout. resetSideMenu(false) for logout
   resetSideMenu( login ) {
+
+    let updated_pages = [];
+
     for( let item of this.pages ) {
 
       if( login === true && item.extra_classes.indexOf('loggedin') >= 0 ) {
@@ -1465,7 +1522,21 @@ export class MyApp {
         item.extra_classes = item.extra_classes.replace(" hide", "");
       }
 
+      if(item.extra_classes) {
+        // always remove this to avoid adding twice
+        item.extra_classes = item.extra_classes.replace(' role-hide', '');
+      }
+      if(this.rolesservice.test_user_role(item.extra_classes) === false) {
+        item.extra_classes += ' role-hide';
+      }
+
+      updated_pages.push(item);
+
     }
+
+    this.zone.run( () => {
+      this.pages = updated_pages;
+    });
 
     this.setHomePageComponent();
     
@@ -1509,6 +1580,8 @@ export class MyApp {
       if( !login && item.extra_classes.indexOf('loggedin') >= 0 ) {
         item.show = false;
       } else if( login && item.extra_classes.indexOf('loggedout') >= 0 ) {
+        item.show = false;
+      } else if(this.rolesservice.test_user_role(item.extra_classes) === false) {
         item.show = false;
       }
 

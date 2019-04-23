@@ -60,6 +60,10 @@ export class TabsPage implements OnInit {
       if(typeof(tab.extra_classes) !== 'undefined' && (tab.extra_classes.indexOf('loginmodal') >= 0||tab.extra_classes.indexOf('logoutmodal') >= 0)) {
         tab.root = null;
       }
+      // If current tab is going to be used as a global tab opened from side menu and you do not want to show it on the tab bar
+      if (tab.extra_classes === 'hidden-tab') {
+        tab.show = false;
+      }
       this.tabs.push(tab);
     }
 
