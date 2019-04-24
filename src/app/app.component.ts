@@ -778,8 +778,11 @@ export class MyApp {
 
     // console.log('push page type', root)
 
-    this.nav.push( root, page, opt );
-
+    if (root) {
+      this.nav.push(root, page, opt);
+    } else {
+      this.nav.push(page); // If page is a string and is the class name of the page (component page)
+    }
   }
 
   openTab(tab_index: number) {
@@ -1231,80 +1234,21 @@ export class MyApp {
     });
 
     push.on('notification').subscribe((data: any) => {
-
       // Debugging with the error log
       let error = 'notification received: ' + JSON.stringify(data);
       this.errorlogs.addLog(error, 'push');
 
-      let isAppPushPostURL = ( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 && data.additionalData.target && data.additionalData.target == '_self' );
-      let isAppPushCustomURL = ( data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 );
-      let isAppPage = ( data.additionalData && (<any>data).additionalData.page );
-
-      // Don't allow resetTabs to happen if we need to pushPage from notification: it messes things up
-      if( isAppPushPostURL || isAppPushCustomURL || isAppPage ) {
-        this.stopTabReset = true;
+      // allow the language and user to be set and menus to reset before redirecting
+      let wait = 0;
+      if (this.app_recently_started) {
+        wait = 5000;
+        if (this.myapppsettings.isForcedLogin()) {
+          wait += 3500;
+        }
       }
-
-      this.Dialogs.alert(
-        data.message,  // message
-        data.title,    // title
-        this.translate.instant('Done')  // buttonName
-      ).then(() => {
-
-        // Now we can allow resetTabs to happen
-        this.stopTabReset = false;
-
-        // allow the language and user to be set and menus to reset before redirecting
-        let wait = 0;
-        if(this.app_recently_started) {
-          wait = 5000;
-          if(this.myapppsettings.isForcedLogin()) {
-            wait += 3500;
-          }
-        }
-
-        // if apppush post URL
-        if(isAppPushPostURL) {
-          let page = { title: data.title, component: Iframe, url: data.additionalData.url, classes: null };
-          setTimeout(()=>{
-            this.pushPage( page );
-          }, wait);
-          return;
-        }
-
-        // if there's an external url from apppush custom url field, open in IAB
-        if(isAppPushCustomURL) {
-
-          this.errorlogs.addLog('custom url '+data.additionalData.url, 'push');
-
-          this.openIab( data.additionalData.url, '_blank' );
-          return;
-        }
-
-        // if there's an app page, open it
-        if(isAppPage) {
-
-          let page = (<any>data).additionalData.page;
-
-          // if page is external, fire the in app browser
-          if( page.target === '_blank' ) {
-            this.errorlogs.addLog('page url '+page.url, 'push');
-            setTimeout(()=>{
-              this.openIab( page.url, page.target );
-            }, wait);
-            return;
-          }
-          
-          this.errorlogs.addLog('page slug '+(<any>data).additionalData.page, 'push');
-          
-          // if they included an app page, load the page
-          setTimeout(()=>{
-            this.pushPage( (<any>data).additionalData.page );
-          }, wait);
-        }
-
-      }); // then
-
+      setTimeout(() => {
+        this._redirectPage(data);
+      }, wait);
     });
 
     push.on('error').subscribe((e) => {
@@ -1312,6 +1256,68 @@ export class MyApp {
       console.log(e.message);
     });
 
+  }
+
+  /**
+   * Redirects to the correct page
+   * @param {*} data
+   */
+  private _redirectPage(data: any): void {
+    let isAppPushPostURL = (data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0 && data.additionalData.target && data.additionalData.target == '_self');
+    let isAppPushCustomURL = (data.additionalData && data.additionalData.url && data.additionalData.url.indexOf('http') == 0);
+    let isAppPage = (data.additionalData && (<any>data).additionalData.page);
+
+    // Don't allow resetTabs to happen if we need to pushPage from notification: it messes things up
+    if (isAppPushPostURL || isAppPushCustomURL || isAppPage) {
+      this.stopTabReset = true;
+    }
+
+    this.Dialogs.alert(
+      data.message,  // message
+      data.title,    // title
+      this.translate.instant('Done')  // buttonName
+    )
+      .then(() => {
+        // Now we can allow resetTabs to happen
+        this.stopTabReset = false;
+
+        // if apppush post URL
+        if (isAppPushPostURL) {
+          let page = { title: data.title, component: Iframe, url: data.additionalData.url, classes: null };
+          this.pushPage(page);
+          return;
+        }
+
+        // if there's an external url from apppush custom url field, open in IAB
+        if (isAppPushCustomURL) {
+          this.errorlogs.addLog('custom url ' + data.additionalData.url, 'push');
+          this.openIab(data.additionalData.url, '_blank');
+          return;
+        }
+
+        // if there's an app page, open it
+        if (isAppPage) {
+          let page = (<any>data).additionalData.page;
+          // if page is external, fire the in app browser
+          if (page.target === '_blank') {
+            this.errorlogs.addLog('page url ' + page.url, 'push');
+            this.openIab(page.url, page.target);
+            return;
+          }
+          this.errorlogs.addLog('page slug ' + (<any>data).additionalData.page, 'push');
+          // if they included an app page, load the page
+          this.pushPage((<any>data).additionalData.page);
+        }
+
+        // If there is something in the custom url field, but it is not an external url
+        if (data.additionalData.url && !isAppPushCustomURL) {
+          let page = (<any>data).additionalData.url;
+          this.pushPage(page);
+        }
+      })
+      .catch(error => {
+        console.warn(error);
+      });
   }
 
   maybeSendPushId( ajaxurl? ) {
