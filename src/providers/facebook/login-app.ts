@@ -50,10 +50,14 @@ export class FbConnectApp {
 
     }
 
-    this.Facebook.login(this.fbconnectvars.login_scope).then(result => {
-      // we get back an auth response here, should save it or something
-      this.statusChangeCallback(result);
-    });
+    this.Facebook.login(this.fbconnectvars.login_scope)
+      .then(result => {
+        // we get back an auth response here, should save it or something
+        this.statusChangeCallback(result);
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }
 
   // This is called with the results from from FB.getLoginStatus().
