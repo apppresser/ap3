@@ -410,7 +410,10 @@ export class LoginModal {
 
 			let title = e.target.innerText
 
-			this.dismiss()
+			// fix dismiss bug when force login is used
+			if( this.viewCtrl.name === "ModalCmp" ) {
+				this.dismiss()
+			}
 
 			// link to custom registration url
 			if( this.api_register_setting.url.indexOf('https') >= 0 ) {
