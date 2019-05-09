@@ -48,32 +48,35 @@
 
 		<p *ngIf="selectedItem.in_stock" class="product-stock">{{ '✓ In Stock.' | translate }}</p>
 
-		<form (ngSubmit)="addToCart(addToCartForm)" #addToCartForm="ngForm">
+		<button ion-button block *ngIf="variations?.length" (click)="optionModal()">Select Options</button>
 
-			<!-- <div *ngIf="variations">
+		<form *ngIf="!variations?.length" (ngSubmit)="addToCart(addToCartForm)" #addToCartForm="ngForm">
+
+			<!-- <div *ngIf="variations?.length">
 				<ion-item *ngIf="variations.length">
 					<ion-label stacked>Options</ion-label>
 					<ion-select ngModel name="variation_id">
 						<ion-option *ngFor="let variation of variations" value="{{variation.id}}">
-							{{variation.price}} - 
+							<img src="{{variation.image.src}}" />
+							<span class="currency-symbol" *ngIf="currencySymbol" [innerHTML]="currencySymbol"></span> {{variation.price}} |  
 							<div *ngFor="let attr of variation.attributes">
-								{{attr.name}} : {{attr.option}}
+								{{attr.name}}: {{attr.option}}
 							</div>
 						</ion-option>
 					</ion-select>
 				</ion-item>
 			</div> -->
 
-			<div *ngIf="!groupedProducts?.length && availableAttributes.length">
+			<!-- <div *ngIf="!groupedProducts?.length && availableAttributes.length">
 				<ion-item *ngFor="let attribute of availableAttributes">
 					<ion-label stacked>{{attribute.name}}</ion-label>
-					<ion-select (ionChange)="variationChanged( $event, attribute )" ngModel name="{{attribute.id}}" >
+					<ion-select (ionChange)="attributeChanged( $event, attribute )" ngModel name="{{attribute.id}}" >
 						<ion-option *ngFor="let option of attribute.options" value="{{option}}">
 							{{option}}
 						</ion-option>
 					</ion-select>
 				</ion-item>
-			</div>
+			</div> -->
 			
 			<div *ngIf="groupedProducts?.length">
 				<ion-grid *ngFor="let groupProd of groupedProducts">

@@ -138,7 +138,7 @@ export class WooDetail {
 			this.description = '';
 		}
 
-		this.availableAttributes = this.verifyAttributes();
+		this.availableAttributes = this.selectedItem.attributes;
 
 		if( this.selectedItem.type === 'variable' ) {
 			this.getVariations()
@@ -164,22 +164,56 @@ export class WooDetail {
 
 	}
 
-	variationChanged( e, attribute ) {
+	/*
+	We need to make sure people only select variations that actually exist. For example, if there is a Small red t-shirt but not a large red t-shirt, then we cannot allow them to select "Large" and "Red". Therefore, when one attribute like "Large" is selected, we see what other attributes like "Red" exist and show them accordingly.
+	*/
+	attributeChanged( attributeName, attribute ) {
+
+		return;
 
 		console.log(this.availableAttributes)
 
-		console.log(e, attribute)
+		console.log(attributeName, attribute)
 
 		if( !this.variations )
 			return;
 
 		/*
-		when an attribute is selected, need to query woo to get other available attributes like this:
-
-		https://appdev.local/wp-json/wc/v3/products/1758/variations?attribute=pa_color&attribute_term=229
-
-		This returns variations with that attribute, need to loop through those and get available variation attributes, then send those to this.availableAttributes.
+		Loop over variations and pull out the attributes that exist.
+		When an attribute is selected, loop over this.variations to find a variation with that attribute, then add other attributes in that variation to this.availableAttributes and remove duplicates.
 		*/
+
+		// loop through variations
+		for (var i = 0; i < this.variations.length; ++i) {
+
+			console.log( this.variations[i].attributes )
+
+			let attrString = JSON.stringify( this.variations[i].attributes );
+			if( attrString.indexOf(attributeName) >= 0 ) {
+				console.log('this variation exists', this.variations[i])
+			}
+
+			/* loop through attributes within each variation. They look like this: 
+			[{ id: 1, name: "Color", option: "Red"}, { id: 1, name: "Size", option: "Large"}]
+			*/
+			/*
+			for (var z = 0; z < this.variations[i].attributes.length; ++z) {
+
+				console.log( this.variations[i].attributes[z].option, attributeName )
+
+				// find when our selected attribute option matches in a variation. For example, if the selected attribute is "Large", find all instances of "Large" and get the corresponding colors like Red and Blue. Then we populate the Red and Blue options. This is to avoid someone selecting a Large Red t-shirt when it doesn't exist.
+				if( this.variations[i].attributes[z].option === attributeName ) {
+
+					// The user selected Blue, and this variation has Blue in it. Then we pull out the other attributes, for example Large, Small, and populate the options on the front end.
+					console.log('match', this.variations[i].attributes[z])
+
+					//attribute.options.push( this.variations[i].attributes[z].option );
+
+					console.log(attribute)
+
+				}
+			} */
+		}
 		
 	}
 
@@ -229,17 +263,20 @@ export class WooDetail {
 
 	addSingleItem( item ) {
 
-		console.log(item, this.selectedItem)
+		//console.log(item, this.selectedItem)
 
-		if( this.variations && this.variations.length ) {
+		if( this.variations && this.variations.length && !this.selectedItem.variation_id ) {
 			item.variation_id = this.getVariationId( item )
 			if( item.variation_id === undefined ) {
-				this.presentToast( 'Please select from available options.' )
+				this.translate.get( 'Not available, please select different options.' ).subscribe( text => {
+					this.presentToast( text )
+				})
+				
 				return;
 			}
 		}
 
-		console.log('variation id: ' + item.variation_id )
+		//console.log('variation id: ' + item.variation_id )
 
 		this.presentToast( this.selectedItem.name + ' added to cart.' )
 
@@ -603,6 +640,20 @@ export class WooDetail {
           // update cart in case items were changed on site
           this.getCartFromAPI()
         })
+	}
+
+	optionModal() {
+
+		let modal = this.modalCtrl.create('WooModal', {variations: this.variations, attributes: this.availableAttributes});
+		modal.onDidDismiss(data => {
+			console.log(data);
+			if( data ) {
+				this.selectedItem.variation_id = data.id
+				this.addSingleItem( this.selectedItem )
+			}
+		});
+    	modal.present();
+
 	}
 
 	productSiteLink( url ) {
