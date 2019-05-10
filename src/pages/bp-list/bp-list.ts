@@ -384,8 +384,11 @@ export class BpList implements OnInit {
 
     }
 
-    route = this.addQueryParam( route, this.getSegmentArg() );
-
+    let getSegmentArg: string = this.getSegmentArg();
+    if (getSegmentArg !== '') {
+        route = this.addQueryParam(route, this.getSegmentArg());
+    }
+    
     return route;
 
   }
