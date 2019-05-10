@@ -19,6 +19,8 @@ export class WooDetail {
 	description: any;
 	cartModal: any;
 	variations: any;
+	filteredVariations: any;
+	noResults: boolean = false;
 	reviews: any;
 	moreReviewsExist: boolean = false;
 	cart_count: number;
@@ -28,6 +30,7 @@ export class WooDetail {
 	availableAttributes: any;
 	listenFunc: Function;
 	currencySymbol: any;
+	productImages: any;
 
 	constructor(
 		public navCtrl: NavController, 
@@ -86,46 +89,6 @@ export class WooDetail {
 
 	}
 
-	/**
-	 * Variations must be created as taxonomies in Woocommerce in order to have unique variation IDs.
-	 * Because these IDs are required for the items to be added to the card, the variations, must be 
-	 * verified before they can be used.
-	 */
-	verifyAttributes() {
-
-		if(this.selectedItem.type == 'variable') {
-			
-			let ids = [];
-			let unique_ids = true;
-			let valid_ids = true;
-
-			console.log('verifyAttributes', this.selectedItem.attributes)
-
-			if(this.selectedItem.attributes && this.selectedItem.attributes.length) {
-				this.selectedItem.attributes.forEach((obj, index)=>{
-					if(obj.id === 0) {
-						console.warn('The id for this item is zero', obj);
-						valid_ids = false;
-					} else if(ids.indexOf(obj.id) >= 0) {
-						console.warn('This id is already there ', obj.id);
-						unique_ids = false;
-					} else {
-						ids.push(obj.id);
-					}
-				});
-			}
-
-			if(!unique_ids || !valid_ids) {
-				if(this.myapppsettings.isPreview()) {
-					alert( 'Admin Notice: This product has variations, but they were not created as taxonomies. Because of this they have no unique IDs and can not be used now.' );
-					return [];
-				}
-			}
-		}
-
-		return this.selectedItem.attributes;
-	}
-
 	loadProduct() {
 
 		this.selectedItem = this.navParams.get('item');
@@ -156,6 +119,10 @@ export class WooDetail {
 			this.selectedItem.quantity = 1
 		}
 
+		if( this.selectedItem.images.length ) {
+			this.productImages = this.selectedItem.images
+		}
+
 		this.wooProvider.getCurrencySymbol().then( symbol => {
 	    	this.currencySymbol = symbol
 	    })
@@ -164,57 +131,37 @@ export class WooDetail {
 
 	}
 
-	/*
-	We need to make sure people only select variations that actually exist. For example, if there is a Small red t-shirt but not a large red t-shirt, then we cannot allow them to select "Large" and "Red". Therefore, when one attribute like "Large" is selected, we see what other attributes like "Red" exist and show them accordingly.
-	*/
-	attributeChanged( attributeName, attribute ) {
+	attributeChanged( name, attribute ) {
+		console.log(name, attribute)
+		this.noResults = false
+		// find variations with this attribute in them, and filter
 
-		return;
+		let getVariations = this.filteredVariations.filter( variation => JSON.stringify( variation.attributes ).indexOf( name ) >= 0 )
 
-		console.log(this.availableAttributes)
-
-		console.log(attributeName, attribute)
-
-		if( !this.variations )
-			return;
-
-		/*
-		Loop over variations and pull out the attributes that exist.
-		When an attribute is selected, loop over this.variations to find a variation with that attribute, then add other attributes in that variation to this.availableAttributes and remove duplicates.
-		*/
-
-		// loop through variations
-		for (var i = 0; i < this.variations.length; ++i) {
-
-			console.log( this.variations[i].attributes )
-
-			let attrString = JSON.stringify( this.variations[i].attributes );
-			if( attrString.indexOf(attributeName) >= 0 ) {
-				console.log('this variation exists', this.variations[i])
-			}
-
-			/* loop through attributes within each variation. They look like this: 
-			[{ id: 1, name: "Color", option: "Red"}, { id: 1, name: "Size", option: "Large"}]
-			*/
-			/*
-			for (var z = 0; z < this.variations[i].attributes.length; ++z) {
-
-				console.log( this.variations[i].attributes[z].option, attributeName )
-
-				// find when our selected attribute option matches in a variation. For example, if the selected attribute is "Large", find all instances of "Large" and get the corresponding colors like Red and Blue. Then we populate the Red and Blue options. This is to avoid someone selecting a Large Red t-shirt when it doesn't exist.
-				if( this.variations[i].attributes[z].option === attributeName ) {
-
-					// The user selected Blue, and this variation has Blue in it. Then we pull out the other attributes, for example Large, Small, and populate the options on the front end.
-					console.log('match', this.variations[i].attributes[z])
-
-					//attribute.options.push( this.variations[i].attributes[z].option );
-
-					console.log(attribute)
-
-				}
-			} */
+		// if there are no results, we don't want to wipe the array, just display a notice
+		if( !getVariations.length ) {
+			this.noResults = true
+		} else {
+			attribute.disabled = true
+			this.filteredVariations = getVariations
 		}
-		
+
+		if( this.filteredVariations.length === 1 ) {
+			console.log( this.filteredVariations[0] )
+			this.productImages = [ this.filteredVariations[0].image ]
+		}
+	}
+
+	resetOptions() {
+		this.filteredVariations = this.variations
+
+		for (let i = 0; i < this.selectedItem.attributes.length; ++i) {
+			this.selectedItem.attributes[i].disabled = false
+		}
+
+		this.productImages = this.selectedItem.images
+
+		this.noResults = false
 	}
 
 	increment( item ) {
@@ -265,8 +212,15 @@ export class WooDetail {
 
 		//console.log(item, this.selectedItem)
 
-		if( this.variations && this.variations.length && !this.selectedItem.variation_id ) {
-			item.variation_id = this.getVariationId( item )
+		if( this.variations && this.variations.length ) {
+
+			if( this.filteredVariations.length === 1 ) {
+				item.variation_id = this.filteredVariations[0].id
+			} else {
+				// probably don't need this
+				item.variation_id = this.getVariationId( item )
+			}
+			
 			if( item.variation_id === undefined ) {
 				this.translate.get( 'Not available, please select different options.' ).subscribe( text => {
 					this.presentToast( text )
@@ -554,7 +508,8 @@ export class WooDetail {
 		this.wooProvider.get( 'products/' + this.selectedItem.id + '/variations' + param, 'nopaging' ).then(variations => {
 			console.log('getVariations variations', variations)
 			this.variations = variations
-			this.verifyVariations();
+			this.filteredVariations = variations
+			this.verifyVariations()
 		}).catch( e => {
 			console.warn(e)
 		}).then( () => { 
@@ -640,20 +595,6 @@ export class WooDetail {
           // update cart in case items were changed on site
           this.getCartFromAPI()
         })
-	}
-
-	optionModal() {
-
-		let modal = this.modalCtrl.create('WooModal', {variations: this.variations, attributes: this.availableAttributes});
-		modal.onDidDismiss(data => {
-			console.log(data);
-			if( data ) {
-				this.selectedItem.variation_id = data.id
-				this.addSingleItem( this.selectedItem )
-			}
-		});
-    	modal.present();
-
 	}
 
 	productSiteLink( url ) {

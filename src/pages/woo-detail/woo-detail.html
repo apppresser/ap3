@@ -26,7 +26,7 @@
 
  	<ion-slides pager class="single-product-images" *ngIf="selectedItem.images">
 
-	  <ion-slide *ngFor="let image of selectedItem.images">
+	  <ion-slide *ngFor="let image of productImages">
 		<img src="{{image.src}}" class="product-image" imageViewer />
 	  </ion-slide>
 
@@ -48,35 +48,22 @@
 
 		<p *ngIf="selectedItem.in_stock" class="product-stock">{{ '✓ In Stock.' | translate }}</p>
 
-		<button ion-button block *ngIf="variations?.length" (click)="optionModal()">Select Options</button>
+		<button *ngIf="variations?.length" block ion-button clear icon-start (click)="resetOptions()"><ion-icon name="refresh"></ion-icon> Reset Options</button>
 
-		<form *ngIf="!variations?.length" (ngSubmit)="addToCart(addToCartForm)" #addToCartForm="ngForm">
+		<form (ngSubmit)="addToCart(addToCartForm)" #addToCartForm="ngForm">
 
-			<!-- <div *ngIf="variations?.length">
-				<ion-item *ngIf="variations.length">
-					<ion-label stacked>Options</ion-label>
-					<ion-select ngModel name="variation_id">
-						<ion-option *ngFor="let variation of variations" value="{{variation.id}}">
-							<img src="{{variation.image.src}}" />
-							<span class="currency-symbol" *ngIf="currencySymbol" [innerHTML]="currencySymbol"></span> {{variation.price}} |  
-							<div *ngFor="let attr of variation.attributes">
-								{{attr.name}}: {{attr.option}}
-							</div>
-						</ion-option>
-					</ion-select>
+			<div *ngIf="variations?.length">
+				<ion-item *ngFor="let attribute of selectedItem.attributes">
+				  <ion-label stacked>{{attribute.name}}</ion-label>
+				  <ion-select [disabled]="attribute.disabled" (ionChange)="attributeChanged( $event, attribute )" ngModel name="{{attribute.id}}" >
+				    <ion-option *ngFor="let option of attribute.options" value="{{option}}">
+				      {{option}}
+				    </ion-option>
+				  </ion-select>
 				</ion-item>
-			</div> -->
+			</div>
 
-			<!-- <div *ngIf="!groupedProducts?.length && availableAttributes.length">
-				<ion-item *ngFor="let attribute of availableAttributes">
-					<ion-label stacked>{{attribute.name}}</ion-label>
-					<ion-select (ionChange)="attributeChanged( $event, attribute )" ngModel name="{{attribute.id}}" >
-						<ion-option *ngFor="let option of attribute.options" value="{{option}}">
-							{{option}}
-						</ion-option>
-					</ion-select>
-				</ion-item>
-			</div> -->
+			<p *ngIf="noResults">Please choose different options.</p>
 			
 			<div *ngIf="groupedProducts?.length">
 				<ion-grid *ngFor="let groupProd of groupedProducts">
@@ -119,7 +106,7 @@
 			
 			<button *ngIf="productLoaded && selectedItem.type === 'composite'" ion-button block (tap)="productSiteLink(selectedItem.permalink)">{{ 'Choose options on website' | translate }}</button>
 
-			<button *ngIf="productLoaded && selectedItem.type != 'composite' && selectedItem.price" ion-button type="submit" block>{{ 'Add to Cart' | translate }}</button>
+			<button *ngIf="productLoaded && selectedItem.type != 'composite' && selectedItem.price && !noResults" ion-button type="submit" block [disabled]="filteredVariations?.length > 1">{{ 'Add to Cart' | translate }}</button>
 
 		</form>
 
