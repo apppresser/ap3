@@ -303,10 +303,10 @@ export class EditProfileModal {
     loading.present();
     
     this.bpProvider.updateProfileAvatar(this.login_data, profileAvatar)
-      .then(() => {
-        this.profileAvatar = profileAvatar;
-        this.loginservice.user.avatar = profileAvatar;
-        this.login_data.avatar = profileAvatar;
+      .then(avatar => {
+        this.profileAvatar = avatar[0].full;
+        this.loginservice.user.avatar = avatar[0].full;
+        this.login_data.avatar = avatar[0].full;
         this.storage.set('user_login', this.login_data);
         loading.dismiss();
       })
