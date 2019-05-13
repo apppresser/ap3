@@ -1,4 +1,4 @@
-import {Component, Renderer, ElementRef, isDevMode, ComponentFactoryResolver } from '@angular/core';
+import {Component, Renderer, ElementRef, isDevMode, ComponentFactoryResolver, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController, ModalController, Events } from 'ionic-angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Storage } from '@ionic/storage';
@@ -31,6 +31,7 @@ export class WooDetail {
 	listenFunc: Function;
 	currencySymbol: any;
 	productImages: any;
+	@ViewChild('addToCartForm') addToCartForm;
 
 	constructor(
 		public navCtrl: NavController, 
@@ -67,6 +68,10 @@ export class WooDetail {
 
 		this.getCartCount()
 
+	}
+
+	ionViewWillLeave() {
+		this.resetOptions()
 	}
 
 	getCartCount() {
@@ -133,10 +138,22 @@ export class WooDetail {
 
 	attributeChanged( name, attribute ) {
 		console.log(name, attribute)
+
+		// bail on form reset
+		if( !name.length ) {
+			return;
+		}
+
 		this.noResults = false
 		// find variations with this attribute in them, and filter
 
-		let getVariations = this.filteredVariations.filter( variation => JSON.stringify( variation.attributes ).indexOf( name ) >= 0 )
+		let getVariations = this.filteredVariations.filter( variation => {
+			for (let i = 0; i < variation.attributes.length; ++i) {
+				if( variation.attributes[i].option === name ) {
+					return variation;
+				}
+			}
+		})
 
 		// if there are no results, we don't want to wipe the array, just display a notice
 		if( !getVariations.length ) {
@@ -147,21 +164,24 @@ export class WooDetail {
 		}
 
 		if( this.filteredVariations.length === 1 ) {
-			console.log( this.filteredVariations[0] )
 			this.productImages = [ this.filteredVariations[0].image ]
 		}
 	}
 
 	resetOptions() {
+
 		this.filteredVariations = this.variations
 
 		for (let i = 0; i < this.selectedItem.attributes.length; ++i) {
+
 			this.selectedItem.attributes[i].disabled = false
 		}
 
 		this.productImages = this.selectedItem.images
 
 		this.noResults = false
+
+		this.addToCartForm.reset();
 	}
 
 	increment( item ) {
@@ -216,9 +236,6 @@ export class WooDetail {
 
 			if( this.filteredVariations.length === 1 ) {
 				item.variation_id = this.filteredVariations[0].id
-			} else {
-				// probably don't need this
-				item.variation_id = this.getVariationId( item )
 			}
 			
 			if( item.variation_id === undefined ) {
@@ -280,58 +297,6 @@ export class WooDetail {
 		})
 
 		this.presentToast( this.selectedItem.name + ' added to list.')
-
-	}
-
-	// we need the variation ID to add item to cart, but all we have are attributes. Get variation ID from attributes
-	getVariationId( selectedAttributes ) {
-
-		console.log('get variation id', selectedAttributes, this.variations)
-
-		// match attributes with a variation ID
-		// first, loop through variations
-		for (var i = 0; i < this.variations.length; ++i) {
-
-			// see if this variation's attributes match what the user selected. If so, return the variation ID
-			let match = this.matchAttributes( this.variations[i].attributes, selectedAttributes )
-			if( match ) {
-				// if we found the right variation, return the ID. Otherwise, go to the next variation
-				return this.variations[i].id
-			}
-			
-		}
-
-	}
-
-	/* We are trying to match the selected attributes with the attributes stored in the variations, and then get the variation ID for the cart item.
-	attributeArr[z] is one of the attribute objects like { id: 1, name: "Color", option: "Green" }
-	objKeys[z] is the attribute ID, like 0 or 1
-	item[objKeys[z]] is the option value, like "Green"
-	*/
-	matchAttributes( attributeArr, selectedAttributes ) {
-
-		// these are the attribute IDs, like 0, 1 etc
-		var objKeys = Object.keys(selectedAttributes)
-
-		// loop over attributes user selected, and try to match them to a variation
-		for (var i = 0; i < objKeys.length; ++i) {
-
-			// find index of this attribute in our array of variation attributes
-			let index = attributeArr.findIndex(x => x.id== objKeys[i] );
-
-			// check if this attribute matches the variation's attribute. For example, if they are both name:"Color", option:"Green" then we have a match.
-			if( selectedAttributes[objKeys[i]] === attributeArr[index].option ) {
-				// this is a match, we should check the next attribute
-				continue;
-			} else {
-				// attributes do not match, so we should go to the next variation
-				return false;
-			}
-
-		}
-
-		// if we get here, that means all attributes in this variation checked out
-		return true;
 
 	}
 
@@ -405,6 +370,8 @@ export class WooDetail {
 		this.cart_count = this.cart_count + quantity
 		this.storage.set( 'cart_count', this.cart_count )
 		this.events.publish( 'cart_change', this.cart_count )
+
+		this.addToCartForm.reset();
 
 	}
 
