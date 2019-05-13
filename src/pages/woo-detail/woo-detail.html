@@ -48,6 +48,8 @@
 
 		<p *ngIf="selectedItem.in_stock" class="product-stock">{{ '✓ In Stock.' | translate }}</p>
 
+		<p *ngIf="selectedItem.stock_status === 'outofstock'" class="product-error out-of-stock">{{ 'Out of Stock.' | translate }}</p>
+
 		<button *ngIf="variations?.length" block ion-button clear icon-start (click)="resetOptions()"><ion-icon name="refresh"></ion-icon> {{ 'Reset Options' | translate }}</button>
 
 		<form (ngSubmit)="addToCart(addToCartForm)" #addToCartForm="ngForm">
@@ -63,7 +65,7 @@
 				</ion-item>
 			</div>
 
-			<p class="variation-error" *ngIf="noResults">{{ 'These options may not be available.' | translate }}</p>
+			<p class="product-error" *ngIf="noResults">{{ 'These options may not be available.' | translate }}</p>
 			
 			<div *ngIf="groupedProducts?.length">
 				<ion-grid *ngFor="let groupProd of groupedProducts">
