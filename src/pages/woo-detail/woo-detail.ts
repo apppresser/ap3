@@ -136,11 +136,10 @@ export class WooDetail {
 
 	}
 
-	attributeChanged( name, attribute ) {
-		console.log(name, attribute)
+	attributeChanged( value, attribute ) {
 
 		// bail on form reset
-		if( !name.length ) {
+		if( !value.length ) {
 			return;
 		}
 
@@ -149,7 +148,7 @@ export class WooDetail {
 
 		let getVariations = this.filteredVariations.filter( variation => {
 			for (let i = 0; i < variation.attributes.length; ++i) {
-				if( variation.attributes[i].option === name ) {
+				if( variation.attributes[i].name === attribute.name && variation.attributes[i].option === value ) {
 					return variation;
 				}
 			}
@@ -169,6 +168,9 @@ export class WooDetail {
 	}
 
 	resetOptions() {
+
+		if(!this.selectedItem)
+			return;
 
 		this.filteredVariations = this.variations
 

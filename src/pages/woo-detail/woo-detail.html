@@ -63,7 +63,7 @@
 				</ion-item>
 			</div>
 
-			<p *ngIf="noResults">{{ 'Not available. Please select different options.' | translate }}</p>
+			<p class="variation-error" *ngIf="noResults">{{ 'These options may not be available.' | translate }}</p>
 			
 			<div *ngIf="groupedProducts?.length">
 				<ion-grid *ngFor="let groupProd of groupedProducts">
@@ -106,7 +106,7 @@
 			
 			<button *ngIf="productLoaded && selectedItem.type === 'composite'" ion-button block (tap)="productSiteLink(selectedItem.permalink)">{{ 'Choose options on website' | translate }}</button>
 
-			<button *ngIf="productLoaded && selectedItem.type != 'composite' && selectedItem.price && !noResults" ion-button type="submit" block [disabled]="filteredVariations?.length > 1">{{ 'Add to Cart' | translate }}</button>
+			<button *ngIf="productLoaded && selectedItem.type != 'composite' && selectedItem.price" ion-button type="submit" block>{{ 'Add to Cart' | translate }}</button>
 
 		</form>
 
