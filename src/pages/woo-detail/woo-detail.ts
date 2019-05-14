@@ -106,8 +106,6 @@ export class WooDetail {
 			this.description = '';
 		}
 
-		this.availableAttributes = this.selectedItem.attributes;
-
 		if( this.selectedItem.type === 'variable' ) {
 			this.getVariations()
 		} else if( this.selectedItem.type === 'grouped' ) {
@@ -133,6 +131,17 @@ export class WooDetail {
 	    })
 
 		this.listener()
+
+	}
+
+	// remove attributes that are used for variations
+	getAvailableAttributes() {
+
+		this.availableAttributes = this.selectedItem.attributes.filter( attribute =>  {
+				if( attribute.variation && attribute.visible ) {
+					return attribute;
+				}
+			})
 
 	}
 
@@ -475,10 +484,12 @@ export class WooDetail {
 		let param = ( arg ? '/?' + arg : '' )
 
 		this.wooProvider.get( 'products/' + this.selectedItem.id + '/variations' + param, 'nopaging' ).then(variations => {
-			console.log('getVariations variations', variations)
+			//console.log('getVariations variations', variations)
 			this.variations = variations
 			this.filteredVariations = variations
+			this.getAvailableAttributes()
 			this.verifyVariations()
+			
 		}).catch( e => {
 			console.warn(e)
 		}).then( () => { 

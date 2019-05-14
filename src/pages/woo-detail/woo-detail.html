@@ -54,8 +54,8 @@
 
 		<form (ngSubmit)="addToCart(addToCartForm)" #addToCartForm="ngForm">
 
-			<div *ngIf="variations?.length">
-				<ion-item *ngFor="let attribute of selectedItem.attributes">
+			<div *ngIf="variations?.length && availableAttributes?.length">
+				<ion-item *ngFor="let attribute of availableAttributes">
 				  <ion-label stacked>{{attribute.name}}</ion-label>
 				  <ion-select [disabled]="attribute.disabled" (ionChange)="attributeChanged( $event, attribute )" ngModel name="{{attribute.id}}" >
 				    <ion-option *ngFor="let option of attribute.options" value="{{option}}">
