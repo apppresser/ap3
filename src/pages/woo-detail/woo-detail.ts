@@ -138,7 +138,7 @@ export class WooDetail {
 	getAvailableAttributes() {
 
 		this.availableAttributes = this.selectedItem.attributes.filter( attribute =>  {
-				if( attribute.variation && attribute.visible ) {
+				if( attribute.variation ) {
 					return attribute;
 				}
 			})
