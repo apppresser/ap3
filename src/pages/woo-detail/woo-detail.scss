@@ -151,6 +151,16 @@ page-woo-detail {
 		text-align: center;
 	}
 
+	.loading-squares.loading-squares-vertical {
+		height: 120px;
+		position: static;
+		padding: 20px;
+		flex-direction: column;
+		.loading-square {
+			margin: 5px 0;
+		}
+	}
+
 }
 
 // global

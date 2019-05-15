@@ -54,6 +54,13 @@
 
 		<form (ngSubmit)="addToCart(addToCartForm)" #addToCartForm="ngForm">
 
+			<div class="loading-squares loading-squares-vertical" *ngIf="selectedItem.type === 'variable' && !availableAttributes?.length">
+			 <div class="loading-square">
+			 </div>
+			 <div class="loading-square">
+			 </div>
+			</div>
+
 			<div *ngIf="variations?.length && availableAttributes?.length">
 				<ion-item *ngFor="let attribute of availableAttributes">
 				  <ion-label stacked>{{attribute.name}}</ion-label>

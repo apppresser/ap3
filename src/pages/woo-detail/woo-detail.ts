@@ -178,14 +178,14 @@ export class WooDetail {
 
 	resetOptions() {
 
-		if(!this.selectedItem)
+		if(!this.selectedItem || !this.availableAttributes )
 			return;
 
 		this.filteredVariations = this.variations
 
-		for (let i = 0; i < this.selectedItem.attributes.length; ++i) {
+		for (let i = 0; i < this.availableAttributes.length; ++i) {
 
-			this.selectedItem.attributes[i].disabled = false
+			this.availableAttributes[i].disabled = false
 		}
 
 		this.productImages = this.selectedItem.images
@@ -376,13 +376,19 @@ export class WooDetail {
 
 		let quantity = ( item.quantity ? item.quantity : 1 )
 
-		console.log( this.cart_count, quantity )
-
 		this.cart_count = this.cart_count + quantity
 		this.storage.set( 'cart_count', this.cart_count )
 		this.events.publish( 'cart_change', this.cart_count )
 
-		this.addToCartForm.reset();
+		// maybe reset options
+		if( this.availableAttributes ) {
+			for (let i = 0; i < this.availableAttributes.length; ++i) {
+
+				this.availableAttributes[i].disabled = false
+			}
+
+			this.filteredVariations = this.variations
+		}
 
 	}
 
