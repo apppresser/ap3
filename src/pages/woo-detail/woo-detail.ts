@@ -245,7 +245,7 @@ export class WooDetail {
 
 		if( this.variations && this.variations.length ) {
 
-			if( this.filteredVariations.length === 1 ) {
+			if( this.filteredVariations && this.filteredVariations.length >= 1 ) {
 				item.variation_id = this.filteredVariations[0].id
 			}
 			
