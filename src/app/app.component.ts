@@ -180,19 +180,19 @@ export class MyApp {
 
     // TODO: this causes a bug when iframe page is the homepage. It calls resetTabs too many times, which loads iframe.ts twice, causing the spinner to appear for too long.
     this.languageservice.languageStatus().subscribe((language: Language) => {
+        this.zone.run(() => {
+            let is_loggedin = (this.loginservice.user);
+            this.rtl = (language.dir && language.dir == 'rtl');
+            let dir: DocumentDirection = (this.rtl) ? 'rtl' : 'ltr';
 
-      let is_loggedin = (this.loginservice.user);
-      this.rtl = (language.dir && language.dir == 'rtl');
-      let dir: DocumentDirection = (this.rtl) ? 'rtl' : 'ltr';
+            this.platform.setDir(dir, true);
+            this.platform.setLang(language.code, true);
 
-      this.platform.setDir(dir, true);
-      this.platform.setLang(language.code, true);
+            this.setBackBtnText();
 
-      this.setBackBtnText();
-
-      const lang_updated = true;
-
-      this.resetTabs(is_loggedin, lang_updated);
+            const lang_updated = true;
+            this.resetTabs(is_loggedin, lang_updated);
+        });
     });
 
     this.platform.ready().then(() => {
