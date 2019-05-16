@@ -385,30 +385,55 @@ export class MyApp {
 
     const data = this.myapppsettings.settings;
 
+    let homeItem;
+
+    // prevents bug when first/second menu item is not a valid page
+    if( !this.tabs && data.menus.items ) {
+      homeItem = this.getValidHomeItem( data.menus.items )
+    }
+
     if(!this.user && this.myapppsettings.isForcedLogin() && !this.myapppsettings.isPreview()) {
       // force login, but not when in the preview
       this.nav.setRoot( 'LoginModal', [this.menuservice.getLoginModalPage()] );
     } else if( this.tabs ) {
 
       this.pages.unshift( { 'title': data.tab_menu.name, 'url': '', 'component': 'TabsPage', 'navparams': this.navparams, 'class': 'home', 'extra_classes':'hide', 'is_home': true } );
-    } else if( !this.tabs && data.menus.items[0].type === 'apppages' ) {
+
+    } else if( !this.tabs && homeItem.type === 'apppages' ) {
 
       // used for custom logo
-      data.menus.items[0].is_home = true;
+      homeItem.is_home = true;
 
-      let root = this.getPageType( data.menus.items[0] );
+      let root = this.getPageType( homeItem );
 
-      this.nav.setRoot( root, data.menus.items[0] );
+      this.nav.setRoot( root, homeItem );
 
     } else {
 
       // used for custom logo
-      data.menus.items[0].is_home = true;
+      homeItem.is_home = true;
 
       // anything else uses Iframe component
-      this.nav.setRoot( Iframe, data.menus.items[0] );
+      this.nav.setRoot( Iframe, homeItem );
 
     }
+  }
+
+  // if first menu item can't be used for homepage, go to the next. Fixes bug when first menu item is not a valid page, like a divider.
+  getValidHomeItem( itemArray ) {
+
+    let homeItem = itemArray[0]
+
+    if( homeItem.extra_classes.indexOf('submenu-parent') >= 0 || homeItem.extra_classes.indexOf('divider') >= 0 ) {
+      homeItem = itemArray[1]
+    }
+
+    if( homeItem.extra_classes.indexOf('submenu-parent') >= 0 || homeItem.extra_classes.indexOf('divider') >= 0 ) {
+      homeItem = itemArray[2]
+    }
+
+    return homeItem;
+
   }
 
   loadTabMenu() {
@@ -459,6 +484,12 @@ export class MyApp {
   loadMenus() {
 
     const data = this.myapppsettings.settings;
+
+    if( this.myapppsettings.isPreview() && !data.tab_menu.items && !data.menus.items ) {
+      // we are in the preview and no menu is set
+      alert('Please visit the Settings tab and select a menu for your app.')
+      return;
+    }
 
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
     this.loadTabMenu();
