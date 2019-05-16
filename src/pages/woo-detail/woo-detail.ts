@@ -244,18 +244,18 @@ export class WooDetail {
 
 	addSingleItem( item ) {
 
-		// don't allow adding to cart if attributes are not all selected
-		for (let i = 0; i < this.availableAttributes.length; ++i) {
-			if( !this.availableAttributes[i].disabled ) {
-				this.translate.get( 'Please choose available options first.' ).subscribe( text => {
-					this.presentToast( text )
-				})
-				
-				return;
-			}
-		}
-
 		if( this.variations && this.variations.length ) {
+
+			// don't allow adding to cart if attributes are not all selected
+			for (let i = 0; i < this.availableAttributes.length; ++i) {
+				if( !this.availableAttributes[i].disabled ) {
+					this.translate.get( 'Please choose available options first.' ).subscribe( text => {
+						this.presentToast( text )
+					})
+					
+					return;
+				}
+			}
 
 			if( this.filteredVariations && this.filteredVariations.length >= 1 ) {
 				item.variation_id = this.filteredVariations[0].id
