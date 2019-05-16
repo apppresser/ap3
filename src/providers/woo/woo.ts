@@ -70,6 +70,11 @@ export class WooProvider {
         url = url + concat + 'page=1'
       }
 
+      // don't show draft products
+      if( route.indexOf('products') >= 0 ) {
+        url = url + '&status=publish'
+      }
+
       this.http.get( url, this.httpOptions )
         .subscribe(data => {
 
