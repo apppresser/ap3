@@ -166,9 +166,11 @@ export class WooDetail {
 		// if there are no results, we don't want to wipe the array, just display a notice
 		if( !getVariations.length ) {
 			this.noResults = true
+			attribute.highlight = true
 		} else {
 			attribute.disabled = true
 			this.filteredVariations = getVariations
+			attribute.highlight = false
 		}
 
 		if( this.filteredVariations.length === 1 ) {
@@ -186,6 +188,7 @@ export class WooDetail {
 		for (let i = 0; i < this.availableAttributes.length; ++i) {
 
 			this.availableAttributes[i].disabled = false
+			this.availableAttributes[i].highlight = false
 		}
 
 		this.productImages = this.selectedItem.images
@@ -241,7 +244,16 @@ export class WooDetail {
 
 	addSingleItem( item ) {
 
-		//console.log(item, this.selectedItem)
+		// don't allow adding to cart if attributes are not all selected
+		for (let i = 0; i < this.availableAttributes.length; ++i) {
+			if( !this.availableAttributes[i].disabled ) {
+				this.translate.get( 'Please choose available options first.' ).subscribe( text => {
+					this.presentToast( text )
+				})
+				
+				return;
+			}
+		}
 
 		if( this.variations && this.variations.length ) {
 
@@ -385,6 +397,7 @@ export class WooDetail {
 			for (let i = 0; i < this.availableAttributes.length; ++i) {
 
 				this.availableAttributes[i].disabled = false
+				this.availableAttributes[i].highlight = false
 			}
 
 			this.filteredVariations = this.variations

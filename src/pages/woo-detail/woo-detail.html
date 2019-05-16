@@ -64,7 +64,7 @@
 			<div *ngIf="variations?.length && availableAttributes?.length">
 				<ion-item *ngFor="let attribute of availableAttributes">
 				  <ion-label stacked>{{attribute.name}}</ion-label>
-				  <ion-select [disabled]="attribute.disabled" (ionChange)="attributeChanged( $event, attribute )" ngModel name="{{attribute.name}}-{{attribute.id}}" >
+				  <ion-select [ngClass]="{ 'attribute-highlight' : attribute.highlight }" [disabled]="attribute.disabled" (ionChange)="attributeChanged( $event, attribute )" ngModel name="{{attribute.name}}-{{attribute.id}}" >
 				    <ion-option *ngFor="let option of attribute.options" value="{{option}}">
 				      {{option}}
 				    </ion-option>
