@@ -270,9 +270,9 @@ export class WooDetail {
 			}
 		}
 
-		//console.log('variation id: ' + item.variation_id )
-
-		this.presentToast( this.selectedItem.name + ' added to cart.' )
+		this.translate.get( 'added to cart' ).subscribe( text => {
+			this.presentToast( this.selectedItem.name + ' ' + text )
+		})
 
 		item.name = this.selectedItem.name
 		item.product_id = this.selectedItem.id
