@@ -152,12 +152,21 @@ export class WooDetail {
 			return;
 		}
 
+		// get rid of all dashes, fixes a bug
+		value = value.replace("-", " ")
+
 		this.noResults = false
 		// find variations with this attribute in them, and filter
 
 		let getVariations = this.filteredVariations.filter( variation => {
+
 			for (let i = 0; i < variation.attributes.length; ++i) {
-				if( variation.attributes[i].name === attribute.name && variation.attributes[i].option === value ) {
+
+				// fix bugs with special characters
+				let decoded = decodeURIComponent( variation.attributes[i].option )
+				decoded = decoded.replace("-", " ")
+
+				if( variation.attributes[i].name === attribute.name && decoded === value ) {
 					return variation;
 				}
 			}
@@ -248,7 +257,9 @@ export class WooDetail {
 
 			// don't allow adding to cart if attributes are not all selected
 			for (let i = 0; i < this.availableAttributes.length; ++i) {
-				if( !this.availableAttributes[i].disabled ) {
+
+				// if attributes are not all selected, you can still add item to cart if there is one variation we narrowed it down to. Otherwise you can't add to cart.
+				if( !this.availableAttributes[i].disabled && this.filteredVariations.length > 1 ) {
 					this.translate.get( 'Please choose available options first.' ).subscribe( text => {
 						this.presentToast( text )
 					})
@@ -257,6 +268,7 @@ export class WooDetail {
 				}
 			}
 
+			// this handles duplicate variations
 			if( this.filteredVariations && this.filteredVariations.length >= 1 ) {
 				item.variation_id = this.filteredVariations[0].id
 			}
