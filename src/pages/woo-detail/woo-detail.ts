@@ -153,7 +153,7 @@ export class WooDetail {
 		}
 
 		// get rid of all dashes, fixes a bug
-		value = value.replace("-", " ")
+		value = value.replace(/-/g, " ")
 
 		this.noResults = false
 		// find variations with this attribute in them, and filter
@@ -164,7 +164,7 @@ export class WooDetail {
 
 				// fix bugs with special characters
 				let decoded = decodeURIComponent( variation.attributes[i].option )
-				decoded = decoded.replace("-", " ")
+				decoded = decoded.replace(/-/g, " ")
 
 				if( variation.attributes[i].name === attribute.name && decoded === value ) {
 					return variation;
