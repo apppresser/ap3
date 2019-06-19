@@ -26,7 +26,7 @@
 
     </ion-navbar>
 
-    <ion-toolbar [hidden]="showSearch">
+    <ion-toolbar [hidden]="!showSearch">
       <ion-searchbar placeholder="{{'Search' | translate }}" debounce="1000" (ionInput)="search($event)" (ionClear)="clearSearch()"></ion-searchbar>
     </ion-toolbar>
 
