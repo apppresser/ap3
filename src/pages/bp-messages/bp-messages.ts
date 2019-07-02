@@ -67,7 +67,7 @@ export class BpMessages {
     this.threadReply = '';
     let item = window.localStorage.getItem( 'myappp' );
 
-    this.base_route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/messages';
+    this.base_route = JSON.parse( item ).wordpress_url + 'wp-json/buddypress/v1/messages';
     this.route = this.base_route;
 
     this.customClasses = 'bp-messages';
@@ -337,7 +337,7 @@ export class BpMessages {
     this.page = 1;
     
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
-    this.bpProvider.getItems( route + this.boxArg, this.login_data, this.page ).then(items => {
+    this.bpProvider.getItems( route + this.boxArg, this.page ).then(items => {
 
       // Loads posts from WordPress API
       this.threads = items;
@@ -378,7 +378,7 @@ export class BpMessages {
 
     this.page++;
 
-    this.bpProvider.getItems( this.route + this.boxArg, this.login_data, this.page ).then(items => {
+    this.bpProvider.getItems( this.route + this.boxArg, this.page ).then(items => {
       // Loads posts from WordPress API
       let length = items["length"];
 

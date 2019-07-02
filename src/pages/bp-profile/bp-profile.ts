@@ -15,6 +15,7 @@ export class BpProfilePage implements OnInit {
   listenFunc: Function;
   rtlBack: boolean = false;
   user_id: any;
+  user_name: string;
   userData: any;
   login_data: any;
   isError: boolean = false;
@@ -54,7 +55,7 @@ export class BpProfilePage implements OnInit {
 
     if( this.navParams ) {
       this.user_id = this.navParams.get('user_id');
-
+      this.user_name = this.navParams.get('user_name');        
       this.login_data = this.navParams.get('login_data');
     }
 
@@ -106,28 +107,37 @@ export class BpProfilePage implements OnInit {
     })
   }
 
-  setupUser( spinner ) {
+    setupUser(spinner) {
 
-    this.isError = false
+        this.isError = false
 
-    if( spinner )
-      this.showSpinner()
+        if (spinner)
+            this.showSpinner()
 
-    if( this.user_id === this.login_data.user_id ) {
-      this.isMyProfile = true
+        if (this.user_id === this.login_data.user_id) {
+            this.isMyProfile = true
+        }
+
+        this.getBpMemberItem()
+            .then(data => {
+                this.userData = data
+                this.hideSpinner()
+            })
+            .catch(e => {
+                this.isError = true
+                console.warn(e)
+                this.hideSpinner()
+            })
+
     }
 
-    this.bpProvider.getItem( 'members/' + this.user_id, this.login_data ).then( data => {
-
-      this.userData = data
-      this.hideSpinner()
-    }).catch( e => {
-      this.isError = true
-      console.warn(e)
-      this.hideSpinner()
-    })
-
-  }
+    private getBpMemberItem(): Promise<any> {
+        if (this.user_name) {
+            return this.bpProvider.getMemberByName('members/' + this.user_name, this.login_data);
+        } else {
+            return this.bpProvider.getItem('members/' + this.user_id, this.login_data);
+        }
+    }
 
   userActivity( userData ) {
 

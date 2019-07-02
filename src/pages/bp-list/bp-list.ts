@@ -178,7 +178,7 @@ export class BpList implements OnInit {
 
       let item = window.localStorage.getItem( 'myappp' );
       let wp_url = JSON.parse( item ).wordpress_url;
-      let rest_base = 'wp-json/ap-bp/v1/';
+      let rest_base = 'wp-json/buddypress/v1/';
 
       if( !wp_url ) {
         alert('Please add a WordPress URL in your app settings.')
@@ -435,7 +435,7 @@ export class BpList implements OnInit {
     }
     
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
-    this.bpProvider.getItems( route, login, this.page ).then(items => {
+    this.bpProvider.getItems( route, this.page ).then(items => {
 
       // Loads posts from WordPress API
       this.items = items;
@@ -530,7 +530,7 @@ export class BpList implements OnInit {
 
       // console.log('load more ' + this.page + route )
 
-      this.bpProvider.getItems( route, login, this.page ).then(items => {
+      this.bpProvider.getItems( route, this.page ).then(items => {
         // Loads posts from WordPress API
         let length = items["length"];
 
@@ -681,24 +681,24 @@ export class BpList implements OnInit {
 
   }
 
-  openMember( item ) {
+    openMember(item: any): void {
+        if (false === this.loginCheck())
+            return;
 
-    if( false === this.loginCheck() )
-      return;
-  	
-  	let id;
-  	if( this.activityList ) {
-  		id = item.user
-  	} else {
-  		id = item.id
-  	}
+        let id;
+        if (this.activityList) {
+            id = item.user_id
+        } else {
+            id = item.id
+        }
 
-    this.nav.push('BpProfilePage', {
-      user_id: id,
-      login_data: this.login_data
-    });
-  	
-  }
+        this.nav.push('BpProfilePage', {
+            user_id: id,
+            user_name: item.user,
+            login_data: this.login_data
+        });
+
+    }
 
   toggleSearchBar() {
     if( this.showSearch === true ) {

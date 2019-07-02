@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
+import {Http, Headers} from '@angular/http';
 import 'rxjs/add/operator/map';
 import {Camera} from '@ionic-native/camera';
 import { Transfer, FileUploadOptions, TransferObject, FileUploadResult } from '@ionic-native/transfer';
@@ -14,7 +14,8 @@ import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
 export class BpProvider {
   data: any = null;
   url: string;
-  restBase: string;
+  restBuddypressBase: string;
+  restApbpBase: string;
 
   options: any = {
     quality: 50,
@@ -35,21 +36,19 @@ export class BpProvider {
 
     let item = window.localStorage.getItem( 'myappp' );
     this.url = JSON.parse( item ).wordpress_url;
-    this.restBase = 'wp-json/ap-bp/v1/'
+    this.restBuddypressBase = 'wp-json/buddypress/v1/';
+    this.restApbpBase = 'wp-json/ap-bp/v2/';
 
   }
 
   // pass full route url with login data. Some routes do not require login.
-  getItems( route, login_data, page ) {
+  getItems( route, page ) {
 
     // set pagination
     if( !page ) {
       let page = '1';
     }
 
-    let user_id = ( login_data && login_data.user_id ? '&user_id=' + login_data.user_id : '' );
-    let token = ( login_data ? '&token=' + login_data.token : '' );
-
     let concat;
     if( route.indexOf('?') >= 0 ) {
       concat = '&'
@@ -57,7 +56,7 @@ export class BpProvider {
       concat = '?'
     }
 
-    let url = route + concat + 'page=' + page + user_id + token;
+    let url = route + concat + 'page=' + page;
 
     return new Promise( (resolve, reject) => {
 
@@ -74,37 +73,53 @@ export class BpProvider {
 
   }
 
-  getItem( route, login_data ) {
+    /**
+     * Gets item by route
+     * @param {string} route
+     * @param {*} login_data
+     * @returns {Promise<any>}
+     * @memberof BpProvider
+     */
+    public getItem(route: string, login_data: any): Promise<any> {
+        let url = this.url + this.restBuddypressBase + route;
 
-    let concat;
-    if( route.indexOf('?') >= 0 ) {
-      concat = '&'
-    } else {
-      concat = '?'
+        return new Promise((resolve, reject) => {
+            let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
+            this.http.get(url, { headers: headers })
+                .map(res => res.json())
+                .subscribe(data => {
+                    resolve(data);
+                },
+                    error => {
+                        // probably a bad url or 404
+                        reject(error);
+                    })
+        });
     }
 
-    let user_id = ( login_data && login_data.user_id ? 'user_id=' + login_data.user_id : '' );
-    let token = ( login_data && login_data.token && login_data.user_id ? '&token=' + login_data.token : '' );
+    /**
+     * Gets member item by name
+     * @param {string} route
+     * @param {*} login_data
+     * @returns {Promise<any>}
+     * @memberof BpProvider
+     */
+    public getMemberByName(route: string, login_data: any): Promise<any> {
+        let url = this.url + this.restApbpBase + route;
 
-    let url = this.url + this.restBase + route;
-    url = url + concat + user_id + token;
-
-    console.log( url )
-
-    return new Promise( (resolve, reject) => {
-
-      this.http.get( url )
-          .map(res => res.json())
-          .subscribe(data => {
-              resolve(data);
-          },
-          error => {
-            // probably a bad url or 404
-            reject(error);
-          })
-    });
-
-  }
+        return new Promise((resolve, reject) => {
+            let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
+            this.http.get(url, { headers: headers })
+                .map(res => res.json())
+                .subscribe(data => {
+                    resolve(data);
+                },
+                    error => {
+                        // probably a bad url or 404
+                        reject(error);
+                    })
+        });
+    }
 
   /**
    * Gets current fields from profile
@@ -113,7 +128,7 @@ export class BpProvider {
    */
   public getFields(login_data: any): Promise<any> {
     let objectParams: any = { user_id: login_data.user_id, token: login_data.token, fetch_field_data: true };
-    let route: string = this.url + this.restBase + 'xprofile/fields';
+    let route: string = this.url + this.restBuddypressBase + 'xprofile/fields';
     let params: string = this.objToParams(objectParams);
 
     return this.http.get(route + '?' + params, null).toPromise();
@@ -155,7 +170,7 @@ export class BpProvider {
       activity.content = '';
     }
 
-    let route = this.url + this.restBase + 'activity';
+    let route = this.url + this.restBuddypressBase + 'activity';
 
     return new Promise( (resolve, reject) => {
 
@@ -221,7 +236,7 @@ export class BpProvider {
    */
   postTextOnly( login_data, activity, group_id ) {
 
-    let route = this.url + this.restBase + 'activity';
+    let route = this.url + this.restBuddypressBase + 'activity';
 
     let data: any = {
       user_id: login_data.user_id,
@@ -267,7 +282,7 @@ export class BpProvider {
 
   updateItem( action, login_data, activity_id ) {
 
-    let route = this.url + this.restBase + 'activity/' + activity_id;
+    let route = this.url + this.restBuddypressBase + 'activity/' + activity_id;
 
     let data = { 
       user_id: login_data.user_id,
@@ -310,7 +325,7 @@ export class BpProvider {
    */
   public updateProfileField (login_data: any, fieldId: number, fieldValue: string): Promise<any> {
     let objectParams: any = { token: login_data.token, value: fieldValue };
-    let route: string = this.url + this.restBase + 'xprofile/' + fieldId + '/data/' + login_data.user_id;
+    let route: string = this.url + this.restBuddypressBase + 'xprofile/' + fieldId + '/data/' + login_data.user_id;
     let params: string = this.objToParams(objectParams);
 
     return this.http.post(route + '?' + params, null).toPromise();
@@ -323,7 +338,7 @@ export class BpProvider {
    * @returns {Promise<any>}
    */
   public updateProfileAvatar(login_data: any, imageUrl: string): Promise<any> {
-    let route: string = this.url + this.restBase + 'members/' + login_data.user_id + '/avatar';
+    let route: string = this.url + this.restBuddypressBase + 'members/' + login_data.user_id + '/avatar';
 
     return new Promise((resolve, reject) => {
       let imageURI = '';
@@ -372,7 +387,7 @@ export class BpProvider {
 
   joinGroup( item, login_data ) {
 
-    let route = this.url + this.restBase + 'groups/join-group';
+    let route = this.url + this.restBuddypressBase + 'groups/join-group';
 
     let data = {
       user_id: login_data.user_id,
@@ -406,7 +421,7 @@ export class BpProvider {
 
   doFriend( friendId, login_data, unfriend ) {
 
-    let route = this.url + this.restBase + 'friends/friend/' + friendId;
+    let route = this.url + this.restBuddypressBase + 'friends/friend/' + friendId;
 
     let action;
 
@@ -454,7 +469,7 @@ export class BpProvider {
    * @returns {Promise<any>}
    */
   public acceptOrWithdrawFriendship(friendId: number, login_data: any, withdraw: string): Promise<any> {
-    let route: string = this.url + this.restBase + 'friends/requests/' + friendId;
+    let route: string = this.url + this.restBuddypressBase + 'friends/requests/' + friendId;
     let action: string = (withdraw) ? 'withdraw' : 'accept';
     let data: any = { action: action, user_id: login_data.user_id, token: login_data.token };
     let params: string = this.objToParams(data);
@@ -468,7 +483,7 @@ export class BpProvider {
       subject = ''
     }
 
-    let route = this.url + this.restBase + 'messages/send';
+    let route = this.url + this.restBuddypressBase + 'messages/send';
 
     let data: any = {
       recipients: recipients,
@@ -516,7 +531,7 @@ export class BpProvider {
    * @returns {Promise<any>}
    */
   sendMessageWithImage(recipients: any, login_data: any, imageUrl: string, threadId: number): Promise<any> {
-    let route: string = this.url + this.restBase + 'messages/send';
+    let route: string = this.url + this.restBuddypressBase + 'messages/send';
 
     return new Promise((resolve, reject) => {
       let imageURI = '';
@@ -572,14 +587,10 @@ export class BpProvider {
 
   getNotifications( login_data ) {
 
-    // let user_id = ( login_data && login_data.user_id ? '&user_id=' + login_data.user_id : '' );
-    // let token = ( login_data ? '&token=' + login_data.token : '' );
-
-    let data = '?user_id=' + login_data.user_id + '&token=' + login_data.token;
+    let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
 
     return new Promise( (resolve, reject) => {
-
-      this.http.get( this.url + this.restBase + 'notifications' + data )
+      this.http.get( this.url + this.restBuddypressBase + 'notifications', { headers: headers } )
           .map(res => res.json())
           .subscribe(data => {
               resolve( data );
@@ -605,7 +616,7 @@ export class BpProvider {
 
     return new Promise( (resolve, reject) => {
 
-      this.http.post( this.url + this.restBase + 'notifications?' + params, null )
+      this.http.post( this.url + this.restBuddypressBase + 'notifications?' + params, null )
           .map(res => res.json())
           .subscribe(data => {
               resolve( data );

@@ -52,12 +52,12 @@ export class BpNotifications {
 
     let item = window.localStorage.getItem( 'myappp' );
 
-    this.route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/notifications';
+    this.route = JSON.parse( item ).wordpress_url + 'wp-json/buddypress/v1/notifications';
 
     if( this.navParams.get('requests') ) {
 
       this.isRequests = true
-      this.route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/friends/requests';
+      this.route = JSON.parse( item ).wordpress_url + 'wp-json/buddypress/v1/friends/requests';
       this.translate.get('Requests').subscribe( text => {
         this.title = text;
       });
@@ -143,7 +143,7 @@ export class BpNotifications {
 
   getRequests() {
 
-    this.bpProvider.getItems( this.route, this.login_data, 1 ).then(items => {
+    this.bpProvider.getItems( this.route, 1 ).then(items => {
 
       // Loads posts from WordPress API
       this.items = items;

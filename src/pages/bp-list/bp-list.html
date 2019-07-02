@@ -75,7 +75,7 @@
 
       <ion-card-content>
         
-        <div class="item-content" *ngIf="item.content" [innerHTML]="item.content | doLinks"></div>
+        <div class="item-content" *ngIf="item.content" [innerHTML]="item.content.rendered | doLinks"></div>
 
       </ion-card-content>
 
@@ -135,8 +135,8 @@
 
     <ion-item *ngFor="let item of items" (tap)="openMember(item)">
 
-      <ion-avatar item-start *ngIf="item.avatar">
-        <img [src]="formatUrl( item.avatar )">
+      <ion-avatar item-start *ngIf="item.avatar_urls?.thumb">
+        <img [src]="formatUrl( item.avatar_urls?.thumb )">
       </ion-avatar>
 
       <span class="comment-name" [innerHTML]="item.name"></span>
