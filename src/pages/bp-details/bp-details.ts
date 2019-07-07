@@ -65,22 +65,20 @@ export class BpDetailsPage implements OnInit {
 
   }
 
-  getComments() {
-
-    this.bpProvider.getItem( 'activity/' + this.selectedItem.id, this.login_data ).then(response => {
-
-        this.activityComments = this.formatComments( (<any>response).activities[0].children );
-
-        this.commentsLoaded = true
-
-      }).catch( e => {
-
-        console.warn(e)
-        this.commentsLoaded = true
-
-      })
-
-  }
+    /**
+     * Get comments from activity item
+     */
+    public getComments(): void {
+        this.bpProvider.getItem('activity/' + this.selectedItem.id, this.login_data)
+            .then(response => {
+                this.activityComments = this.formatComments(response[0].comments);
+                this.commentsLoaded = true
+            })
+            .catch(e => {
+                console.warn(e)
+                this.commentsLoaded = true
+            })
+    }
 
   setupContent() {
 

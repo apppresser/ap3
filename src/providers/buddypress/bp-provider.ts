@@ -56,7 +56,7 @@ export class BpProvider {
       concat = '?'
     }
 
-    let url = route + concat + 'page=' + page;
+    let url = route + concat + 'display_comments=threaded' + '&' + 'page=' + page;
 
     return new Promise( (resolve, reject) => {
 
@@ -81,7 +81,14 @@ export class BpProvider {
      * @memberof BpProvider
      */
     public getItem(route: string, login_data: any): Promise<any> {
-        let url = this.url + this.restBuddypressBase + route;
+        let concat: string;
+        if( route.indexOf('?') >= 0 ) {
+          concat = '&'
+        } else {
+          concat = '?'
+        }
+
+        let url = this.url + this.restBuddypressBase + route + concat + 'display_comments=threaded';
 
         return new Promise((resolve, reject) => {
             let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);

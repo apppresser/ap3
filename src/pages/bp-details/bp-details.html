@@ -36,9 +36,9 @@
 			<span class="comment-name" *ngIf="selectedItem.display_name" [innerHTML]="selectedItem.display_name"></span>
 		</ion-item>
 
-		<ion-card-content *ngIf="selectedItem.content">
+		<ion-card-content *ngIf="selectedItem.content.rendered">
 
-			<div class="item-content" [innerHTML]="selectedItem.content | doLinks"></div>
+			<div class="item-content" [innerHTML]="selectedItem.content.rendered | doLinks"></div>
 
 		</ion-card-content>
 
@@ -63,13 +63,13 @@
 
 		<ion-card *ngFor="let comment of activityComments">
 
-			<ion-card-content *ngIf="comment.content">
+			<ion-card-content *ngIf="comment.content.rendered">
 
 				<span class="comment-name" [innerHTML]="comment.display_name" *ngIf="comment.display_name"></span>
 
 				<span class="comment-name" [innerHTML]="comment.title" *ngIf="comment.title && !comment.display_name"></span>
 
-				<span class="comment-content" [innerHTML]="comment.content | doLinks"></span>
+				<span class="comment-content" [innerHTML]="comment.content.rendered | doLinks"></span>
 
 			</ion-card-content>
 

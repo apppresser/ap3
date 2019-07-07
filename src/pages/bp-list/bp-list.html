@@ -82,12 +82,11 @@
       <ion-row>
         <ion-col>
           <button ion-button icon-start clear small (click)="loadDetail(item)">
+            <div *ngIf="!item.comment_count || item.comment_count === 0"><ion-icon name="text" ></ion-icon> {{ 'Comment' | translate }}</div>
 
-            <div *ngIf="!item.comment_count || item.comment_count === '0'"><ion-icon name="text" ></ion-icon> {{ 'Comment' | translate }}</div>
+            <div *ngIf="item.comment_count && item.comment_count === 1"><span>{{item.comment_count}}</span> {{ 'Comment' | translate }}</div>
 
-            <div *ngIf="item.comment_count && item.comment_count === '1'"><span>{{item.comment_count}}</span> {{ 'Comment' | translate }}</div>
-
-            <div *ngIf="item.comment_count && item.comment_count != '0' && item.comment_count != '1'"><span>{{item.comment_count}}</span> {{ 'Comments' | translate }}</div>
+            <div *ngIf="item.comment_count && item.comment_count != 0 && item.comment_count != 1"><span>{{item.comment_count}}</span> {{ 'Comments' | translate }}</div>
 
           </button>
         </ion-col>
