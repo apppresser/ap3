@@ -247,14 +247,13 @@ export class BpProvider {
 
     let data: any = {
       user_id: login_data.user_id,
-      content: activity.content,
-      token: login_data.token,
+      content: activity.content
     };
 
     if( activity.parent ) {
       data.type = 'activity_comment';
-      data.parent = activity.parent;
-      data.id = activity.parent;
+      data.primary_item_id = activity.parent;
+      data.secondary_item_id = activity.parent;
     }
 
     if( group_id ) {
@@ -265,9 +264,10 @@ export class BpProvider {
     let params = this.objToParams( data )
 
     return new Promise( (resolve, reject) => {
+      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
 
       // sending data as params avoids OPTIONS pre-flight request which doesn't work on some apache servers for an unknown reason
-      this.http.post( route + '?' + params, null )
+      this.http.post( route + '?' + params, null, { headers: headers } )
         .map(res => res.json())
         .subscribe(data => {
           
