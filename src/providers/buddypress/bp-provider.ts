@@ -246,7 +246,6 @@ export class BpProvider {
     let route = this.url + this.restBuddypressBase + 'activity';
 
     let data: any = {
-      user_id: login_data.user_id,
       content: activity.content
     };
 
@@ -287,40 +286,32 @@ export class BpProvider {
 
   }
 
-  updateItem( action, login_data, activity_id ) {
+  /**
+   * Updates activity item
+   * @param {string} action
+   * @param {*} login_data
+   * @param {number} activity_id
+   * @returns {Promise<any>}
+   */
+  public updateItem(action: string, login_data: any, activity_id: number): Promise<any> {
+    let route = this.url + this.restApbpBase + 'activity/' + activity_id;
+    let data = { action: action, user_id: login_data.user_id };
+    let params = this.objToParams(data);
 
-    let route = this.url + this.restBuddypressBase + 'activity/' + activity_id;
-
-    let data = { 
-      user_id: login_data.user_id,
-      action: action,
-      token: login_data.token
-    }
-
-    let params = this.objToParams( data )
-
-    return new Promise( (resolve, reject) => {
-
-      this.http.post( route + '?' + params, null )
+    return new Promise((resolve, reject) => {
+      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
+      this.http.post(route + '?' + params, null, { headers: headers })
         .map(res => res.json())
         .subscribe(data => {
-
-            console.log(data)
-          
-            resolve(data)
-
-          },
+          console.log(data)
+          resolve(data)
+        },
           error => {
-
             console.log(error)
-
             reject(error);
-
           }
         )
-
     }) // end promise
-
   }
 
   /**
@@ -338,7 +329,7 @@ export class BpProvider {
     return this.http.post(route + '?' + params, null).toPromise();
   }
 
-/**
+  /**
    * Update the profile avatar picture
    * @param {*} login_data
    * @param {string} imageUrl
