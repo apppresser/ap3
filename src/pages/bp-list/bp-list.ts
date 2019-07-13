@@ -375,10 +375,10 @@ export class BpList implements OnInit {
     // display activities
     if( this.activityList ) {
 
-      route += '?type=activity_update&display_comments=false'
+      route += '?display_comments=threaded'
 
       // add this to the global route also
-      this.route += '?type=activity_update&display_comments=false'
+      this.route += '?display_comments=threaded'
 
       route = this.addActivityParams( route )
 
@@ -435,7 +435,7 @@ export class BpList implements OnInit {
     }
     
     // any menu imported from WP has to use same component. Other pages can be added manually with different components
-    this.bpProvider.getItems( route, this.page ).then(items => {
+    this.bpProvider.getItems( route, login, this.page ).then(items => {
 
       // Loads posts from WordPress API
       this.items = items;
@@ -518,8 +518,8 @@ export class BpList implements OnInit {
 
     this.page++;
 
-    let login;
-    this.getRoute().then( route => {
+    let login: any;
+    this.getRoute().then( (route: string) => {
 
       // for some requests, we don't want to send login data
       if( this.activityList || this.memberList && this.segments === "Friends" ) {  
@@ -530,7 +530,7 @@ export class BpList implements OnInit {
 
       // console.log('load more ' + this.page + route )
 
-      this.bpProvider.getItems( route, this.page ).then(items => {
+      this.bpProvider.getItems( route, login, this.page ).then(items => {
         // Loads posts from WordPress API
         let length = items["length"];
 

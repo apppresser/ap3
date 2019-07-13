@@ -41,92 +41,89 @@ export class BpProvider {
 
   }
 
-  // pass full route url with login data. Some routes do not require login.
-  getItems( route, page ) {
-
+  /**
+   * Passes full route url with login data. Some routes do not require login.
+   * @param {string} route
+   * @param {*} login_data
+   * @param {number} page
+   * @returns {Promise<any>}
+   */
+  public getItems(route: string, login_data: any, page: number): Promise<any> {
     // set pagination
-    if( !page ) {
+    if (!page) {
       let page = '1';
     }
 
-    let concat;
-    if( route.indexOf('?') >= 0 ) {
+    let concat: string;
+    if (route.indexOf('?') >= 0) {
       concat = '&'
     } else {
       concat = '?'
     }
 
-    let url = route + concat + 'display_comments=threaded' + '&' + 'page=' + page;
+    let url = route + concat + 'page=' + page;
 
-    return new Promise( (resolve, reject) => {
-
-      this.http.get( url )
-          .map(res => res.json())
-          .subscribe(data => {
-              resolve(data);
-          },
+    return new Promise((resolve, reject) => {
+      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
+      this.http.get(url, { headers: headers })
+        .map(res => res.json())
+        .subscribe(data => {
+          resolve(data);
+        },
           error => {
             // probably a bad url or 404
             reject(error);
           })
     });
-
   }
 
-    /**
-     * Gets item by route
-     * @param {string} route
-     * @param {*} login_data
-     * @returns {Promise<any>}
-     * @memberof BpProvider
-     */
-    public getItem(route: string, login_data: any): Promise<any> {
-        let concat: string;
-        if( route.indexOf('?') >= 0 ) {
-          concat = '&'
-        } else {
-          concat = '?'
-        }
+  /**
+   * Gets item by route
+   * @param {string} route
+   * @param {*} login_data
+   * @returns {Promise<any>}
+   * @memberof BpProvider
+   */
+  public getItem(route: string, login_data: any): Promise<any> {
+    let url = this.url + this.restBuddypressBase + route;
 
-        let url = this.url + this.restBuddypressBase + route + concat + 'display_comments=threaded';
+    return new Promise((resolve, reject) => {
+      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
+      this.http.get(url, { headers: headers })
+        .map(res => res.json())
+        .subscribe(data => {
+          resolve(data);
+        },
+          error => {
+            // probably a bad url or 404
+            reject(error);
+          })
+    });
+  }
 
-        return new Promise((resolve, reject) => {
-            let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
-            this.http.get(url, { headers: headers })
-                .map(res => res.json())
-                .subscribe(data => {
-                    resolve(data);
-                },
-                    error => {
-                        // probably a bad url or 404
-                        reject(error);
-                    })
-        });
-    }
+  /**
+   * Gets member item by name
+   * @param {string} route
+   * @param {*} login_data
+   * @returns {Promise<any>}
+   * @memberof BpProvider
+   */
+  public getMemberByName(route: string, login_data: any): Promise<any> {
+    let url = this.url + this.restApbpBase + route;
 
-    /**
-     * Gets member item by name
-     * @param {string} route
-     * @param {*} login_data
-     * @returns {Promise<any>}
-     * @memberof BpProvider
-     */
-    public getMemberByName(route: string, login_data: any): Promise<any> {
-        let url = this.url + this.restApbpBase + route;
-
-        return new Promise((resolve, reject) => {
-            let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
-            this.http.get(url, { headers: headers })
-                .map(res => res.json())
-                .subscribe(data => {
-                    resolve(data);
-                },
-                    error => {
-                        // probably a bad url or 404
-                        reject(error);
-                    })
-        });
-    }
+    return new Promise((resolve, reject) => {
+      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
+      this.http.get(url, { headers: headers })
+        .map(res => res.json())
+        .subscribe(data => {
+          resolve(data);
+        },
+          error => {
+            // probably a bad url or 404
+            reject(error);
+          })
+    });
+  }
 
   /**
    * Gets current fields from profile
@@ -460,19 +457,29 @@ export class BpProvider {
   }
 
   /**
-   * Accepts or Withdraws a friend request to the API
+   * Accepts a friend request to the API
    * @param {number} friendId
    * @param {*} login_data
-   * @param {string} withdraw
    * @returns {Promise<any>}
    */
-  public acceptOrWithdrawFriendship(friendId: number, login_data: any, withdraw: string): Promise<any> {
-    let route: string = this.url + this.restBuddypressBase + 'friends/requests/' + friendId;
-    let action: string = (withdraw) ? 'withdraw' : 'accept';
-    let data: any = { action: action, user_id: login_data.user_id, token: login_data.token };
-    let params: string = this.objToParams(data);
+  public acceptFriendship(friendId: number, login_data: any): Promise<any> {
+    let route: string = this.url + this.restApbpBase + 'friends/requests/accept/' + friendId;
+    let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
 
-    return this.http.post(route + '?' + params, null).toPromise();
+    return this.http.post(route, null, { headers: headers }).toPromise();
+  }
+
+  /**
+   * Rejects a friend request to the API
+   * @param {number} friendId
+   * @param {*} login_data
+   * @returns {Promise<any>}
+   */
+  public rejectFriendship(friendId: number, login_data: any): Promise<any> {
+    let route: string = this.url + this.restApbpBase + 'friends/requests/reject/' + friendId;
+    let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
+
+    return this.http.post(route, null, { headers: headers }).toPromise();
   }
 
   sendMessage( recipients, login_data, subject, content, threadId ) {

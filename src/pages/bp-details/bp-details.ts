@@ -69,7 +69,7 @@ export class BpDetailsPage implements OnInit {
      * Get comments from activity item
      */
     public getComments(): void {
-        this.bpProvider.getItem('activity/' + this.selectedItem.id, this.login_data)
+        this.bpProvider.getItem('activity/' + this.selectedItem.id + '?display_comments=threaded', this.login_data)
             .then(response => {
                 this.activityComments = this.formatComments(response[0].comments);
                 this.commentsLoaded = true
