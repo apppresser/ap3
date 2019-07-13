@@ -405,7 +405,7 @@ export class BpList implements OnInit {
 
     } else if( this.navParams.data.user_activity ) {
 
-      route = this.addQueryParam( route, '&user=' + this.navParams.data.user_activity )
+      route = this.addQueryParam( route, '&user_id=' + this.navParams.data.user_activity )
 
     }
 
