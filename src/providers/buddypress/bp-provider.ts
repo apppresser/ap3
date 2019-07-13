@@ -612,7 +612,6 @@ export class BpProvider {
 
     let data = {
       user_id: (login_data && login_data.user_id) ? login_data.user_id : '',
-      token: (login_data && login_data.token) ? login_data.token : '',
       component: notification.component,
       action: notification.action
     };
@@ -621,7 +620,8 @@ export class BpProvider {
 
     return new Promise( (resolve, reject) => {
 
-      this.http.post( this.url + this.restBuddypressBase + 'notifications?' + params, null )
+      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
+      this.http.post( this.url + this.restApbpBase + 'notifications?' + params, null, { headers: headers } )
           .map(res => res.json())
           .subscribe(data => {
               resolve( data );
