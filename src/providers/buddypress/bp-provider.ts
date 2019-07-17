@@ -482,48 +482,47 @@ export class BpProvider {
     return this.http.post(route, null, { headers: headers }).toPromise();
   }
 
-  sendMessage( recipients, login_data, subject, content, threadId ) {
-
-    if( !subject ) {
+  /**
+   * Sends a message to receipient or more using an existing thread id or not
+   * @param {*} recipients
+   * @param {*} login_data
+   * @param {string} subject
+   * @param {string} content
+   * @param {number} threadId
+   * @returns {Promise<any>}
+   */
+  public sendMessage(recipients: any, login_data: any, subject: string, content: string, threadId: number): Promise<any> {
+    if (!subject) {
       subject = ''
     }
 
-    let route = this.url + this.restBuddypressBase + 'messages/send';
+    let route = this.url + this.restBuddypressBase + 'messages';
 
     let data: any = {
       recipients: recipients,
       subject: subject,
-      content: content,
-      user_id: login_data.user_id,
-      token: login_data.token,
+      content: content
     };
 
-    if(threadId) {
+    if (threadId) {
       data.thread_id = threadId;
     }
 
-    let params = this.objToParams( data )
+    let params = this.objToParams(data)
 
-    return new Promise( (resolve, reject) => {
-
-      this.http.post( route + '?' + params, null )
+    return new Promise((resolve, reject) => {
+      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
+      this.http.post(route + '?' + params, null, { headers: headers })
         .map(res => res.json())
         .subscribe(data => {
-          
-            resolve(data)
-
-          },
+          resolve(data)
+        },
           error => {
-
             console.log(error)
-
             reject(error);
-
           }
         )
-
     }) // end promise
-
   }
 
   /**

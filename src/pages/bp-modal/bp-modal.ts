@@ -207,7 +207,7 @@ export class BpModal {
 					this.translate.get('Message sent.').subscribe( text => {
 						this.presentToast(text);
 					  })
-					this.events.publish('bp-add-message', { subject: this.activity.subject, content: this.activity.content, threadId: ret } )
+					this.events.publish('bp-add-message', { subject: this.activity.subject, content: this.activity.content, threadId: ret[0].id } )
 				}
 
 				this.dismiss(ret)

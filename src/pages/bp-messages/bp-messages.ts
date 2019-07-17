@@ -239,16 +239,14 @@ export class BpMessages {
   }
 
   addMessage( data ) {
-
-    this.threads.messages.unshift( { 
-      "subject": ( data.subject ? data.subject : null ), 
-      "message": data.content,
+    this.threads[0].messages.push( { 
+      "subject": { "rendered": ( data.subject ? data.subject : null ) },
+      "message": { "rendered": data.content },
       "sender_id": this.login_data.user_id,
       "sender_data": {
         name: this.login_data.username,
         avatar: this.login_data.avatar
       } } )
-
   }
 
   scrollDown( delay ) {
@@ -440,19 +438,19 @@ export class BpMessages {
    * If there is an error, we remove the message.
    */
   public replyToThread(): void {
-    let recipients = Object.keys(this.threads.recipients);
+    let recipients = Object.keys(this.threads[0].recipients);
 
     this.addMessage({ subject: null, content: this.threadReply });
     this.scrollDown(1);
     this.progressMessage = this.translate.instant('Sending...');
-    
-    this.bpProvider.sendMessage(recipients, this.login_data, '', this.threadReply, this.threads.thread_id)
+
+    this.bpProvider.sendMessage(recipients, this.login_data, '', this.threadReply, this.threads[0].id)
       .then(ret => {
         this.progressMessage = null;
         console.log('message sent, thread id: ', ret)
       })
       .catch(e => {
-        this.threads.messages.shift()
+        this.threads[0].messages.shift()
         this.handleErr(e)
       });
 
