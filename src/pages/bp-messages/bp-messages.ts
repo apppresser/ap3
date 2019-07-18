@@ -461,13 +461,15 @@ export class BpMessages {
    * Sends an image from camera or library as a private message
    */
   public sendImage(): void {
-    let options = {
+    let options: ActionSheetOptions = {
       title: this.translate.instant('Choose an image'),
       buttonLabels: [
         this.translate.instant('Take Photo'),
         this.translate.instant('Photo Library')
       ],
       addCancelButtonWithLabel: this.translate.instant('Cancel'),
+      androidTheme: 5,
+      androidEnableCancelButton: true,
       destructiveButtonLast: true
     }
 
@@ -517,15 +519,15 @@ export class BpMessages {
     this.progressMessage = this.translate.instant('Uploading...');
 
     // 4) Send image to API
-    let recipients = Object.keys(this.threads.recipients);
-    this.bpProvider.sendMessageWithImage(recipients, this.login_data, imageMessage, this.threads.thread_id)
+    let recipients = Object.keys(this.threads[0].recipients);
+    this.bpProvider.sendMessageWithImage(recipients, this.login_data, imageMessage, this.threads[0].id)
       .then(ret => {
         // 4.1) Remove progress message
         this.progressMessage = null;
       })
       .catch(e => {
-        this.threads.messages.shift()
-        this.handleErr(e)
+        this.threads[0].messages.shift();
+        this.handleErr(e);
       });
   }
 

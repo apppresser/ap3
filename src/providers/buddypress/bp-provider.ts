@@ -535,7 +535,7 @@ export class BpProvider {
    * @returns {Promise<any>}
    */
   sendMessageWithImage(recipients: any, login_data: any, imageUrl: string, threadId: number): Promise<any> {
-    let route: string = this.url + this.restBuddypressBase + 'messages/send';
+    let route: string = this.url + this.restBuddypressBase + 'messages';
 
     return new Promise((resolve, reject) => {
       let imageURI = '';
@@ -560,6 +560,7 @@ export class BpProvider {
       // this creates a random string based on the date
       let d = new Date().toTimeString();
       let random = d.replace(/[\W_]+/g, "").substr(0, 6);
+      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
 
       options = {
         fileKey: 'message_image',
@@ -567,13 +568,13 @@ export class BpProvider {
         fileName: imageURI ? random + image : random,
         mimeType: 'image/jpeg',
         httpMethod: "POST",
+        headers: headers,
         chunkedMode: false
       }
 
       let params: any = {
-        recipients: recipients,
-        user_id: login_data.user_id,
-        token: login_data.token,
+        recipients: recipients.join(), // convert recipients array into comma separated string
+        content: '', // this is used because it is required from the buddypress REST-API, do not change this as it will be overwriten by the AppCommunity plugin.
         thread_id: threadId
       };
 
