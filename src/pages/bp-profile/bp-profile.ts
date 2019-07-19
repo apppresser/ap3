@@ -107,7 +107,7 @@ export class BpProfilePage implements OnInit {
     })
   }
 
-    setupUser(spinner) {
+  setupUser(spinner) {
 
         this.isError = false
 
@@ -118,7 +118,7 @@ export class BpProfilePage implements OnInit {
             this.isMyProfile = true
         }
 
-        this.getBpMemberItem()
+        this._getBpMemberItem()
             .then(data => {
                 this.userData = data
                 this.hideSpinner()
@@ -129,15 +129,19 @@ export class BpProfilePage implements OnInit {
                 this.hideSpinner()
             })
 
-    }
+  }
 
-    private getBpMemberItem(): Promise<any> {
-        if (this.user_name) {
-            return this.bpProvider.getMemberByName('members/' + this.user_name, this.login_data);
-        } else {
-            return this.bpProvider.getItem('members/' + this.user_id, this.login_data);
-        }
+  /**
+   * Gets member data by username or id
+   * @returns {Promise<any>}
+   */
+  private _getBpMemberItem(): Promise<any> {
+    if (this.user_name) {
+      return this.bpProvider.getMemberByName('members/' + this.user_name, this.login_data);
+    } else {
+      return this.bpProvider.getItem('members/' + this.user_id + '?user_id=' + this.login_data.user_id, this.login_data);
     }
+  }
 
   userActivity( userData ) {
 
@@ -172,31 +176,46 @@ export class BpProfilePage implements OnInit {
     this.nav.push( 'BpNotifications' )
   }
 
-  doFriend( friendId, unfriend ) {
-
+  /**
+   * Adds a friend
+   * @param {number} friendId
+   * @memberof BpProfilePage
+   */
+  public addFriend(friendId: number): void {
     this.showSpinner()
-
-    this.bpProvider.doFriend( friendId, this.login_data, unfriend ).then( response => {
-      
-      this.presentToast( response )
-
-      this.hideSpinner()
-    }).catch( e => {
-
-      this.translate.get('There was a problem.').subscribe( text => {
-        
-        let msg = text;
-  
+    this.bpProvider.addFriend(friendId, this.login_data)
+      .then(response => {
+        let message: string = this.translate.instant('Friendship request sent');
+        this.presentToast(message);
+        this.hideSpinner();
+      })
+      .catch(e => {
         console.warn(e)
-        if(e.status && e.status == 404) {
-          msg = 'Friendship connections are not enabled';
-        }
-        this.presentToast(msg);
-        this.hideSpinner()
-      });
+        let message: string = (e.status && e.status == 404) ? this.translate.instant('Friendship connections are not enabled') : this.translate.instant('There was a problem');
+        this.presentToast(message);
+        this.hideSpinner();
+      })
+  }
 
-    })
-
+  /**
+   * Removes a friend
+   * @param {number} friendId
+   * @memberof BpProfilePage
+   */
+  public removeFriend(friendId: number): void {
+    this.showSpinner()
+    this.bpProvider.removeFriend(friendId, this.login_data)
+      .then(response => {
+        let message: string = this.translate.instant('Friendship removed');
+        this.presentToast(message);
+        this.hideSpinner();
+      })
+      .catch(e => {
+        console.warn(e)
+        let message: string = (e.status && e.status == 404) ? this.translate.instant('Friendship connections are not enabled') : this.translate.instant('There was a problem');
+        this.presentToast(message);
+        this.hideSpinner();
+      })
   }
 
   message( userData ) {

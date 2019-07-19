@@ -85,7 +85,7 @@ export class BpProvider {
    * @memberof BpProvider
    */
   public getItem(route: string, login_data: any): Promise<any> {
-    let url = this.url + this.restBuddypressBase + route;
+    let url = this.url + this.restApbpBase + route;
 
     return new Promise((resolve, reject) => {
       let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
@@ -416,46 +416,52 @@ export class BpProvider {
 
   }
 
-  doFriend( friendId, login_data, unfriend ) {
+  /**
+   * Adds a new friend
+   * @param {number} friendId
+   * @param {*} login_data
+   * @returns {Promise<any>}
+   */
+  public addFriend(friendId: number, login_data: any): Promise<any> {
+    let route = this.url + this.restApbpBase + 'friends/' + friendId;
+    let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
 
-    let route = this.url + this.restBuddypressBase + 'friends/friend/' + friendId;
-
-    let action;
-
-    if( unfriend ) {
-      action = 'remove_friend'
-    } else {
-      action = 'add_friend'
-    }
-
-    let data = {
-      action: action,
-      user_id: login_data.user_id,
-      token: login_data.token
-    };
-
-    let params = this.objToParams( data )
-
-    return new Promise( (resolve, reject) => {
-
-      this.http.post( route + '?' + params, null )
+    return new Promise((resolve, reject) => {
+      this.http.post(route, null, { headers: headers })
         .map(res => res.json())
         .subscribe(data => {
-          
-            resolve(data)
-
-          },
+          resolve(data)
+        },
           error => {
-
             console.log(error)
-
             reject(error);
-
           }
         )
-
     }) // end promise
+  }
 
+  /**
+   * Adds a new friend
+   * @param {number} friendId
+   * @param {*} login_data
+   * @returns {Promise<any>}
+   */
+  public removeFriend(friendId: number, login_data: any): Promise<any> {
+    let route = this.url + this.restApbpBase + 'friends/' + friendId;
+    let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
+
+    return new Promise((resolve, reject) => {
+      this.http.delete(route, { headers: headers })
+        .map(res => res.json())
+        .subscribe(data => {
+          resolve(data)
+        },
+          error => {
+            console.log(error)
+            reject(error);
+          }
+        )
+    }) // end promise
   }
 
   /**

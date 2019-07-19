@@ -49,8 +49,8 @@
 				<button ion-button icon-start small clear (click)="userActivity(userData )"><ion-icon name="list"></ion-icon> {{ 'Activity' | translate }}</button>
 			</ion-col>
 			<ion-col text-center>
-				<button *ngIf="!userData.check_friendship" ion-button icon-start small clear (click)="doFriend(userData.id, false)"><ion-icon name="add"></ion-icon> {{ 'Friend' | translate }}</button>
-				<button *ngIf="userData.check_friendship" ion-button icon-start small clear (click)="doFriend(userData.id, true)"><ion-icon name="remove-circle"></ion-icon> {{ 'Unfriend' | translate }}</button>
+				<button *ngIf="!userData.check_friendship" ion-button icon-start small clear (click)="addFriend(userData.id)"><ion-icon name="add"></ion-icon> {{ 'Friend' | translate }}</button>
+				<button *ngIf="userData.check_friendship" ion-button icon-start small clear (click)="removeFriend(userData.id)"><ion-icon name="remove-circle"></ion-icon> {{ 'Unfriend' | translate }}</button>
 			</ion-col>
 		</ion-row>
 
