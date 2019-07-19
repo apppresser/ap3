@@ -70,15 +70,18 @@ export class BpGroupPage {
     console.log('onIonSelected BpGroupPage');
   }
 
-  setupGroup() {
-
-    this.bpProvider.getItem( 'groups/' + this.groupId, this.login_data ).then( data => {
-      console.log(data)
-      this.groupData = data
-    }).catch( e => {
-      console.warn(e)
-    })
-
+  /**
+   * Sets group up
+   */
+  public setupGroup(): void {
+    let route: string = this.bpProvider.restBuddypressBase + 'groups/' + this.groupId;
+    this.bpProvider.getItem(route, this.login_data)
+      .then(data => {        
+        this.groupData = data[0]
+      })
+      .catch(e => {
+        console.warn(e)
+      })
   }
 
   groupActivity() {

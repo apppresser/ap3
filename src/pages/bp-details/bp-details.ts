@@ -65,20 +65,21 @@ export class BpDetailsPage implements OnInit {
 
   }
 
-    /**
-     * Get comments from activity item
-     */
-    public getComments(): void {
-        this.bpProvider.getItem('activity/' + this.selectedItem.id + '?display_comments=threaded', this.login_data)
-            .then(response => {
-                this.activityComments = this.formatComments(response[0].comments);
-                this.commentsLoaded = true
-            })
-            .catch(e => {
-                console.warn(e)
-                this.commentsLoaded = true
-            })
-    }
+  /**
+   * Get comments from activity item
+   */
+  public getComments(): void {
+    let route: string = this.bpProvider.restBuddypressBase + 'activity/' + this.selectedItem.id + '?display_comments=threaded';
+    this.bpProvider.getItem(route, this.login_data)
+      .then(response => {
+        this.activityComments = this.formatComments(response[0].comments);
+        this.commentsLoaded = true
+      })
+      .catch(e => {
+        console.warn(e)
+        this.commentsLoaded = true
+      })
+  }
 
   setupContent() {
 

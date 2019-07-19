@@ -115,7 +115,7 @@
 
       <span (tap)="openGroup(item)" class="comment-name" [innerHTML]="item.name"></span>
         
-      <div class="item-content" *ngIf="item.description" (tap)="openGroup(item)" [innerHTML]="item.description"></div>
+      <div class="item-content" *ngIf="item.description.rendered" (tap)="openGroup(item)" [innerHTML]="item.description.rendered"></div>
 
       <!-- <button *ngIf="!myGroups" ion-button color="light" (tap)="joinGroup(item)" item-end>Join Group</button> -->
 

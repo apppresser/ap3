@@ -32,7 +32,7 @@
 				<img *ngIf="!groupData.avatar_urls.full" src="{{groupData.avatar_urls.thumb}}">
 			</ion-avatar>
 			<h2 class="group-name" *ngIf="groupData.name" [innerHTML]="groupData.name"></h2>
-			<p style="white-space:normal" *ngIf="groupData.description" [innerHTML]="groupData.description"></p>
+			<p style="white-space:normal" *ngIf="groupData.description.rendered" [innerHTML]="groupData.description.rendered"></p>
 			<p class="member-count">{{ groupData.total_member_count }} {{ 'members' | translate }}</p>
 		</ion-item>
 

@@ -85,8 +85,8 @@ export class BpProvider {
    * @memberof BpProvider
    */
   public getItem(route: string, login_data: any): Promise<any> {
-    let url = this.url + this.restApbpBase + route;
-
+    let url: string = this.url + route;
+    
     return new Promise((resolve, reject) => {
       let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
       this.http.get(url, { headers: headers })
@@ -382,38 +382,27 @@ export class BpProvider {
     }); // end promise
   }
 
-  joinGroup( item, login_data ) {
-
-    let route = this.url + this.restBuddypressBase + 'groups/join-group';
-
-    let data = {
-      user_id: login_data.user_id,
-      group_id: item.id,
-      token: login_data.token
-    };
-
-    let params = this.objToParams( data )
-
-    return new Promise( (resolve, reject) => {
-
-      this.http.post( route + '?' + params, null )
+  /**
+   * Joins a group
+   * @param {*} item
+   * @param {*} login_data
+   * @returns {Promise<any>}
+   */
+  public joinGroup(item: any, login_data: any): Promise<any> {
+    let route = this.url + this.restBuddypressBase + 'groups/' + item.id;
+    return new Promise((resolve, reject) => {
+      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
+      this.http.post(route, null, { headers: headers })
         .map(res => res.json())
         .subscribe(data => {
-          
-            resolve(data)
-
-          },
+          resolve(data)
+        },
           error => {
-
             console.log(error)
-
             reject(error);
-
           }
         )
-
     }) // end promise
-
   }
 
   /**

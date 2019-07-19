@@ -137,9 +137,11 @@ export class BpProfilePage implements OnInit {
    */
   private _getBpMemberItem(): Promise<any> {
     if (this.user_name) {
-      return this.bpProvider.getMemberByName('members/' + this.user_name, this.login_data);
+      let route: string = this.bpProvider.restApbpBase + 'members/' + this.user_name;
+      return this.bpProvider.getMemberByName(route, this.login_data);
     } else {
-      return this.bpProvider.getItem('members/' + this.user_id + '?user_id=' + this.login_data.user_id, this.login_data);
+      let route: string = this.bpProvider.restApbpBase + 'members/' + this.user_id + '?user_id=' + this.login_data.user_id;
+      return this.bpProvider.getItem(route, this.login_data);
     }
   }
 
