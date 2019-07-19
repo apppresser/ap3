@@ -131,11 +131,12 @@ export class BpProvider {
    * @returns {Promise<any>}
    */
   public getFields(login_data: any): Promise<any> {
-    let objectParams: any = { user_id: login_data.user_id, token: login_data.token, fetch_field_data: true };
+    let objectParams: any = { fetch_field_data: true };
     let route: string = this.url + this.restBuddypressBase + 'xprofile/fields';
     let params: string = this.objToParams(objectParams);
+    let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
 
-    return this.http.get(route + '?' + params, null).toPromise();
+    return this.http.get(route + '?' + params, { headers: headers }).toPromise();
   }
 
   doCamera( type ) {
@@ -202,6 +203,7 @@ export class BpProvider {
       // this creates a random string based on the date
       let d = new Date().toTimeString();
       let random = d.replace(/[\W_]+/g, "").substr(0,6);
+      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
 
       options = {
         fileKey: 'activity_image',
@@ -209,13 +211,12 @@ export class BpProvider {
         fileName: imageURI ? random + image : random,
         mimeType: 'image/jpeg',
         httpMethod: "POST",
+        headers: headers,
         chunkedMode: false
       }
 
       let params = {
         content: activity.content,
-        user_id: login_data.user_id,
-        token: login_data.token
       }
 
       if( group_id ) {
@@ -319,11 +320,12 @@ export class BpProvider {
    * @returns {Promise<any>}
    */
   public updateProfileField (login_data: any, fieldId: number, fieldValue: string): Promise<any> {
-    let objectParams: any = { token: login_data.token, value: fieldValue };
+    let objectParams: any = { value: fieldValue };
     let route: string = this.url + this.restBuddypressBase + 'xprofile/' + fieldId + '/data/' + login_data.user_id;
     let params: string = this.objToParams(objectParams);
+    let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
 
-    return this.http.post(route + '?' + params, null).toPromise();
+    return this.http.post(route + '?' + params, null, { headers: headers }).toPromise();
   }
 
   /**
@@ -358,6 +360,7 @@ export class BpProvider {
       // this creates a random string based on the date
       let d = new Date().toTimeString();
       let random = d.replace(/[\W_]+/g, "").substr(0, 6);
+      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
 
       options = {
         fileKey: 'file',
@@ -365,10 +368,9 @@ export class BpProvider {
         fileName: imageURI ? random + image : random,
         mimeType: 'image/jpeg',
         httpMethod: "POST",
+        headers: headers,
         chunkedMode: false
       }
-
-      options.params = { token: login_data.token };
 
       fileTransfer.upload(imageURI, route, options, true).then((data) => {
         console.log(data);
