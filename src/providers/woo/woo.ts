@@ -2,7 +2,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { Storage } from '@ionic/storage';
-import { GlobalVars } from '../globalvars/globalvars';
 import { LoginService } from '../logins/login.service';
 
 @Injectable()
@@ -19,7 +18,6 @@ export class WooProvider {
 
   constructor(
     public http: HttpClient,
-    private globalvars: GlobalVars,
     public loginService: LoginService,
     public storage: Storage ) {
 
@@ -27,9 +25,7 @@ export class WooProvider {
     this.itemParsed = JSON.parse( item );
     this.url = this.itemParsed.wordpress_url;
     this.wooRest = 'wp-json/wc/v3/';
-    this.cartRest = 'wp-json/appcommerce/v2/cart';
-    this.authString = this.globalvars.getWooAuth();
-    
+    this.cartRest = 'wp-json/appcommerce/v2/cart';    
 
     this.httpOptions = {
       headers: new HttpHeaders({

@@ -5,6 +5,7 @@ import {Storage} from '@ionic/storage';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import {Platform} from 'ionic-angular';
+import { LoginService } from '../logins/login.service';
 
 /*
   In App Purchases
@@ -23,6 +24,7 @@ export class IAP {
     private iap: InAppPurchase,
     public storage: Storage,
     public http: HttpClient,
+    public loginService: LoginService,
     public platform: Platform
     ) {
 
@@ -33,7 +35,8 @@ export class IAP {
 
     this.httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json'
+        'Content-Type':  'application/json',
+        'Authorization': 'Bearer ' + this.loginService.user.access_token 
       })
     }
 
@@ -323,7 +326,7 @@ export class IAP {
         product_id: productId
       }
 
-      this.http.post( this.wpUrl + 'wp-json/appp/v1/in-app-purchase-validate', data, this.httpOptions )
+      this.http.post( this.wpUrl + 'wp-json/appp/v2/in-app-purchase-validate', data, this.httpOptions )
         .subscribe(response => {
 
           console.log('validateAndroidRemotely response', response)
@@ -347,7 +350,7 @@ export class IAP {
 
     return new Promise( (resolve, reject) => {
 
-      this.http.get( this.wpUrl + 'wp-json/appp/v1/in-app-purchase-status?user_id=' + user_id + '&product_id=' + productId )
+      this.http.get( this.wpUrl + 'wp-json/appp/v2/in-app-purchase-status?user_id=' + user_id + '&product_id=' + productId )
         .subscribe(response => {
 
           console.log('iap check response', response)

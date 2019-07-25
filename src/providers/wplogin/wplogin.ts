@@ -230,7 +230,7 @@ export class WPlogin {
   // log in and return data
   iapRegisterLogIn( userData, transaction_id ) {
 
-    let url = this.url + 'wp-json/appp/v1/in-app-purchase';
+    let url = this.url + 'wp-json/appp/v2/in-app-purchase';
     let params = Object.keys(userData).map(function(k) {
         return encodeURIComponent(k) + "=" + encodeURIComponent(userData[k]);
     }).join('&');
