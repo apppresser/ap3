@@ -26,7 +26,7 @@
 
  	<ion-slides pager class="single-product-images" *ngIf="selectedItem.images">
 
-	  <ion-slide *ngFor="let image of productImages">
+	  <ion-slide *ngFor="let image of productImages" (click)="openImageModal(image.src)">
 		<img src="{{image.src}}" class="product-image" />
 	  </ion-slide>
 

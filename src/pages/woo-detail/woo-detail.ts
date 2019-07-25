@@ -662,4 +662,11 @@ export class WooDetail {
 			return 'CustomPage';
 	}
 
+	openImageModal( imageSrc ) {
+
+	    const imageModal = this.modalCtrl.create('ImageModal', { src: imageSrc }, { cssClass: 'image-modal' } );
+	    imageModal.present();
+
+	  }
+
 }
