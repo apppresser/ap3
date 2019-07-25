@@ -158,7 +158,7 @@ export class WooAccountComponent implements OnInit {
 		})
 
 		// sucks to do an extra http request, tried hard to avoid this
-		this.wooProvider.getCustom( 'wp-json/appcommerce/v1/misc' ).then( response => {
+		this.wooProvider.getCustom( 'wp-json/appcommerce/v2/misc' ).then( response => {
 
 			if( response && (<any>response).account && (<any>response).account.url ) {
 				this.accountUrl = (<any>response).account.url

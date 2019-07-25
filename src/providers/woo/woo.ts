@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { Storage } from '@ionic/storage';
 import { GlobalVars } from '../globalvars/globalvars';
+import { LoginService } from '../logins/login.service';
 
 @Injectable()
 export class WooProvider {
@@ -19,22 +20,22 @@ export class WooProvider {
   constructor(
     public http: HttpClient,
     private globalvars: GlobalVars,
+    public loginService: LoginService,
     public storage: Storage ) {
 
     let item = window.localStorage.getItem( 'myappp' );
     this.itemParsed = JSON.parse( item );
     this.url = this.itemParsed.wordpress_url;
     this.wooRest = 'wp-json/wc/v3/';
-    this.cartRest = 'wp-json/appcommerce/v1/cart';
+    this.cartRest = 'wp-json/appcommerce/v2/cart';
     this.authString = this.globalvars.getWooAuth();
     
 
     this.httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
-        'Authorization': this.authString
-      }),
-      withCredentials: true
+        'Authorization': 'Bearer ' + this.loginService.user.access_token 
+      })
     };
 
   }

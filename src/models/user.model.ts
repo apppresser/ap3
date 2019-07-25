@@ -2,7 +2,8 @@ export class User {
 	public username: String;
 	public firstname: String;
 	public lastname: String;
-	public email: String;
+  public email: String;
+  public access_token: string;
 	public avatar: String;
 	public role: String;
 	public roles: String[];
@@ -16,6 +17,7 @@ export class User {
 			this.firstname = (data.firstname) ? data.firstname : '';
 			this.lastname = (data.lastname) ? data.lastname : '';
 			this.email = (data.email) ? data.email : '';
+			this.access_token = (data.access_token) ? data.access_token : '';
 			this.avatar = (data.avatar) ? data.avatar : '';
 			this.role = (data.role) ? data.role : '';
 			this.roles = (data.roles) ? data.roles : [];
