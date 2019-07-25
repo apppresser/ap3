@@ -62,7 +62,6 @@ import {Iframe} from "../pages/iframe/iframe";
 /* Other */
 import { IonicStorageModule } from '@ionic/storage';
 import { WooProvider } from '../providers/woo/woo';
-import { IonicImageViewerModule } from 'ionic-img-viewer';
 
 // required for ng translate, tells it to look in assets folder for trans files
 export function HttpLoaderFactory(http: HttpClient) {
@@ -86,7 +85,6 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     BrowserModule,
     HttpModule,
     HttpClientModule,
-    IonicImageViewerModule,
     Angulartics2RouterlessModule.forRoot([Angulartics2GoogleAnalytics]),
     TranslateModule.forRoot({
       loader: {
