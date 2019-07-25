@@ -22,6 +22,7 @@ export class WooListComponent implements OnInit {
 	@Input() wishlist: boolean = false;
 	@Input() hideToolbar: boolean = false;
 	@Input() hideSearch: boolean = false;
+	@Input() categoriesInclude: any;
 
 	// super confusing way to add a class of "has-toolbar" when there is a toolbar
 	@HostBinding('class.has-toolbar') chkToolbar: boolean = true
@@ -160,12 +161,16 @@ export class WooListComponent implements OnInit {
 			return;
 		}
 
-		this.wooProvider.get( 'products/categories?per_page=50', null ).then(categories => {
+		let params = '';
+
+		if( this.categoriesInclude ) {
+			params = '&include=' + this.categoriesInclude
+		}
+
+		this.wooProvider.get( 'products/categories?per_page=50' + params, null ).then(categories => {
 
 			// Loads posts from WordPress API
 			this.categories = categories;
-
-			console.log(this.categories)
 
 			// set category name in dropdown
 			if( this.route.indexOf('category') >= 0 ) {
