@@ -14,9 +14,11 @@
 </ion-header>
 
 <ion-content>
-	<ion-slides>
+	<ion-slides zoom>
 		<ion-slide>
-			<img [src]="imgSrc" class="zoomable-image" />
+			<div class="swiper-zoom-container"> 
+				<img [src]="imgSrc" class="zoomable-image" />
+			</div>
 		</ion-slide>
 	</ion-slides>
 </ion-content>
