@@ -22,7 +22,7 @@ export class WooListComponent implements OnInit {
 	@Input() wishlist: boolean = false;
 	@Input() hideToolbar: boolean = false;
 	@Input() hideSearch: boolean = false;
-	@Input() categoriesInclude: any;
+	@Input() categoryParams: any;
 
 	// super confusing way to add a class of "has-toolbar" when there is a toolbar
 	@HostBinding('class.has-toolbar') chkToolbar: boolean = true
@@ -163,8 +163,8 @@ export class WooListComponent implements OnInit {
 
 		let params = '';
 
-		if( this.categoriesInclude ) {
-			params = '&include=' + this.categoriesInclude
+		if( this.categoryParams ) {
+			params = '&' + this.categoryParams
 		}
 
 		this.wooProvider.get( 'products/categories?per_page=50' + params, null ).then(categories => {
