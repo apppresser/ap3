@@ -20,8 +20,6 @@
 
     <img [src]="source" *ngIf="!showVideoPlayer && !isPdf" class="media-modal-full-image" />
 
-    <pdf-viewer *ngIf="isPdf" [src]="pdfSrc" [original-size]="false" [render-text]="false" style="display: block;max-width:100%"></pdf-viewer>
-
     <vg-player *ngIf="showVideoPlayer" (onPlayerReady)="onPlayerReady($event)">
         <vg-overlay-play *ngIf="image" [ngStyle]="{'background-image': 'url(' + image + ')'}"></vg-overlay-play>
         <vg-overlay-play *ngIf="!image"></vg-overlay-play>
