@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
 import {DynamicComponentModule} from 'angular2-dynamic-component/index';
@@ -15,6 +15,9 @@ import { ApIapFormModule } from '../../components/ap-iap-form/ap-iap-form.module
 
 
 @NgModule({
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA
+  ],
   declarations: [
     CustomPage,
   ],

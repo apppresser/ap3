@@ -5,9 +5,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import { StarRatingComponentModule } from '../../components/star-rating/star-rating.module';
 
 @NgModule({
-	schemas: [
-	 CUSTOM_ELEMENTS_SCHEMA
-	],
+  schemas: [
+	CUSTOM_ELEMENTS_SCHEMA
+  ],
   declarations: [
     WooList,
   ],
