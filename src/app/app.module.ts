@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import { NgModule, ErrorHandler } from '@angular/core';
+import { NgModule, ErrorHandler, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { Http, HttpModule } from '@angular/http';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
@@ -75,6 +75,9 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
 }
 
 @NgModule({
+   schemas: [
+     CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA
+   ],
   declarations: [
     MyApp,
     Iframe
