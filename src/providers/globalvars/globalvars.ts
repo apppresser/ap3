@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import 'rxjs/add/operator/map';
+import { isDevMode } from '@angular/core';
 
 /*
   Store global variables to use throughout app
@@ -12,7 +13,7 @@ import 'rxjs/add/operator/map';
 export class GlobalVars {
 
   data: any = null;
-  useDynamicContentModule: boolean = true; // false when using our builder on remote Ionic builder?
+  useDynamicContentModule: boolean = false; // false when using our builder on remote Ionic builder?
   // url should be WP site with AP installed, dynamically changes based on build form
   appid: string = '[[appp_app_id]]';
   apiurl: string = '[[myappp_url]]'
@@ -21,6 +22,10 @@ export class GlobalVars {
   api: string;
 
   constructor( public http: Http ) {
+
+    if( isDevMode ) {
+      this.useDynamicContentModule = true
+    }
     // development API
     if( window.location && window.location.href && window.location.href.indexOf('localhost') >=0 ) {
       this.appid = '11';
