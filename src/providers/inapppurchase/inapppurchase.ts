@@ -33,13 +33,13 @@ export class IAP {
     if( item )
       this.wpUrl = JSON.parse( item ).wordpress_url;
 
-    this.httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json',
-        'Authorization': 'Bearer ' + this.loginService.user.access_token 
-      })
-    }
-
+      let headers: HttpHeaders = new HttpHeaders();
+      headers = headers.append('Content-Type', 'application/json');
+      // Add Authorization header only if access_token exists on user model
+      if(this.loginService.user && this.loginService.user.access_token) {
+        headers = headers.append('Authorization', 'Bearer ' + this.loginService.user.access_token);
+      }
+      this.httpOptions = { headers: headers };
   }
 
   // buy a product
