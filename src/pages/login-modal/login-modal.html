@@ -122,7 +122,7 @@
         </ion-item>
         <ion-item [hidden]="!show_reset_code">
           <ion-label stacked>{{ 'Enter a new password' | translate }}</ion-label>
-          <ion-input type="text" [(ngModel)]="pw_reset.password" name="password" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
+          <ion-input type="password" [(ngModel)]="pw_reset.password" name="password" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
         </ion-item>
         
         <div padding>
