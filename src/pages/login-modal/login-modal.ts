@@ -295,7 +295,7 @@ export class LoginModal {
     if (!this.show_reset_code && !this.pw_reset.email) {
       this.presentToast("Please fill out your email.")
       return;
-    } else if (this.show_reset_code && !this.pw_reset.code && !this.pw_reset.password) {
+    } else if (this.show_reset_code && (!this.pw_reset.code || !this.pw_reset.password)) {
       this.presentToast("Please fill out required fields.")
       return;
     }
