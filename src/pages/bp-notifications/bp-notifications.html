@@ -4,7 +4,7 @@
     
     <ion-buttons start>
     <button *ngIf="rtlBack||is_registration_page" (click)="backRtlTransition()" ion-button class="custom-back-button">
-        <ion-icon name="arrow-back"></ion-icon>
+        <ion-icon name="arrow-forward"></ion-icon>
         {{ 'Back' | translate }}
     </button>
 
@@ -69,8 +69,8 @@
           </ion-avatar>
           <p *ngIf="request.name" (tap)="viewMember( request )"><strong>{{ request.name }}</strong></p>
           
-          <button ion-button (tap)="acceptFriendship(request)">{{ 'Accept' | translate }}</button>
-          <button ion-button (tap)="rejectFriendship(request)">{{ 'Reject' | translate }}</button>
+          <button ion-button (tap)="acceptOrWithdrawFriendship(request, false)">{{ 'Accept' | translate }}</button>
+          <button ion-button (tap)="acceptOrWithdrawFriendship(request, true)">{{ 'Reject' | translate }}</button>
           
         </ion-item>
 

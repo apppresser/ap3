@@ -4,7 +4,7 @@
     
     <ion-buttons start>
     <button *ngIf="rtlBack||is_registration_page" (click)="backRtlTransition()" ion-button class="custom-back-button">
-        <ion-icon name="arrow-back"></ion-icon>
+        <ion-icon name="arrow-forward"></ion-icon>
         {{ 'Back' | translate }}
     </button>
 
@@ -59,12 +59,12 @@
 
         <ion-item *ngFor="let thread of threads" (tap)="loadThread(thread)">
           <ion-avatar item-start>
-            <img *ngIf="thread.recipients[thread.last_sender_id]?.user_avatars?.thumb" [src]="formatUrl( thread.recipients[thread.last_sender_id].user_avatars.thumb )">
-            <img *ngIf="!thread.recipients[thread.last_sender_id]?.user_avatars?.thumb" src="assets/default.png">
+            <img *ngIf="thread.sender_data && thread.sender_data.avatar" [src]="formatUrl( thread.sender_data.avatar )">
+            <img *ngIf="!thread.sender_data || !thread.sender_data.avatar" src="assets/default.png">
           </ion-avatar>
-          <p *ngIf="thread.recipients[thread.last_sender_id]?.user_display_name"><strong>{{ thread.recipients[thread.last_sender_id]?.user_display_name }}</strong></p>
-          <p class="message-preview"><strong *ngIf="thread.subject.rendered && thread.subject.rendered != 'undefined'" [innerHTML]="getSubject( thread.subject.rendered )"></strong> <span [innerHTML]="thread.message.rendered"></span></p>
-          <p *ngIf="thread.date" class="message-date">{{ thread.date | date }}</p>
+          <p *ngIf="thread.sender_data && thread.sender_data.name"><strong>{{ thread.sender_data.name }}</strong></p>
+          <p class="message-preview"><strong *ngIf="thread.subject && thread.subject != 'undefined'" [innerHTML]="getSubject( thread.subject )"></strong> <span [innerHTML]="thread.message"></span></p>
+          <p *ngIf="thread.date" class="message-date">{{ thread.date }}</p>
           
         </ion-item>
 
@@ -75,14 +75,15 @@
   <div *ngIf="threads && singleThread">
 
     <ion-list no-lines class="single-message-thread">
-        <ion-item *ngFor="let message of threads[0].messages" [ngClass]="{ 'my-reply' : message.sender_id == login_data.user_id }" text-wrap>
+
+        <ion-item *ngFor="let message of threads.messages.reverse()" [ngClass]="{ 'my-reply' : message.sender_id == login_data.user_id }" text-wrap>
           <ion-avatar item-start>
-            <img *ngIf="threads[0].recipients[message.sender_id]?.user_avatars?.thumb" [src]="formatUrl( threads[0].recipients[message.sender_id]?.user_avatars?.thumb )">
-            <img *ngIf="!threads[0].recipients[message.sender_id]?.user_avatars?.thumb" src="assets/default.png">
-            <p *ngIf="threads[0].recipients[message.sender_id]?.user_display_name" class="sender-name">{{ threads[0].recipients[message.sender_id]?.user_display_name }}</p>
+            <img *ngIf="message.sender_data && message.sender_data.avatar" [src]="formatUrl( message.sender_data.avatar )">
+            <img *ngIf="!message.sender_data || !message.sender_data.avatar" src="assets/default.png">
+            <p *ngIf="message.sender_data && message.sender_data.name" class="sender-name">{{ message.sender_data.name }}</p>
           </ion-avatar>
             
-            <p class="message-preview"><strong>{{ getSubject( message.subject.rendered ) }}</strong> <span [innerHTML]=" message.message.rendered | doLinks"></span></p>
+            <p class="message-preview"><strong>{{ getSubject( message.subject ) }}</strong> <span [innerHTML]=" message.message | doLinks"></span></p>
 
         </ion-item>
         <ion-item class="progress-message" *ngIf="progressMessage">

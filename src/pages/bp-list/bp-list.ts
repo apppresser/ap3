@@ -178,7 +178,7 @@ export class BpList implements OnInit {
 
       let item = window.localStorage.getItem( 'myappp' );
       let wp_url = JSON.parse( item ).wordpress_url;
-      let rest_base = 'wp-json/buddypress/v1/';
+      let rest_base = 'wp-json/ap-bp/v1/';
 
       if( !wp_url ) {
         alert('Please add a WordPress URL in your app settings.')
@@ -375,10 +375,10 @@ export class BpList implements OnInit {
     // display activities
     if( this.activityList ) {
 
-      route += '?display_comments=threaded'
+      route += '?type=activity_update&display_comments=false'
 
       // add this to the global route also
-      this.route += '?display_comments=threaded'
+      this.route += '?type=activity_update&display_comments=false'
 
       route = this.addActivityParams( route )
 
@@ -405,7 +405,7 @@ export class BpList implements OnInit {
 
     } else if( this.navParams.data.user_activity ) {
 
-      route = this.addQueryParam( route, '&user_id=' + this.navParams.data.user_activity )
+      route = this.addQueryParam( route, '&user=' + this.navParams.data.user_activity )
 
     }
 
@@ -518,8 +518,8 @@ export class BpList implements OnInit {
 
     this.page++;
 
-    let login: any;
-    this.getRoute().then( (route: string) => {
+    let login;
+    this.getRoute().then( route => {
 
       // for some requests, we don't want to send login data
       if( this.activityList || this.memberList && this.segments === "Friends" ) {  
@@ -681,24 +681,24 @@ export class BpList implements OnInit {
 
   }
 
-    openMember(item: any): void {
-        if (false === this.loginCheck())
-            return;
+  openMember( item ) {
 
-        let id;
-        if (this.activityList) {
-            id = item.user_id
-        } else {
-            id = item.id
-        }
+    if( false === this.loginCheck() )
+      return;
+  	
+  	let id;
+  	if( this.activityList ) {
+  		id = item.user
+  	} else {
+  		id = item.id
+  	}
 
-        this.nav.push('BpProfilePage', {
-            user_id: id,
-            user_name: item.user,
-            login_data: this.login_data
-        });
-
-    }
+    this.nav.push('BpProfilePage', {
+      user_id: id,
+      login_data: this.login_data
+    });
+  	
+  }
 
   toggleSearchBar() {
     if( this.showSearch === true ) {

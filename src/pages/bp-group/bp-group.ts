@@ -70,18 +70,15 @@ export class BpGroupPage {
     console.log('onIonSelected BpGroupPage');
   }
 
-  /**
-   * Sets group up
-   */
-  public setupGroup(): void {
-    let route: string = this.bpProvider.restBuddypressBase + 'groups/' + this.groupId + '?user_id=' + this.login_data.user_id;
-    this.bpProvider.getItem(route, this.login_data)
-      .then(data => {        
-        this.groupData = data[0]
-      })
-      .catch(e => {
-        console.warn(e)
-      })
+  setupGroup() {
+
+    this.bpProvider.getItem( 'groups/' + this.groupId, this.login_data ).then( data => {
+      console.log(data)
+      this.groupData = data
+    }).catch( e => {
+      console.warn(e)
+    })
+
   }
 
   groupActivity() {
@@ -104,9 +101,6 @@ export class BpGroupPage {
 
     this.bpProvider.joinGroup( this.groupData, this.login_data ).then( data => {
 
-      console.log('join group');
-      console.log(data);
-      
       if( data && !(<any>data).status ) {
         // deprecated, here for backwards compat
         this.presentToast('Joined group!')

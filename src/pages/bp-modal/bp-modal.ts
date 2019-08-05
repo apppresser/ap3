@@ -132,7 +132,7 @@ export class BpModal {
 
 		let item = window.localStorage.getItem( 'myappp' );
 		let wp_url = JSON.parse( item ).wordpress_url;
-		let rest_base = 'wp-json/buddypress/v1/members';
+		let rest_base = 'wp-json/ap-bp/v1/members';
 		let route = wp_url + rest_base
 
 		this.bpProvider.getItems( route + '?scope=friends&user=' + this.login_data.user_id + '&per_page=99', this.login_data, 1 ).then( items => {
@@ -207,7 +207,7 @@ export class BpModal {
 					this.translate.get('Message sent.').subscribe( text => {
 						this.presentToast(text);
 					  })
-					this.events.publish('bp-add-message', { subject: this.activity.subject, content: this.activity.content, threadId: ret[0].id } )
+					this.events.publish('bp-add-message', { subject: this.activity.subject, content: this.activity.content, threadId: ret } )
 				}
 
 				this.dismiss(ret)

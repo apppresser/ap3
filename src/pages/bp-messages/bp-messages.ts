@@ -67,7 +67,7 @@ export class BpMessages {
     this.threadReply = '';
     let item = window.localStorage.getItem( 'myappp' );
 
-    this.base_route = JSON.parse( item ).wordpress_url + 'wp-json/buddypress/v1/messages';
+    this.base_route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/messages';
     this.route = this.base_route;
 
     this.customClasses = 'bp-messages';
@@ -239,14 +239,16 @@ export class BpMessages {
   }
 
   addMessage( data ) {
-    this.threads[0].messages.push( { 
-      "subject": { "rendered": ( data.subject ? data.subject : null ) },
-      "message": { "rendered": data.content },
+
+    this.threads.messages.unshift( { 
+      "subject": ( data.subject ? data.subject : null ), 
+      "message": data.content,
       "sender_id": this.login_data.user_id,
       "sender_data": {
         name: this.login_data.username,
         avatar: this.login_data.avatar
       } } )
+
   }
 
   scrollDown( delay ) {
@@ -438,19 +440,19 @@ export class BpMessages {
    * If there is an error, we remove the message.
    */
   public replyToThread(): void {
-    let recipients = Object.keys(this.threads[0].recipients);
+    let recipients = Object.keys(this.threads.recipients);
 
     this.addMessage({ subject: null, content: this.threadReply });
     this.scrollDown(1);
     this.progressMessage = this.translate.instant('Sending...');
-
-    this.bpProvider.sendMessage(recipients, this.login_data, '', this.threadReply, this.threads[0].id)
+    
+    this.bpProvider.sendMessage(recipients, this.login_data, '', this.threadReply, this.threads.thread_id)
       .then(ret => {
         this.progressMessage = null;
         console.log('message sent, thread id: ', ret)
       })
       .catch(e => {
-        this.threads[0].messages.shift()
+        this.threads.messages.shift()
         this.handleErr(e)
       });
 
@@ -461,15 +463,13 @@ export class BpMessages {
    * Sends an image from camera or library as a private message
    */
   public sendImage(): void {
-    let options: ActionSheetOptions = {
+    let options = {
       title: this.translate.instant('Choose an image'),
       buttonLabels: [
         this.translate.instant('Take Photo'),
         this.translate.instant('Photo Library')
       ],
       addCancelButtonWithLabel: this.translate.instant('Cancel'),
-      androidTheme: 5,
-      androidEnableCancelButton: true,
       destructiveButtonLast: true
     }
 
@@ -519,15 +519,15 @@ export class BpMessages {
     this.progressMessage = this.translate.instant('Uploading...');
 
     // 4) Send image to API
-    let recipients = Object.keys(this.threads[0].recipients);
-    this.bpProvider.sendMessageWithImage(recipients, this.login_data, imageMessage, this.threads[0].id)
+    let recipients = Object.keys(this.threads.recipients);
+    this.bpProvider.sendMessageWithImage(recipients, this.login_data, imageMessage, this.threads.thread_id)
       .then(ret => {
         // 4.1) Remove progress message
         this.progressMessage = null;
       })
       .catch(e => {
-        this.threads[0].messages.shift();
-        this.handleErr(e);
+        this.threads.messages.shift()
+        this.handleErr(e)
       });
   }
 

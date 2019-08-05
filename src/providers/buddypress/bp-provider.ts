@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers} from '@angular/http';
+import {Http} from '@angular/http';
 import 'rxjs/add/operator/map';
 import {Camera} from '@ionic-native/camera';
 import { Transfer, FileUploadOptions, TransferObject, FileUploadResult } from '@ionic-native/transfer';
@@ -14,8 +14,7 @@ import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
 export class BpProvider {
   data: any = null;
   url: string;
-  restBuddypressBase: string;
-  restApbpBase: string;
+  restBase: string;
 
   options: any = {
     quality: 50,
@@ -36,93 +35,75 @@ export class BpProvider {
 
     let item = window.localStorage.getItem( 'myappp' );
     this.url = JSON.parse( item ).wordpress_url;
-    this.restBuddypressBase = 'wp-json/buddypress/v1/';
-    this.restApbpBase = 'wp-json/ap-bp/v2/';
+    this.restBase = 'wp-json/ap-bp/v1/'
 
   }
 
-  /**
-   * Passes full route url with login data. Some routes do not require login.
-   * @param {string} route
-   * @param {*} login_data
-   * @param {number} page
-   * @returns {Promise<any>}
-   */
-  public getItems(route: string, login_data: any, page: number): Promise<any> {
+  // pass full route url with login data. Some routes do not require login.
+  getItems( route, login_data, page ) {
+
     // set pagination
-    if (!page) {
+    if( !page ) {
       let page = '1';
     }
 
-    let concat: string;
-    if (route.indexOf('?') >= 0) {
+    let user_id = ( login_data && login_data.user_id ? '&user_id=' + login_data.user_id : '' );
+    let token = ( login_data ? '&token=' + login_data.token : '' );
+
+    let concat;
+    if( route.indexOf('?') >= 0 ) {
       concat = '&'
     } else {
       concat = '?'
     }
 
-    let url = route + concat + 'page=' + page;
+    let url = route + concat + 'page=' + page + user_id + token;
 
-    return new Promise((resolve, reject) => {
-      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
-      this.http.get(url, { headers: headers })
-        .map(res => res.json())
-        .subscribe(data => {
-          resolve(data);
-        },
+    return new Promise( (resolve, reject) => {
+
+      this.http.get( url )
+          .map(res => res.json())
+          .subscribe(data => {
+              resolve(data);
+          },
           error => {
             // probably a bad url or 404
             reject(error);
           })
     });
+
   }
 
-  /**
-   * Gets item by route
-   * @param {string} route
-   * @param {*} login_data
-   * @returns {Promise<any>}
-   * @memberof BpProvider
-   */
-  public getItem(route: string, login_data: any): Promise<any> {
-    let url: string = this.url + route;
-    
-    return new Promise((resolve, reject) => {
-      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
-      this.http.get(url, { headers: headers })
-        .map(res => res.json())
-        .subscribe(data => {
-          resolve(data);
-        },
+  getItem( route, login_data ) {
+
+    let concat;
+    if( route.indexOf('?') >= 0 ) {
+      concat = '&'
+    } else {
+      concat = '?'
+    }
+
+    let user_id = ( login_data && login_data.user_id ? 'user_id=' + login_data.user_id : '' );
+    let token = ( login_data && login_data.token && login_data.user_id ? '&token=' + login_data.token : '' );
+
+    let url = this.url + this.restBase + route;
+    url = url + concat + user_id + token;
+
+    console.log( url )
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.get( url )
+          .map(res => res.json())
+          .subscribe(data => {
+              resolve(data);
+          },
           error => {
             // probably a bad url or 404
             reject(error);
           })
     });
-  }
 
-  /**
-   * Gets member item by name
-   * @param {string} route
-   * @param {*} login_data
-   * @returns {Promise<any>}
-   * @memberof BpProvider
-   */
-  public getMemberByName(route: string, login_data: any): Promise<any> {
-    let url = this.url + this.restApbpBase + route;
-
-    return new Promise((resolve, reject) => {
-      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
-      this.http.get(url, { headers: headers })
-        .map(res => res.json())
-        .subscribe(data => {
-          resolve(data);
-        },
-          error => {
-            // probably a bad url or 404
-            reject(error);
-          })
-    });
   }
 
   /**
@@ -131,12 +112,11 @@ export class BpProvider {
    * @returns {Promise<any>}
    */
   public getFields(login_data: any): Promise<any> {
-    let objectParams: any = { fetch_field_data: true };
-    let route: string = this.url + this.restBuddypressBase + 'xprofile/fields';
+    let objectParams: any = { user_id: login_data.user_id, token: login_data.token, fetch_field_data: true };
+    let route: string = this.url + this.restBase + 'xprofile/fields';
     let params: string = this.objToParams(objectParams);
-    let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
 
-    return this.http.get(route + '?' + params, { headers: headers }).toPromise();
+    return this.http.get(route + '?' + params, null).toPromise();
   }
 
   doCamera( type ) {
@@ -175,7 +155,7 @@ export class BpProvider {
       activity.content = '';
     }
 
-    let route = this.url + this.restBuddypressBase + 'activity';
+    let route = this.url + this.restBase + 'activity';
 
     return new Promise( (resolve, reject) => {
 
@@ -203,7 +183,6 @@ export class BpProvider {
       // this creates a random string based on the date
       let d = new Date().toTimeString();
       let random = d.replace(/[\W_]+/g, "").substr(0,6);
-      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
 
       options = {
         fileKey: 'activity_image',
@@ -211,12 +190,13 @@ export class BpProvider {
         fileName: imageURI ? random + image : random,
         mimeType: 'image/jpeg',
         httpMethod: "POST",
-        headers: headers,
         chunkedMode: false
       }
 
       let params = {
         content: activity.content,
+        user_id: login_data.user_id,
+        token: login_data.token
       }
 
       if( group_id ) {
@@ -241,16 +221,18 @@ export class BpProvider {
    */
   postTextOnly( login_data, activity, group_id ) {
 
-    let route = this.url + this.restBuddypressBase + 'activity';
+    let route = this.url + this.restBase + 'activity';
 
     let data: any = {
-      content: activity.content
+      user_id: login_data.user_id,
+      content: activity.content,
+      token: login_data.token,
     };
 
     if( activity.parent ) {
       data.type = 'activity_comment';
-      data.primary_item_id = activity.parent;
-      data.secondary_item_id = activity.parent;
+      data.parent = activity.parent;
+      data.id = activity.parent;
     }
 
     if( group_id ) {
@@ -261,10 +243,190 @@ export class BpProvider {
     let params = this.objToParams( data )
 
     return new Promise( (resolve, reject) => {
-      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
 
       // sending data as params avoids OPTIONS pre-flight request which doesn't work on some apache servers for an unknown reason
-      this.http.post( route + '?' + params, null, { headers: headers } )
+      this.http.post( route + '?' + params, null )
+        .map(res => res.json())
+        .subscribe(data => {
+          
+            resolve(data)
+
+          },
+          error => {
+
+            console.log(error)
+
+            reject(error);
+
+          }
+        )
+
+    }) // end promise
+
+  }
+
+  updateItem( action, login_data, activity_id ) {
+
+    let route = this.url + this.restBase + 'activity/' + activity_id;
+
+    let data = { 
+      user_id: login_data.user_id,
+      action: action,
+      token: login_data.token
+    }
+
+    let params = this.objToParams( data )
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.post( route + '?' + params, null )
+        .map(res => res.json())
+        .subscribe(data => {
+
+            console.log(data)
+          
+            resolve(data)
+
+          },
+          error => {
+
+            console.log(error)
+
+            reject(error);
+
+          }
+        )
+
+    }) // end promise
+
+  }
+
+  /**
+   * Updates the specified profile field
+   * @param {*} login_data
+   * @param {number} fieldId
+   * @param {string} fieldValue
+   * @returns {Promise<any>}
+   */
+  public updateProfileField (login_data: any, fieldId: number, fieldValue: string): Promise<any> {
+    let objectParams: any = { token: login_data.token, value: fieldValue };
+    let route: string = this.url + this.restBase + 'xprofile/' + fieldId + '/data/' + login_data.user_id;
+    let params: string = this.objToParams(objectParams);
+
+    return this.http.post(route + '?' + params, null).toPromise();
+  }
+
+/**
+   * Update the profile avatar picture
+   * @param {*} login_data
+   * @param {string} imageUrl
+   * @returns {Promise<any>}
+   */
+  public updateProfileAvatar(login_data: any, imageUrl: string): Promise<any> {
+    let route: string = this.url + this.restBase + 'members/' + login_data.user_id + '/avatar';
+
+    return new Promise((resolve, reject) => {
+      let imageURI = '';
+      const fileTransfer: TransferObject = this.Transfer.create();
+      let options: FileUploadOptions = {};
+
+      if (imageUrl.indexOf('{') === 0) { // from cordova-plugin-camera-with-exif
+        let img = JSON.parse(imageUrl);
+        imageURI = img.filename;
+      } else { // from cordova-plugin-camera
+        imageURI = imageUrl;
+      }
+
+      let image = imageURI.substr(imageURI.lastIndexOf('/') + 1);
+      let name = image.split("?")[0];
+      let anumber = image.split("?")[1];
+
+      if ('Android' === this.Device.platform) {
+        image = anumber + '.jpg';
+      }
+
+      // this creates a random string based on the date
+      let d = new Date().toTimeString();
+      let random = d.replace(/[\W_]+/g, "").substr(0, 6);
+
+      options = {
+        fileKey: 'file',
+        // prepend image name with random string to avoid duplicate upload errors
+        fileName: imageURI ? random + image : random,
+        mimeType: 'image/jpeg',
+        httpMethod: "POST",
+        chunkedMode: false
+      }
+
+      options.params = { token: login_data.token };
+
+      fileTransfer.upload(imageURI, route, options, true).then((data) => {
+        console.log(data);
+        resolve(JSON.parse(data.response));
+      }).catch((FileTransferError) => {
+        this.handleError(FileTransferError);
+        reject(FileTransferError);
+      })
+    }); // end promise
+  }
+
+  joinGroup( item, login_data ) {
+
+    let route = this.url + this.restBase + 'groups/join-group';
+
+    let data = {
+      user_id: login_data.user_id,
+      group_id: item.id,
+      token: login_data.token
+    };
+
+    let params = this.objToParams( data )
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.post( route + '?' + params, null )
+        .map(res => res.json())
+        .subscribe(data => {
+          
+            resolve(data)
+
+          },
+          error => {
+
+            console.log(error)
+
+            reject(error);
+
+          }
+        )
+
+    }) // end promise
+
+  }
+
+  doFriend( friendId, login_data, unfriend ) {
+
+    let route = this.url + this.restBase + 'friends/friend/' + friendId;
+
+    let action;
+
+    if( unfriend ) {
+      action = 'remove_friend'
+    } else {
+      action = 'add_friend'
+    }
+
+    let data = {
+      action: action,
+      user_id: login_data.user_id,
+      token: login_data.token
+    };
+
+    let params = this.objToParams( data )
+
+    return new Promise( (resolve, reject) => {
+
+      this.http.post( route + '?' + params, null )
         .map(res => res.json())
         .subscribe(data => {
           
@@ -285,241 +447,63 @@ export class BpProvider {
   }
 
   /**
-   * Updates activity item
-   * @param {string} action
-   * @param {*} login_data
-   * @param {number} activity_id
-   * @returns {Promise<any>}
-   */
-  public updateItem(action: string, login_data: any, activity_id: number): Promise<any> {
-    let route = this.url + this.restApbpBase + 'activity/' + activity_id;
-    let data = { action: action, user_id: login_data.user_id };
-    let params = this.objToParams(data);
-
-    return new Promise((resolve, reject) => {
-      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
-      this.http.post(route + '?' + params, null, { headers: headers })
-        .map(res => res.json())
-        .subscribe(data => {
-          console.log(data)
-          resolve(data)
-        },
-          error => {
-            console.log(error)
-            reject(error);
-          }
-        )
-    }) // end promise
-  }
-
-  /**
-   * Updates the specified profile field
-   * @param {*} login_data
-   * @param {number} fieldId
-   * @param {string} fieldValue
-   * @returns {Promise<any>}
-   */
-  public updateProfileField (login_data: any, fieldId: number, fieldValue: string): Promise<any> {
-    let objectParams: any = { value: fieldValue };
-    let route: string = this.url + this.restBuddypressBase + 'xprofile/' + fieldId + '/data/' + login_data.user_id;
-    let params: string = this.objToParams(objectParams);
-    let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
-
-    return this.http.post(route + '?' + params, null, { headers: headers }).toPromise();
-  }
-
-  /**
-   * Update the profile avatar picture
-   * @param {*} login_data
-   * @param {string} imageUrl
-   * @returns {Promise<any>}
-   */
-  public updateProfileAvatar(login_data: any, imageUrl: string): Promise<any> {
-    let route: string = this.url + this.restBuddypressBase + 'members/' + login_data.user_id + '/avatar';
-
-    return new Promise((resolve, reject) => {
-      let imageURI = '';
-      const fileTransfer: TransferObject = this.Transfer.create();
-      let options: FileUploadOptions = {};
-
-      if (imageUrl.indexOf('{') === 0) { // from cordova-plugin-camera-with-exif
-        let img = JSON.parse(imageUrl);
-        imageURI = img.filename;
-      } else { // from cordova-plugin-camera
-        imageURI = imageUrl;
-      }
-
-      let image = imageURI.substr(imageURI.lastIndexOf('/') + 1);
-      let name = image.split("?")[0];
-      let anumber = image.split("?")[1];
-
-      if ('Android' === this.Device.platform) {
-        image = anumber + '.jpg';
-      }
-
-      // this creates a random string based on the date
-      let d = new Date().toTimeString();
-      let random = d.replace(/[\W_]+/g, "").substr(0, 6);
-      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
-
-      options = {
-        fileKey: 'file',
-        // prepend image name with random string to avoid duplicate upload errors
-        fileName: imageURI ? random + image : random,
-        mimeType: 'image/jpeg',
-        httpMethod: "POST",
-        headers: headers,
-        chunkedMode: false
-      }
-
-      fileTransfer.upload(imageURI, route, options, true).then((data) => {
-        console.log(data);
-        resolve(JSON.parse(data.response));
-      }).catch((FileTransferError) => {
-        this.handleError(FileTransferError);
-        reject(FileTransferError);
-      })
-    }); // end promise
-  }
-
-  /**
-   * Joins a group
-   * @param {*} item
-   * @param {*} login_data
-   * @returns {Promise<any>}
-   */
-  public joinGroup(item: any, login_data: any): Promise<any> {
-    let route = this.url + this.restBuddypressBase + 'groups/' + item.id;
-    return new Promise((resolve, reject) => {
-      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
-      this.http.post(route, null, { headers: headers })
-        .map(res => res.json())
-        .subscribe(data => {
-          resolve(data)
-        },
-          error => {
-            console.log(error)
-            reject(error);
-          }
-        )
-    }) // end promise
-  }
-
-  /**
-   * Adds a new friend
+   * Accepts or Withdraws a friend request to the API
    * @param {number} friendId
    * @param {*} login_data
+   * @param {string} withdraw
    * @returns {Promise<any>}
    */
-  public addFriend(friendId: number, login_data: any): Promise<any> {
-    let route = this.url + this.restApbpBase + 'friends/' + friendId;
-    let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
+  public acceptOrWithdrawFriendship(friendId: number, login_data: any, withdraw: string): Promise<any> {
+    let route: string = this.url + this.restBase + 'friends/requests/' + friendId;
+    let action: string = (withdraw) ? 'withdraw' : 'accept';
+    let data: any = { action: action, user_id: login_data.user_id, token: login_data.token };
+    let params: string = this.objToParams(data);
 
-    return new Promise((resolve, reject) => {
-      this.http.post(route, null, { headers: headers })
-        .map(res => res.json())
-        .subscribe(data => {
-          resolve(data)
-        },
-          error => {
-            console.log(error)
-            reject(error);
-          }
-        )
-    }) // end promise
+    return this.http.post(route + '?' + params, null).toPromise();
   }
 
-  /**
-   * Adds a new friend
-   * @param {number} friendId
-   * @param {*} login_data
-   * @returns {Promise<any>}
-   */
-  public removeFriend(friendId: number, login_data: any): Promise<any> {
-    let route = this.url + this.restApbpBase + 'friends/' + friendId;
-    let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
+  sendMessage( recipients, login_data, subject, content, threadId ) {
 
-    return new Promise((resolve, reject) => {
-      this.http.delete(route, { headers: headers })
-        .map(res => res.json())
-        .subscribe(data => {
-          resolve(data)
-        },
-          error => {
-            console.log(error)
-            reject(error);
-          }
-        )
-    }) // end promise
-  }
-
-  /**
-   * Accepts a friend request to the API
-   * @param {number} friendId
-   * @param {*} login_data
-   * @returns {Promise<any>}
-   */
-  public acceptFriendship(friendId: number, login_data: any): Promise<any> {
-    let route: string = this.url + this.restApbpBase + 'friends/requests/accept/' + friendId;
-    let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
-
-    return this.http.post(route, null, { headers: headers }).toPromise();
-  }
-
-  /**
-   * Rejects a friend request to the API
-   * @param {number} friendId
-   * @param {*} login_data
-   * @returns {Promise<any>}
-   */
-  public rejectFriendship(friendId: number, login_data: any): Promise<any> {
-    let route: string = this.url + this.restApbpBase + 'friends/requests/reject/' + friendId;
-    let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
-
-    return this.http.post(route, null, { headers: headers }).toPromise();
-  }
-
-  /**
-   * Sends a message to receipient or more using an existing thread id or not
-   * @param {*} recipients
-   * @param {*} login_data
-   * @param {string} subject
-   * @param {string} content
-   * @param {number} threadId
-   * @returns {Promise<any>}
-   */
-  public sendMessage(recipients: any, login_data: any, subject: string, content: string, threadId: number): Promise<any> {
-    if (!subject) {
+    if( !subject ) {
       subject = ''
     }
 
-    let route = this.url + this.restBuddypressBase + 'messages';
+    let route = this.url + this.restBase + 'messages/send';
 
     let data: any = {
       recipients: recipients,
       subject: subject,
-      content: content
+      content: content,
+      user_id: login_data.user_id,
+      token: login_data.token,
     };
 
-    if (threadId) {
+    if(threadId) {
       data.thread_id = threadId;
     }
 
-    let params = this.objToParams(data)
+    let params = this.objToParams( data )
 
-    return new Promise((resolve, reject) => {
-      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
-      this.http.post(route + '?' + params, null, { headers: headers })
+    return new Promise( (resolve, reject) => {
+
+      this.http.post( route + '?' + params, null )
         .map(res => res.json())
         .subscribe(data => {
-          resolve(data)
-        },
+          
+            resolve(data)
+
+          },
           error => {
+
             console.log(error)
+
             reject(error);
+
           }
         )
+
     }) // end promise
+
   }
 
   /**
@@ -532,7 +516,7 @@ export class BpProvider {
    * @returns {Promise<any>}
    */
   sendMessageWithImage(recipients: any, login_data: any, imageUrl: string, threadId: number): Promise<any> {
-    let route: string = this.url + this.restBuddypressBase + 'messages';
+    let route: string = this.url + this.restBase + 'messages/send';
 
     return new Promise((resolve, reject) => {
       let imageURI = '';
@@ -557,7 +541,6 @@ export class BpProvider {
       // this creates a random string based on the date
       let d = new Date().toTimeString();
       let random = d.replace(/[\W_]+/g, "").substr(0, 6);
-      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
 
       options = {
         fileKey: 'message_image',
@@ -565,13 +548,13 @@ export class BpProvider {
         fileName: imageURI ? random + image : random,
         mimeType: 'image/jpeg',
         httpMethod: "POST",
-        headers: headers,
         chunkedMode: false
       }
 
       let params: any = {
-        recipients: recipients.join(), // convert recipients array into comma separated string
-        content: '', // this is used because it is required from the buddypress REST-API, do not change this as it will be overwriten by the AppCommunity plugin.
+        recipients: recipients,
+        user_id: login_data.user_id,
+        token: login_data.token,
         thread_id: threadId
       };
 
@@ -589,10 +572,14 @@ export class BpProvider {
 
   getNotifications( login_data ) {
 
-    let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
+    // let user_id = ( login_data && login_data.user_id ? '&user_id=' + login_data.user_id : '' );
+    // let token = ( login_data ? '&token=' + login_data.token : '' );
+
+    let data = '?user_id=' + login_data.user_id + '&token=' + login_data.token;
 
     return new Promise( (resolve, reject) => {
-      this.http.get( this.url + this.restBuddypressBase + 'notifications', { headers: headers } )
+
+      this.http.get( this.url + this.restBase + 'notifications' + data )
           .map(res => res.json())
           .subscribe(data => {
               resolve( data );
@@ -609,6 +596,7 @@ export class BpProvider {
 
     let data = {
       user_id: (login_data && login_data.user_id) ? login_data.user_id : '',
+      token: (login_data && login_data.token) ? login_data.token : '',
       component: notification.component,
       action: notification.action
     };
@@ -617,8 +605,7 @@ export class BpProvider {
 
     return new Promise( (resolve, reject) => {
 
-      let headers = (login_data && login_data.access_token ? new Headers({ 'Authorization': 'Bearer ' + login_data.access_token }) : null);
-      this.http.post( this.url + this.restApbpBase + 'notifications?' + params, null, { headers: headers } )
+      this.http.post( this.url + this.restBase + 'notifications?' + params, null )
           .map(res => res.json())
           .subscribe(data => {
               resolve( data );

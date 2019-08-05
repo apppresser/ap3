@@ -4,7 +4,7 @@
     
     <ion-buttons start>
     <button *ngIf="rtlBack||is_registration_page" (click)="backRtlTransition()" ion-button class="custom-back-button">
-        <ion-icon name="arrow-back"></ion-icon>
+        <ion-icon name="arrow-forward"></ion-icon>
         {{ 'Back' | translate }}
     </button>
 
@@ -75,18 +75,19 @@
 
       <ion-card-content>
         
-        <div class="item-content" *ngIf="item.content" [innerHTML]="item.content.rendered | doLinks"></div>
+        <div class="item-content" *ngIf="item.content" [innerHTML]="item.content | doLinks"></div>
 
       </ion-card-content>
 
       <ion-row>
         <ion-col>
           <button ion-button icon-start clear small (click)="loadDetail(item)">
-            <div *ngIf="!item.comment_count || item.comment_count === 0"><ion-icon name="text" ></ion-icon> {{ 'Comment' | translate }}</div>
 
-            <div *ngIf="item.comment_count && item.comment_count === 1"><span>{{item.comment_count}}</span> {{ 'Comment' | translate }}</div>
+            <div *ngIf="!item.comment_count || item.comment_count === '0'"><ion-icon name="text" ></ion-icon> {{ 'Comment' | translate }}</div>
 
-            <div *ngIf="item.comment_count && item.comment_count != 0 && item.comment_count != 1"><span>{{item.comment_count}}</span> {{ 'Comments' | translate }}</div>
+            <div *ngIf="item.comment_count && item.comment_count === '1'"><span>{{item.comment_count}}</span> {{ 'Comment' | translate }}</div>
+
+            <div *ngIf="item.comment_count && item.comment_count != '0' && item.comment_count != '1'"><span>{{item.comment_count}}</span> {{ 'Comments' | translate }}</div>
 
           </button>
         </ion-col>
@@ -115,7 +116,7 @@
 
       <span (tap)="openGroup(item)" class="comment-name" [innerHTML]="item.name"></span>
         
-      <div class="item-content" *ngIf="item.description.rendered" (tap)="openGroup(item)" [innerHTML]="item.description.rendered"></div>
+      <div class="item-content" *ngIf="item.description" (tap)="openGroup(item)" [innerHTML]="item.description"></div>
 
       <!-- <button *ngIf="!myGroups" ion-button color="light" (tap)="joinGroup(item)" item-end>Join Group</button> -->
 
@@ -134,8 +135,8 @@
 
     <ion-item *ngFor="let item of items" (tap)="openMember(item)">
 
-      <ion-avatar item-start *ngIf="item.avatar_urls?.thumb">
-        <img [src]="formatUrl( item.avatar_urls?.thumb )">
+      <ion-avatar item-start *ngIf="item.avatar">
+        <img [src]="formatUrl( item.avatar )">
       </ion-avatar>
 
       <span class="comment-name" [innerHTML]="item.name"></span>

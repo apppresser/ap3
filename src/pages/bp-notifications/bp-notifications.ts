@@ -52,12 +52,12 @@ export class BpNotifications {
 
     let item = window.localStorage.getItem( 'myappp' );
 
-    this.route = JSON.parse( item ).wordpress_url + 'wp-json/buddypress/v1/notifications';
+    this.route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/notifications';
 
     if( this.navParams.get('requests') ) {
 
       this.isRequests = true
-      this.route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v2/friends/requests';
+      this.route = JSON.parse( item ).wordpress_url + 'wp-json/ap-bp/v1/friends/requests';
       this.translate.get('Requests').subscribe( text => {
         this.title = text;
       });
@@ -143,7 +143,7 @@ export class BpNotifications {
 
   getRequests() {
 
-    this.bpProvider.getItems( this.route + '?user_id=' + this.login_data.user_id, this.login_data, 1 ).then(items => {
+    this.bpProvider.getItems( this.route, this.login_data, 1 ).then(items => {
 
       // Loads posts from WordPress API
       this.items = items;
@@ -217,45 +217,30 @@ export class BpNotifications {
   }
 
   /**
-   * Accepts a friend request
+   * Accepts or Withdraws a friend request
    * @param {*} friend
+   * @param {string} withdraw
    */
-  public acceptFriendship(friend: any): void {
-    this.bpProvider.acceptFriendship(friend.user_id, this.login_data)
-      .then(() => {
+  public acceptOrWithdrawFriendship(friend: any, withdraw: string): void {
+    var friend = friend;
+    console.log(friend);
+
+    this.bpProvider.acceptOrWithdrawFriendship(friend.id, this.login_data, withdraw)
+      .then(response => {
+        let message: string = response.json();
+
         for (let i = this.items.length - 1; i >= 0; i--) {
-          if (this.items[i].user_id === friend.user_id) {
+          if (this.items[i].id === friend.id) {
+            console.log(this.items[i])
             this.items.splice(i, 1);
             break;
           }
         }
 
-        this.presentToast(this.translate.instant('Friendship accepted.'));
+        this.presentToast(message);
       })
       .catch(error => {
-        this.presentToast(this.translate.instant('There was a problem.'));
-        console.warn(error);
-      });
-  }
-
-  /**
-   * Rejects a friend request
-   * @param {*} friend
-   */
-  public rejectFriendship(friend: any): void {
-    this.bpProvider.rejectFriendship(friend.user_id, this.login_data)
-      .then(() => {
-        for (let i = this.items.length - 1; i >= 0; i--) {
-          if (this.items[i].user_id === friend.user_id) {
-            this.items.splice(i, 1);
-            break;
-          }
-        }
-
-        this.presentToast(this.translate.instant('Friendship rejected.'));
-      })
-      .catch(error => {
-        this.presentToast(this.translate.instant('There was a problem.'));
+        this.presentToast('There was a problem.');
         console.warn(error);
       });
   }

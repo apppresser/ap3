@@ -3,7 +3,7 @@
 
 		<ion-buttons start>
 			<button *ngIf="rtlBack" (click)="backRtlTransition()" ion-button class="custom-back-button">
-			    <ion-icon name="arrow-back"></ion-icon>
+			    <ion-icon name="arrow-forward"></ion-icon>
 			    {{'Back' | translate }}
 			</button>
 
@@ -36,9 +36,9 @@
 			<span class="comment-name" *ngIf="selectedItem.display_name" [innerHTML]="selectedItem.display_name"></span>
 		</ion-item>
 
-		<ion-card-content *ngIf="selectedItem.content.rendered">
+		<ion-card-content *ngIf="selectedItem.content">
 
-			<div class="item-content" [innerHTML]="selectedItem.content.rendered | doLinks"></div>
+			<div class="item-content" [innerHTML]="selectedItem.content | doLinks"></div>
 
 		</ion-card-content>
 
@@ -63,13 +63,13 @@
 
 		<ion-card *ngFor="let comment of activityComments">
 
-			<ion-card-content *ngIf="comment.content.rendered">
+			<ion-card-content *ngIf="comment.content">
 
 				<span class="comment-name" [innerHTML]="comment.display_name" *ngIf="comment.display_name"></span>
 
 				<span class="comment-name" [innerHTML]="comment.title" *ngIf="comment.title && !comment.display_name"></span>
 
-				<span class="comment-content" [innerHTML]="comment.content.rendered | doLinks"></span>
+				<span class="comment-content" [innerHTML]="comment.content | doLinks"></span>
 
 			</ion-card-content>
 
