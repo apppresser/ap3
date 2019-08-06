@@ -11,7 +11,7 @@ export class WooProvider {
   url: string;
   wooRest: string;
   cartRest: string;
-  authString: string;
+  authString: string; 
   httpOptions: any;
   itemParsed: any;
   currencySymbol: string;
