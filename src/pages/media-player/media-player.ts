@@ -4,6 +4,7 @@ import {Storage} from '@ionic/storage';
 import {AnalyticsService} from '../../providers/analytics/analytics.service';
 import { VgAPI } from 'videogular2/core';
 import { Device } from '@ionic-native/device';
+import {DomSanitizer} from '@angular/platform-browser';
 
 export interface IMedia {
   title: string;
@@ -38,9 +39,11 @@ export class MediaPlayer {
     private ga: AnalyticsService,
     private storage: Storage,
     public device: Device,
-    public viewCtrl: ViewController 
+    public viewCtrl: ViewController,
+    private sanitizer: DomSanitizer
   ) {
     this.source = navParams.get('source');
+ 
     this.image = navParams.get('image');
     this.currentIndex = navParams.get('index');
     this.currentItem = {
@@ -67,9 +70,11 @@ export class MediaPlayer {
       this.showVideoPlayer = false;
       this.isPdf = true;
 
-      this.loadPdf().then( data => {
-        this.pdfSrc = data
-      })
+      this.pdfSrc = this.sanitizer.bypassSecurityTrustResourceUrl(this.source)
+
+      // this.loadPdf().then( data => {
+      //   this.pdfSrc = this.sanitizer.bypassSecurityTrustUrl(data)
+      // })
 
     } else {
       this.showVideoPlayer = true;
