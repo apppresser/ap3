@@ -21,6 +21,7 @@ export class GlobalVars {
   appid: string = '[[appp_app_id]]';
   apiurl: string = '[[myappp_url]]'
   endpoint: string = 'wp-json/ap3/v1/app/[[appp_app_id]]';
+  wooAuth: string = '[[woo_auth_string]]';
   api: string = this.apiurl + this.endpoint;
 
   constructor( public http: Http ) {}
@@ -39,6 +40,10 @@ export class GlobalVars {
 
   getUseDynamicPageModule() {
     return this.useDynamicContentModule;
+  }
+
+  getWooAuth() {
+    return this.wooAuth;
   }
 
 }
