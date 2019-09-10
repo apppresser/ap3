@@ -453,13 +453,25 @@ export class MyApp {
 
         root = this.getPageType( item );
 
-        // hide the tab if user added class of hide
-        item.show = true;
-        if( item.extra_classes.indexOf('hide') >= 0 || item.extra_classes.indexOf('loggedin') >= 0 ) {
-          item.show = false;
+        // Temporary console log (just to be sure)
+        if(this.loginservice.user) {
+          console.log('load loggedin tab menu');
+        } else {
+          console.log('load loggedout tab menu');
         }
 
-        if(this.rolesservice.test_user_role(item.extra_classes) === false) {
+        item.show = true;
+        if( item.extra_classes.indexOf('hide') >= 0 ) {
+          // hide the tab if user added class of hide
+          item.show = false;
+        } else if (item.extra_classes === 'hidden-tab') {
+          // hide the tab if user added class of hidden-tab (used in global tabs)
+          item.show = false;
+        } else if( !this.loginservice.user && item.extra_classes.indexOf('loggedin') >= 0 ) {
+          item.show = false;
+        } else if( this.loginservice.user && item.extra_classes.indexOf('loggedout') >= 0 ) {
+          item.show = false;
+        } else if(this.rolesservice.test_user_role(item.extra_classes) === false) {
           item.show = false;
         }
 
@@ -1608,13 +1620,14 @@ export class MyApp {
         root = this.getPageType( item );
       }
 
-      // hide the tab if user added class of hide
       item.show = true;
       if( item.extra_classes.indexOf('hide') >= 0 ) {
+        // hide the tab if user added class of hide
         item.show = false;
-      }
-
-      if( !login && item.extra_classes.indexOf('loggedin') >= 0 ) {
+      } else if (item.extra_classes === 'hidden-tab') {
+        // hide the tab if user added class of hidden-tab (used in global tabs)
+        item.show = false;
+      } else if( !login && item.extra_classes.indexOf('loggedin') >= 0 ) {
         item.show = false;
       } else if( login && item.extra_classes.indexOf('loggedout') >= 0 ) {
         item.show = false;
