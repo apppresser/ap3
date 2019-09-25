@@ -23,6 +23,7 @@ export class ApIapForm {
 	@Input() secret: string
 	@Input() removeAds: boolean = false
 	@Input() noLogin: string
+	@Input() skipRegistration: boolean = false
 
 	formData: any;
 	loading: any;
@@ -102,9 +103,9 @@ export class ApIapForm {
 
 		let fields = form.value
 
-		console.log( fields )
+		console.log(fields)
 
-		if( this.noLogin != 'true' ) {
+		if( this.noLogin != 'true' && !fields.skipRegistration ) {
 
 			// only validate if fields are needed
 			if( !this.login_data && !fields.username || !this.login_data && !fields.password || !fields.email ) {
@@ -254,11 +255,16 @@ export class ApIapForm {
 	// send the data to WP
 	// if the user doesn't exist, register them
 	// log them in and add user meta of in_app_purchase = true
-	handleWpLogin( userData, transactionId ) {
+	handleWpLogin( fields, transactionId ) {
 
 		// in some cases we don't need to communicate with WP, like for removing ads
 		if( this.noLogin === "true" ) {
 			return;
+		}
+
+		// this user does not want to be registered, but we still have to let them access the content
+		if( fields.skipRegistration ) {
+			this.loginSuccess( { name: "Anonymous", email: "anonymous@anon.com", message: "" } )
 		}
 
 		this.showSpinner()
@@ -267,7 +273,7 @@ export class ApIapForm {
 			this.presentToast( text )
 		})
 
-		this.wplogin.iapRegisterLogIn( userData, transactionId ).then( data => {
+		this.wplogin.iapRegisterLogIn( fields, transactionId ).then( data => {
 
 			console.log(data)
 

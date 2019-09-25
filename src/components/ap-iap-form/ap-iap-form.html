@@ -39,4 +39,9 @@
 
   <p *ngIf="isIos && isSubscription != 'false'" class="manage-subscriptions-link"><a href="https://buy.itunes.apple.com/WebObjects/MZFinance.woa/wa/manageSubscriptions" target="_system">Manage subscription</a></p>
 
+  
+  <div class="ap-form-checkbox skip-registration" *ngIf="isIos">
+    <input type="checkbox" ngModel name="skipRegistration" aria-checked="false" checked="false"> <label for="skipRegistration">{{ 'Check to disable registering your name and email in our system. You may not be able to login to access your content.' | translate }}</label>
+  </div>
+
 </form>
