@@ -43,24 +43,25 @@ export class MediaPlayer {
     private sanitizer: DomSanitizer
   ) {
     this.source = navParams.get('source');
- 
-    this.image = navParams.get('image');
-    this.currentIndex = navParams.get('index');
-    this.currentItem = {
-      title: navParams.get('title'),
-      src: navParams.get('source'),
-      type: this.getMimeType(navParams.get('source')),
-      image: navParams.get('image')
-    };
-    this.sources = navParams.get('sources');
-    this.storage.get('media-list-autoplay').then( v => this.autoPlay = (v === false ) ? false:true );
-    this.playlist = navParams.get('sources');
 
     if(this.navParams.get('title')) {
       this.title = this.navParams.get('title');
     } else {
       this.title = 'Media Player';
     }
+ 
+    this.image = navParams.get('image');
+    this.currentIndex = navParams.get('index');
+    this.currentItem = {
+      title: this.title,
+      src: this.source,
+      type: this.getMimeType(navParams.get('source')),
+      image: this.image
+    };
+
+    this.sources = navParams.get('sources');
+    this.storage.get('media-list-autoplay').then( v => this.autoPlay = (v === false ) ? false:true );
+    this.playlist = this.sources;
 
     var fileExt = this.source.split('.').pop();
     if( fileExt === 'jpg' || fileExt === 'png' || fileExt === 'jpeg' ) {
