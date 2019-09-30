@@ -211,9 +211,16 @@ export class WooDetail {
 		item.quantity = parseInt( item.quantity ) + 1
 	}
 
-	decrement( item ) {
-		item.quantity = parseInt( item.quantity ) - 1
-	}
+  /**
+   * Decrease quantity by one only if bigger than 1
+   * @param {*} item
+   */
+  public decrement(item: any): void {
+    let quantity: number = parseInt(item.quantity);
+    if (quantity > 1) {
+      item.quantity = quantity - 1;
+    }
+  }
 
 	addToCart(form) {
 
