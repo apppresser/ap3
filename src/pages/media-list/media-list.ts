@@ -9,7 +9,7 @@ import {Network} from '@ionic-native/network';
 import {Download} from '../../providers/download/download';
 import {File} from '@ionic-native/file';
 import {TranslateService} from '@ngx-translate/core';
-import { IMedia } from "../media-player/media-player";
+import {StreamingMediaPlayer} from '../../providers/streaming-media/streaming-media';
 
 declare var cordova:any;
 
@@ -63,7 +63,8 @@ export class MediaList implements OnInit {
     public file: File,
     public translate: TranslateService,
     public events: Events,
-    public zone: NgZone
+    public zone: NgZone,
+    public streamingMediaPlayer: StreamingMediaPlayer
   ) {
 
     this.storage.get('media-list-autoplay').then( value => {
@@ -556,31 +557,6 @@ export class MediaList implements OnInit {
     })
   }
 
-  getMediaSources() {
-
-    let sources: Array<IMedia> = [];
-    let mediaUrl = '';
-
-    for(let i=0;i<this.items.length;i++) {
-      if( this.items[i].downloaded && this.items[i].download_url ) {
-        mediaUrl = this.items[i].download_url;
-      } else {
-        mediaUrl = this.items[i].appp_media.media_url;
-      }
-
-      
-
-      sources.push({
-        title: (this.items[i].title && this.items[i].title.rendered) ? this.items[i].title.rendered : '',
-        src: mediaUrl,
-        type: this.getMimeType(mediaUrl),
-        image: ''
-      });
-    }
-
-    return sources;
-  }
-
   /**
    * Tip: we use mimetype to know when to remove/stop autoplay.
    * A PDF can't autoplay, so we don't give it a mimetype.
@@ -616,7 +592,7 @@ export class MediaList implements OnInit {
     return mimeType;
   }
 
-  mediaModal( item, index ) {
+  playStreamingMedia( item  ) {
 
     let url = ''
 
@@ -627,15 +603,14 @@ export class MediaList implements OnInit {
     }
 
     let title = (item.title && item.title.rendered) ? item.title.rendered : '';
-    let sources: Array<IMedia> = (this.doAutoPlay) ? this.getMediaSources() : [];
-    let data = {source: url, title: title, index: index, sources: sources};
+    let mediaType = this.getMimeType(url);
+    let data = {source: url, title: title, type: mediaType };
 
     if( item.appp_media.media_image ) {
       (<any>data).image = item.appp_media.media_image
     }
 
-    let modal = this.modalCtrl.create('MediaPlayer', data );
-    modal.present();
+    this.streamingMediaPlayer.start( data )
 
   }
 

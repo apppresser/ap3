@@ -57,7 +57,7 @@
           <img *ngIf="item.featured_image_urls && item.featured_image_urls.thumbnail" src="{{item.featured_image_urls.thumbnail}}">
         </ion-avatar>
         
-        <div (click)="mediaModal(item, i)" class="media-click-area">
+        <div (click)="playStreamingMedia(item)" class="media-click-area">
 
           <ion-icon item-start name="{{selectedItem.download_left_icon}}" *ngIf="!showFeaturedImage"></ion-icon>
 

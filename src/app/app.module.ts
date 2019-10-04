@@ -25,6 +25,7 @@ import { Push } from "@ionic-native/push";
 import { Dialogs } from "@ionic-native/dialogs";
 import { Geolocation } from "@ionic-native/geolocation";
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
+import { StreamingMedia } from '@ionic-native/streaming-media';
 
 /* Providers */
 import { MyApppSettingsService } from "../providers/appdata/myappp.settings.service";
@@ -147,7 +148,8 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     BpProvider,
     MenuService,
     NetworkStatusService,
-    WooProvider
+    WooProvider,
+    StreamingMedia
   ]
 })
 export class AppModule {}
