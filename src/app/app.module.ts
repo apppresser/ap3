@@ -25,7 +25,7 @@ import { Push } from "@ionic-native/push";
 import { Dialogs } from "@ionic-native/dialogs";
 import { Geolocation } from "@ionic-native/geolocation";
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
-import { StreamingMediaOriginal } from '@ionic-native/streaming-media';
+import { StreamingMedia } from '@ionic-native/streaming-media';
 
 /* Providers */
 import { MyApppSettingsService } from "../providers/appdata/myappp.settings.service";
@@ -57,6 +57,7 @@ import { Angulartics2RouterlessModule } from 'angulartics2/routerlessmodule';
 import { AnalyticsService } from '../providers/analytics/analytics.service';
 import { ErrorLogService } from "../providers/appdata/error-log.service";
 import { RemoteDataService } from "../providers/appdata/remote-data";
+import { StreamingMediaPlayer } from "../providers/streaming-media/streaming-media";
 
 import {Iframe} from "../pages/iframe/iframe";
 
@@ -149,7 +150,8 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     MenuService,
     NetworkStatusService,
     WooProvider,
-    StreamingMediaOriginal
+    StreamingMedia,
+    StreamingMediaPlayer
   ]
 })
 export class AppModule {}

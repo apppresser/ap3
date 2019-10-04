@@ -28,10 +28,10 @@ export class GlobalVars {
     }
     // development API
     if( window.location && window.location.href && window.location.href.indexOf('localhost') >=0 ) {
-      this.appid = '11';
-      this.apiurl = 'http://staging.myapppresser.com/staging/';
+      this.appid = '884';
+      this.apiurl = 'https://myapppresser.com/demos/';
       // auth for appptest.wpengine.com
-      this.wooAuth = 'Basic Y2tfMmRhZTNmMzg0NDg2MGIxNmEyNzgwNjY0ODMzNjgwNzIyYjBiZTAzNzpjc183NDE3ZmFjYzJmMmVkNjQ1Zjc4NjBjOWNiOTE2MTBiZjVmY2Y2ZjVl';
+      // this.wooAuth = 'Basic Y2tfMmRhZTNmMzg0NDg2MGIxNmEyNzgwNjY0ODMzNjgwNzIyYjBiZTAzNzpjc183NDE3ZmFjYzJmMmVkNjQ1Zjc4NjBjOWNiOTE2MTBiZjVmY2Y2ZjVl';
     }
     this.endpoint += this.appid;
     this.api = this.apiurl + this.endpoint

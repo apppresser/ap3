@@ -1,9 +1,8 @@
 import { Injectable } from "@angular/core";
-import { NavParams } from "ionic-angular";
 import {
   StreamingVideoOptions,
   StreamingAudioOptions,
-  StreamingMediaOriginal
+  StreamingMedia
 } from "@ionic-native/streaming-media";
 
 @Injectable()
@@ -14,8 +13,7 @@ export class StreamingMediaPlayer {
   type: any;
 
   constructor(
-    private streamingMedia: StreamingMediaOriginal,
-    public navParams: NavParams
+    private streamingMedia: StreamingMedia
   ) {}
 
   start( data ) {
