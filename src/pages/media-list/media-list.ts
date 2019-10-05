@@ -10,6 +10,7 @@ import {Download} from '../../providers/download/download';
 import {File} from '@ionic-native/file';
 import {TranslateService} from '@ngx-translate/core';
 import {StreamingMediaPlayer} from '../../providers/streaming-media/streaming-media';
+import {AnalyticsService} from '../../providers/analytics/analytics.service';
 
 declare var cordova:any;
 
@@ -64,7 +65,8 @@ export class MediaList implements OnInit {
     public translate: TranslateService,
     public events: Events,
     public zone: NgZone,
-    public streamingMediaPlayer: StreamingMediaPlayer
+    public streamingMediaPlayer: StreamingMediaPlayer,
+    private ga: AnalyticsService
   ) {
 
     this.storage.get('media-list-autoplay').then( value => {
@@ -605,13 +607,45 @@ export class MediaList implements OnInit {
     let title = (item.title && item.title.rendered) ? item.title.rendered : '';
     let mediaType = this.getMimeType(url);
     let data = {source: url, title: title, type: mediaType };
+    let playlist = this.getMediaSources()
 
     if( item.appp_media.media_image ) {
       (<any>data).image = item.appp_media.media_image
     }
 
-    this.streamingMediaPlayer.start( data )
+    this.ga.trackScreenView('MediaPlayer', 'play/' + data.title);
 
+    this.streamingMediaPlayer.start( data, playlist )
+
+  }
+
+  getMediaSources() {
+
+    let sources = [];
+    let mediaUrl = '';
+    let mediaImage = '';
+
+    for(let i=0;i<this.items.length;i++) {
+      if( this.items[i].downloaded && this.items[i].download_url ) {
+        mediaUrl = this.items[i].download_url;
+      } else {
+        mediaUrl = this.items[i].appp_media.media_url;
+      }
+
+      if( this.items[i].appp_media.media_image ) {
+        mediaImage = this.items[i].appp_media.media_image;
+      }
+
+      sources.push({
+        title: (this.items[i].title && this.items[i].title.rendered) ? this.items[i].title.rendered : '',
+        source: mediaUrl,
+        type: this.getMimeType(mediaUrl),
+        image: mediaImage
+      });
+
+    }
+
+    return sources;
   }
 
   doProgress(progress) {

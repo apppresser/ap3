@@ -11,41 +11,69 @@ export class StreamingMediaPlayer {
   image: any;
   title: string = "";
   type: any;
+  currentIndex = 0;
+  playlist: any;
 
-  constructor(
-    private streamingMedia: StreamingMedia
-  ) {}
+  constructor(private streamingMedia: StreamingMedia) {}
 
-  start( data ) {
-    if( !data.source ) {
-      alert("Error: no media source.")
+  start(item, playlist) {
+    this.playlist = playlist;
+    // where are we in playlist? song 1, song 5, etc?
+    this.currentIndex = this.playlist.findIndex(x => x.source === item.source);
+
+    console.log(this.playlist, this.currentIndex);
+
+    if (!item.source) {
+      alert("Error: no media source.");
       return;
     }
-    if( data.type.indexOf('audio') >= 0 ) {
 
+    this.playMedia(item);
+  }
+
+  playMedia(item) {
+    if (item.type.indexOf("audio") >= 0) {
       let options: StreamingAudioOptions = {
-        successCallback: () => { console.log('Audio played') },
-        errorCallback: (e) => { console.log('Error streaming') },
+        successCallback: () => this.playNext(),
+        errorCallback: e => {
+          console.log("Error streaming");
+        },
         bgImageScale: "fit", // other valid values: "stretch", "aspectStretch"
         initFullscreen: false, // true is default. iOS only.
-        keepAwake: false, // prevents device from sleeping. true is default. Android only.
+        keepAwake: false // prevents device from sleeping. true is default. Android only.
       };
-      if( data.image ) {
-        options.bgImage = data.image
+      if (item.image) {
+        options.bgImage = item.image;
       }
 
-      this.streamingMedia.playAudio( data.source, options )
-
+      this.streamingMedia.playAudio(item.source, options);
     } else {
       let options: StreamingVideoOptions = {
-        successCallback: () => { console.log('Video played') },
-        errorCallback: (e) => { console.log('Error streaming') },
-        shouldAutoClose: false,  // true(default)/false
+        successCallback: () =>  this.playNext(),
+        errorCallback: e => {
+          console.log("Error streaming");
+        },
+        shouldAutoClose: false, // true(default)/false
         controls: true // true(default)/false. Used to hide controls on fullscreen
       };
 
-      this.streamingMedia.playVideo( data.source, options )
+      this.streamingMedia.playVideo(item.source, options);
+    }
+  }
+
+  playNext() {
+    if( !this.currentIndex || this.currentIndex === 0 ) {
+      this.currentIndex = 1
+    } else {
+      this.currentIndex++;
     }
     
+
+    if (this.currentIndex >= this.playlist.length) {
+      this.currentIndex = 0;
+    }
+
+    console.log(this.playlist[this.currentIndex], this.currentIndex);
+    this.playMedia(this.playlist[this.currentIndex]);
   }
 }
