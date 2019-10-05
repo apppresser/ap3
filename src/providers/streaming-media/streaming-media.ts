@@ -24,7 +24,7 @@ export class StreamingMediaPlayer {
     if( data.type.indexOf('audio') >= 0 ) {
 
       let options: StreamingAudioOptions = {
-        successCallback: () => { console.log('Video played') },
+        successCallback: () => { console.log('Audio played') },
         errorCallback: (e) => { console.log('Error streaming') },
         bgImageScale: "fit", // other valid values: "stretch", "aspectStretch"
         initFullscreen: false, // true is default. iOS only.
@@ -33,6 +33,7 @@ export class StreamingMediaPlayer {
       if( data.image ) {
         options.bgImage = data.image
       }
+
       this.streamingMedia.playAudio( data.source, options )
 
     } else {
