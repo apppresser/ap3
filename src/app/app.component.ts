@@ -1318,7 +1318,7 @@ export class MyApp {
     this.Dialogs.alert(
       data.message,  // message
       data.title,    // title
-      this.translate.instant('Done')  // buttonName
+      this.translate.instant('Continue')  // buttonName
     )
       .then(() => {
         // Now we can allow resetTabs to happen
