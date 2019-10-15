@@ -17,21 +17,29 @@ export class StreamingMediaPlayer {
   constructor(private streamingMedia: StreamingMedia) {}
 
   start(item, playlist) {
-    this.playlist = playlist;
-    // where are we in playlist? song 1, song 5, etc?
-    this.currentIndex = this.playlist.findIndex(x => x.source === item.source);
-
-    console.log(this.playlist, this.currentIndex);
+    if (playlist) {
+      this.playlist = playlist;
+      // where are we in playlist? song 1, song 5, etc?
+      this.currentIndex = this.playlist.findIndex(
+        x => x.source === item.source
+      );
+    }
 
     if (!item.source) {
-      alert("Error: no media source.");
-      return;
+      if (item.url) {
+        item.source = item.url;
+      } else {
+        alert("Error: no media source.");
+        return;
+      }
     }
 
     this.playMedia(item);
   }
 
   playMedia(item) {
+    item.type = this.getMimeType(item.source);
+
     if (item.type.indexOf("audio") >= 0) {
       let options: StreamingAudioOptions = {
         successCallback: () => this.playNext(),
@@ -49,7 +57,7 @@ export class StreamingMediaPlayer {
       this.streamingMedia.playAudio(item.source, options);
     } else {
       let options: StreamingVideoOptions = {
-        successCallback: () =>  this.playNext(),
+        successCallback: () => this.playNext(),
         errorCallback: e => {
           console.log("Error streaming");
         },
@@ -62,12 +70,13 @@ export class StreamingMediaPlayer {
   }
 
   playNext() {
-    if( !this.currentIndex || this.currentIndex === 0 ) {
-      this.currentIndex = 1
+    if (!this.playlist) return;
+
+    if (!this.currentIndex || this.currentIndex === 0) {
+      this.currentIndex = 1;
     } else {
       this.currentIndex++;
     }
-    
 
     if (this.currentIndex >= this.playlist.length) {
       this.currentIndex = 0;
@@ -75,5 +84,38 @@ export class StreamingMediaPlayer {
 
     console.log(this.playlist[this.currentIndex], this.currentIndex);
     this.playMedia(this.playlist[this.currentIndex]);
+  }
+
+  /**
+   * Tip: we use mimetype to know when to remove/stop autoplay.
+   * A PDF can't autoplay, so we don't give it a mimetype.
+   * @param mediaUrl
+   */
+  getMimeType(mediaUrl) {
+    if (!mediaUrl) return "";
+
+    let fileExt = mediaUrl.split(".").pop();
+    let mimeType = "";
+
+    // .mp3, .m4a, .mov, .mp4
+    switch (fileExt) {
+      case "mp3":
+        mimeType = "audio/mp3";
+        break;
+      case "mp4":
+        mimeType = "video/mp4";
+        break;
+      case "mov":
+        mimeType = "video/quicktime";
+        break;
+      case "m4a":
+        mimeType = "audio/mp4a-latm";
+        break;
+      default:
+        mimeType = "";
+        break;
+    }
+
+    return mimeType;
   }
 }

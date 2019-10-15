@@ -559,41 +559,6 @@ export class MediaList implements OnInit {
     })
   }
 
-  /**
-   * Tip: we use mimetype to know when to remove/stop autoplay.
-   * A PDF can't autoplay, so we don't give it a mimetype.
-   * @param mediaUrl 
-   */
-  getMimeType( mediaUrl ) {
-
-    if(!mediaUrl)
-      return '';
-
-    let fileExt = mediaUrl.split('.').pop();
-    let mimeType = '';
-
-    // .mp3, .m4a, .mov, .mp4
-    switch(fileExt) {
-      case 'mp3':
-        mimeType = 'audio/mp3';
-        break;
-      case 'mp4':
-        mimeType = 'video/mp4';
-        break;
-      case 'mov':
-        mimeType = 'video/quicktime';
-        break;
-      case 'm4a':
-        mimeType = 'audio/mp4a-latm';
-        break;
-      default:
-        mimeType = '';
-        break;
-    }
-
-    return mimeType;
-  }
-
   playStreamingMedia( item  ) {
 
     let url = ''
@@ -605,8 +570,7 @@ export class MediaList implements OnInit {
     }
 
     let title = (item.title && item.title.rendered) ? item.title.rendered : '';
-    let mediaType = this.getMimeType(url);
-    let data = {source: url, title: title, type: mediaType };
+    let data = {source: url, title: title };
     let playlist = this.getMediaSources()
 
     if( item.appp_media.media_image ) {

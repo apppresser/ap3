@@ -3,7 +3,7 @@ import {Component, Renderer, ElementRef, OnInit} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SocialSharing} from '@ionic-native/social-sharing';
 
-import {MediaPlayer} from '../media-player/media-player';
+import {StreamingMediaPlayer} from '../../providers/streaming-media/streaming-media';
 import { VideoUtils } from "../../providers/video/video-utils";
 import { MenuService } from '../../providers/menus/menu.service';
 import { LoginService } from '../../providers/logins/login.service';
@@ -34,7 +34,8 @@ export class PostDetailsPage implements OnInit {
     private menuservice: MenuService,
     private loginservice: LoginService,
     private ga: AnalyticsService,
-    private videoUtils: VideoUtils
+    private videoUtils: VideoUtils,
+    public streamingMediaPlayer: StreamingMediaPlayer
     ) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = this.navParams.get('item');
@@ -167,8 +168,9 @@ export class PostDetailsPage implements OnInit {
 
   mediaModal( src, img = null ) {
 
-    let modal = this.modalCtrl.create(MediaPlayer, {source: src, image: img});
-    modal.present();
+    let data = {source: src, image: img};
+
+    this.streamingMediaPlayer.start( data, null )
 
   }
 

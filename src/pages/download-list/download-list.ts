@@ -3,6 +3,7 @@ import {NavParams, ViewController, ToastController, IonicPage, ModalController} 
 import {Storage} from '@ionic/storage';
 import {File} from '@ionic-native/file';
 import { TranslateService } from '@ngx-translate/core';
+import {StreamingMediaPlayer} from '../../providers/streaming-media/streaming-media';
 
 declare var cordova: any;
 
@@ -23,7 +24,8 @@ export class DownloadList {
     public toastCtrl: ToastController,
     public modalCtrl: ModalController,
     private file: File,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public streamingMediaPlayer: StreamingMediaPlayer
     ) {
 
     if(this.navParams.get('title')) {
@@ -57,8 +59,7 @@ export class DownloadList {
 
   mediaModal( item ) {
 
-    let modal = this.modalCtrl.create('MediaPlayer', {source: item.url });
-    modal.present();
+    this.streamingMediaPlayer.start( item, this.downloads )
 
   }
 

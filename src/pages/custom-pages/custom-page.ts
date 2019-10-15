@@ -13,6 +13,7 @@ import { WooProvider } from '../../providers/woo/woo';
 import {Iframe} from "../iframe/iframe";
 import { Language } from "../../models/language.model";
 import { LanguageService } from '../../providers/language/language.service';
+import {StreamingMediaPlayer} from '../../providers/streaming-media/streaming-media';
 
 /** Development mode only -- START */
 import { IComponentInputData } from 'angular2-dynamic-component/index';
@@ -131,7 +132,8 @@ export class CustomPage implements OnInit, OnDestroy {
 		private zone: NgZone,
 		private analyticsservice: AnalyticsService,
 		private network: Network,
-		public wooProvider: WooProvider
+		public wooProvider: WooProvider,
+		public streamingMediaPlayer: StreamingMediaPlayer
         ) {
 					this.language = this.languageservice.language;
 				}
@@ -490,17 +492,13 @@ export class CustomPage implements OnInit, OnDestroy {
 
 	mediaModal( src, img = null, opt?: ModalOptions ) {
 
-		const css = (opt && opt.cssClass) ? opt.cssClass : '';
-		const params: {source, image, title?} = {source: src, image: img};
+		const data: {source, image, title?} = {source: src, image: img};
 
 		if(opt && opt.title) {
-			params.title = opt.title;
+			data.title = opt.title;
 		}
 
-		let modal = this.modalCtrl.create('MediaPlayer', params, {
-			cssClass: css
-		});
-		modal.present();
+		this.streamingMediaPlayer.start( data, null )
 	}
 
 	updateData() {

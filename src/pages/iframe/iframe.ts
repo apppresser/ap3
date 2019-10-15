@@ -10,7 +10,7 @@ import {Storage} from '@ionic/storage';
 import {Events} from 'ionic-angular';
 import {InAppBrowser, InAppBrowserObject} from '@ionic-native/in-app-browser';
 
-import {MediaPlayer} from '../media-player/media-player';
+import {StreamingMediaPlayer} from '../../providers/streaming-media/streaming-media';
 import {HeaderLogo} from "../../providers/header-logo/header-logo";
 import { LanguageService } from "../../providers/language/language.service";
 import { AnalyticsService } from '../../providers/analytics/analytics.service';
@@ -63,7 +63,8 @@ export class Iframe implements OnInit {
         private ga: AnalyticsService,
         public zone: NgZone,
         public iab: InAppBrowser,
-        private menuCtrl: MenuController
+        private menuCtrl: MenuController,
+        public streamingMediaPlayer: StreamingMediaPlayer
         ) {
 
             events.subscribe('user:login', data => {
@@ -518,8 +519,9 @@ export class Iframe implements OnInit {
 
     mediaModal( src, img = null ) {
 
-        let modal = this.modalCtrl.create('MediaPlayer', {source: src, image: img});
-        modal.present();
+        let data = {source: src, image: img};
+
+        this.streamingMediaPlayer.start( data, null )
 
     }
 

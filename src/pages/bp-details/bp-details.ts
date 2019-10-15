@@ -6,7 +6,7 @@ import {SocialSharing} from '@ionic-native/social-sharing';
 import {Http} from '@angular/http';
 import 'rxjs/add/operator/map';
 
-import {MediaPlayer} from '../media-player/media-player';
+import {StreamingMediaPlayer} from '../../providers/streaming-media/streaming-media';
 import { VideoUtils } from "../../providers/video/video-utils";
 import {BpProvider} from '../../providers/buddypress/bp-provider';
 import {AnalyticsService} from '../../providers/analytics/analytics.service';
@@ -41,7 +41,8 @@ export class BpDetailsPage implements OnInit {
     public bpProvider: BpProvider,
     public toastCtrl: ToastController,
     private ga: AnalyticsService,
-    public translate: TranslateService
+    public translate: TranslateService,
+    public streamingMediaPlayer: StreamingMediaPlayer
     ) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = this.navParams.get('item');
@@ -156,8 +157,9 @@ export class BpDetailsPage implements OnInit {
 
   mediaModal( src, img = null ) {
 
-    let modal = this.modalCtrl.create(MediaPlayer, {source: src, image: img});
-    modal.present();
+    let data = {source: src, image: img};
+
+    this.streamingMediaPlayer.start( data, null )
 
   }
 
