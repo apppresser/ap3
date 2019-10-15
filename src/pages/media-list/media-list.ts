@@ -603,7 +603,6 @@ export class MediaList implements OnInit {
       sources.push({
         title: (this.items[i].title && this.items[i].title.rendered) ? this.items[i].title.rendered : '',
         source: mediaUrl,
-        type: this.getMimeType(mediaUrl),
         image: mediaImage
       });
 
