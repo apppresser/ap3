@@ -61,7 +61,7 @@ export class StreamingMediaPlayer {
         errorCallback: e => {
           console.log("Error streaming");
         },
-        shouldAutoClose: false, // true(default)/false
+        shouldAutoClose: true, // true(default)/false
         controls: true // true(default)/false. Used to hide controls on fullscreen
       };
 
