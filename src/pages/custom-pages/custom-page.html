@@ -37,18 +37,8 @@
 	</ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="!use_dynamic" [ngClass]="customClasses">
+<ion-content>
+		<button ion-button (click)="mediaModal('https://reactordev.com/apv3/wp-content/uploads/2017/05/haines-headliner-vid.mp4')">Play Movie</button>
 
-	Content goes here
-	
-</ion-content>
-<ion-content *ngIf="use_dynamic" [ngClass]="customClasses">
-
-	<DynamicComponent *ngIf="templateUrl"
-    [componentTemplateUrl]="templateUrl" 
-    [componentModules]="extraModules"
-		[componentInputData]="inputData"></DynamicComponent>
-
-	<div *ngIf="!templateUrl">Missing templateUrl</div>
-
+		<button ion-button (click)="mediaModal('assets/powerful-mp3.mp3')">Play Local Song</button>
 </ion-content>

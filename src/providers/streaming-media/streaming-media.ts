@@ -5,6 +5,7 @@ import {
   StreamingMedia
 } from "@ionic-native/streaming-media";
 import { File } from "@ionic-native/file";
+import { Device } from "@ionic-native/device";
 
 @Injectable()
 export class StreamingMediaPlayer {
@@ -15,7 +16,7 @@ export class StreamingMediaPlayer {
   currentIndex = 0;
   playlist: any;
 
-  constructor(private streamingMedia: StreamingMedia, private file: File) {}
+  constructor(private streamingMedia: StreamingMedia, private file: File, public device: Device) {}
 
   start(item, playlist) {
     if (playlist) {
@@ -42,9 +43,10 @@ export class StreamingMediaPlayer {
     item.type = this.getMimeType(item.source);
 
     // convert assets url to native file path
-    if( item.source.indexOf('assets') >= 0 ) {
-      item.source = this.file.applicationDirectory + 'www/' + item.source;
-      console.log( item.source )
+    if (item.source.indexOf("assets") >= 0) {
+      if( this.device && this.device.platform.toLowerCase() === "ios") {
+        item.source = this.file.applicationDirectory + "www/" + item.source;
+      }
     }
 
     if (item.type.indexOf("audio") >= 0) {
