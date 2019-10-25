@@ -74,8 +74,6 @@ export class StreamingMediaPlayer {
         options.bgImage = item.image;
       }
 
-      console.log("play audio", item.source);
-
       this.streamingMedia.playAudio(item.source, options);
     } else {
       let options: StreamingVideoOptions = {
@@ -93,13 +91,15 @@ export class StreamingMediaPlayer {
 
   getSource(item) {
     return new Promise((resolve, reject) => {
+
       if (item.source.indexOf("assets") >= 0) {
+
+        // only move file on android
         if (this.device.platform.toLowerCase() === "ios") {
-          item.source = this.file.applicationDirectory + "www/" + item.source;
+          resolve( this.file.applicationDirectory + "www/" + item.source)
         } else if (this.device.platform.toLowerCase() === "android") {
           this.maybeCopyFile(item)
             .then(source => {
-              console.log("copied file source " + source);
               resolve(source);
             })
             .catch(err => {
@@ -107,6 +107,9 @@ export class StreamingMediaPlayer {
               reject(err);
             });
         }
+
+      } else {
+        resolve(item.source)
       }
     });
   }
@@ -166,25 +169,21 @@ export class StreamingMediaPlayer {
     return new Promise((resolve, reject) => {
       let assetPath = this.file.applicationDirectory + "www/" + item.source;
 
-      console.log(assetPath);
-
       //first - resolve target path in bundled file structure:
       this.file
         .resolveLocalFilesystemUrl(assetPath)
         .then((entry: any) => {
           let wwwFile = entry.toURL();
-          console.log("target entry: " + entry + ", - wwwFile: " + wwwFile);
+          //console.log("target entry: " + entry + ", - wwwFile: " + wwwFile);
 
           //then - resolve save folder in dataDirectory:
           this.file
             .resolveLocalFilesystemUrl(this.file.dataDirectory)
             .then((entry: any) => {
               let savePath = entry.toURL();
-              console.log("save entry: " + entry + ", - savePath: " + savePath);
-              // TODO: check if file exists before copying
+              //console.log("save entry: " + entry + ", - savePath: " + savePath);
               //then - copy file to saveFolder
               let fileName = wwwFile.split("/").pop();
-              console.log(fileName, wwwFile);
 
               this.file
                 .copyFile(
@@ -195,7 +194,7 @@ export class StreamingMediaPlayer {
                 )
                 .then((entry: any) => {
                   let newPath = entry.toURL();
-                  console.log("File copied, entry.toURL(): " + newPath);
+                  // console.log("File copied, entry.toURL(): " + newPath);
 
                   resolve(newPath);
                 })
