@@ -16,7 +16,11 @@ export class StreamingMediaPlayer {
   currentIndex = 0;
   playlist: any;
 
-  constructor(private streamingMedia: StreamingMedia, private file: File, public device: Device) {}
+  constructor(
+    private streamingMedia: StreamingMedia,
+    private file: File,
+    public device: Device
+  ) {}
 
   start(item, playlist) {
     if (playlist) {
@@ -36,18 +40,25 @@ export class StreamingMediaPlayer {
       }
     }
 
-    this.playMedia(item);
+    // handle local file paths
+    this.getSource(item)
+      .then(source => {
+        item.source = source;
+        this.playMedia(item);
+      })
+      .catch(err => {
+        console.warn(err);
+        alert("Unable to play file.");
+      });
   }
 
   playMedia(item) {
-    item.type = this.getMimeType(item.source);
-
-    // convert assets url to native file path
-    if (item.source.indexOf("assets") >= 0) {
-      if( this.device && this.device.platform.toLowerCase() === "ios") {
-        item.source = this.file.applicationDirectory + "www/" + item.source;
-      }
+    if (!this.device) {
+      alert("Please try from a device.");
+      return;
     }
+
+    item.type = this.getMimeType(item.source);
 
     if (item.type.indexOf("audio") >= 0) {
       let options: StreamingAudioOptions = {
@@ -63,6 +74,8 @@ export class StreamingMediaPlayer {
         options.bgImage = item.image;
       }
 
+      console.log("play audio", item.source);
+
       this.streamingMedia.playAudio(item.source, options);
     } else {
       let options: StreamingVideoOptions = {
@@ -76,6 +89,26 @@ export class StreamingMediaPlayer {
 
       this.streamingMedia.playVideo(item.source, options);
     }
+  }
+
+  getSource(item) {
+    return new Promise((resolve, reject) => {
+      if (item.source.indexOf("assets") >= 0) {
+        if (this.device.platform.toLowerCase() === "ios") {
+          item.source = this.file.applicationDirectory + "www/" + item.source;
+        } else if (this.device.platform.toLowerCase() === "android") {
+          this.maybeCopyFile(item)
+            .then(source => {
+              console.log("copied file source " + source);
+              resolve(source);
+            })
+            .catch(err => {
+              console.warn("maybe copy file error", err);
+              reject(err);
+            });
+        }
+      }
+    });
   }
 
   playNext() {
@@ -126,5 +159,63 @@ export class StreamingMediaPlayer {
     }
 
     return mimeType;
+  }
+
+  // local files on Android don't work from assets folder, so we have to copy them to the app storage
+  maybeCopyFile(item) {
+    return new Promise((resolve, reject) => {
+      let assetPath = this.file.applicationDirectory + "www/" + item.source;
+
+      console.log(assetPath);
+
+      //first - resolve target path in bundled file structure:
+      this.file
+        .resolveLocalFilesystemUrl(assetPath)
+        .then((entry: any) => {
+          let wwwFile = entry.toURL();
+          console.log("target entry: " + entry + ", - wwwFile: " + wwwFile);
+
+          //then - resolve save folder in dataDirectory:
+          this.file
+            .resolveLocalFilesystemUrl(this.file.dataDirectory)
+            .then((entry: any) => {
+              let savePath = entry.toURL();
+              console.log("save entry: " + entry + ", - savePath: " + savePath);
+              // TODO: check if file exists before copying
+              //then - copy file to saveFolder
+              let fileName = wwwFile.split("/").pop();
+              console.log(fileName, wwwFile);
+
+              this.file
+                .copyFile(
+                  this.file.applicationDirectory + "www/assets/",
+                  fileName,
+                  savePath,
+                  fileName
+                )
+                .then((entry: any) => {
+                  let newPath = entry.toURL();
+                  console.log("File copied, entry.toURL(): " + newPath);
+
+                  resolve(newPath);
+                })
+                .catch(error => {
+                  console.log("error copyFile: ", error);
+                  reject(error)
+                });
+            })
+            .catch(error => {
+              console.log(
+                "error resolveLocalFilesystemUrl (save folder): ",
+                error
+              );
+              reject(error)
+            });
+        })
+        .catch(error => {
+          console.log("error resolveLocalFilesystemUrl (target): ", error);
+          reject(error)
+        });
+    });
   }
 }
