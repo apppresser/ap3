@@ -6,6 +6,7 @@ import {
 } from "@ionic-native/streaming-media";
 import { File } from "@ionic-native/file";
 import { Device } from "@ionic-native/device";
+import { Media, MediaObject } from '@ionic-native/media';
 
 @Injectable()
 export class StreamingMediaPlayer {
@@ -19,7 +20,8 @@ export class StreamingMediaPlayer {
   constructor(
     private streamingMedia: StreamingMedia,
     private file: File,
-    public device: Device
+    public device: Device,
+    private media: Media
   ) {}
 
   start(item, playlist) {
@@ -40,6 +42,8 @@ export class StreamingMediaPlayer {
       }
     }
 
+    item.type = this.getMimeType(item.source);
+
     // handle local file paths
     this.getSource(item)
       .then(source => {
@@ -58,26 +62,42 @@ export class StreamingMediaPlayer {
       return;
     }
 
-    item.type = this.getMimeType(item.source);
+    console.log('play media', item)
 
     if (item.type.indexOf("audio") >= 0) {
-      let options: StreamingAudioOptions = {
-        successCallback: () => this.playNext(),
-        errorCallback: e => {
-          console.log("Error streaming");
-        },
-        bgImageScale: "fit", // other valid values: "stretch", "aspectStretch"
-        initFullscreen: false, // true is default. iOS only.
-        keepAwake: false // prevents device from sleeping. true is default. Android only.
-      };
-      if (item.image) {
-        options.bgImage = item.image;
-      }
 
-      this.streamingMedia.playAudio(item.source, options);
+      const file: MediaObject = this.media.create(item.source);
+      file.onSuccess.subscribe(() => {
+        console.log('Play is successful')
+        this.playNext()
+      });
+
+      file.play();
+
+      // let options: StreamingAudioOptions = {
+      //   successCallback: () => {
+      //     console.log('success callback')
+      //     this.playNext()
+      //   },
+      //   errorCallback: e => {
+      //     console.log("Error streaming");
+      //   },
+      //   bgImageScale: "fit", // other valid values: "stretch", "aspectStretch"
+      //   initFullscreen: false, // true is default. iOS only.
+      //   keepAwake: false // prevents device from sleeping. true is default. Android only.
+      // };
+      // if (item.image) {
+      //   options.bgImage = item.image;
+      // }
+
+      // this.streamingMedia.playAudio(item.source, options);
+
     } else {
+
       let options: StreamingVideoOptions = {
-        successCallback: () => this.playNext(),
+        successCallback: () => {
+          console.log('Video success')
+        },
         errorCallback: e => {
           console.log("Error streaming");
         },

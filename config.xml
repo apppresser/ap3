@@ -133,5 +133,4 @@
     <plugin name="cordova-plugin-media" spec="^5.0.3">
         <variable name="KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE" value="NO" />
     </plugin>
-    <plugin name="cordova-plugin-exoplayer" spec="^2.5.4" />
 </widget>
