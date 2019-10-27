@@ -101,7 +101,7 @@ export class MyApp {
   stopTabReset: boolean = false;
   menu_all_pages: boolean = false;
   app_recently_started: boolean = true;
-  showAudioPlayer: boolean = false;
+  audioPlayerVisible: boolean = false;
   audioPlayer: any;
 
   constructor(
@@ -166,8 +166,8 @@ export class MyApp {
       this.fetchData(obj);
     });
 
-    events.subscribe("toggle_audio_player", data => {
-      this.toggleAudioPlayer(data);
+    events.subscribe("show_audio_player", data => {
+      this.showAudioPlayer(data);
     });
 
     events.subscribe("login:force_login", () => {
@@ -2085,15 +2085,15 @@ export class MyApp {
     if (this.tabs) this.resetTabs(false);
   }
 
-  toggleAudioPlayer(data) {
+  showAudioPlayer(data) {
     
-    if( this.showAudioPlayer ) return;
+    if( this.audioPlayerVisible ) return;
     let opts = { showBackdrop: false, cssClass: "audio-player-wrapper", enableBackdropDismiss: false };
     this.audioPlayer = this.popoverCtrl.create(AudioPlayerComponent, data, opts);
     this.audioPlayer.onDidDismiss( data => {
-      this.showAudioPlayer = false
+      this.audioPlayerVisible = false
     })
-    this.showAudioPlayer = true;
+    this.audioPlayerVisible = true;
     this.audioPlayer.present();
   }
 }

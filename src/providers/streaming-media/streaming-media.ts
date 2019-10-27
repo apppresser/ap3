@@ -75,6 +75,8 @@ export class StreamingMediaPlayer {
 
     if (item.type.indexOf("audio") >= 0) {
 
+      this.events.publish("show_audio_player");
+
       (<MediaObject>this.currentTrack) = this.media.create(item.source);
       this.currentTrack.onSuccess.subscribe(() => {
         console.log("Play is successful");
@@ -158,22 +160,25 @@ export class StreamingMediaPlayer {
 
   getSource(item) {
     return new Promise((resolve, reject) => {
+
+      item.type = this.getMimeType(item.source);
+
       if (item.source.indexOf("assets") >= 0) {
         resolve(this.file.applicationDirectory + "www/" + item.source);
 
-        // only move file on android
-        // if (this.device.platform.toLowerCase() === "ios") {
-        //   resolve( this.file.applicationDirectory + "www/" + item.source)
-        // } else if (this.device.platform.toLowerCase() === "android") {
-        //   this.maybeCopyFile(item)
-        //     .then(source => {
-        //       resolve(source);
-        //     })
-        //     .catch(err => {
-        //       console.warn("maybe copy file error", err);
-        //       reject(err);
-        //     });
-        // }
+        // local android videos need to be copied to dataDirectory to work with streaming video player
+        if (this.device.platform.toLowerCase() === "ios") {
+          resolve( this.file.applicationDirectory + "www/" + item.source)
+        } else if (this.device.platform.toLowerCase() === "android" && item.type.indexOf('video') >= 0 ) {
+          this.maybeCopyFile(item)
+            .then(source => {
+              resolve(source);
+            })
+            .catch(err => {
+              console.warn("maybe copy file error", err);
+              reject(err);
+            });
+        }
       } else {
         resolve(item.source);
       }
