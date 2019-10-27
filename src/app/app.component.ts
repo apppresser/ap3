@@ -102,6 +102,7 @@ export class MyApp {
   menu_all_pages: boolean = false;
   app_recently_started: boolean = true;
   showAudioPlayer: boolean = false;
+  audioPlayer: any;
 
   constructor(
     private platform: Platform,
@@ -2085,9 +2086,14 @@ export class MyApp {
   }
 
   toggleAudioPlayer(data) {
-    console.log('toggle player', data)
+    
+    if( this.showAudioPlayer ) return;
     let opts = { showBackdrop: false, cssClass: "audio-player-wrapper", enableBackdropDismiss: false };
-    let popover = this.popoverCtrl.create(AudioPlayerComponent, data, opts);
-    popover.present();
+    this.audioPlayer = this.popoverCtrl.create(AudioPlayerComponent, data, opts);
+    this.audioPlayer.onDidDismiss( data => {
+      this.showAudioPlayer = false
+    })
+    this.showAudioPlayer = true;
+    this.audioPlayer.present();
   }
 }

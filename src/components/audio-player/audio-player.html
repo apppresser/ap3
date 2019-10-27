@@ -6,9 +6,6 @@
     <button ion-button clear (click)="pause()" icon-only>
       <ion-icon name="pause"></ion-icon>
     </button>
-    <button ion-button clear (click)="stop()" icon-only>
-      <ion-icon name="square"></ion-icon>
-    </button>
     <button ion-button clear (click)="play()" icon-only>
       <ion-icon name="play"></ion-icon>
     </button>
@@ -17,6 +14,6 @@
     </button>
   </ion-item>
   <ion-item class="player-progress" no-lines>
-    <ion-range [(ngModel)]="progress" color="primary"></ion-range>
+    <ion-range [(ngModel)]="progress" min="0" max="100" color="primary"></ion-range>
   </ion-item>
 </ion-item>

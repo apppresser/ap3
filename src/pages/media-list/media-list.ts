@@ -579,6 +579,8 @@ export class MediaList implements OnInit {
 
     this.ga.trackScreenView('MediaPlayer', 'play/' + data.title);
 
+    this.events.publish("toggle_audio_player");
+
     this.streamingMediaPlayer.start( data, playlist )
 
   }
