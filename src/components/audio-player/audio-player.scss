@@ -1,0 +1,38 @@
+.audio-player-wrapper {
+  height: 100px;
+  top: unset;
+
+  .popover-content {
+    bottom: 0;
+    max-height: 170px;
+    top: unset !important;
+    width: 100%;
+    left: 0 !important;
+    right: 0;
+  }
+
+  audio-player {
+      .close-button {
+          position: absolute;
+          right: 10px;
+          top: 10px;
+          z-index: 1;
+          height: 44px;
+          width: 44px;
+      }
+      .item.player-buttons {
+          padding-left: 0;
+          .item-inner {
+              border-bottom: none;
+          }
+          .button {
+              height: 44px;
+              width: 44px;
+              margin: 5px 20px;
+          }
+      }
+      .player-buttons {
+          text-align: center;
+      }
+  }
+}

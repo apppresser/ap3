@@ -7,6 +7,7 @@ import {
 import { File } from "@ionic-native/file";
 import { Device } from "@ionic-native/device";
 import { Media, MediaObject } from '@ionic-native/media';
+import { Events } from "ionic-angular";
 
 @Injectable()
 export class StreamingMediaPlayer {
@@ -16,12 +17,14 @@ export class StreamingMediaPlayer {
   type: any;
   currentIndex = 0;
   playlist: any;
+  currentTrack: any;
 
   constructor(
     private streamingMedia: StreamingMedia,
     private file: File,
     public device: Device,
-    private media: Media
+    private media: Media,
+    public events: Events
   ) {}
 
   start(item, playlist) {
@@ -66,13 +69,17 @@ export class StreamingMediaPlayer {
 
     if (item.type.indexOf("audio") >= 0) {
 
-      const file: MediaObject = this.media.create(item.source);
-      file.onSuccess.subscribe(() => {
+      this.events.publish( "toggle_audio_player", { audio: item, playlist: this.playlist } );
+
+      (<MediaObject>this.currentTrack) = this.media.create(item.source);
+      this.currentTrack.onSuccess.subscribe(() => {
         console.log('Play is successful')
         this.playNext()
       });
 
-      file.play();
+      this.currentTrack.play();
+
+      
 
       // let options: StreamingAudioOptions = {
       //   successCallback: () => {
@@ -107,6 +114,18 @@ export class StreamingMediaPlayer {
 
       this.streamingMedia.playVideo(item.source, options);
     }
+  }
+
+  pause() {
+    if( this.currentTrack ) this.currentTrack.pause()
+  }
+
+  stop() {
+    if( this.currentTrack ) this.currentTrack.stop()
+  }
+
+  play() {
+    if( this.currentTrack ) this.currentTrack.play()
   }
 
   getSource(item) {

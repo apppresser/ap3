@@ -132,7 +132,7 @@
       "cordova-plugin-file": {},
       "cordova-plugin-media": {
         "KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE": "NO"
-      },
+      }
     },
     "platforms": []
   }

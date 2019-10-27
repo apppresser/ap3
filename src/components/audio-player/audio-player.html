@@ -1,0 +1,22 @@
+<ion-item class="audio-player-inside" no-lines>
+  <button ion-button clear small (click)="close()" class="close-button">
+    <ion-icon name="close"></ion-icon>
+  </button>
+  <ion-item class="player-buttons" no-lines>
+    <button ion-button clear (click)="pause()" icon-only>
+      <ion-icon name="pause"></ion-icon>
+    </button>
+    <button ion-button clear (click)="stop()" icon-only>
+      <ion-icon name="square"></ion-icon>
+    </button>
+    <button ion-button clear (click)="play()" icon-only>
+      <ion-icon name="play"></ion-icon>
+    </button>
+    <button ion-button clear (click)="forward()" icon-only>
+      <ion-icon name="skip-forward"></ion-icon>
+    </button>
+  </ion-item>
+  <ion-item class="player-progress" no-lines>
+    <ion-range [(ngModel)]="progress" color="primary"></ion-range>
+  </ion-item>
+</ion-item>
