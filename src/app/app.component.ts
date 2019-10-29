@@ -2091,7 +2091,9 @@ export class MyApp {
     console.log('showAudioPlayer', data)
     console.log('player visible? ' + this.audioPlayerVisible )
     
-    if( this.audioPlayerVisible ) return;
+    if( this.audioPlayerVisible ) {
+      this.audioPlayer.dismiss()
+    };
     let opts = { showBackdrop: false, cssClass: "audio-player-wrapper", enableBackdropDismiss: false };
     this.audioPlayer = this.popoverCtrl.create(AudioPlayerComponent, data, opts);
     this.audioPlayer.onDidDismiss( data => {

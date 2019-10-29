@@ -2,7 +2,9 @@
     height: auto;
     top: unset;
 
-  .item.audio-player-image {
+  .audio-player-image {
+
+    max-height: 180px;
 
     img {
         display: block;
@@ -13,7 +15,7 @@
 
   .popover-content {
     bottom: 0;
-    max-height: 300px;
+    max-height: 360px;
     top: unset !important;
     width: 100%;
     left: 0 !important;

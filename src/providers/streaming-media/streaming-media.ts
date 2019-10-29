@@ -170,12 +170,13 @@ export class StreamingMediaPlayer {
       ) {
         // local android videos need to be copied to dataDirectory to work with streaming video player
         if (this.device.platform.toLowerCase() === "ios") {
-          this.file.resolveLocalFileSystemURL(
-            this.file.applicationDirectory + "www/" + item.source,
-            function(dir) {
+          this.file
+            .resolveLocalFilesystemUrl(
+              this.file.applicationDirectory + "www/" + item.source
+            )
+            .then(dir => {
               resolve(dir.toInternalURL());
-            }
-          );
+            });
         } else if (
           this.device.platform.toLowerCase() === "android" &&
           item.type.indexOf("video") >= 0
@@ -299,14 +300,17 @@ export class StreamingMediaPlayer {
             })
             .catch(error => {
               console.log(
-                "error resolveLocalFilesystemUrl (save folder): ",
+                "error this.file.resolveLocalFilesystemUrl (save folder): ",
                 error
               );
               reject(error);
             });
         })
         .catch(error => {
-          console.log("error resolveLocalFilesystemUrl (target): ", error);
+          console.log(
+            "error this.file.resolveLocalFilesystemUrl (target): ",
+            error
+          );
           reject(error);
         });
     });
