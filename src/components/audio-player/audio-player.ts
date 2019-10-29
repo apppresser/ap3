@@ -10,7 +10,8 @@ import {StreamingMediaPlayer} from '../../providers/streaming-media/streaming-me
 })
 export class AudioPlayerComponent {
 
-  progress: any;
+  progress: any = null;
+  image: any = null;
 
   constructor( public navParams: NavParams, public viewCtrl: ViewController, public streamingMedia: StreamingMediaPlayer, public events: Events ) {
     console.log("audio player constructor", navParams.data);
@@ -20,6 +21,11 @@ export class AudioPlayerComponent {
   }
 
   ngAfterViewInit() {
+    if( this.navParams && this.navParams.get('image') ) {
+      this.image = this.navParams.get('image')
+    } else {
+      this.image = null
+    }
   }
 
   play() {
@@ -32,6 +38,10 @@ export class AudioPlayerComponent {
 
   forward() {
     this.streamingMedia.playNext()
+  }
+
+  collapse() {
+    this.image = null;
   }
 
   close() {

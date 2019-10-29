@@ -50,6 +50,7 @@ export class StreamingMediaPlayer {
     this.getSource(item)
       .then(source => {
         item.source = source;
+        console.log("got source: ", source);
         this.playMedia(item);
       })
       .catch(err => {
@@ -64,9 +65,9 @@ export class StreamingMediaPlayer {
       return;
     }
 
-    if( this.currentTrack ) {
-      this.currentTrack.stop()
-      this.currentTrack.release()
+    if (this.currentTrack) {
+      this.currentTrack.stop();
+      this.currentTrack.release();
     }
 
     item.type = this.getMimeType(item.source);
@@ -74,8 +75,7 @@ export class StreamingMediaPlayer {
     console.log("play media", item);
 
     if (item.type.indexOf("audio") >= 0) {
-
-      this.events.publish("show_audio_player");
+      this.events.publish("show_audio_player", item);
 
       (<MediaObject>this.currentTrack) = this.media.create(item.source);
       this.currentTrack.onSuccess.subscribe(() => {
@@ -83,7 +83,7 @@ export class StreamingMediaPlayer {
         // this.playNext();
       });
 
-      console.log('playing track', this.currentTrack)
+      console.log("playing track", this.currentTrack);
 
       this.currentTrack.play();
 
@@ -124,8 +124,10 @@ export class StreamingMediaPlayer {
 
   doProgress() {
     var dur = this.currentTrack.getDuration();
-    console.log('duration', dur)
-    this.progress = setInterval( () => {
+    if (dur === -1) return;
+
+    console.log("duration", dur);
+    this.progress = setInterval(() => {
       // get media position
       this.currentTrack.getCurrentPosition(
         // success callback
@@ -133,8 +135,8 @@ export class StreamingMediaPlayer {
           if (position > -1) {
             console.log(position + " sec", dur);
             let percentCompleted = position / dur;
-            console.log("percent: " + percentCompleted )
-            this.events.publish("audio_player_progress", position );
+            console.log("percent: " + percentCompleted);
+            this.events.publish("audio_player_progress", position);
           }
         },
         // error callback
@@ -143,7 +145,6 @@ export class StreamingMediaPlayer {
         }
       );
     }, 1000);
-
   }
 
   pause() {
@@ -160,16 +161,25 @@ export class StreamingMediaPlayer {
 
   getSource(item) {
     return new Promise((resolve, reject) => {
-
       item.type = this.getMimeType(item.source);
 
-      if (item.source.indexOf("assets") >= 0) {
-        resolve(this.file.applicationDirectory + "www/" + item.source);
-
+      if (
+        item.source.indexOf("assets") >= 0 &&
+        item.source.indexOf("file://") < 0 &&
+        item.source.indexOf("cdvfile://") < 0
+      ) {
         // local android videos need to be copied to dataDirectory to work with streaming video player
         if (this.device.platform.toLowerCase() === "ios") {
-          resolve( this.file.applicationDirectory + "www/" + item.source)
-        } else if (this.device.platform.toLowerCase() === "android" && item.type.indexOf('video') >= 0 ) {
+          this.file.resolveLocalFileSystemURL(
+            this.file.applicationDirectory + "www/" + item.source,
+            function(dir) {
+              resolve(dir.toInternalURL());
+            }
+          );
+        } else if (
+          this.device.platform.toLowerCase() === "android" &&
+          item.type.indexOf("video") >= 0
+        ) {
           this.maybeCopyFile(item)
             .then(source => {
               resolve(source);
@@ -187,7 +197,7 @@ export class StreamingMediaPlayer {
 
   playNext() {
     console.log("playNext", this.playlist);
-    console.log('currentIndex' + this.currentIndex)
+    console.log("currentIndex" + this.currentIndex);
 
     if (!this.playlist) return;
 
@@ -257,14 +267,14 @@ export class StreamingMediaPlayer {
       this.file
         .resolveLocalFilesystemUrl(assetPath)
         .then((entry: any) => {
-          let wwwFile = entry.toURL();
+          let wwwFile = entry.toInternalURL();
           //console.log("target entry: " + entry + ", - wwwFile: " + wwwFile);
 
           //then - resolve save folder in dataDirectory:
           this.file
             .resolveLocalFilesystemUrl(this.file.dataDirectory)
             .then((entry: any) => {
-              let savePath = entry.toURL();
+              let savePath = entry.toInternalURL();
               //console.log("save entry: " + entry + ", - savePath: " + savePath);
               //then - copy file to saveFolder
               let fileName = wwwFile.split("/").pop();
@@ -304,11 +314,11 @@ export class StreamingMediaPlayer {
 
   // when audio player is closed, kill all processes
   cleanup() {
-    if ( this.currentTrack ) {
-      this.currentTrack.stop()
-      this.currentTrack.release()
+    if (this.currentTrack) {
+      this.currentTrack.stop();
+      this.currentTrack.release();
     }
 
-    if( this.progress ) clearInterval( this.progress )
+    if (this.progress) clearInterval(this.progress);
   }
 }

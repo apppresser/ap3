@@ -1,38 +1,61 @@
 .audio-player-wrapper {
-  height: 100px;
-  top: unset;
+    height: auto;
+    top: unset;
+
+  .item.audio-player-image {
+
+    img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+  }
 
   .popover-content {
     bottom: 0;
-    max-height: 170px;
+    max-height: 300px;
     top: unset !important;
     width: 100%;
     left: 0 !important;
     right: 0;
+    background: #333;
+    border-radius: 0;
   }
 
   audio-player {
-      .close-button {
-          position: absolute;
-          right: 10px;
-          top: 10px;
-          z-index: 1;
-          height: 44px;
-          width: 44px;
+    .close-button, .collapse-button {
+      position: absolute;
+      right: 0;
+      top: 0;
+      z-index: 1;
+      height: 44px;
+      width: 44px;
+      color: #fff;
+    }
+    .collapse-button {
+        right: 55px;
+    }
+    .item {
+      background: transparent;
+      color: #fff;
+    }
+    .item-range ion-range {
+      padding: 0 8px;
+    }
+    .item.player-buttons {
+      padding-left: 0;
+      .item-inner {
+        border-bottom: none;
       }
-      .item.player-buttons {
-          padding-left: 0;
-          .item-inner {
-              border-bottom: none;
-          }
-          .button {
-              height: 44px;
-              width: 44px;
-              margin: 5px 20px;
-          }
+      .button {
+        height: 44px;
+        width: 44px;
+        margin: 5px 20px;
+        color: #fff;
       }
-      .player-buttons {
-          text-align: center;
-      }
+    }
+    .player-buttons {
+      text-align: center;
+    }
   }
 }

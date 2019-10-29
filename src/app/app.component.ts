@@ -167,6 +167,7 @@ export class MyApp {
     });
 
     events.subscribe("show_audio_player", data => {
+      console.log('show_audio_player event', data)
       this.showAudioPlayer(data);
     });
 
@@ -2086,6 +2087,9 @@ export class MyApp {
   }
 
   showAudioPlayer(data) {
+
+    console.log('showAudioPlayer', data)
+    console.log('player visible? ' + this.audioPlayerVisible )
     
     if( this.audioPlayerVisible ) return;
     let opts = { showBackdrop: false, cssClass: "audio-player-wrapper", enableBackdropDismiss: false };
