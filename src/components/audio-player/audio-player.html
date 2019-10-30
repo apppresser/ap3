@@ -19,9 +19,10 @@
       <ion-icon name="skip-forward"></ion-icon>
     </button>
   </ion-item>
-  <ion-item class="player-progress" no-lines *ngIf="progress">
+  <ion-item class="player-progress" no-lines>
     <ion-range
       [(ngModel)]="progress"
+      (ionBlur)="seek()"
       min="0"
       max="100"
       color="primary"

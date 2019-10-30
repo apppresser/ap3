@@ -171,6 +171,11 @@ export class MyApp {
       this.showAudioPlayer(data);
     });
 
+    events.subscribe("close_audio_player", () => {
+      console.log('close_audio_player event')
+      this.closeAudioPlayer();
+    });
+
     events.subscribe("login:force_login", () => {
       if (
         !this.user &&
@@ -2086,20 +2091,21 @@ export class MyApp {
     if (this.tabs) this.resetTabs(false);
   }
 
+  closeAudioPlayer() {
+    if( this.audioPlayer ) {
+      this.audioPlayer.dismiss()
+    };
+  }
+
   showAudioPlayer(data) {
 
     console.log('showAudioPlayer', data)
-    console.log('player visible? ' + this.audioPlayerVisible )
     
-    if( this.audioPlayerVisible ) {
+    if( this.audioPlayer ) {
       this.audioPlayer.dismiss()
     };
     let opts = { showBackdrop: false, cssClass: "audio-player-wrapper", enableBackdropDismiss: false };
     this.audioPlayer = this.popoverCtrl.create(AudioPlayerComponent, data, opts);
-    this.audioPlayer.onDidDismiss( data => {
-      this.audioPlayerVisible = false
-    })
-    this.audioPlayerVisible = true;
     this.audioPlayer.present();
   }
 }

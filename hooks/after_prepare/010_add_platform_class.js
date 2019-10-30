@@ -73,7 +73,10 @@ if (rootdir) {
   for(var x=0; x<platforms.length; x++) {
     // open up the index.html file at the www root
     try {
-      var platform = platforms[x].trim().toLowerCase();
+      var platform = platforms[x].trim();
+      if( platform ) {
+        platform = platform.toLowerCase();
+      }
       var indexPath;
 
       if(platform == 'android') {

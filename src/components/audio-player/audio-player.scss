@@ -61,3 +61,10 @@
     }
   }
 }
+
+body .disable-scroll .ion-page {
+  pointer-events: auto;
+  touch-action: initial;
+}
+
+$range-ios-knob-width: 18px;

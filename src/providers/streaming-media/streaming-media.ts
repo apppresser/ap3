@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import {
   StreamingVideoOptions,
-  StreamingAudioOptions,
   StreamingMedia
 } from "@ionic-native/streaming-media";
 import { File } from "@ionic-native/file";
@@ -16,9 +15,11 @@ export class StreamingMediaPlayer {
   title: string = "";
   type: any;
   currentIndex = 0;
-  playlist: any;
+  playlist: any = null;
   currentTrack: any;
   progress: any;
+  durationInterval: any;
+  duration: any = null;
 
   constructor(
     private streamingMedia: StreamingMedia,
@@ -65,10 +66,7 @@ export class StreamingMediaPlayer {
       return;
     }
 
-    if (this.currentTrack) {
-      this.currentTrack.stop();
-      this.currentTrack.release();
-    }
+    this.cleanup()
 
     item.type = this.getMimeType(item.source);
 
@@ -88,24 +86,6 @@ export class StreamingMediaPlayer {
       this.currentTrack.play();
 
       this.doProgress();
-
-      // let options: StreamingAudioOptions = {
-      //   successCallback: () => {
-      //     console.log('success callback')
-      //     this.playNext()
-      //   },
-      //   errorCallback: e => {
-      //     console.log("Error streaming");
-      //   },
-      //   bgImageScale: "fit", // other valid values: "stretch", "aspectStretch"
-      //   initFullscreen: false, // true is default. iOS only.
-      //   keepAwake: false // prevents device from sleeping. true is default. Android only.
-      // };
-      // if (item.image) {
-      //   options.bgImage = item.image;
-      // }
-
-      // this.streamingMedia.playAudio(item.source, options);
     } else {
       let options: StreamingVideoOptions = {
         successCallback: () => {
@@ -118,33 +98,63 @@ export class StreamingMediaPlayer {
         controls: true // true(default)/false. Used to hide controls on fullscreen
       };
 
+      this.events.publish("close_audio_player");
+
       this.streamingMedia.playVideo(item.source, options);
     }
   }
 
-  doProgress() {
-    var dur = this.currentTrack.getDuration();
-    if (dur === -1) return;
-
-    console.log("duration", dur);
-    this.progress = setInterval(() => {
-      // get media position
-      this.currentTrack.getCurrentPosition(
-        // success callback
-        position => {
-          if (position > -1) {
-            console.log(position + " sec", dur);
-            let percentCompleted = position / dur;
-            console.log("percent: " + percentCompleted);
-            this.events.publish("audio_player_progress", position);
-          }
-        },
-        // error callback
-        e => {
-          console.log("Error getting pos=" + e);
+  getDur() {
+    return new Promise(resolve => {
+      console.log("getting duration...");
+      var counter = 0;
+      this.durationInterval = setInterval(() => {
+        counter = counter + 100;
+        if (counter > 2000) {
+          clearInterval(this.durationInterval);
         }
-      );
-    }, 1000);
+        var dur = this.currentTrack.getDuration();
+        if (dur > 0) {
+          clearInterval(this.durationInterval);
+          console.log(dur + " sec");
+          this.duration = dur;
+          resolve(dur);
+        }
+      }, 100);
+    });
+  }
+
+  doProgress() {
+    this.getDur().then(duration => {
+      console.log("doing progress...", duration);
+
+      var dur = duration;
+
+      this.progress = setInterval(() => {
+
+        console.log('set duration to ' + dur)
+
+        // get media position
+        this.currentTrack.getCurrentPosition(
+          // success callback
+          position => {
+            console.log('set duration 2 ' + dur)
+            if (position > -1) {
+              console.log(position + " sec", dur);
+              let percentCompleted =
+                parseInt(position) / parseInt(<any>dur);
+              percentCompleted = Math.floor(percentCompleted * 100);
+              console.log("percent: " + percentCompleted);
+              this.events.publish("audio_player_progress", percentCompleted);
+            }
+          },
+          // error callback
+          e => {
+            console.log("Error getting pos=" + e);
+          }
+        );
+      }, 1000);
+    });
   }
 
   pause() {
@@ -159,25 +169,31 @@ export class StreamingMediaPlayer {
     if (this.currentTrack) this.currentTrack.play();
   }
 
+  seek(num) {
+    if (!this.currentTrack || !this.duration) return;
+    // num is integer between 1 - 100
+    // turn that into a percent num / 100
+    let percent = num / 100;
+    // get track duration in milliseconds dur * 1000
+    let durMil = this.duration * 1000;
+    // percent * duration = seekMil
+    let seekMil = percent * durMil; // milliseconds to seek to
+    console.log("seek to duration: " + durMil, seekMil);
+    this.currentTrack.seekTo(seekMil);
+  }
+
   getSource(item) {
     return new Promise((resolve, reject) => {
       item.type = this.getMimeType(item.source);
 
+      // local files require special paths
       if (
         item.source.indexOf("assets") >= 0 &&
         item.source.indexOf("file://") < 0 &&
         item.source.indexOf("cdvfile://") < 0
       ) {
         // local android videos need to be copied to dataDirectory to work with streaming video player
-        if (this.device.platform.toLowerCase() === "ios") {
-          this.file
-            .resolveLocalFilesystemUrl(
-              this.file.applicationDirectory + "www/" + item.source
-            )
-            .then(dir => {
-              resolve(dir.toInternalURL());
-            });
-        } else if (
+        if (
           this.device.platform.toLowerCase() === "android" &&
           item.type.indexOf("video") >= 0
         ) {
@@ -189,8 +205,25 @@ export class StreamingMediaPlayer {
               console.warn("maybe copy file error", err);
               reject(err);
             });
+        } else if (
+          this.device.platform.toLowerCase() === "ios" &&
+          item.type.indexOf("video") >= 0
+        ) {
+          // local ios videos require different path
+          resolve(this.file.applicationDirectory + "www/" + item.source);
+        } else {
+          // audio files are the same on both platforms
+          this.file
+            .resolveLocalFilesystemUrl(
+              this.file.applicationDirectory + "www/" + item.source
+            )
+            .then(dir => {
+              // this will return a url starting with cdvfile://
+              resolve(dir.toInternalURL());
+            });
         }
       } else {
+        // this is a remote url
         resolve(item.source);
       }
     });
@@ -321,8 +354,10 @@ export class StreamingMediaPlayer {
     if (this.currentTrack) {
       this.currentTrack.stop();
       this.currentTrack.release();
+      this.duration = null;
     }
 
-    if (this.progress) clearInterval(this.progress);
+    clearInterval(this.progress);
+    clearInterval(this.durationInterval);
   }
 }

@@ -40,6 +40,11 @@ export class AudioPlayerComponent {
     this.streamingMedia.playNext()
   }
 
+  seek() {
+    console.log("seek to: " + this.progress)
+    this.streamingMedia.seek(this.progress)
+  }
+
   collapse() {
     this.image = null;
   }
