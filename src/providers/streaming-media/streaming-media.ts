@@ -186,46 +186,49 @@ export class StreamingMediaPlayer {
     return new Promise((resolve, reject) => {
       item.type = this.getMimeType(item.source);
 
-      // local files require special paths
-      if (
-        item.source.indexOf("assets") >= 0 &&
-        item.source.indexOf("file://") < 0 &&
-        item.source.indexOf("cdvfile://") < 0
-      ) {
-        // local android videos need to be copied to dataDirectory to work with streaming video player
-        if (
-          this.device.platform.toLowerCase() === "android" &&
-          item.type.indexOf("video") >= 0
-        ) {
-          this.maybeCopyFile(item)
-            .then(source => {
-              resolve(source);
-            })
-            .catch(err => {
-              console.warn("maybe copy file error", err);
-              reject(err);
-            });
-        } else if (
-          this.device.platform.toLowerCase() === "ios" &&
-          item.type.indexOf("video") >= 0
-        ) {
-          // local ios videos require different path
-          resolve(this.file.applicationDirectory + "www/" + item.source);
+      if( item.source.indexOf('http') >= 0 ) {
+        // remote file, don't do anything with url
+        resolve( item.source )
+      } else if ( item.type.indexOf("audio") >= 0 ) {
+        // local audio files need special handling
+        let src;
+
+        if( item.source.indexOf("file://") >= 0 ) {
+          // already an absolute local url
+          src = item.source
         } else {
-          // audio files are the same on both platforms
-          this.file
-            .resolveLocalFilesystemUrl(
-              this.file.applicationDirectory + "www/" + item.source
-            )
-            .then(dir => {
-              // this will return a url starting with cdvfile://
-              resolve(dir.toInternalURL());
-            });
+          // relative url, need to make it absolute
+          src = this.file.applicationDirectory + "www/" + item.source
         }
+
+        this.file
+        .resolveLocalFilesystemUrl(
+          src
+        )
+        .then(dir => {
+          // this will return a url starting with cdvfile://
+          resolve(dir.toInternalURL());
+        });
+      } else if ( item.type.indexOf("video") >= 0 ) {
+
+        if( this.device.platform.toLowerCase() === "android" ) {
+          this.maybeCopyFile(item)
+          .then(source => {
+            resolve(source);
+          })
+          .catch(err => {
+            console.warn("maybe copy file error", err);
+            reject(err);
+          });
+        } else {
+          resolve(this.file.applicationDirectory + "www/" + item.source);
+        }
+        
       } else {
-        // this is a remote url
-        resolve(item.source);
+        // shouldn't be here, but just in case...
+        resolve( item.source )
       }
+
     });
   }
 
