@@ -16,7 +16,7 @@ export class StreamingMediaPlayer {
   type: any;
   currentIndex = 0;
   playlist: any = null;
-  currentTrack: any;
+  currentTrack: MediaObject;
   progress: any;
   durationInterval: any;
   duration: any = null;
@@ -107,14 +107,11 @@ export class StreamingMediaPlayer {
   }
 
   getDur() {
+    // @TODO consider adding a loader until audio starts to play and duration is available
+    // (check constantly for the cordova media plugin updates, beacuse there are pull requests that have already fixed this)
     return new Promise(resolve => {
       console.log("getting duration...");
-      var counter = 0;
       this.durationInterval = setInterval(() => {
-        counter = counter + 100;
-        if (counter > 2000) {
-          clearInterval(this.durationInterval);
-        }
         var dur = this.currentTrack.getDuration();
         if (dur > 0) {
           clearInterval(this.durationInterval);
@@ -137,9 +134,8 @@ export class StreamingMediaPlayer {
         console.log('set duration to ' + dur)
 
         // get media position
-        this.currentTrack.getCurrentPosition(
-          // success callback
-          position => {
+        this.currentTrack.getCurrentPosition()
+          .then(position => {
             console.log('set duration 2 ' + dur)
             if (position > -1) {
               console.log(position + " sec", dur);
@@ -149,12 +145,10 @@ export class StreamingMediaPlayer {
               console.log("percent: " + percentCompleted);
               this.events.publish("audio_player_progress", percentCompleted);
             }
-          },
-          // error callback
-          e => {
+          })
+          .catch(e => {
             console.log("Error getting pos=" + e);
-          }
-        );
+          });
       }, 1000);
     });
   }
