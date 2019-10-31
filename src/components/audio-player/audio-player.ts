@@ -12,6 +12,7 @@ export class AudioPlayerComponent {
 
   progress: any = null;
   image: any = null;
+  playerExpanded: boolean = true;
 
   constructor( public navParams: NavParams, public viewCtrl: ViewController, public streamingMedia: StreamingMediaPlayer, public events: Events ) {
     console.log("audio player constructor", navParams.data);
@@ -40,13 +41,17 @@ export class AudioPlayerComponent {
     this.streamingMedia.playNext()
   }
 
+  expand() {
+    this.playerExpanded = true;
+  }
+
   seek() {
     console.log("seek to: " + this.progress)
     this.streamingMedia.seek(this.progress)
   }
 
   collapse() {
-    this.image = null;
+    this.playerExpanded = false;
   }
 
   close() {

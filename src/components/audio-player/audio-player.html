@@ -1,31 +1,39 @@
-<ion-card class="audio-player-image" no-lines *ngIf="image">
-  <img [src]="image" />
-</ion-card>
-<ion-list class="audio-player-inside" no-lines>
-  <button ion-button clear (click)="close()" class="close-button">
-    <ion-icon name="close"></ion-icon>
+<ion-fab right top *ngIf="!playerExpanded">
+  <button ion-fab color="dark" mini (click)="expand()">
+    <ion-icon name="options"></ion-icon>
   </button>
-  <button ion-button clear (click)="collapse()" class="collapse-button" *ngIf="image">
-    <ion-icon name="arrow-down"></ion-icon>
-  </button>
-  <ion-item class="player-buttons" no-lines>
-    <button ion-button clear (click)="pause()" icon-only>
-      <ion-icon name="pause"></ion-icon>
+</ion-fab>
+
+<div *ngIf="playerExpanded">
+  <ion-card class="audio-player-image" no-lines *ngIf="image">
+    <img [src]="image" />
+  </ion-card>
+  <ion-list class="audio-player-inside" no-lines>
+    <button ion-button clear (click)="close()" class="close-button">
+      <ion-icon name="close"></ion-icon>
     </button>
-    <button ion-button clear (click)="play()" icon-only>
-      <ion-icon name="play"></ion-icon>
+    <button ion-button clear (click)="collapse()" class="collapse-button">
+      <ion-icon name="arrow-down"></ion-icon>
     </button>
-    <button ion-button clear (click)="forward()" icon-only>
-      <ion-icon name="skip-forward"></ion-icon>
-    </button>
-  </ion-item>
-  <ion-item class="player-progress" no-lines>
-    <ion-range
-      [(ngModel)]="progress"
-      (ionBlur)="seek()"
-      min="0"
-      max="100"
-      color="primary"
-    ></ion-range>
-  </ion-item>
-</ion-list>
+    <ion-item class="player-buttons" no-lines>
+      <button ion-button clear (click)="pause()" icon-only>
+        <ion-icon name="pause"></ion-icon>
+      </button>
+      <button ion-button clear (click)="play()" icon-only>
+        <ion-icon name="play"></ion-icon>
+      </button>
+      <button ion-button clear (click)="forward()" icon-only>
+        <ion-icon name="skip-forward"></ion-icon>
+      </button>
+    </ion-item>
+    <ion-item class="player-progress" no-lines>
+      <ion-range
+        [(ngModel)]="progress"
+        (ionBlur)="seek()"
+        min="0"
+        max="100"
+        color="primary"
+      ></ion-range>
+    </ion-item>
+  </ion-list>
+</div>

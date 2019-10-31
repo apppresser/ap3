@@ -6,7 +6,7 @@ import {
 import { File } from "@ionic-native/file";
 import { Device } from "@ionic-native/device";
 import { Media, MediaObject } from "@ionic-native/media";
-import { Events } from "ionic-angular";
+import { Events, LoadingController } from "ionic-angular";
 
 @Injectable()
 export class StreamingMediaPlayer {
@@ -26,10 +26,12 @@ export class StreamingMediaPlayer {
     private file: File,
     public device: Device,
     private media: Media,
-    public events: Events
+    public events: Events,
+    public loadingCtrl: LoadingController
   ) {}
 
   start(item, playlist) {
+  
     if (playlist) {
       this.playlist = playlist;
       // where are we in playlist? song 1, song 5, etc?
@@ -212,6 +214,10 @@ export class StreamingMediaPlayer {
       } else if ( item.type.indexOf("video") >= 0 ) {
 
         if( this.device.platform.toLowerCase() === "android" ) {
+          var loading = this.loadingCtrl.create();
+  
+          loading.present();
+  
           this.maybeCopyFile(item)
           .then(source => {
             resolve(source);
@@ -219,7 +225,10 @@ export class StreamingMediaPlayer {
           .catch(err => {
             console.warn("maybe copy file error", err);
             reject(err);
-          });
+          }).then( () => {
+            loading.dismiss()
+          })
+          
         } else {
           resolve(this.file.applicationDirectory + "www/" + item.source);
         }
