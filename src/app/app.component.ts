@@ -2100,11 +2100,17 @@ export class MyApp {
   showAudioPlayer(data) {
 
     console.log('showAudioPlayer', data)
+
+    let classes = "audio-player-wrapper"
+
+    if( this.tabs ) {
+      classes = "audio-player-wrapper has-tabs"
+    }
     
     if( this.audioPlayer ) {
       this.audioPlayer.dismiss()
     };
-    let opts = { showBackdrop: false, cssClass: "audio-player-wrapper", enableBackdropDismiss: false };
+    let opts = { showBackdrop: false, cssClass: classes, enableBackdropDismiss: false };
     this.audioPlayer = this.popoverCtrl.create(AudioPlayerComponent, data, opts);
     this.audioPlayer.present();
   }

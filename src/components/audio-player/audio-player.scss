@@ -1,3 +1,11 @@
+.audio-player-wrapper.has-tabs {
+  bottom: 56px;
+
+  .popover-content {
+    min-height: 80px;
+  }
+}
+
 .audio-player-wrapper {
     height: auto;
     top: unset;
