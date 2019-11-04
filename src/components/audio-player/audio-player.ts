@@ -1,7 +1,5 @@
-import { Component, Input, ViewChild } from "@angular/core";
+import { Component } from "@angular/core";
 import { NavParams, ViewController, Events } from "ionic-angular";
-import { Storage } from "@ionic/storage";
-import { TranslateService } from "@ngx-translate/core";
 import {StreamingMediaPlayer} from '../../providers/streaming-media/streaming-media';
 
 @Component({
@@ -15,10 +13,11 @@ export class AudioPlayerComponent {
   playerExpanded: boolean = true;
 
   constructor( public navParams: NavParams, public viewCtrl: ViewController, public streamingMedia: StreamingMediaPlayer, public events: Events ) {
-    console.log("audio player constructor", navParams.data);
+
     this.events.subscribe("audio_player_progress", position => {
       this.progress = position
     })
+
   }
 
   ngAfterViewInit() {
@@ -43,15 +42,16 @@ export class AudioPlayerComponent {
 
   expand() {
     this.playerExpanded = true;
+    this.events.publish('audio_player_expand_collapse')
   }
 
   seek() {
-    console.log("seek to: " + this.progress)
     this.streamingMedia.seek(this.progress)
   }
 
   collapse() {
     this.playerExpanded = false;
+    this.events.publish('audio_player_expand_collapse', { collapse: true })
   }
 
   close() {

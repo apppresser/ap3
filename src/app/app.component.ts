@@ -176,6 +176,16 @@ export class MyApp {
       this.closeAudioPlayer();
     });
 
+    events.subscribe("audio_player_expand_collapse", data => {
+      console.log('audio_player_expand_collapse event', data)
+      if( data && data.collapse ) {
+        this.bodyTag.classList.add('audio-player-minimized')
+      } else {
+        this.bodyTag.classList.remove('audio-player-minimized')
+      }
+      
+    });
+
     events.subscribe("login:force_login", () => {
       if (
         !this.user &&
@@ -2099,12 +2109,10 @@ export class MyApp {
 
   showAudioPlayer(data) {
 
-    console.log('showAudioPlayer', data)
-
     let classes = "audio-player-wrapper"
 
-    if( this.tabs ) {
-      classes = "audio-player-wrapper has-tabs"
+    if( this.tabs || this.myapppsettings.settings.ads && this.myapppsettings.settings.ads.ios || this.myapppsettings.settings.ads && this.myapppsettings.settings.ads.android ) {
+      classes = "audio-player-wrapper move-up"
     }
     
     if( this.audioPlayer ) {

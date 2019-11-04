@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { TranslateModule } from '@ngx-translate/core';
 import { AudioPlayerComponent } from './audio-player';
 
 @NgModule({
@@ -8,8 +7,7 @@ import { AudioPlayerComponent } from './audio-player';
     AudioPlayerComponent,
   ],
   imports: [
-    IonicPageModule.forChild(AudioPlayerComponent),
-    TranslateModule.forChild()
+    IonicPageModule.forChild(AudioPlayerComponent)
   ],
   exports: [
     AudioPlayerComponent

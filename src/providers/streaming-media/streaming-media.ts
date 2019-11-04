@@ -53,7 +53,6 @@ export class StreamingMediaPlayer {
     this.getSource(item)
       .then(source => {
         item.source = source;
-        console.log("got source: ", source);
         this.playMedia(item);
       })
       .catch(err => {
@@ -72,8 +71,6 @@ export class StreamingMediaPlayer {
 
     item.type = this.getMimeType(item.source);
 
-    console.log("play media", item);
-
     if (item.type.indexOf("audio") >= 0) {
       this.events.publish("show_audio_player", item);
 
@@ -82,8 +79,6 @@ export class StreamingMediaPlayer {
         console.log("Play is successful");
         // this.playNext();
       });
-
-      console.log("playing track", this.currentTrack);
 
       this.currentTrack.play();
 
@@ -110,12 +105,10 @@ export class StreamingMediaPlayer {
     // @TODO consider adding a loader until audio starts to play and duration is available
     // (check constantly for the cordova media plugin updates, beacuse there are pull requests that have already fixed this)
     return new Promise(resolve => {
-      console.log("getting duration...");
       this.durationInterval = setInterval(() => {
         var dur = this.currentTrack.getDuration();
         if (dur > 0) {
           clearInterval(this.durationInterval);
-          console.log(dur + " sec");
           this.duration = dur;
           resolve(dur);
         }
@@ -125,24 +118,21 @@ export class StreamingMediaPlayer {
 
   doProgress() {
     this.getDur().then(duration => {
-      console.log("doing progress...", duration);
 
       var dur = duration;
 
       this.progress = setInterval(() => {
 
-        console.log('set duration to ' + dur)
-
         // get media position
         this.currentTrack.getCurrentPosition()
           .then(position => {
-            console.log('set duration 2 ' + dur)
+
             if (position > -1) {
-              console.log(position + " sec", dur);
+
               let percentCompleted =
                 parseInt(position) / parseInt(<any>dur);
               percentCompleted = Math.floor(percentCompleted * 100);
-              console.log("percent: " + percentCompleted);
+
               this.events.publish("audio_player_progress", percentCompleted);
             }
           })
@@ -174,7 +164,7 @@ export class StreamingMediaPlayer {
     let durMil = this.duration * 1000;
     // percent * duration = seekMil
     let seekMil = percent * durMil; // milliseconds to seek to
-    console.log("seek to duration: " + durMil, seekMil);
+
     this.currentTrack.seekTo(seekMil);
   }
 
@@ -236,8 +226,6 @@ export class StreamingMediaPlayer {
   }
 
   playNext() {
-    console.log("playNext", this.playlist);
-    console.log("currentIndex" + this.currentIndex);
 
     if (!this.playlist) return;
 
@@ -251,17 +239,6 @@ export class StreamingMediaPlayer {
       this.currentIndex = 0;
     }
 
-    // if we have a mixed video/audio playlist, just skip the videos
-    // if (
-    //   this.playlist[this.currentIndex] && this.getMimeType(this.playlist[this.currentIndex].source).indexOf(
-    //     "video"
-    //   ) >= 0
-    // ) {
-    //   console.log("found a video, skipping...");
-    //   this.playNext();
-    // }
-
-    console.log(this.playlist[this.currentIndex], this.currentIndex);
     this.playMedia(this.playlist[this.currentIndex]);
   }
 
@@ -361,6 +338,7 @@ export class StreamingMediaPlayer {
       this.currentTrack.stop();
       this.currentTrack.release();
       this.duration = null;
+      this.events.publish('audio_player_expand_collapse')
     }
 
     clearInterval(this.progress);
