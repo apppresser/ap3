@@ -28,13 +28,20 @@
     padding: 0 15px;
   }
 
-  .player-title {
-    text-align: center;
+  .player-title-wrap {
+    .label {
+      padding: 2px;
+    }
+
+    .player-title {
+      text-align: center;
+      font-size: 2.2rem;
+    }
   }
 
   .audio-player-image {
     max-height: 40vh;
-    margin: 100px 15px 0;
+    margin: 100px 20px 0;
     overflow: hidden;
     width: calc(100% - 40px);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
@@ -111,14 +118,15 @@
     }
     .item.player-buttons {
       padding-left: 0;
-      padding-top: 20px;
+      padding-top: 5px;
+      height: 100px;
       .item-inner {
         border-bottom: none;
       }
       .button {
         height: 44px;
         width: 44px;
-        margin: 5px 20px;
+        margin: 5px 15px;
         color: #fff;
       }
       .button.play-button .icon {
