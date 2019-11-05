@@ -18,7 +18,7 @@
   </ion-card>
   <ion-list class="audio-player-inside" no-lines>
     <ion-item no-lines text-wrap class="player-title-wrap">
-      <h1 class="player-title" *ngIf="title">{{ title }}</h1>
+      <h1 class="player-title" *ngIf="title" [innerHTML]="title"></h1>
     </ion-item>
     <ion-item class="player-buttons" no-lines>
       <button
