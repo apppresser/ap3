@@ -14,6 +14,7 @@ export class AudioPlayerComponent {
   title: string = null;
 
   constructor( public navParams: NavParams, public viewCtrl: ViewController, public streamingMedia: StreamingMediaPlayer, public events: Events ) {
+    console.log(navParams.data)
 
     this.events.subscribe("audio_player_progress", position => {
       this.progress = position

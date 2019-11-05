@@ -37,18 +37,8 @@
 	</ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="!use_dynamic" [ngClass]="customClasses">
+<ion-content>
 
-	Content goes here
-	
-</ion-content>
-<ion-content *ngIf="use_dynamic" [ngClass]="customClasses">
-
-	<DynamicComponent *ngIf="templateUrl"
-    [componentTemplateUrl]="templateUrl" 
-    [componentModules]="extraModules"
-		[componentInputData]="inputData"></DynamicComponent>
-
-	<div *ngIf="!templateUrl">Missing templateUrl</div>
+	<button ion-button (click)="mediaModal('assets/my-song.mp3','assets/my-image.jpg',{title:'Morning Music', cssClass:'morning-music-modal'})">Click</button>
 
 </ion-content>
