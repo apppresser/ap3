@@ -559,6 +559,11 @@ export class MyApp {
     this.loadTabMenu();
     this.loadSideMenu();
 
+    // If the user is already logged in, when the app opens it should reset side menu so that the items would show/hide accordingly
+    if (this.user) {
+      this.resetSideMenu(true);
+    }
+
     // Only show the intro if there's a slug
     if (data.meta.intro_slug && data.meta.intro_slug != "")
       this.maybeShowIntro(data.meta.intro_slug);
