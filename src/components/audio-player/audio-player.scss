@@ -14,14 +14,18 @@
 .audio-player-wrapper {
   height: 100%;
 
+  .player-title {
+    text-align: center;
+  }
+
   .audio-player-image {
     max-height: 50vh;
-    margin: 80px 20px 0;
+    margin: 100px 20px 0;
     overflow: hidden;
     width: calc(100% - 40px);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
       0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    transition: all .2s;
+    transition: all 0.2s;
 
     img {
       display: block;
@@ -60,6 +64,12 @@
       left: 0;
       right: 0;
     }
+    .close-buttons {
+      top: 40px;
+      position: absolute;
+      left: 0;
+      right: 0;
+    }
     .close-button,
     .collapse-button {
       position: absolute;
@@ -94,14 +104,16 @@
         margin: 5px 20px;
         color: #fff;
       }
-      .button.play-button {
+      .button.play-button .icon {
+        left: 2px;
+        position: relative;
+      }
+      .button.big-circle {
         border-radius: 100%;
         border: 2px solid rgba(255, 255, 255, 0.5);
         height: 60px;
         width: 60px;
         .icon {
-          left: 2px;
-          position: relative;
           font-size: 2.2em;
         }
       }

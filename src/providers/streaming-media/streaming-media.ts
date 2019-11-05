@@ -242,6 +242,20 @@ export class StreamingMediaPlayer {
     this.playMedia(this.playlist[this.currentIndex]);
   }
 
+  playPrevious() {
+    if (!this.playlist) return;
+
+    if (!this.currentIndex || this.currentIndex === 0) {
+      this.currentIndex = 1;
+    } else {
+      this.currentIndex--;
+    }
+
+    if (this.currentIndex <= -1) return;
+
+    this.playMedia(this.playlist[this.currentIndex]);
+  }
+
   /**
    * Tip: we use mimetype to know when to remove/stop autoplay.
    * A PDF can't autoplay, so we don't give it a mimetype.

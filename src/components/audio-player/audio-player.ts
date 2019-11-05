@@ -11,6 +11,7 @@ export class AudioPlayerComponent {
   progress: any = null;
   image: any = null;
   playerExpanded: boolean = true;
+  title: string = null;
 
   constructor( public navParams: NavParams, public viewCtrl: ViewController, public streamingMedia: StreamingMediaPlayer, public events: Events ) {
 
@@ -26,6 +27,13 @@ export class AudioPlayerComponent {
     } else {
       this.image = null
     }
+
+    if( this.navParams && this.navParams.get('title') ) {
+      this.title = this.navParams.get('title')
+    } else {
+      this.title = null
+    }
+
   }
 
   play() {
@@ -34,6 +42,10 @@ export class AudioPlayerComponent {
 
   pause() {
     this.streamingMedia.pause()
+  }
+
+  back() {
+    this.streamingMedia.playPrevious()
   }
 
   forward() {

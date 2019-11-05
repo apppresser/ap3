@@ -5,24 +5,51 @@
 </ion-fab>
 
 <div *ngIf="playerExpanded">
+  <div class="close-buttons">
+    <button ion-button clear (click)="close()" class="close-button">
+      <ion-icon name="close"></ion-icon>
+    </button>
+    <button ion-button clear (click)="collapse()" class="collapse-button">
+      <ion-icon name="arrow-down"></ion-icon>
+    </button>
+  </div>
   <ion-card class="audio-player-image" no-lines *ngIf="image">
     <img [src]="image" />
   </ion-card>
-  <button ion-button clear (click)="close()" class="close-button">
-    <ion-icon name="close"></ion-icon>
-  </button>
-  <button ion-button clear (click)="collapse()" class="collapse-button">
-    <ion-icon name="arrow-down"></ion-icon>
-  </button>
-  <ion-list class="audio-player-inside" no-lines>  
+  <ion-list class="audio-player-inside" no-lines>
+    <ion-item no-lines>
+      <h1 class="player-title" *ngIf="title">{{ title }}</h1>
+    </ion-item>
     <ion-item class="player-buttons" no-lines>
-      <button class="pause-button" ion-button clear (click)="pause()" icon-only>
+      <button
+        class="skip-backward-button"
+        ion-button
+        clear
+        (click)="back()"
+        icon-only
+      >
+        <ion-icon name="skip-backward"></ion-icon>
+      </button>
+      <button ion-button class="pause-button" clear (click)="pause()" icon-only>
         <ion-icon name="pause"></ion-icon>
       </button>
-      <button ion-button class="play-button" clear (click)="play()" icon-only>
+      <button
+        ion-button
+        class="play-button"
+        clear
+        (click)="play()"
+        icon-only
+      >
         <ion-icon name="play"></ion-icon>
       </button>
-      <button class="forward-button" ion-button clear (click)="forward()" icon-only>
+
+      <button
+        class="forward-button"
+        ion-button
+        clear
+        (click)="forward()"
+        icon-only
+      >
         <ion-icon name="skip-forward"></ion-icon>
       </button>
     </ion-item>
