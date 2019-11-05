@@ -2,6 +2,8 @@
   width: 100px;
   left: unset;
   bottom: 75px;
+  height: 65px;
+  top: unset;
 
   audio-player {
     width: 100px;
@@ -14,13 +16,25 @@
 .audio-player-wrapper {
   height: 100%;
 
+  .item {
+    padding-left: 0;
+  }
+
+  .item-md .label-md {
+    padding: 13px 0;
+  }
+
+  .item.player-progress {
+    padding: 0 15px;
+  }
+
   .player-title {
     text-align: center;
   }
 
   .audio-player-image {
-    max-height: 50vh;
-    margin: 100px 20px 0;
+    max-height: 40vh;
+    margin: 100px 15px 0;
     overflow: hidden;
     width: calc(100% - 40px);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
@@ -69,6 +83,9 @@
       position: absolute;
       left: 0;
       right: 0;
+    }
+    .popover-md .close-buttons {
+      top: 30px;
     }
     .close-button,
     .collapse-button {
@@ -122,6 +139,13 @@
     .player-buttons {
       text-align: center;
     }
+
+    .range-ios .range-knob {
+      left: 7px;
+      top: 11px;
+      width: 20px;
+      height: 20px;
+    }
   }
 }
 
@@ -129,5 +153,3 @@ body .disable-scroll .ion-page {
   pointer-events: auto;
   touch-action: initial;
 }
-
-$range-ios-knob-width: 18px;
