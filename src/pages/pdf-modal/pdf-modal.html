@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons start>
+      <button ion-button (click)="browser()">
+        <ion-icon name="share"></ion-icon>
+      </button>
+      <button ion-button (click)="zoomIn()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+      <button ion-button (click)="zoomOut()">
+        <ion-icon name="minus"></ion-icon>
+      </button>
+    </ion-buttons>
+
+    <ion-title></ion-title>
+
+    <ion-buttons end>
+      <button ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <pdf-viewer
+    *ngIf="pdfSrc"
+    [src]="pdfSrc"
+    [original-size]="false"
+    [render-text]="false"
+    style="display: block;max-width:100%"
+    [zoom]="zoom"
+  ></pdf-viewer>
+</ion-content>

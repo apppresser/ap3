@@ -170,8 +170,19 @@ export class PostDetailsPage implements OnInit {
 
     let data = {source: src, image: img};
 
-    this.streamingMediaPlayer.start( data, null )
+    let fileExt = src.split(".").pop();
 
+    if (fileExt === "pdf") {
+      this.handlePDF(src);
+        } else {
+            this.streamingMediaPlayer.start( data, null )
+        }
+
+  }
+
+  handlePDF(src) {
+    let modal = this.modalCtrl.create("PdfModal", { url: src });
+    modal.present();
   }
 
   share() {

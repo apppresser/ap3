@@ -275,9 +275,6 @@ export class MyApp {
         this.appdata.checkForUpdates(this.apiurl);
       }, 5000);
 
-      // for pdf viewer in media modal
-      (<any>window).pdfWorkerSrc = "assets/lib/pdf-worker.min.js";
-
       setTimeout(() => {
         // on startup, wait a little while before doing a push notification redirect
         this.app_recently_started = false;

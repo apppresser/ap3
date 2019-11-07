@@ -37,18 +37,10 @@
 	</ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="!use_dynamic" [ngClass]="customClasses">
+<ion-content>
 
-	Content goes here
-	
-</ion-content>
-<ion-content *ngIf="use_dynamic" [ngClass]="customClasses">
+	<button ion-button (click)="mediaModal('assets/Ionic-PWA-paper.pdf')">Local PDF</button>
 
-	<DynamicComponent *ngIf="templateUrl"
-    [componentTemplateUrl]="templateUrl" 
-    [componentModules]="extraModules"
-		[componentInputData]="inputData"></DynamicComponent>
-
-	<div *ngIf="!templateUrl">Missing templateUrl</div>
+	<button ion-button (click)="mediaModal('https://reactordev.com/apv3/wp-content/uploads/2016/11/Single-pdf.pdf')">Remote PDF</button>
 
 </ion-content>

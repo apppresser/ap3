@@ -569,6 +569,13 @@ export class MediaList implements OnInit {
       url = item.appp_media.media_url
     }
 
+    let fileExt = url.split(".").pop();
+
+		if (fileExt === "pdf") {
+      this.handlePDF(src);
+      return;
+    }
+
     let title = (item.title && item.title.rendered) ? item.title.rendered : '';
     let data = {source: url, title: title };
     let playlist = this.getMediaSources()
@@ -582,6 +589,11 @@ export class MediaList implements OnInit {
     this.streamingMediaPlayer.start( data, playlist )
 
   }
+
+  handlePDF(src) {
+		let modal = this.modalCtrl.create("PdfModal", { url: src });
+		modal.present();
+	}
 
   getMediaSources() {
 
