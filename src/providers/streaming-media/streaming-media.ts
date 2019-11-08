@@ -62,7 +62,7 @@ export class StreamingMediaPlayer {
   }
 
   playMedia(item) {
-    if (!this.device) {
+    if ( !this.device || typeof this.device.platform != 'string' ) {
       alert("Please try from a device.");
       return;
     }
