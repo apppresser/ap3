@@ -10,6 +10,7 @@ import {Download} from '../../providers/download/download';
 import {File} from '@ionic-native/file';
 import {TranslateService} from '@ngx-translate/core';
 import {StreamingMediaPlayer} from '../../providers/streaming-media/streaming-media';
+import {PdfService} from '../../providers/pdf/pdf';
 import {AnalyticsService} from '../../providers/analytics/analytics.service';
 
 declare var cordova:any;
@@ -66,7 +67,8 @@ export class MediaList implements OnInit {
     public events: Events,
     public zone: NgZone,
     public streamingMediaPlayer: StreamingMediaPlayer,
-    private ga: AnalyticsService
+    private ga: AnalyticsService,
+    public pdfService: PdfService
   ) {
 
     this.storage.get('media-list-autoplay').then( value => {
@@ -591,8 +593,7 @@ export class MediaList implements OnInit {
   }
 
   handlePDF(src) {
-		let modal = this.modalCtrl.create("PdfModal", { url: src });
-		modal.present();
+		this.pdfService.openPdf( src )
 	}
 
   getMediaSources() {

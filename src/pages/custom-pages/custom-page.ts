@@ -14,6 +14,7 @@ import {Iframe} from "../iframe/iframe";
 import { Language } from "../../models/language.model";
 import { LanguageService } from '../../providers/language/language.service';
 import {StreamingMediaPlayer} from '../../providers/streaming-media/streaming-media';
+import {PdfService} from '../../providers/pdf/pdf';
 
 /** Development mode only -- START */
 import { IComponentInputData } from 'angular2-dynamic-component/index';
@@ -133,7 +134,8 @@ export class CustomPage implements OnInit, OnDestroy {
 		private analyticsservice: AnalyticsService,
 		private network: Network,
 		public wooProvider: WooProvider,
-		public streamingMediaPlayer: StreamingMediaPlayer
+		public streamingMediaPlayer: StreamingMediaPlayer,
+		public pdfService: PdfService
         ) {
 					this.language = this.languageservice.language;
 				}
@@ -508,8 +510,7 @@ export class CustomPage implements OnInit, OnDestroy {
 	}
 
 	handlePDF(src) {
-		let modal = this.modalCtrl.create("PdfModal", { url: src });
-		modal.present();
+		this.pdfService.openPdf( src )
 	}
 
 	updateData() {

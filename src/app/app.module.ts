@@ -32,6 +32,7 @@ import { Geolocation } from "@ionic-native/geolocation";
 import { InAppPurchase } from "@ionic-native/in-app-purchase";
 import { StreamingMedia } from "@ionic-native/streaming-media";
 import { Media } from "@ionic-native/media";
+import { FileOpener } from '@ionic-native/file-opener';
 
 /* Providers */
 import { MyApppSettingsService } from "../providers/appdata/myappp.settings.service";
@@ -64,6 +65,7 @@ import { AnalyticsService } from "../providers/analytics/analytics.service";
 import { ErrorLogService } from "../providers/appdata/error-log.service";
 import { RemoteDataService } from "../providers/appdata/remote-data";
 import { StreamingMediaPlayer } from "../providers/streaming-media/streaming-media";
+import { PdfService } from "../providers/pdf/pdf";
 
 import { Iframe } from "../pages/iframe/iframe";
 
@@ -157,7 +159,9 @@ export class MyMissingTranslationHandler implements MissingTranslationHandler {
     WooProvider,
     StreamingMedia,
     StreamingMediaPlayer,
-    Media
+    Media,
+    FileOpener,
+    PdfService
   ]
 })
 export class AppModule {}

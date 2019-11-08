@@ -11,6 +11,7 @@ import { Storage } from "@ionic/storage";
 import { File } from "@ionic-native/file";
 import { TranslateService } from "@ngx-translate/core";
 import { StreamingMediaPlayer } from "../../providers/streaming-media/streaming-media";
+import {PdfService} from '../../providers/pdf/pdf';
 
 declare var cordova: any;
 
@@ -32,7 +33,8 @@ export class DownloadList {
     public modalCtrl: ModalController,
     private file: File,
     private translate: TranslateService,
-    public streamingMediaPlayer: StreamingMediaPlayer
+    public streamingMediaPlayer: StreamingMediaPlayer,
+    public pdfService: PdfService
   ) {
     if (this.navParams.get("title")) {
       this.title = this.navParams.get("title");
@@ -64,16 +66,15 @@ export class DownloadList {
     let fileExt = url.split(".").pop();
 
     if (fileExt === "pdf") {
-      this.handlePDF(item);
+      this.handlePDF(url);
     } else {
       this.streamingMediaPlayer.start(item, this.downloads);
     }
   }
 
-  handlePDF(item) {
-    let modal = this.modalCtrl.create("PdfModal", item);
-    modal.present();
-  }
+  handlePDF(src) {
+		this.pdfService.openPdf( src )
+	}
 
   removeDownload(item) {
     let path = cordova.file.dataDirectory + "media/";

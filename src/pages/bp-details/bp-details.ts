@@ -7,6 +7,7 @@ import {Http} from '@angular/http';
 import 'rxjs/add/operator/map';
 
 import {StreamingMediaPlayer} from '../../providers/streaming-media/streaming-media';
+import {PdfService} from '../../providers/pdf/pdf';
 import { VideoUtils } from "../../providers/video/video-utils";
 import {BpProvider} from '../../providers/buddypress/bp-provider';
 import {AnalyticsService} from '../../providers/analytics/analytics.service';
@@ -42,7 +43,8 @@ export class BpDetailsPage implements OnInit {
     public toastCtrl: ToastController,
     private ga: AnalyticsService,
     public translate: TranslateService,
-    public streamingMediaPlayer: StreamingMediaPlayer
+    public streamingMediaPlayer: StreamingMediaPlayer,
+    public pdfService: PdfService
     ) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = this.navParams.get('item');
@@ -170,8 +172,7 @@ export class BpDetailsPage implements OnInit {
   }
 
   handlePDF(src) {
-		let modal = this.modalCtrl.create("PdfModal", { url: src });
-		modal.present();
+		this.pdfService.openPdf( src )
 	}
 
   comment() {

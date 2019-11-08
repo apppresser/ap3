@@ -11,6 +11,7 @@ import {Events} from 'ionic-angular';
 import {InAppBrowser, InAppBrowserObject} from '@ionic-native/in-app-browser';
 
 import {StreamingMediaPlayer} from '../../providers/streaming-media/streaming-media';
+import {PdfService} from '../../providers/pdf/pdf';
 import {HeaderLogo} from "../../providers/header-logo/header-logo";
 import { LanguageService } from "../../providers/language/language.service";
 import { AnalyticsService } from '../../providers/analytics/analytics.service';
@@ -64,7 +65,8 @@ export class Iframe implements OnInit {
         public zone: NgZone,
         public iab: InAppBrowser,
         private menuCtrl: MenuController,
-        public streamingMediaPlayer: StreamingMediaPlayer
+        public streamingMediaPlayer: StreamingMediaPlayer,
+        public pdfService: PdfService
         ) {
 
             events.subscribe('user:login', data => {
@@ -532,8 +534,7 @@ export class Iframe implements OnInit {
     }
 
     handlePDF(src) {
-		let modal = this.modalCtrl.create("PdfModal", { url: src });
-		modal.present();
+		this.pdfService.openPdf( src )
 	}
 
     openLoginModal() {
