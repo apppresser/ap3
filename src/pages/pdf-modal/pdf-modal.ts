@@ -73,7 +73,7 @@ export class PdfModal {
   }
 
   browser() {
-    let browser = this.iab.create(this.pdfSrc, "_blank")
+    let browser = this.iab.create(this.pdfSrc, "_system")
   }
 
   zoomIn() {
