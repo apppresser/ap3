@@ -572,7 +572,7 @@ export class MediaList implements OnInit {
     let fileExt = url.split(".").pop();
 
 		if (fileExt === "pdf") {
-      this.handlePDF(src);
+      this.handlePDF(url);
       return;
     }
 
