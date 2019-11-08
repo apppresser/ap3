@@ -1,46 +1,61 @@
 <ion-header [ngClass]="customHeaderClasses">
+  <ion-navbar>
+    <ion-buttons start>
+      <button
+        *ngIf="rtlBack"
+        (click)="backRtlTransition()"
+        ion-button
+        class="custom-back-button"
+      >
+        <ion-icon name="arrow-forward"></ion-icon>
+        {{ "Back" | translate }}
+      </button>
+      <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
 
-	<ion-navbar>
+    <img class="header-logo" *ngIf="show_header_logo" [src]="header_logo_url" />
 
-		<ion-buttons start>
-			<button *ngIf="rtlBack" (click)="backRtlTransition()" ion-button class="custom-back-button">
-				<ion-icon name="arrow-forward"></ion-icon>
-				{{'Back' | translate }}
-			</button>
-			<button ion-button menuToggle>
-				<ion-icon name="menu"></ion-icon>
-			</button>
+    <ion-title *ngIf="!show_header_logo">{{ pagetitle | translate }}</ion-title>
 
-		</ion-buttons>
+    <ion-buttons end>
+      <button
+        ion-button
+        *ngIf="showSearchIcon"
+        class="search-button-header"
+        (click)="toggleSearchBar()"
+      >
+        <ion-icon name="search"></ion-icon>
+      </button>
 
-		<img class="header-logo" *ngIf="show_header_logo" [src]="header_logo_url" />
+      <button *ngIf="showCartIcon" ion-button (click)="showCart()">
+        <ion-icon name="cart"></ion-icon>
+        <ion-badge color="clear" item-end>{{ cart_count }}</ion-badge>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
 
-		<ion-title *ngIf="!show_header_logo">{{pagetitle | translate}}</ion-title>
-
-		<ion-buttons end>
-
-			<button ion-button *ngIf="showSearchIcon" class="search-button-header" (click)="toggleSearchBar()">
-				<ion-icon name="search"></ion-icon>
-			</button>
-
-			<button *ngIf="showCartIcon" ion-button (click)="showCart()">
-				<ion-icon name="cart"></ion-icon>
-				<ion-badge color="clear" item-end>{{cart_count}}</ion-badge>
-			</button>
-
-	    </ion-buttons>
-
-	</ion-navbar>
-
-	<ion-toolbar *ngIf="toggleSearch">
-		<ion-searchbar placeholder="{{'Search' | translate }}" debounce="1000" (ionInput)="doSearch($event)" (ionClear)="clearSearch()"></ion-searchbar>
-	</ion-toolbar>
+  <ion-toolbar *ngIf="toggleSearch">
+    <ion-searchbar
+      placeholder="{{ 'Search' | translate }}"
+      debounce="1000"
+      (ionInput)="doSearch($event)"
+      (ionClear)="clearSearch()"
+    ></ion-searchbar>
+  </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content *ngIf="!use_dynamic" [ngClass]="customClasses">
+  Content goes here
+</ion-content>
+<ion-content *ngIf="use_dynamic" [ngClass]="customClasses">
+  <DynamicComponent
+    *ngIf="templateUrl"
+    [componentTemplateUrl]="templateUrl"
+    [componentModules]="extraModules"
+    [componentInputData]="inputData"
+  ></DynamicComponent>
 
-	<button ion-button (click)="mediaModal('assets/Ionic-PWA-paper.pdf')">Local PDF</button>
-
-	<button ion-button (click)="mediaModal('https://reactordev.com/apv3/wp-content/uploads/2016/11/Single-pdf.pdf')">Remote PDF</button>
-
+  <div *ngIf="!templateUrl">Missing templateUrl</div>
 </ion-content>
