@@ -28,6 +28,8 @@ export class ApListComponent implements OnInit {
 	@Input() refresh: boolean = false;
 	@Input() title: string;
 	@Input() hideEmpty: boolean = false;
+	@Input() categories: boolean = false;
+	@Input() categoryListDisplay: string = 'default';
 
 	page: number = 1;
 	items: any;
@@ -161,6 +163,25 @@ export class ApListComponent implements OnInit {
 		  item: item
 		}, opt);
 
+	}
+
+	// load the post list page for this category
+	loadCategory( item ) {
+
+		let opt = {};
+
+		if( this.platform.isRTL && this.platform.is('ios') ) {
+			opt = { direction: 'back' }
+		}
+
+		let getRoute = this.route.split("?").shift()
+		getRoute = getRoute.replace("categories","posts?categories=") + item.id
+		this.nav.push('PostList', {
+			title: item.name,
+			list_route: getRoute,
+			list_display: ( this.card ? "card" : "" ),
+			favorites: this.favorites
+		}, opt);
 	}
 
 	loadMore(infiniteScroll) {
