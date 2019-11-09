@@ -49,33 +49,44 @@ export class PdfService {
         src = this.file.applicationDirectory + "www/" + src;
       }
 
-      this.fileOpener
-        .open(src, "application/pdf")
-        .then(() => console.log("File is opened"))
-        .catch(e => console.log("Error opening file", e));
+      this.useFileOpener(src)
     }
   }
 
   handleAndroidLocal(source) {
-    this.maybeCopyFile(source)
+
+    // if the file is already on the local system, don't mess with the url. This is probably from the downloads list
+    if( source.indexOf('file://') >= 0 ) {
+      this.useFileOpener(source)
+    } else {
+
+      // if the file is in our assets or application directory, move it to a public folder so it can be opened by a pdf app
+      this.maybeCopyFile(source)
       .then((res:string) => {
 
-        this.fileOpener
-        .open(res, "application/pdf")
-        .then(() => console.log("File is opened"))
-        .catch(e => console.log("Error opening file after copying", e));
+        this.useFileOpener(res)
 
       })
       .catch(err => {
         console.warn(err);
       });
-      
+    }
+     
+  }
+
+  useFileOpener(src) {
+
+    this.fileOpener
+        .open(src, "application/pdf")
+        .then(() => { /* success */ })
+        .catch(e => console.warn("Error opening file after copying", e));
   }
 
   // local files on Android don't work from assets folder, so we have to copy them to the app storage
   maybeCopyFile(source) {
     return new Promise((resolve, reject) => {
       let assetPath = this.file.applicationDirectory + "www/" + source;
+      console.log(assetPath);
 
       //first - resolve target path in bundled file structure:
       this.file
