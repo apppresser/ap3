@@ -44,14 +44,17 @@
     margin: 100px 20px 0;
     overflow: hidden;
     width: calc(100% - 40px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
     transition: all 0.2s;
+    background: none;
+    box-shadow: none;
 
     img {
       display: block;
-      width: 100%;
-      height: auto;
+      width: auto;
+      max-height: 40vh;
+      margin: 0 auto;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
   }
 
