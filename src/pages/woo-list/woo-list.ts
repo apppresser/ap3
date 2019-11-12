@@ -434,12 +434,12 @@ export class WooList {
 		// if the value is an empty string don't filter the items
 		if (val && val.trim() != '') {
 
-			if( this.route.indexOf('search') >= 0 ) {
-				// remove extra search param
-				this.route = this.route.split('?search')[0]
-			}
+			// if( this.route.indexOf('search') >= 0 ) {
+			// 	// remove extra search param
+			// 	this.route = this.route.split('?search')[0]
+			// }
 
-		  let route = this.addQueryParam(this.route, 'search=' + val);
+		  let route = this.addQueryParam('products', 'search=' + val);
 		  this.loadProducts( route )
 		}
 
