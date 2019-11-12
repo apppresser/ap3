@@ -175,7 +175,7 @@ export class WooList {
 
 	getCategories() {
 
-		if( this.route.indexOf('categories') >= 0 ) {
+		if( this.route.indexOf('categories') >= 0 || this.route.indexOf('search=') >= 0 ) {
 			return;
 		}
 
@@ -188,8 +188,6 @@ export class WooList {
 
 			// Loads posts from WordPress API
 			this.categories = categories;
-
-			console.log(this.categories)
 
 			// set category name in dropdown
 			if( this.route.indexOf('category') >= 0 ) {
@@ -220,8 +218,6 @@ export class WooList {
 	loadDetail(item) {
 
 		let opt = {};
-
-		console.log( item )
 
 		if( item.price || item.price === '' ) {
 			
@@ -428,16 +424,17 @@ export class WooList {
 	}
 
 	search(ev) {
+
 		// set val to the value of the searchbar
 		let val = ev.target.value;
 
 		// if the value is an empty string don't filter the items
 		if (val && val.trim() != '') {
 
-			// if( this.route.indexOf('search') >= 0 ) {
-			// 	// remove extra search param
-			// 	this.route = this.route.split('?search')[0]
-			// }
+			if( this.route.indexOf('search') >= 0 ) {
+				// remove extra search param
+				this.route = this.route.split('?search')[0]
+			}
 
 		  let route = this.addQueryParam('products', 'search=' + val);
 		  this.loadProducts( route )
@@ -447,7 +444,7 @@ export class WooList {
 
 	// get category ID from url string
 	getUrlParam( url, param ) {
-		console.log('url param ' + url, param)
+		// console.log('url param ' + url, param)
 		return url.split( param ).pop()
 	}
 

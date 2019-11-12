@@ -795,7 +795,8 @@ export class CustomPage implements OnInit, OnDestroy {
 		// if the value is an empty string don't filter the items
 		if (val && val.trim() != '') {
 		  // set to this.route so infinite scroll works
-		  let route = this.addQueryParam( this.searchRoute, 'search=' + val);
+		  let route = this.addQueryParam( 'products', 'search=' + val);
+		  console.log('woo search route = ' + route)
 		  this.nav.push('WooList', { route: route, search: true, card: this.searchCard })
 		}
 	}
