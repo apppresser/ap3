@@ -195,13 +195,13 @@ export class StreamingMediaPlayer {
           // this will return a url starting with cdvfile://
           resolve(dir.toInternalURL());
         });
-      } else if ( item.type.indexOf("video") >= 0 ) {
+      } else if (item.type.indexOf("video") >= 0 && item.source.indexOf('file://') < 0 ) {
 
         if( this.device.platform.toLowerCase() === "android" ) {
           var loading = this.loadingCtrl.create();
   
           loading.present();
-  
+
           this.maybeCopyFile(item)
           .then(source => {
             resolve(source);
@@ -218,7 +218,7 @@ export class StreamingMediaPlayer {
         }
         
       } else {
-        // shouldn't be here, but just in case...
+        // probably here because file is already downloaded. This happens on media list downloads.
         resolve( item.source )
       }
 
@@ -292,6 +292,7 @@ export class StreamingMediaPlayer {
   // local files on Android don't work from assets folder, so we have to copy them to the app storage
   maybeCopyFile(item) {
     return new Promise((resolve, reject) => {
+
       let assetPath = this.file.applicationDirectory + "www/" + item.source;
 
       //first - resolve target path in bundled file structure:
