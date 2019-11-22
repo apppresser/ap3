@@ -71,7 +71,7 @@ export class WooProvider {
       }
 
       // don't show draft products
-      if( route.indexOf('products') >= 0 ) {
+      if( route.indexOf('products') >= 0 && route.indexOf('reviews') < 0 ) {
         url = url + '&status=publish'
       }
 
