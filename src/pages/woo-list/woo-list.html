@@ -30,7 +30,7 @@
 
     <ion-select [(ngModel)]="category" (ionChange)="categoryChanged()" placeholder="{{ 'Category' | translate }}">
 
-      <ion-option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name | translate }}</ion-option>
+      <ion-option *ngFor="let cat of categories" [value]="cat.id" [innerHTML]="cat.name | translate"></ion-option>
 
     </ion-select>
 
