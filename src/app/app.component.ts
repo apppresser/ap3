@@ -1636,6 +1636,9 @@ export class MyApp {
   resetSideMenu(login) {
     let updated_pages = [];
 
+    // fixes a bug with colors when there is no side menu
+    if( !this.pages ) return;
+
     for (let item of this.pages) {
       if (login === true && item.extra_classes.indexOf("loggedin") >= 0) {
         item.extra_classes += " show";
