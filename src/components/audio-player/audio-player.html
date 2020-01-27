@@ -38,15 +38,15 @@
     <ion-item class="player-progress" no-lines>
       <ion-range [(ngModel)]="progress" (ionBlur)="seek()" min="0" max="100" color="primary"></ion-range>
     </ion-item>
+    <ion-grid>
+      <ion-row>
+        <ion-col col-6 class="player-duration-left">
+          {{ position }}
+        </ion-col>
+        <ion-col col-6 class="player-duration-right">
+          {{ duration }}
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </ion-list>
-  <ion-grid>
-    <ion-row>
-      <ion-col col-6 class="player-duration-left">
-        {{ position }}
-      </ion-col>
-      <ion-col col-6 class="player-duration-right">
-        {{ duration }}
-      </ion-col>
-    </ion-row>
-  </ion-grid>
 </div>

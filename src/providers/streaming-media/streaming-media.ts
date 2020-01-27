@@ -76,7 +76,6 @@ export class StreamingMediaPlayer {
 
       (<MediaObject>this.currentTrack) = this.media.create(item.source);
       this.currentTrack.onSuccess.subscribe(() => {
-        console.log("Play is successful");
         // this.playNext();
       });
 
