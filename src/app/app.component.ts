@@ -1761,15 +1761,25 @@ export class MyApp {
             return;
           }
 
-          // some craziness to update Iframe components in the TabsPage Tab
-          // bug fix: https://trello.com/c/Q3qlMxOU/999-language-options-and-iframe-tab-conflict
-          this.nav.popToRoot(this.navparams).then(() => {
-            (<Nav>this.nav.getActiveChildNav())
-              .goToRoot(this.navparams)
-              .then(() => {
-                this.nav.setRoot("TabsPage", this.navparams);
-              });
-          });
+          // This is another bug fix (workaround) to fix changing language with resetting tabs
+          // This workaround is only for Post List, (but it should work with any page that might have a problem)
+          let homePage = this.navparams[0]; // Select the first page (which probably is going to be the homepage) from the navparms variable (all tab pages)
+          if (homePage.root === 'PostList') {
+            let root = this.getPageType(homePage);
+            if (root) {
+              this.nav.setRoot(root, homePage);
+            }
+          } else {
+            // some craziness to update Iframe components in the TabsPage Tab
+            // bug fix: https://trello.com/c/Q3qlMxOU/999-language-options-and-iframe-tab-conflict
+            this.nav.popToRoot(this.navparams).then(() => {
+              (<Nav>this.nav.getActiveChildNav())
+                .goToRoot(this.navparams)
+                .then(() => {
+                  this.nav.setRoot("TabsPage", this.navparams);
+                });
+            });
+          }
         } else {
           // reset the tabs
           this.nav.setRoot("TabsPage", this.navparams);
