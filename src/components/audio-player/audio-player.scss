@@ -157,6 +157,19 @@
       width: 20px;
       height: 20px;
     }
+
+    .player-duration-left, .player-duration-right {
+      color: #999;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 5px 15px;
+      margin-bottom: 20px;
+      min-height: 25px;
+    }
+  
+    .player-duration-right {
+      text-align: right;
+    }
   }
 }
 

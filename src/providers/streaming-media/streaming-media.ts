@@ -62,10 +62,10 @@ export class StreamingMediaPlayer {
   }
 
   playMedia(item) {
-    if ( !this.device || typeof this.device.platform != 'string' ) {
-      alert("Please try from a device.");
-      return;
-    }
+    // if ( !this.device || typeof this.device.platform != 'string' ) {
+    //   alert("Please try from a device.");
+    //   return;
+    // }
 
     this.cleanup()
 
@@ -133,7 +133,7 @@ export class StreamingMediaPlayer {
                 parseInt(position) / parseInt(<any>dur);
               percentCompleted = Math.floor(percentCompleted * 100);
 
-              this.events.publish("audio_player_progress", percentCompleted);
+              this.events.publish("audio_player_progress", { duration: dur, position: position, percent: percentCompleted } );
             }
           })
           .catch(e => {

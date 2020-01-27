@@ -21,46 +21,32 @@
       <h1 class="player-title" *ngIf="title" [innerHTML]="title"></h1>
     </ion-item>
     <ion-item class="player-buttons" no-lines>
-      <button
-        class="skip-backward-button"
-        ion-button
-        clear
-        (click)="back()"
-        icon-only
-      >
+      <button class="skip-backward-button" ion-button clear (click)="back()" icon-only>
         <ion-icon name="skip-backward"></ion-icon>
       </button>
       <button ion-button class="pause-button" clear (click)="pause()" icon-only>
         <ion-icon name="pause"></ion-icon>
       </button>
-      <button
-        ion-button
-        class="play-button"
-        clear
-        (click)="play()"
-        icon-only
-      >
+      <button ion-button class="play-button" clear (click)="play()" icon-only>
         <ion-icon name="play"></ion-icon>
       </button>
 
-      <button
-        class="forward-button"
-        ion-button
-        clear
-        (click)="forward()"
-        icon-only
-      >
+      <button class="forward-button" ion-button clear (click)="forward()" icon-only>
         <ion-icon name="skip-forward"></ion-icon>
       </button>
     </ion-item>
     <ion-item class="player-progress" no-lines>
-      <ion-range
-        [(ngModel)]="progress"
-        (ionBlur)="seek()"
-        min="0"
-        max="100"
-        color="primary"
-      ></ion-range>
+      <ion-range [(ngModel)]="progress" (ionBlur)="seek()" min="0" max="100" color="primary"></ion-range>
     </ion-item>
   </ion-list>
+  <ion-grid>
+    <ion-row>
+      <ion-col col-6 class="player-duration-left">
+        {{ position }}
+      </ion-col>
+      <ion-col col-6 class="player-duration-right">
+        {{ duration }}
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </div>
