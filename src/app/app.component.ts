@@ -588,6 +588,7 @@ export class MyApp {
       allow_downloads: item.allow_downloads,
       auto_play_next: item.auto_play_next,
       extra_classes: item.extra_classes,
+      target: item.target,
       show: item.show,
       show_slider: item.show_slider,
       slide_route: item.slide_route,
