@@ -7,6 +7,7 @@ import {Storage} from '@ionic/storage';
 import {Device} from '@ionic-native/device';
 import {Network} from '@ionic-native/network';
 import {AnalyticsService} from '../../providers/analytics/analytics.service';
+import {TranslateService} from '@ngx-translate/core';
 
 @IonicPage()
 @Component({
@@ -51,7 +52,8 @@ export class PostList implements OnInit {
     private headerLogoService: HeaderLogo,
     private Network: Network,
     private ga: AnalyticsService,
-    private Device: Device
+    private Device: Device,
+    public translate: TranslateService
   ) {
 
     this.route = navParams.data.list_route;
@@ -125,7 +127,9 @@ export class PostList implements OnInit {
         if( posts ) {
           this.items = posts;
         } else {
-          this.presentToast('No data available, pull to refresh when you are online.');
+          this.translate.get('No data available, pull to refresh when you are online.').subscribe( text => {
+            this.presentToast(text);
+          })
         }
       });
     }
@@ -160,7 +164,9 @@ export class PostList implements OnInit {
     }).catch((err) => {
       loading.dismiss();
       console.error('Error getting posts', err);
-      this.presentToast('Error getting posts.');
+      this.translate.get('Error getting posts.').subscribe( text => {
+        this.presentToast(text);
+      })
     });
 
     setTimeout(() => {
@@ -283,7 +289,9 @@ export class PostList implements OnInit {
 
       this.storage.set( this.route.substr(-10, 10) + '_favorites', this.favorites);
 
-      this.presentToast('Favorite Added');
+      this.translate.get('Favorite Added').subscribe( text => {
+        this.presentToast(text);
+      });
 
     } else {
 
@@ -303,7 +311,9 @@ export class PostList implements OnInit {
         this.showAll();
       }
 
-      this.presentToast('Favorite Removed');
+      this.translate.get('Favorite Removed').subscribe( text => {
+        this.presentToast(text);
+      })
 
     }
 
@@ -340,7 +350,9 @@ export class PostList implements OnInit {
         this.showSlider = false;
 
       } else {
-        this.presentToast('No Favorites to show');
+        this.translate.get('No Favorites to show').subscribe( text => {
+          this.presentToast(text);
+        })
       }
 
     });

@@ -65,7 +65,9 @@ export class ApIapForm {
 
 	ngAfterViewInit() {
 		if( !this.productId && !this.productIdAndroid ) {
-			this.presentToast("Product ID is required.")
+			this.translate.get( "Product ID is required." ).subscribe( text => {
+				this.presentToast( text )
+			})
 		}
 
 		if( this.secret ) {
@@ -109,7 +111,9 @@ export class ApIapForm {
 
 			// only validate if fields are needed
 			if( !this.login_data && !fields.username || !this.login_data && !fields.password || !fields.email ) {
-				this.presentToast('Please fill out all fields.')
+				this.translate.get( 'Please fill out all fields.' ).subscribe( text => {
+					this.presentToast( text )
+				})
 				return;
 			}
 
@@ -149,14 +153,18 @@ export class ApIapForm {
 
 			this.iap.restorePurchase( id, fields ).then( result => {
 
-				this.presentToast('Purchase restored!')
+				this.translate.get( 'Purchase restored!' ).subscribe( text => {
+					this.presentToast( text )
+				})
 
 				if( fields.removeAds === true ) {
 	              this.removeAppAds()
 	            }
 
 			}).catch( err => {
-				this.presentToast("There was a problem with your purchase " + err )
+				this.translate.get( "There was a problem with your purchase" ).subscribe( text => {
+					this.presentToast( text + err )
+				})
 			})
 
 		} else {
@@ -167,7 +175,9 @@ export class ApIapForm {
 
 			}).catch( err => {
 
-				this.presentToast("There was a problem with your purchase " + err )
+				this.translate.get( 'There was a problem with your purchase.' ).subscribe( text => {
+					this.presentToast( text + err )
+				})
 
 			})
 		}
@@ -282,7 +292,9 @@ export class ApIapForm {
 		}).catch( err => {
 
 			console.warn(err)
-			this.presentToast('There was a problem, please contact support.')
+			this.translate.get( 'There was a problem, please contact support.' ).subscribe( text => {
+				this.presentToast( text )
+			})
 			
 		}).then( () => {
 

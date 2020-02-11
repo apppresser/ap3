@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, ViewController, Events, ToastContr
 import { Storage } from '@ionic/storage';
 import { WooProvider } from '../../providers/woo/woo';
 import {InAppBrowser, InAppBrowserObject} from '@ionic-native/in-app-browser';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'woo-cart',
@@ -35,7 +36,8 @@ export class WooCartComponent implements OnInit {
 		public toastCtrl: ToastController,
 		public loadingCtrl: LoadingController,
 		public platform: Platform,
-		public iab: InAppBrowser
+		public iab: InAppBrowser,
+		public translate: TranslateService
 		) {
 
 		events.subscribe('cart_change', count => {
@@ -324,14 +326,18 @@ export class WooCartComponent implements OnInit {
 
 	presentToast(msg) {
 
-		let toast = this.toastCtrl.create({
-		  message: msg,
-		  duration: 3000,
-		  position: 'bottom',
-		  cssClass: 'normal-toast'
-		});
+		this.translate.get( msg ).subscribe( text => {
 
-		toast.present();
+			let toast = this.toastCtrl.create({
+				message: text,
+				duration: 3000,
+				position: 'bottom',
+				cssClass: 'normal-toast'
+			});
+	
+			toast.present();
+
+		});
 
 	}
 

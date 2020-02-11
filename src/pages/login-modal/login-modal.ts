@@ -237,14 +237,6 @@ export class LoginModal {
 
 	maybeSetCookie( login_data, logout = false ) {
 
-		// only do this in the browser
-		if( this.platform.is('ios') || this.platform.is('android') ) {
-			this.dismiss()
-			return;
-		}
-
-		console.log('Setting cookie via iframe because we are in the browser.')
-
         let myappp = JSON.parse( window.localStorage.getItem( 'myappp' ) );
         let url = myappp.wordpress_url;
 

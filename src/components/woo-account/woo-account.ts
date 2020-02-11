@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, LoadingController, ToastController
 import { WooProvider } from '../../providers/woo/woo';
 import {Storage} from '@ionic/storage';
 import {InAppBrowser, InAppBrowserObject} from '@ionic-native/in-app-browser';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'woo-account',
@@ -35,7 +36,8 @@ export class WooAccountComponent implements OnInit {
 		public iab: InAppBrowser,
 		public toastCtrl: ToastController,
 		public modalCtrl: ModalController,
-		public events: Events
+		public events: Events,
+		public translate: TranslateService
 		) {
 	}
 
@@ -81,7 +83,9 @@ export class WooAccountComponent implements OnInit {
 			this.customer = this.login_data.user_id
 			this.getOrders( '?customer=' + this.login_data.user_id + '&status=pending,processing,on-hold,completed,refunded,failed' )
 		} else {
-			this.presentToast('Please login.')
+			this.translate.get('Please login.').subscribe( text => {
+				this.presentToast(text);
+			});
 			this.showLoginModal()
 		}
 	}
@@ -112,6 +116,9 @@ export class WooAccountComponent implements OnInit {
 			this.orders = response
 		}).catch( e => {
 			console.warn(e)
+			this.translate.get('There was a problem getting your orders. Maybe you need to login?').subscribe( text => {
+				this.presentToast(text);
+			});
 		}).then( ()=> {
 			this.hideSpinner()
 		})
@@ -121,7 +128,10 @@ export class WooAccountComponent implements OnInit {
 	showOrders() {
 
 		if( !this.login_data ) {
-			this.presentToast('Please login.')
+			
+			this.translate.get('Please login.').subscribe( text => {
+				this.presentToast(text);
+			});
 			return;
 		}
 
@@ -134,7 +144,9 @@ export class WooAccountComponent implements OnInit {
 	showAccount() {
 
 		if( !this.login_data ) {
-			this.presentToast('Please login.')
+			this.translate.get('Please login.').subscribe( text => {
+				this.presentToast(text);
+			});
 			return;
 		}
 

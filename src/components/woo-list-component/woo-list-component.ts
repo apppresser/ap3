@@ -207,7 +207,9 @@ export class WooListComponent implements OnInit {
 			if( items && items.length ) {
 				this.items = items
 			} else {
-				this.presentToast('No items to show.')
+				this.translate.get('No items to show.').subscribe( text => {
+					this.presentToast(text);
+				});
 			}
 
 		})
@@ -347,7 +349,9 @@ export class WooListComponent implements OnInit {
 
 	addToCart( item ) {
 
-		this.presentToast( item.name + ' added to cart.' )
+		this.translate.get('added to cart').subscribe( text => {
+			this.presentToast(item.name + ' ' + text);
+		});
 
 		item.quantity = 1
 		item.product_id = item.id

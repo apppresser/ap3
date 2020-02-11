@@ -2,6 +2,7 @@ import { Component, ViewChild, isDevMode} from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController, ToastController, ModalController, Events, Content } from 'ionic-angular';
 import { WooProvider } from '../../providers/woo/woo';
 import { Storage } from '@ionic/storage';
+import {TranslateService} from '@ngx-translate/core';
 
 @IonicPage()
 @Component({
@@ -34,7 +35,8 @@ export class WooList {
 		public toastCtrl: ToastController,
 		public modalCtrl: ModalController,
 		public events: Events,
-		public storage: Storage
+		public storage: Storage,
+		public translate: TranslateService
 		) {
 
 		if( this.navParams.get('route') ) {
@@ -381,7 +383,7 @@ export class WooList {
 	presentToast(msg) {
 
 		let toast = this.toastCtrl.create({
-		  message: msg,
+		  message: this.translate.instant(msg),
 		  duration: 3000,
 		  position: 'bottom',
 		  cssClass: 'normal-toast'
