@@ -23,7 +23,7 @@
 
     </button>
 
-    <ion-item-options side="right">
+    <ion-item-options [side]="platform.isRTL?'left':'right'">
       <button ion-button color="danger" (click)="removeDownload(download)">
         <ion-icon name="remove-circle"></ion-icon>
         {{ 'Delete' | translate }}

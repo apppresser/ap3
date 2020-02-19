@@ -5,7 +5,8 @@ import {
   ViewController,
   ToastController,
   IonicPage,
-  ModalController
+  ModalController,
+  Platform
 } from "ionic-angular";
 import { Storage } from "@ionic/storage";
 import { File } from "@ionic-native/file";
@@ -34,7 +35,8 @@ export class DownloadList {
     private file: File,
     private translate: TranslateService,
     public streamingMediaPlayer: StreamingMediaPlayer,
-    public pdfService: PdfService
+    public pdfService: PdfService,
+    public platform: Platform
   ) {
     if (this.navParams.get("title")) {
       this.title = this.navParams.get("title");
