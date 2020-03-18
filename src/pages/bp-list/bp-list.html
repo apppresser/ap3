@@ -129,7 +129,7 @@
   <ion-list *ngIf="memberList">
 
     <ion-item-divider color="light" (tap)="myProfile()" *ngIf="login_data">
-      {{ 'My Profile' || translate }}
+      {{ 'My Profile' | translate }}
       <ion-icon item-end name="ios-arrow-forward"></ion-icon>
     </ion-item-divider>
 

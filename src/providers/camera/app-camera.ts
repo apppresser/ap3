@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Camera} from '@ionic-native/camera';
 import { Transfer, FileUploadOptions, TransferObject, FileUploadResult } from '@ionic-native/transfer';
-import { File } from '@ionic-native/file';
 import { Device } from "@ionic-native/device";
-import { ActionSheet, ActionSheetOptions } from '@ionic-native/action-sheet';
+import { ActionSheet } from '@ionic-native/action-sheet';
+import { TranslateService } from '@ngx-translate/core';
 
 declare var window;
 
@@ -30,25 +30,34 @@ export class AppCamera {
   appbuddy: boolean = false;
   progress_timeout: any;
 
-  constructor(private actionSheet: ActionSheet, private Camera: Camera, private Device: Device, private Transfer: Transfer, private File: File) { }
+  constructor(
+    private actionSheet: ActionSheet,
+    private Camera: Camera,
+    private Device: Device,
+    private Transfer: Transfer,
+    public translate: TranslateService
+  ) { }
 
-  openSheet( appbuddy ) {
-
-    let buttonLabels = ['Take Photo', 'Photo Library'];
-    
+  /**
+   * Opens an Action Sheet to choose between using camera or photo library
+   * @param {*} appbuddy
+   */
+  public openSheet(appbuddy: any): void {
     this.actionSheet.show({
-      title: 'Choose an image',
-      buttonLabels: buttonLabels,
-      addCancelButtonWithLabel: 'Cancel',
+      title: this.translate.instant('Choose an image'),
+      buttonLabels: [
+        this.translate.instant('Take Photo'),
+        this.translate.instant('Photo Library')
+      ],
+      addCancelButtonWithLabel: this.translate.instant('Cancel'),
       destructiveButtonLast: true
     }).then((buttonIndex: number) => {
-      if( buttonIndex === 1 ) {
+      if (buttonIndex === 1) {
         this.takePicture(appbuddy);
-      } else if( buttonIndex === 2 ) {
+      } else if (buttonIndex === 2) {
         this.photoLibrary(appbuddy);
       }
     });
-
   }
 
   takePicture(appbuddy) {

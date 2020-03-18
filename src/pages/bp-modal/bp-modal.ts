@@ -25,16 +25,6 @@ export class BpModal {
 	groupId: any = null;
 	recipients: any;
 	recipientArr: any[];
-	i18n = {
-		imageSheet: {
-			title: 'Choose an image',
-			buttonLabels: {
-				takePhoto: 'Take Photo',
-				photoLibrary: 'Photo Library'
-			},
-			addCancelButtonWithLabel: 'Cancel',
-		}
-	};
 	customClasses: string;
 	iphoneX: boolean = false;
 
@@ -60,8 +50,6 @@ export class BpModal {
 				this.title = text;
 			});
 		}
-
-		this.setTranslations();
 
 		this.route = this.navParams.get('route');
 
@@ -107,25 +95,6 @@ export class BpModal {
 
 		this.doIphoneX()
 
-	}
-
-	setTranslations() {
-
-		this.translate.get(this.i18n.imageSheet.title).subscribe( text => {
-			this.i18n.imageSheet.title = text;
-
-			this.translate.get(this.i18n.imageSheet.buttonLabels.takePhoto).subscribe( text => {
-				this.i18n.imageSheet.buttonLabels.takePhoto = text;
-
-				this.translate.get(this.i18n.imageSheet.buttonLabels.takePhoto).subscribe( text => {
-					this.i18n.imageSheet.buttonLabels.takePhoto = text;
-
-					this.translate.get(this.i18n.imageSheet.addCancelButtonWithLabel).subscribe( text => {
-						this.i18n.imageSheet.addCancelButtonWithLabel = text;
-					});
-				});
-			});
-		});
 	}
 
 	populateRecipients() {
@@ -283,39 +252,33 @@ export class BpModal {
 		this.presentToast( msg )
 	}
 
-	imageSheet() {
+  /**
+   * Opens an Action Sheet to choose between using camera or photo library
+   */
+  public imageSheet(): void {
+    let options = {
+      title: this.translate.instant('Choose an image'),
+      buttonLabels: [
+        this.translate.instant('Take Photo'),
+        this.translate.instant('Photo Library')
+      ],
+      addCancelButtonWithLabel: this.translate.instant('Cancel'),
+      destructiveButtonLast: true
+    }
 
-		let options = {
-	      title: this.i18n.imageSheet.title,
-	      buttonLabels: [
-			  this.i18n.imageSheet.buttonLabels.takePhoto,
-			  this.i18n.imageSheet.buttonLabels.photoLibrary
-		  ],
-	      addCancelButtonWithLabel: this.i18n.imageSheet.addCancelButtonWithLabel,
-	      destructiveButtonLast: true
-	    }
-    
-	    this.actionSheet.show( options ).then( (buttonIndex: number) => {
-
-	      if( buttonIndex === 1 ) {
-
-	        this.bpProvider.doCamera( 'camera' ).then( image => {
-
-	        	this.uploadedImage = (<string>image)
-	        })
-
-	      } else if( buttonIndex === 2 ) {
-
-	        this.bpProvider.doCamera( 'library' ).then( image => {
-	        	console.log(image) 
-	        	this.uploadedImage = (<string>image)
-	        })
-
-	      }
-
-	    })
-
-	}
+    this.actionSheet.show(options).then((buttonIndex: number) => {
+      if (buttonIndex === 1) {
+        this.bpProvider.doCamera('camera').then(image => {
+          this.uploadedImage = (<string>image);
+        });
+      } else if (buttonIndex === 2) {
+        this.bpProvider.doCamera('library').then(image => {
+          console.log(image);
+          this.uploadedImage = (<string>image);
+        })
+      }
+    });
+  }
 
 	dismiss( data = null ) {
 		this.viewCtrl.dismiss( data );
