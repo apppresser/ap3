@@ -155,40 +155,39 @@ export class WooListComponent implements OnInit {
 
 	}
 
-	getCategories() {
+  /**
+   * Gets categories (max=200) from API
+   * @returns {Promise<void>}
+   */
+  public async getCategories(): Promise<void> {
+    if (this.route.indexOf('categories') >= 0) {
+      return;
+    }
 
-		if( this.route.indexOf('categories') >= 0 ) {
-			return;
-		}
+    let params = '';
+    if (this.categoryParams) {
+      params = '&' + this.categoryParams
+    }
 
-		let params = '';
+    try {
+      // Loads first 100 categories
+      const categoriesPage1: any = await this.wooProvider.get('products/categories?per_page=100' + params, 1);
+      this.categories = categoriesPage1;
+      // Loads the next 100 categories
+      const categoriesPage2: any = await this.wooProvider.get('products/categories?per_page=100' + params, 2);
+      this.categories = this.categories.concat(categoriesPage2);
 
-		if( this.categoryParams ) {
-			params = '&' + this.categoryParams
-		}
-
-		this.wooProvider.get( 'products/categories?per_page=200' + params, null ).then(categories => {
-
-			// Loads posts from WordPress API
-			this.categories = categories;
-
-			// set category name in dropdown
-			if( this.route.indexOf('category') >= 0 ) {
-				let catId = this.getUrlParam( this.route, 'category=' )
-				setTimeout( () => {
-					this.category = catId
-				}, 100 )
-				
-			}
-
-
-		}).catch((err) => {
-
-		  console.warn('Error getting categories', err);
-
-		});
-
-	}
+      // set category name in dropdown
+      if (this.route.indexOf('category') >= 0) {
+        let catId = this.getUrlParam(this.route, 'category=')
+        setTimeout(() => {
+          this.category = catId;
+        }, 100)
+      }
+    } catch (error) {
+      console.warn('Error getting categories', error);
+    }
+  }
 
 	categoryChanged() {
 
