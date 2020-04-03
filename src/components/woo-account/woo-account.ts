@@ -169,17 +169,19 @@ export class WooAccountComponent implements OnInit {
 			this.hideSpinner()
 		})
 
-		// sucks to do an extra http request, tried hard to avoid this
-		this.wooProvider.getCustom( 'wp-json/appcommerce/v1/cart/misc' ).then( response => {
-
-			if( response && (<any>response).account && (<any>response).account.url ) {
-				this.accountUrl = (<any>response).account.url
-			}
-			
-		}).catch( e => {
-			console.warn(e)
-		})
-
+    // sucks to do an extra http request, tried hard to avoid this
+    this.storage.get('user_login').then(login_data => {
+      const authUrlParams: string = (login_data) ? '?appp=3&token=' + login_data.access_token : '';
+      this.wooProvider.getCustom('wp-json/appcommerce/v1/cart/misc' + authUrlParams)
+        .then(response => {
+          if (response && (<any>response).account && (<any>response).account.url) {
+            this.accountUrl = (<any>response).account.url
+          }
+        })
+        .catch(e => {
+          console.warn(e)
+        })
+    })
 	}
 
 	thanksContinue() {

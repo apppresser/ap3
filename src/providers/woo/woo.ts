@@ -118,117 +118,101 @@ export class WooProvider {
 
   }
 
-  addToCart( data ) {
-
-    return new Promise( (resolve, reject) => {
-
-      if( !data )
-        reject({ data: { message: "No data." } })
-
-      this.http.post( this.url + this.cartRest + '/add', data, this.httpOptions )
-        .subscribe(response => {
-
-          console.log(response)
-
-          resolve(response);
-        },
-        error => {
-          // probably a bad url or 404
-          reject(error);
-          this.handleError(error)
-        })
-
-    }); // end Promise
-
-  }
-
-  clearCart() {
-
-    return new Promise( (resolve, reject) => {
-
-      this.http.delete( this.url + this.cartRest + '/clear', this.httpOptions )
-        .subscribe(response => {
-
-          resolve(response);
-        },
-        error => {
-          // probably a bad url or 404
-          reject(error);
-          this.handleError(error)
-        })
-
-    }); // end Promise
-
-  }
-
-  getCartContents() {
-
-    return new Promise( (resolve, reject) => {
-
-      this.http.get( this.url + this.cartRest + '?thumb=true', this.httpOptions )
-        .subscribe(response => {
-
-          this.setCartCount(response)
-
-          resolve(response);
-        },
-        error => {
-          // probably a bad url or 404
-          reject(error);
-          this.handleError(error)
-        })
-
-    }); // end Promise
-
-  }
-
-  // update cart total every time we do an API call
-  setCartCount( response ) {
-
-    if( typeof (<any>response) === 'string' ) {
-      this.storage.remove( 'cart_count' )
-    } else {
-      this.storage.set( 'cart_count', (<any>response).cart_total.cart_contents_count )
+  /**
+   * Adds item to cart
+   * @param {*} data
+   * @returns {Promise<any>}
+   */
+  public async addToCart(data: any): Promise<any> {
+    if (!data) {
+      throw { data: { message: "No data." } };
     }
 
+    try {
+      const login_data: any = await this.storage.get('user_login');
+      const authUrlParams: string = (login_data) ? '?appp=3&token=' + login_data.access_token : '';
+      return this.http.post(this.url + this.cartRest + '/add' + authUrlParams, data, this.httpOptions).toPromise();
+    } catch (error) {
+      // probably a bad url or 404
+      this.handleError(error)
+    }
   }
 
-  removeItem( item ) {
-
-    return new Promise( (resolve, reject) => {
-
-      this.http.delete( this.url + this.cartRest + '/cart-item?cart_item_key=' + item.key, this.httpOptions )
-        .subscribe(response => {
-
-          resolve(response);
-        },
-        error => {
-          // probably a bad url or 404
-          reject(error);
-          this.handleError(error)
-        })
-
-    }); // end Promise
-
+  /**
+   * Removes all items from cart
+   * @returns {Promise<any>}
+   */
+  public async clearCart(): Promise<any> {
+    try {
+      const login_data: any = await this.storage.get('user_login');
+      const authUrlParams: string = (login_data) ? '?appp=3&token=' + login_data.access_token : '';
+      return this.http.delete( this.url + this.cartRest + '/clear' + authUrlParams, this.httpOptions ).toPromise();
+    } catch (error) {
+      // probably a bad url or 404
+      this.handleError(error)
+    }
   }
 
-  updateItem( item, quantity ) {
+  /**
+   * Gets the cart content
+   * @returns {Promise<any>}
+   */
+  public async getCartContents(): Promise<any> {
+    try {
+      const login_data: any = await this.storage.get('user_login');
+      const authUrlParams: string = (login_data) ? '&appp=3&token=' + login_data.access_token : '';
+      const response: any = await this.http.get(this.url + this.cartRest + '?thumb=true' + authUrlParams, this.httpOptions).toPromise();
+      this.setCartCount(response);
+      return response;
+    } catch (error) {
+      // probably a bad url or 404
+      this.handleError(error)
+    }
+  }
 
-    return new Promise( (resolve, reject) => {
+  /**
+   * Updates cart total every time we do an API call
+   * @param {*} response
+   */
+  public setCartCount(response: any): void {
+    if (typeof (<any>response) === 'string') {
+      this.storage.remove('cart_count')
+    } else {
+      this.storage.set('cart_count', (<any>response).cart_total.cart_contents_count)
+    }
+  }
 
-      this.http.post( this.url + this.cartRest + '/cart-item?cart_item_key=' + item.key + '&quantity=' + quantity, null, this.httpOptions )
-        .subscribe(response => {
+  /**
+   * Removes the item from the cart
+   * @param {*} item
+   * @returns {Promise<any>}
+   */
+  public async removeItem(item: any): Promise<any> {
+    try {
+      const login_data: any = await this.storage.get('user_login');
+      const authUrlParams: string = (login_data) ? '&appp=3&token=' + login_data.access_token : '';
+      return this.http.delete(this.url + this.cartRest + '/cart-item?cart_item_key=' + item.key + authUrlParams, this.httpOptions).toPromise();
+    } catch (error) {
+      // probably a bad url or 404
+      this.handleError(error)
+    }
+  }
 
-          resolve(response);
-        },
-        error => {
-          // probably a bad url or 404
-          reject(error);
-          this.handleError(error)
-        })
-
-    }); // end Promise
-
+  /**
+   * Updates an item quantity on the cart
+   * @param {*} item
+   * @param {number} quantity
+   * @returns {Promise<any>}
+   */
+  public async updateItem(item: any, quantity: number): Promise<any> {
+    try {
+      const login_data: any = await this.storage.get('user_login');
+      const authUrlParams: string = (login_data) ? '&appp=3&token=' + login_data.access_token : '';
+      return this.http.post( this.url + this.cartRest + '/cart-item?cart_item_key=' + item.key + '&quantity=' + quantity + authUrlParams, null, this.httpOptions ).toPromise();
+    } catch (error) {
+      // probably a bad url or 404
+      this.handleError(error)
+    }
   }
 
   // find cart, shop, etc page in menu items, return [ id, slug ]
