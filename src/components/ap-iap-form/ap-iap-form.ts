@@ -171,7 +171,8 @@ export class ApIapForm {
 
 			this.iap.buy( id, fields ).then( result => {
 
-				this.purchaseSuccess( result, fields )
+				console.log('Purchase success', result);
+				this.purchaseSuccess( (<any>result).transactionID, fields )
 
 			}).catch( err => {
 
